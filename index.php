@@ -75,6 +75,7 @@ class dao_lav extends dao_generic_2 {
 class dao_seq_kw2 extends dao_generic_2 {
     
     const dbName = 'seqs';
+    const iddel  = '-';
     
     public function __construct() {
 	parent::__construct(self::dbName, __FILE__);
@@ -108,8 +109,22 @@ class dao_seq_kw2 extends dao_generic_2 {
 	
 	if (!$retid) return $newseq;
 	
-	$id = (intval(date('Y', $now)) % 10) . '-' . date('m-d-H:i') . '-' . date('Y') . '-' . $newseq;
-	$dat['_id'] = $id;
+	return self::getID($dat, $now, $newseq);
+
+    }
+    
+    private static function getID($dat, $now, $seq) {
+
+	$id  = '';
+	$id .= (intval(date('Y', $now)) % 10);
+	$id .= self::iddel;
+	$id .= date('m-d-H:i:s');
+	$id .= self::iddel;
+	$id .=  $seq;
+	$id .= self::iddel;
+	$id .= date('Y');
+
+	$dat['_id'] = $id;	
 	return $dat;
     }
     
