@@ -99,8 +99,8 @@ class dao_seq_kw2 extends dao_generic_2 {
 	if (!$r) $r = $this->create($db, $coll, $skey);
 
 	$now = time();	
-	$dat['seqts' ]  = $now;
-	$dat['seqR'  ]  = date('r', $now);
+	$dat['ts' ]  = $now;
+	$dat['r'  ]  = date('r', $now);
 	$newseq = $r['seq'] + 1;
 	$dat['seq'] = $newseq;
 	
@@ -108,12 +108,13 @@ class dao_seq_kw2 extends dao_generic_2 {
 	$locko->unlock();
 	
 	if (!$retid) return $newseq;
-	
+
+	unset($dat['r']); 	
 	return self::getID($dat, $now, $newseq);
 
     }
     
-    private static function getID($dat, $now, $seq) {
+    private static function getID($din, $now, $seq) {
 
 	$id  = '';
 	$id .= (intval(date('Y', $now)) % 10);
@@ -124,6 +125,7 @@ class dao_seq_kw2 extends dao_generic_2 {
 	$id .= self::iddel;
 	$id .= date('Y');
 
+	$dat['seqmeta'] = $din;
 	$dat['_id'] = $id;	
 	return $dat;
     }
@@ -131,8 +133,8 @@ class dao_seq_kw2 extends dao_generic_2 {
     private function create($db, $coll, $skey) {
 	$now = time();
 	$r   = date('r', $now);
-	$dat['created' ] = $dat['seqts']  = $now;
-	$dat['createdR'] = $dat['seqR'] = $r;
+	$dat['created' ] = $now;
+	$dat['createdR'] = $r;
 	$dat['sem_key' ] = $skey;
 	$dat['db'      ] = $db;
 	$dat['name'    ] = $coll;
