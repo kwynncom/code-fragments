@@ -29,6 +29,7 @@ class dao_generic_2 extends dao_generic {
     
     protected function creTabs($dbin, $ts) {
 	foreach($ts as $k => $t) {
+	    kwas(strlen($k) === 1, 'collection / table id / project id must be one character');
 	    $v = $k . 'coll';
 	    $this->$v = $this->client->selectCollection2($dbin, $t, $k);
 	}	
@@ -48,12 +49,15 @@ class dao_lav extends dao_generic_2 {
     }
 }
 
+
 class dao_seq_kw2 extends dao_generic {
     
     const dbName = 'seqs';
     
     public function __construct() {
 	parent::__construct(self::dbName);
+// semaphore should be unique / semaphore key / ID
+	// the _id should be db-name or some such
 	$c->createIndex(['db' => -1, 'name' => -1], ['unique' => true ]);
     }    
 }
