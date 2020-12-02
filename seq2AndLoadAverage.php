@@ -1,10 +1,11 @@
-<?php
+<?php 
 
 require_once('/opt/kwynn/kwcod.php');
 require_once('/opt/kwynn/kwutils.php');
 require_once('/opt/kwynn/lock.php');
-
 require_once(__DIR__ . '/../cpu/utils/dao.php');
+
+// 2020/12/01 7:32pm - This file has served its purpose and be retired.  The code will move to my php utils project and AWS metrics project.
 
 class kwcoll2 extends kwcoll {
     public function __construct($mgr, $db, $coll, $tma, $tpid, $path) {
@@ -21,7 +22,6 @@ class kwcoll2 extends kwcoll {
 	return $seq;
     }
 }
-
 
 class kwmoncli2 extends kwmoncli {
     
@@ -94,16 +94,15 @@ class dao_seq_kw2 extends dao_generic_2 {
 	$q = ['db' => $db, 'name' => $coll];
 	$pr = ['projection' => ['seq' => 1, '_id' => 0]];
 	$skey = $locko->getKey();
-	$locko->lock();
-	$r = $this->scoll->findOne($q, $pr);
-	if (!$r) $r = $this->create($db, $coll, $skey);
 
-	$now = time();	
+	$locko->lock();
+	$now = time();
 	$dat['ts' ]  = $now;
 	$dat['r'  ]  = date('r', $now);
+	$r = $this->scoll->findOne($q, $pr);
+	if (!$r) $r = $this->create($db, $coll, $skey);
 	$newseq = $r['seq'] + 1;
 	$dat['seq'] = $newseq;
-	
 	$r2 = $this->scoll->upsert($q, $dat);
 	$locko->unlock();
 	
