@@ -30,7 +30,7 @@ class tick_time_study_20 extends tick_time_study {
 	    $vvs++;
 	}
 	
-	$ttkm  = $ttk * pow(10,4);
+	$ttkm  = $ttk * pow(10,4); // ****** NOTE TO SELF: output to CSV and analyze in spreadsheet
 	$tpsm  = $ttkm / $tti;
 	$secem = $tk0 / $tpsm;
 	
