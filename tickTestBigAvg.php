@@ -15,26 +15,26 @@ class tick_time_study_20 extends tick_time_study {
 	
 	$tk0 = $res[$n-1]['tick'];
 	$ti0 = $res[$n-1]['Uns' ];
-
+	
 	$sdo = new stddev();
+	
+	$tti = 0;
+	$ttk = 0;
+	$vvs = 0;
 	for ($i=0; $i + 2 < $n; $i++) {
-	    $dti = $res[$i]['Uns' ] - $res[$n-1]['Uns' ] ;
-	    
+	    $dti = $res[$i]['Uns' ] - $ti0;
 	    if ($dti / pow(10,9) < 1200) continue;
-	    
-	    $dtk = $res[$i]['tick'] - $res[$n-1]['tick'] ;
-	    $r = ($dtk / $dti); 
-	    $sdo->put($r);
-
+	    $tti += $dti;
+	    $dtk = $res[$i]['tick'] - $tk0;
+	    $ttk += $dtk;
+	    $vvs++;
 	}
 	
-	$sdr = $sdo->get();
-	var_dump($sdr);
+	$ttkm  = $ttk * pow(10,4);
+	$tpsm  = $ttkm / $tti;
+	$secem = ($tk0 / $tpsm) / pow(10,4);
 	
-	$avg = $sdr['a'];	
-	
-	$btns = $ti0 - $tk0 / $avg;
-	$bts  = intval(round($btns / pow(10,9)));
+	$bts  = intval($ti0 / pow(10,9) - $secem);
 	
 	echo(date('r', $bts) . "\n");
 	echo(date('r', $res[$n-1]['Uboot']));	
