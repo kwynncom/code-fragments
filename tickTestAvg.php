@@ -1,7 +1,7 @@
 <?php
 
-require_once('../tick.php');
-require_once('../stddev.php');
+require_once('tick.php');
+require_once('stddev.php');
 
 class tick_time_study_20 extends tick_time_study {
     public function __construct() {
@@ -23,7 +23,7 @@ class tick_time_study_20 extends tick_time_study {
 	    if ($dti / pow(10,9) < 1200) continue;
 	    
 	    $dtk = ($res[$i]['tick'] - $res[$n-1]['tick']);
-	    $r = ($dtk / $dti); 
+	    $r = ($dti / $dtk); 
 	    $sdo->put($r);
 
 	}
@@ -33,7 +33,7 @@ class tick_time_study_20 extends tick_time_study {
 	
 	$avg = $sdr['a'];	
 	
-	$btns = $ti0 - $tk0 / $avg;
+	$btns = intval(round($ti0 - $tk0 * $avg));
 	$bts  = intval(round($btns / pow(10,9)));
 	
 	echo(date('r', $bts) . "\n");

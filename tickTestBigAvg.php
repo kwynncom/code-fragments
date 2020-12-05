@@ -30,14 +30,19 @@ class tick_time_study_20 extends tick_time_study {
 	    $vvs++;
 	}
 	
-	$ttkm  = $ttk * pow(10,4); // ****** NOTE TO SELF: output to CSV and analyze in spreadsheet
-	$tpsm  = $ttkm / $tti;
-	$secem = $tk0 / $tpsm;
+	$nspt = $tti / $ttk;
 	
-	$bts  = intval(($ti0 - $secem * pow(10,4)) / pow(10,9));
+	$btns = $ti0 - (($tk0 * $tti) / $ttk);
+	$bts  = intval(round($btns / pow(10,9)));
 	
 	echo(date('r', $bts) . "\n");
-	echo(date('r', $res[$n-1]['Uboot']));	
+	echo(date('r', $res[$n-1]['Uboot']) . "\n");
+	
+	echo($res[0]['Uns'] . "\n");
+	$Uns0df = (($res[0]['tick'] * $tti) / $ttk) + $btns;
+	$Uns0d  = intval(round($Uns0df));
+	echo($Uns0d . "\n");
+	echo(($Uns0d - $res[0]['Uns']) . "\n");
 	
 
     }
