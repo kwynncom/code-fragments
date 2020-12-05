@@ -1,6 +1,7 @@
 <?php
 
 require_once('tick.php');
+require_once('stddev.php');
 
 class tick_time_study_20 extends tick_time_study {
     public function __construct() {
@@ -14,9 +15,8 @@ class tick_time_study_20 extends tick_time_study {
 	
 	$tk0 = $res[$n-1]['tick'];
 	$ti0 = $res[$n-1]['Uns' ];
-	
-	$tot = 0;
-	$acnt = 0;
+
+	$sdo = new stddev();
 	for ($i=0; $i + 2 < $n; $i++) {
 	    $dti = $res[$i]['Uns' ] - $res[$n-1]['Uns' ] ;
 	    
@@ -24,15 +24,11 @@ class tick_time_study_20 extends tick_time_study {
 	    
 	    $dtk = $res[$i]['tick'] - $res[$n-1]['tick'] ;
 	    $r = ($dtk / $dti); 
-	    $d = $r - 2.6599790323801;
-	    if (abs($d) > 1E-6) {
-		continue;
-	    }
-	    echo($r . ' ' . $d . "\n");
-	    $tot += $r; $acnt++;
+	    $sdo->put($r);
+
 	}
 	
-	echo(($tot / $acnt) . "\n");
+	var_dump($sdo->get());
 	
 	
     }
