@@ -18,16 +18,21 @@ class tick_time_study_20 extends tick_time_study {
 	$tot = 0;
 	$acnt = 0;
 	for ($i=0; $i + 2 < $n; $i++) {
-	    $dtk = $res[$i]['tick'] - $res[$n-1]['tick'] ;
 	    $dti = $res[$i]['Uns' ] - $res[$n-1]['Uns' ] ;
+	    
+	    if ($dti / pow(1,9) < 1200) continue;
+	    
+	    $dtk = $res[$i]['tick'] - $res[$n-1]['tick'] ;
 	    $r = ($dtk / $dti); 
-	    $d = $r - 2.659979;
-	    if (abs($d) > 1E-6) continue;
+	    $d = $r - 2.6599790323801;
+	    if (abs($d) > 1E-6) {
+		continue;
+	    }
 	    echo($r . ' ' . $d . "\n");
 	    $tot += $r; $acnt++;
 	}
 	
-	echo(($tot / $acnt) . "\n"); // 2.6599791197263
+	echo(($tot / $acnt) . "\n");
 	
 	
     }
