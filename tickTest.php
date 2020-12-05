@@ -20,7 +20,7 @@ class tick_time_study_20 extends tick_time_study {
 	for ($i=0; $i + 2 < $n; $i++) {
 	    $dti = $res[$i]['Uns' ] - $res[$n-1]['Uns' ] ;
 	    
-	    if ($dti / pow(1,9) < 1200) continue;
+	    if ($dti / pow(10,9) < 1200) continue;
 	    
 	    $dtk = $res[$i]['tick'] - $res[$n-1]['tick'] ;
 	    $r = ($dtk / $dti); 
@@ -28,10 +28,21 @@ class tick_time_study_20 extends tick_time_study {
 
 	}
 	
-	var_dump($sdo->get());
+	$sdr = $sdo->get();
+	var_dump($sdr);
 	
+	$avg = $sdr['a'];	
 	
+	$btns = $ti0 - $tk0 / $avg;
+	$bts  = intval(round($btns / pow(10,9)));
+	
+	echo(date('r', $bts) . "\n");
+	echo(date('r', $res[$n-1]['Uboot']));	
+	
+
     }
+    
+
 }
 
 new tick_time_study_20();
