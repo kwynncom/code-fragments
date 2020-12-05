@@ -32,9 +32,9 @@ class tick_time_study_20 extends tick_time_study {
 	
 	$ttkm  = $ttk * pow(10,4);
 	$tpsm  = $ttkm / $tti;
-	$secem = ($tk0 / $tpsm) / pow(10,4);
+	$secem = $tk0 / $tpsm;
 	
-	$bts  = intval($ti0 / pow(10,9) - $secem);
+	$bts  = intval(($ti0 - $secem * pow(10,4)) / pow(10,9));
 	
 	echo(date('r', $bts) . "\n");
 	echo(date('r', $res[$n-1]['Uboot']));	
