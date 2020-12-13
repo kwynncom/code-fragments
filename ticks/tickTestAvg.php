@@ -24,9 +24,14 @@ class tick_time_study_20 extends tick_time_study {
 	    
 	    $dtk = ($res[$i]['tick'] - $res[$n-1]['tick']);
 	    $r = ($dti / $dtk); 
+	    echo($r . "\n");
 	    $sdo->put($r);
 
 	}
+	
+	$fltk = $res[0]['tick'] - $tk0;
+	$flti = $res[0]['Uns' ] - $ti0;
+	echo("\n" . ($flti / $fltk) . "\n");
 	
 	$sdr = $sdo->get();
 	var_dump($sdr);
@@ -37,7 +42,10 @@ class tick_time_study_20 extends tick_time_study {
 	$bts  = intval(round($btns / pow(10,9)));
 	
 	echo(date('r', $bts) . "\n");
-	echo(date('r', $res[$n-1]['Uboot']));	
+	echo(date('r', $res[$n-1]['Uboot']) . "\n");
+	
+	// I am removing seconds per CPU tick precision out of paranoia
+	echo(($res[0]['Uns'] - intval($res[0]['tick'] * 0.3 /* ... */)) . "\n");
 	
 
     }

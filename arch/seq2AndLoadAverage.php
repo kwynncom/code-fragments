@@ -5,7 +5,7 @@ require_once('/opt/kwynn/kwutils.php');
 require_once('/opt/kwynn/lock.php');
 require_once(__DIR__ . '/../cpu/utils/dao.php');
 
-// 2020/12/01 7:32pm - This file has served its purpose and be retired.  The code will move to my php utils project and AWS metrics project.
+// 2020/12/01 7:32pm - This file has served its purpose and will be retired.  The code will move to my php utils project and AWS metrics project.
 
 class kwcoll2 extends kwcoll {
     public function __construct($mgr, $db, $coll, $tma, $tpid, $path) {
