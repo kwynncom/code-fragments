@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('date.php');
 
 class machine_id {
     
@@ -18,7 +19,7 @@ class machine_id {
     const ofPublic  = 'midpu';
     const ofsfx     = '_namespace_kwynn_com_2020_1213_mid_1';
     
-    const midv = 'v0.0.4 - 2020/12/13 10:54pm+ EST GMT -0500';
+    const midv = 'v0.0.5 - 2020/12/13 11:36pm+ EST GMT -0500';
     
     const testUntil = '2015-12-13 19:10';
     
@@ -60,6 +61,9 @@ class machine_id {
 	$now = time();
 	$r['at'] = $now;
 	$r['atr'] = date('r', $now);
+	$created = mid_creation_date::get($r['isAWS']);
+	$r['created'] = $created;
+	$r['createdR'] = date('r', $created);
 	$p = self::getPublicPath();
 	
 	$json = json_encode($r);
@@ -67,10 +71,6 @@ class machine_id {
 	kwas(chmod($p, 0444), "chmod public failed on $p - machine_id out()");
 	
 	return $r;
-	
-	if (0) {echo('OK - files written' . "\n");
-	var_dump($r);
-	}
     }
     
     private static function outPrivate($ain) {
