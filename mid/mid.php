@@ -18,6 +18,8 @@ class machine_id {
     const ofPublic  = 'midpu';
     const ofsfx     = '_namespace_kwynn_com_2020_1213_mid_1';
     
+    const midv = 'v0.0.2 - 2020/12/13 9:37pm EST GMT -0500';
+    
     const testUntil = '2015-12-13 19:10';
     
     private static function isTest() {
@@ -40,13 +42,17 @@ class machine_id {
 	}
 	
 	$r['mid'] = hash('sha256', $ain['private_string']);
+	$r['midv'] = self::midv;
 	$now = time();
 	$r['at'] = $now;
 	$r['atr'] = date('r', $now);
 	$p = self::outBase . self::ofPublic . self::ofsfx;
 	
-	file_put_contents($p, json_encode($r));
+	$json = json_encode($r);
+	kwas(file_put_contents($p, $json) === strlen($json), 'public file_put failed machine_id');
 	kwas(chmod($p, 0444), "chmod public failed on $p - machine_id out()");
+	echo('OK - files written' . "\n");
+	var_dump($r);
     }
     
     private static function outPrivate($ain) {
@@ -54,7 +60,8 @@ class machine_id {
 	if (file_exists($prf)) kwas(unlink($prf), "cannot delete existing $prf - machine_id outPrivate()");
 	touch($prf);
 	kwas(chmod($prf, 0600), "machine_id chmod failed out()");
-	file_put_contents($prf, $ain['private_string']);
+	$out = $ain['private_string'];
+	kwas(file_put_contents($prf, $out) === strlen($out), 'file_put private failed - machine_id');
 	chmod($prf, 0400);
     }
     
@@ -86,7 +93,7 @@ class machine_id {
 	$st = preg_replace('/\W/', '', $s);
 	$re = '/^[\w]{' . self::minStrlenW . '}/';
 	kwas(preg_match($re, $st, $m), "$st failed min character requirements - machine_id::getMin()");
-	return ['s' => $s, 'p' => $p];
+	return ['s' => $s, 'p' => $fin];
     }
 
 
