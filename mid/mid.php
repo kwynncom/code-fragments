@@ -11,29 +11,43 @@ class machine_id {
     const idFilesU    = ['product_name', 'product_serial'];
     const idFilesReal = ['product_uuid'];
     const idFilesAWS  = ['board_asset_tag'];
-    const idPublic    = ['chassis_vendor', 'product_name', 'board_asset_tag'];
+    const idPublic    = ['chassis_vendor', 'product_name', 'board_asset_tag', 'isAWS'];
     
-    const outBase   = '/tmp/';
+    const ofBase    = '/tmp/';
     const ofPrivate = 'midpr';
     const ofPublic  = 'midpu';
     const ofsfx     = '_namespace_kwynn_com_2020_1213_mid_1';
     
-    const midv = 'v0.0.2 - 2020/12/13 9:37pm EST GMT -0500';
+    const midv = 'v0.0.4 - 2020/12/13 10:54pm+ EST GMT -0500';
     
     const testUntil = '2015-12-13 19:10';
     
-    private static function isTest() {
-	return time() < strtotime(self::testUntil);
+    private static function isTest() { return time() < strtotime(self::testUntil);  }
+    
+    public static function get($stdout = false) {
+	$ret = self::getExisting();
+	if (!$ret) {
+	    $a = self::get20();
+	    $ret = self::get30($a); unset($a);
+	}
+	if ($stdout) var_dump($ret);
+	return $ret;
     }
     
-    public static function get() {
-	$a = self::get20();
-	self::out($a);
+    private static function getExisting() {
+	$p = self::getPublicPath();
+	if (!file_exists($p)) return false;
+	$j = file_get_contents($p);
+	$a = json_decode($j, 1);
+	if ($a['midv'] === self::midv) return $a;
+	return false;
     }
     
     private static function isPublic($fin) { return in_array($fin, self::idPublic);   }
     
-    private static function out($ain) {
+    private static function getPublicPath() { return self::ofBase . self::ofPublic . self::ofsfx;  }
+    
+    private static function get30($ain) {
     	self::outPrivate($ain);
 	$r = [];
 	foreach($ain as $k => $v) {
@@ -46,17 +60,21 @@ class machine_id {
 	$now = time();
 	$r['at'] = $now;
 	$r['atr'] = date('r', $now);
-	$p = self::outBase . self::ofPublic . self::ofsfx;
+	$p = self::getPublicPath();
 	
 	$json = json_encode($r);
 	kwas(file_put_contents($p, $json) === strlen($json), 'public file_put failed machine_id');
 	kwas(chmod($p, 0444), "chmod public failed on $p - machine_id out()");
-	echo('OK - files written' . "\n");
+	
+	return $r;
+	
+	if (0) {echo('OK - files written' . "\n");
 	var_dump($r);
+	}
     }
     
     private static function outPrivate($ain) {
-	$prf = self::outBase . self::ofPrivate . self::ofsfx;
+	$prf = self::ofBase . self::ofPrivate . self::ofsfx;
 	if (file_exists($prf)) kwas(unlink($prf), "cannot delete existing $prf - machine_id outPrivate()");
 	touch($prf);
 	kwas(chmod($prf, 0600), "machine_id chmod failed out()");
@@ -68,8 +86,9 @@ class machine_id {
     private static function get20() {
 	$a  = array_merge(self::idFilesU);
 	$ma = self::getMin(self::idFileInit);
-	if ($ma['s'] === 'Amazon EC2') $m = self::idFilesAWS;
-	else			       $m = self::idFilesReal;
+	$r = [];
+	if ($ma['s'] === 'Amazon EC2') { $m = self::idFilesAWS ; $r['isAWS'] = true; }
+    else			       { $m = self::idFilesReal; $r['isAWS'] = false; }
 	$a = array_merge($a, $m);
 	$s = $ma['s'] . ' ';
 	$r[$ma['p']] = $ma['s'];
@@ -99,4 +118,4 @@ class machine_id {
 
 }
 
-machine_id::get();
+if (didCLICallMe(__FILE__)) machine_id::get(true);

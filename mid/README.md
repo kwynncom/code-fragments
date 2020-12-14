@@ -43,3 +43,7 @@ Distributor ID:	Ubuntu
 Description:	Ubuntu 20.04.1 LTS
 Release:	20.04
 Codename:	focal
+
+sudo dmidecode | grep 'Release Date: '
+
+BIOS release date
