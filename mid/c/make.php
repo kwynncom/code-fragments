@@ -1,6 +1,6 @@
 <?php
 
-$cmd = 'sudo php ' . __DIR__ . '/../mid.php';
+$cmd = 'sudo php ' . __DIR__ . '/../midClass.php';
 
 $c = <<<CPROG10
 #include <stdlib.h>
