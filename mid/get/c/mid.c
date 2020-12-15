@@ -3,6 +3,6 @@
 void main()
 {
 	setreuid(geteuid(), getuid());
-	system("sudo php /home/k/sm20/frag/mid/c/../midClass.php");
+	system("sudo php /home/k/sm20/frag/mid/get/c/../midClass.php");
 	
 }

@@ -19,7 +19,7 @@ class machine_id {
     const ofPublic  = 'midpu';
     const ofsfx     = '_namespace_kwynn_com_2020_1213_mid_1';
     
-    const midv = 'v0.0.7 - 2020/12/14 8:17pm+ EST GMT -0500';
+    const midv = 'v0.0.8 - 2020/12/14 10:43pm+ EST GMT -0500';
     
     const testUntil = '2015-12-13 19:10';
     
@@ -64,7 +64,7 @@ class machine_id {
 	return $ret;
     }
     
-    private static function getExisting() {
+    public static function getExisting() {
 	$p = self::getPublicPath();
 	if (!file_exists($p)) return false;
 	$j = file_get_contents($p);
@@ -93,8 +93,8 @@ class machine_id {
 	$r['at'] = $now;
 	$r['atr'] = date('r', $now);
 	$created = mid_creation_date::get($r['isAWS']);
-	$r['fscreated'] = $created;
-	$r['fscreatedR'] = date('r', $created);
+	$r['increated'] = $created;
+	$r['increatedR'] = date('r', $created);
 	$p = self::getPublicPath();
 	
 	$json = json_encode($r);
