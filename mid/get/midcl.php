@@ -19,7 +19,7 @@ class machine_id {
     const ofPublic  = 'midpu';
     const ofsfx     = '_namespace_kwynn_com_2020_1213_mid_1';
     
-    const midv = 'v0.0.8 - 2020/12/14 10:43pm+ EST GMT -0500';
+    const midv = 'v0.0.9 - 2020/12/14 11:00pm+ EST GMT -0500';
     
     const testUntil = '2015-12-13 19:10';
     
@@ -40,7 +40,7 @@ class machine_id {
 	if ($exit) exit(0);
     }
 
-    private static function rm() {
+    public static function rm() {
 	
 	$ps = [self::getPublicPath(),  self::getPrivatePath ()];
 	foreach($ps as $p) {
@@ -51,7 +51,7 @@ class machine_id {
 	}
     }
     
-    public static function get($stdout = false) {
+    public static function get($showstdout = false) {
 	
 	self::doargs();
 	
@@ -60,7 +60,7 @@ class machine_id {
 	    $a = self::get20();
 	    $ret = self::get30($a); unset($a);
 	}
-	if ($stdout) var_dump($ret);
+	if ($showstdout) var_dump($ret);
 	return $ret;
     }
     
