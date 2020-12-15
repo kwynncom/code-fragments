@@ -1,8 +1,9 @@
 <?php
 
-$cmd = 'sudo php ' . __DIR__ . '/../midClass.php';
+$cmd = 'sudo php ' . __DIR__ . '/../midcl.php';
 
 $c = <<<CPROG10
+// THIS ENTIRE PROGRAM IS WRITTEN FROM PHP; DON'T CHANGE THE C FILE
 #include <stdlib.h>
 #include <unistd.h>
 void main()

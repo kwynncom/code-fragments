@@ -3,7 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('utils/date.php');
 
-class machine_id {
+class machine_id_internal {
     
     const minStrlenW = 7;
     
@@ -163,4 +163,4 @@ class machine_id {
 
 }
 
-if (didCLICallMe(__FILE__)) machine_id::get(true);
+if (didCLICallMe(__FILE__)) machine_id_internal::get(true);

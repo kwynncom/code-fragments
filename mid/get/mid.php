@@ -2,7 +2,7 @@
 
 require_once('midcl.php');
 
-class mid_api {
+class machine_id {
     
     const binparent = __DIR__ . '/c/';
     const bin	    = self::binparent . 'mid';
@@ -16,15 +16,15 @@ class mid_api {
     private static function clean() {
 	global $argv;
 	if (!in_array('-clean', $argv)) return;
-	unlink(self::bin);
-	machine_id::rm();
+	if (file_exists(self::bin)) unlink(self::bin);
+	machine_id_internal::rm();
     }
     
     private static function get10($showstdout) {
 	
 	global $argv;
 	
-	$ret = machine_id::getExisting();
+	$ret = machine_id_internal::getExisting();
 
 	if (!$ret) {
 	    if (file_exists(self::bin)) exec(self::bin);
@@ -36,7 +36,7 @@ class mid_api {
 		}
 	    }
 
-	    $ret = machine_id::get(true);	    
+	    $ret = machine_id_internal::get(true);	    
 	}
 	
 	if ($showstdout) var_dump($ret);
@@ -46,4 +46,4 @@ class mid_api {
 }
 
 
-if (didCLICallMe(__FILE__)) mid_api::get(1);
+if (didCLICallMe(__FILE__)) machine_id::get(1);
