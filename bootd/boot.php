@@ -9,7 +9,7 @@ class boot_tracker extends dao_generic_2 {
     const shmsysvpid = 'm';
     const shmSize = 500;
     const shmDatKey = 1;
-    const testUntil = '2020-12-04 02:00';
+    const testUntil = '2020-10-15 02:00';
     
     private function __construct() {
 	parent::__construct(self::dbName, __FILE__);
@@ -20,7 +20,8 @@ class boot_tracker extends dao_generic_2 {
 	$this->p10();
     }
     
-    private static function getShmSysv() { return ftok(__FILE__, self::shmsysvpid); }    
+    private static function getShmSysv() { 
+	return ftok(__FILE__, self::shmsysvpid); }    
     
     private function meta10() { $this->bcoll->createIndex(['nano.Uboot' => -1], ['unique' => true]);    }
     
@@ -28,7 +29,10 @@ class boot_tracker extends dao_generic_2 {
 	$newn = nanopk();
 	$newb = $newn['Uboot'];
 	$r = $this->bcoll->findOne(['Uboot' => ['$gte' => $newb - self::bootTimeMargin, '$lte' => $newb + self::bootTimeMargin]]);
-	if ($r) return;
+	if ($r) {
+	    $this->p30($r);
+	    return;
+	}
 	$this->p20($newb);
 	
 	return;
@@ -50,9 +54,11 @@ class boot_tracker extends dao_generic_2 {
     
     private static function getShmSeg($rw = 'r') {
 	if ($rw === 'w') $perm = 0644;
-	else		 $perm = 0400;
+	else		 $perm = 0444;
 	
-	return shm_attach(self::getShmSysv(), self::shmSize, $perm);
+	kwas($r = shm_attach(self::getShmSysv(), self::shmSize, $perm), 'attached failed' . "\n");
+	return $r;
+	
     }
     
     private static function getI() {
@@ -63,19 +69,35 @@ class boot_tracker extends dao_generic_2 {
 	
     }
     
-    private static function rmShm() {
+    private static function rmShm($rmblock = false) {
 	$shma = self::getShmSeg('w');
 	if (shm_has_var   ($shma, self::shmDatKey))
 	    shm_remove_var($shma, self::shmDatKey);	
+	
+	if ($rmblock) {
+	    kwas(shm_remove($shma), 'failed to rm whole block / segment');
+	    echo('block removed' . "\n");
+	    kwas(shm_detach($shma), 'detach failed');
+	    echo('detached' . "\n");
+	    echo('Exiting...' . "\n");
+	    exit(0);
+	}
     }
     
     public static function get() {
+	self::clean();
 	self::t30();
 	$r = self::getI();
 	if ($r) return $r;
 	$o = new self();
 	$r = $o->getI();
 	return $r;
+    }
+    
+    private static function clean() {
+	global $argv;
+	
+	if (in_array('-clean', $argv)) self::rmShm(1);
     }
     
     private function t10() { 
