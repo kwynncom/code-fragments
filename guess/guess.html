@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>guessing game</title>
+
+<style>
+     .input10  { width: 2.3em; font-size: 3vw; }
+     .input10c { font-family: monospace; }
+     .res10    { margin-left: 1ex; font-family: sans-serif; }
+     .guess10  { font-family: monospace; }
+     .res10c   { padding: 0; margin: 0; }
+</style>
+
+<script>
+    
+    function byid(id) { return document.getElementById(id); }
+    function cree(ty) { return document.createElement (ty); }
+    
+    var KWGGTHEN = false;
+    var KWGGST   = 'init';
+    
+    function setRand() {
+        const rand = Math.floor(Math.random() * 100);
+        // byid('test').innerHTML = rand;
+        KWGGTHEN = rand;
+    }
+    
+    window.onload = function() {     setRand(); }
+ 
+    function doin10(vin) {
+        
+        if (KWGGST === 'win') {
+            setRand();
+            byid('res10').innerHTML = '';
+            KWGGST = 'init';
+        }
+        
+        if (vin.length !== 2) return;
+        
+        const g = parseInt(vin);
+        
+        let   t = 'unknown';
+        const n = KWGGTHEN;
+        
+        if      (g < n) t = 'higher';
+        else if (g > n) t = 'lower' ;
+        else if (g === n) {
+            t = 'win' ;
+            KWGGST = 'win';
+        }
+        
+        const re = cree('p');
+        re.className = 'res10c';
+        const s1 = cree('span');
+        s1.className = 'guess10';
+        const s2 = cree('span');
+        s2.className = 'res10';
+        
+        s1.innerHTML = g;
+        s2.innerHTML = t;
+        
+        re.append(s1);
+        re.append(s2);
+        byid('res10').prepend(re);
+        
+        byid('input10').value = '';
+        
+    }
+    
+</script>
+    
+
+
+</head>
+<body>
+    <div>Pick a number between 0 - 99.  Enter as 2 digits, such as 00 or 05. The result "higher" means guess higher.</div>
+    <div class='input10c'><input type='number' min='0' max='99' step='1' class='input10' id='input10' oninput='doin10(this.value);'/>
+    </div>
+    
+    <div id='res10'>
+        
+    </div>
+    <div id='test'></div>
+    
+</body>
+</html>
