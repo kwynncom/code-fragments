@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>phone number re</title>
+
+<script>
+    function inputPhone(pin) { // rc 1 Wed 2020/12/16 4:15pm
+        
+        let p20 = pin;
+        
+        p20 = p20.replace(/[^\dx]/g, '');
+        p20 = p20.replace(/^1/ , '');
+        
+        const re=/^\d{10}/g;
+        const res = p20.match(re);
+        console.log(res);
+        if (res) console.log('true');
+        
+    }
+</script>
+    
+
+</head>
+<body>
+    <input type='tel' oninput='inputPhone(this.value);'/>
+</body>
+</html>

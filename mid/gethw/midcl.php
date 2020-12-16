@@ -87,7 +87,8 @@ class machine_id_internal {
 	    if (self::isPublic($fn)) $r[$k] = $v;
 	}
 	
-	$r['mid'] = hash('sha256', $ain['private_string']);
+	$r['mid']	   = hash('sha256', $ain['private_string']);
+	$r['hash_of_hash'] = hash('sha256', $r['mid']);
 	$r['midv'] = self::midv;
 	$now = time();
 	$r['at'] = $now;
