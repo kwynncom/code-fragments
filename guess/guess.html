@@ -7,11 +7,11 @@
 <title>guessing game</title>
 
 <style>
-     .input10  { width: 2.3em; font-size: 3vw; }
-     .input10c { font-family: monospace; }
+     .input10  { width: 2.3em; font-size: 300%; border: 3px solid black; }
+     .input10c { font-family: monospace;  }
      .res10    { margin-left: 1ex; font-family: sans-serif; }
      .guess10  { font-family: monospace; }
-     .res10c   { padding: 0; margin: 0; }
+     .res10c   { padding: 0; margin: 0; font-size: 150%; }
 </style>
 
 <script>
@@ -39,6 +39,8 @@
         }
         
         if (vin.length !== 2) return;
+        byid('input10').placeholder = '';
+        
         
         const g = parseInt(vin);
         
@@ -76,14 +78,14 @@
 
 </head>
 <body>
-    <div>Pick a number between 0 - 99.  Enter as 2 digits, such as 00 or 05. The result "higher" means guess higher.</div>
-    <div class='input10c'><input type='number' min='0' max='99' step='1' class='input10' id='input10' oninput='doin10(this.value);'/>
+    <div class='input10c'><input type='number' min='0' max='99' step='1' class='input10' id='input10' oninput='doin10(this.value);' placeholder='50' />
     </div>
     
     <div id='res10'>
         
     </div>
     <div id='test'></div>
+    <div>Pick a number between 0 - 99.  Enter as 2 digits, such as 00 or 05. The result "higher" means guess higher.</div>
     
 </body>
 </html>
