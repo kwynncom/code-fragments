@@ -88,7 +88,21 @@ class tick_study_1217_1 extends tick_time_study {
     }
     
     private function test20($ain, $avg) {
+	
+	$time0 = $ain[20]['Uns'];
+	$tick0 = $ain[20]['tick'];
+	
 	foreach($ain as $v) {	
+	    $uns = $v['Uns'];
+	    echo($uns . ' ');
+	    $eltk = $v['tick'] - $tick0;
+	    $est  = $eltk * $avg + $time0;
+	    $dis = sprintf('%d', $est);
+	    echo($dis . ' ');
+	    $d = $uns - $est;
+	    echo($d . ' ');
+	    echo("\n");
+	    
 	}
     }
     
