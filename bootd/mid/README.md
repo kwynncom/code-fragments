@@ -9,6 +9,15 @@ I should save AWS EC2 image ID and filesystem time because when you build one in
 
 COMMANDS:
 
+ sudo dmidecode --type processor | grep -i current
+	Current Speed: 1333 MHz [not my real number]
+        Depending on type, closest to correct
+
+sudo lshw -C CPU
+    size: 1333MHz
+
+The above is barely accurate to 2 - 3 digits of precision when inverted and compared against tick.php
+
 sudo tune2fs -l /dev/sda1
 
 Shows filesystem creation time, which may be instances and years ago.

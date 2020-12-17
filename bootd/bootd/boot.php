@@ -27,7 +27,7 @@ class boot_tracker extends dao_generic_2 {
     private function meta10() { $this->bcoll->createIndex(['Uboot' => -1], ['unique' => true]);    }
     
     private function p10() {
-	$newn = nanopk();
+	$newn = uptime();
 	$newb = $newn['Uboot'];
 	$r = $this->bcoll->findOne(['Uboot' => ['$gte' => $newb - self::bootTimeMargin, '$lte' => $newb + self::bootTimeMargin]]);
 	if ($r) {
@@ -55,8 +55,8 @@ class boot_tracker extends dao_generic_2 {
     }
     
     private static function getShmSeg($rw = 'r') {
-	if ($rw === 'w') $perm = 0644;
-	else		 $perm = 0444;
+	if ($rw === 'w') $perm = 0666; // This gets thorny because if the segment doesn't exist, a "random" end-user process will try to create it and not have 
+	else		 $perm = 0666; // permission and die.
 	
 	kwas($r = shm_attach(self::getShmSysv(), self::shmSize, $perm), 'attached failed' . "\n");
 	return $r;
