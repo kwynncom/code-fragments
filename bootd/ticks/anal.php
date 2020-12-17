@@ -92,6 +92,8 @@ class tick_study_1217_1 extends tick_time_study {
 	$time0 = $ain[20]['Uns'];
 	$tick0 = $ain[20]['tick'];
 	
+	$pv = false;
+	
 	foreach($ain as $v) {	
 	    $uns = $v['Uns'];
 	    echo($uns . ' ');
@@ -101,7 +103,15 @@ class tick_study_1217_1 extends tick_time_study {
 	    echo($dis . ' ');
 	    $d = $uns - $est;
 	    echo($d . ' ');
+	    
+	    if ($pv) {
+		$d2 = $v['Uns'] - $pv['Uns'];
+		echo($d2 . ' ');
+		echo($d / $d2 . ' ');
+	    }
+	    
 	    echo("\n");
+	    $pv = $v;
 	    
 	}
     }
