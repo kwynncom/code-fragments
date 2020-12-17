@@ -56,7 +56,7 @@ class boot_tracker extends dao_generic_2 {
     
     private static function getShmSeg($rw = 'r') {
 	if ($rw === 'w') $perm = 0644;
-	else		 $perm = 0644;
+	else		 $perm = 0444;
 	
 	kwas($r = shm_attach(self::getShmSysv(), self::shmSize, $perm), 'attached failed' . "\n");
 	return $r;
