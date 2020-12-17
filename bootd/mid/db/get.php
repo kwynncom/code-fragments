@@ -6,8 +6,8 @@ require_once('config.php');
 class machine_id_get {
     public static function get() {
 	$raw = machine_id::get();
-	machine_id_validity::get($raw);
-	return;
+	$mid = machine_id_validity::get($raw);
+	return $mid;
     }
 }
 

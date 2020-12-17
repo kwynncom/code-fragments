@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/mongodb2.php'); // see note at bottom
+require_once(__DIR__ . '/../mid/db/get.php');
 
 class boot_tracker extends dao_generic_2 {
     
@@ -23,7 +24,7 @@ class boot_tracker extends dao_generic_2 {
     private static function getShmSysv() { 
 	return ftok(__FILE__, self::shmsysvpid); }    
     
-    private function meta10() { $this->bcoll->createIndex(['nano.Uboot' => -1], ['unique' => true]);    }
+    private function meta10() { $this->bcoll->createIndex(['Uboot' => -1], ['unique' => true]);    }
     
     private function p10() {
 	$newn = nanopk();
@@ -42,6 +43,7 @@ class boot_tracker extends dao_generic_2 {
 	$dat = $this->bcoll->getseq2(true, $Uboot, false);
 	$dat['Uboot'] = $Uboot;
 	$dat['rboot'] = date('r', $Uboot);
+	$dat['mid'] = machine_id_get::get();
 	$this->bcoll->insertOne($dat);
 	$this->p30($dat);
 	return;
@@ -54,7 +56,7 @@ class boot_tracker extends dao_generic_2 {
     
     private static function getShmSeg($rw = 'r') {
 	if ($rw === 'w') $perm = 0644;
-	else		 $perm = 0444;
+	else		 $perm = 0644;
 	
 	kwas($r = shm_attach(self::getShmSysv(), self::shmSize, $perm), 'attached failed' . "\n");
 	return $r;
