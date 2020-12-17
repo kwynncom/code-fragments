@@ -2,13 +2,13 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-
-
-$limitS = 20;
+$limitS = pow(10,8);
 $startS = time();
-$fn = __DIR__ . '/res/' . 'ticks_start_' . $starS . '.txt';
+$fn = __DIR__ . '/res/' . 'ticks_start_' . $startS . '.txt';
 
 $bn = pow(10,9);
+$precision = '%0.16f';
+$dofile = true;
 
 $b = nanopk();
 $i=0;
@@ -23,15 +23,15 @@ do {
     $d = abs($r - $pr);
     $ds = $dns / $bn;
     $s = '';
-    $s .= sprintf('%0.14f', $r);
+    $s .= sprintf($precision, $r);
     $s .= ' ';
-    $s .= sprintf('%0.14f', $d);
+    $s .= sprintf($precision, $d);
     $s .= ' ';
     $s .= intval($ds);
     $s .= ' ';
     $s .= "\n";
     echo($s);
-    kwas(file_put_contents($fn, $s, FILE_APPEND) === strlen($s), 'write fail');
+    if ($dofile) kwas(file_put_contents($fn, $s, FILE_APPEND) === strlen($s), 'write fail');
     $pr = $r;
     
     $i++;
