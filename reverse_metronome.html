@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>reverse metronome</title>
+
+<script>
+
+    function byid(id) { return document.getElementById(id); }
+
+    window.onload = function() { new reverse_metronome(); }
+    
+    class reverse_metronome {
+        constructor() { 
+            this.ttime = false;
+            const self = this;
+            document.body.onkeydown = function() { self.tick(self); };  
+        }           
+        
+        tick(tob) { 
+            const newt = new Date().getTime();
+            
+            if (tob.ttime === false) { tob.ttime = newt; return; }
+            
+            byid('out10').innerHTML = newt - tob.ttime;
+            tob.ttime = newt;
+        }
+    }
+</script>
+
+
+</head>
+<body>
+    <p>Tap any key two or more times.  The milliseconds between the key down action will be displayed below.  More precisely, any combination of keys that don't 
+    activate something else in a browser.  Control works fine, for example.  </p>
+    <div id='out10'></div>
+    <p>Note to apprentices: something I've whipped up in the last few minutes (2020/12/20 5:30pm EST / GMT -5).  Soon to become a reverse metronome.  This is all 
+        client-side JavaScript, so you should be able to download it, run it in a browser, modify it, etc.  
+    </p>
+    <p>v0.0.2, which is the first released to my web site.</p>
+</body>
+</html>

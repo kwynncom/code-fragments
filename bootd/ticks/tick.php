@@ -1,8 +1,6 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('/opt/kwynn/mongodb2.php');
-require_once(__DIR__ . '/../bootd/' . 'boot.php');
 require_once('stddev.php');
 
 class tick_time_study {
