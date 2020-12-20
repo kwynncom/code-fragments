@@ -6,6 +6,12 @@
 
 <title>reverse metronome</title>
 
+<style>
+    body { margin-left: 1ex; margin-top: 0; font-family: sans-serif }
+    h1 { margin: 0.2ex; padding-top: 0; }
+    #outms10, #outbpm10 { display: inline-block; }
+</style>
+
 <script>
 
     function byid(id) { return document.getElementById(id); }
@@ -24,7 +30,14 @@
             
             if (tob.ttime === false) { tob.ttime = newt; return; }
             
-            byid('out10').innerHTML = newt - tob.ttime;
+            const d = newt - tob.ttime;
+            byid('outms10').innerHTML = d;
+            
+            const bpmf = 60 / (d / 1000);
+            const bpmdis = parseInt(Math.round(bpmf));
+            
+            byid('outbpm10').innerHTML = bpmdis;
+            
             tob.ttime = newt;
         }
     }
@@ -33,12 +46,27 @@
 
 </head>
 <body>
+    <h1>reverse metronome</h1>
     <p>Tap any key two or more times.  The milliseconds between the key down action will be displayed below.  More precisely, any combination of keys that don't 
     activate something else in a browser.  Control works fine, for example.  </p>
-    <div id='out10'></div>
+    <div>
+    <div id='outms10'></div>    <div id='outbpm10'></div>
+    </div>
     <p>Note to apprentices: something I've whipped up in the last few minutes (2020/12/20 5:30pm EST / GMT -5).  Soon to become a reverse metronome.  This is all 
         client-side JavaScript, so you should be able to download it, run it in a browser, modify it, etc.  
     </p>
-    <p>v0.0.2, which is the first released to my web site.</p>
+     
+    <h2>source code</h2>
+    
+    <p>I'm going to <a href='https://github.com/kwynncom/code-fragments/blob/93ee3391ea0aa6019dbc635af65a8746a7a27e2d/reverse_metronome.html'>link to a specific 
+            "commit"</a>  / version because I'll likely move the code eventually.  You'll have to navigate around the verisons.
+        
+    </p>
+    
+    <h2>version history</h2>
+    <ol reversed='reversed'>
+        <li>v0.0.3 - actual beats per minute added - 6:19pm, same day</li>
+        <li>v0.0.2, which is the first released to my web site -- 2020/12/20 ca 5:38pm EST / GMT -5</li>
+    </ol>
 </body>
 </html>
