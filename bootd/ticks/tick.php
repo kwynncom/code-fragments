@@ -3,47 +3,45 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once('/opt/kwynn/mongodb2.php');
 require_once(__DIR__ . '/../bootd/' . 'boot.php');
+require_once('stddev.php');
 
-class tick_time_study extends dao_generic_2 {
-    const dbName = 'tick';
+class tick_time_study {
 
+    const initMin = 4;
+    const sample = 50;
+    const million = 1000000;
+    
     public function __construct($exec) {
-	parent::__construct(self::dbName, __FILE__);
-	$this->creTabs(['t' => 'tick']);
-	
-	if ($exec === 1 || $exec === true) {
-	    $this->init();
-	    $this->doit(1200, 200000);
-	}
+        $this->doit(3);
     }
     
-    private function init() {
-	$booto = boot_tracker::get();
+    private function doit($elapsed) {
+	
+	$sdo = new stddev();
+	
+	for($i=0; $i < self::initMin; $i++) nanopk();
+	
+	$base = nanopk();	
+	usleep($elapsed * self::million);
+	
+	$startS = microtime(1);
+	for($i=0; $i < self::sample; $i++) {
+	    $dat = nanopk();
+	    $r = self::rat($base, $dat);
+	    $sdo->put($r);
+	} 
+		
+	var_dump($sdo->get());
 	return;
-	
     }
     
-    private static function mynano() {
-	$fs = ['Uns', 'coren', 'tick'];
-	$ns = nanopk();
-	foreach($ns as $k => $ignore) if (!in_array($k, $fs)) unset($ns[$k]);
-	return $ns;
-	
+    public static function rat($a, $b) {
+	$ds  = abs($a['Uns'] - $b['Uns' ]);
+	$dtk = abs($a['tsc'] - $b['tsc']);
+	if ($dtk === 0) return false;
+	return $ds / $dtk;
     }
     
-    private function doit($sleep = 30, $sleepI = 20000) {
-	$startS = time();
-	$i = 0;
-	$sl = $sleepI;
-	do {
-	    $dat = self::mynano();
-	    $this->tcoll->insertOne($dat);
-	    usleep($sl);
-	    $el = time() - $startS;
-	    if ($el > 2 && $el < 30) sleep(1);
-	    else if ($el >= 14) sleep($sleep);
-	} while ($i++ < 10000);
-    }
 }
 
 if (didCLICallMe(__FILE__)) new tick_time_study(1);

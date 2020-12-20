@@ -7,6 +7,7 @@ class stddev {
     }
     
     public function put($din) {
+	if (!is_numeric($din)) return;
 	$this->sum  += $din;
 	$this->dat[] = $din;
     }

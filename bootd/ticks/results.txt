@@ -1,0 +1,61 @@
+Conclusions:
+
+You might get good enough data (1E-5s std deviation) in 0.01 seconds elapsed
+You should get (on the order of) 1E-6s standard deviation in 0.1s
+You will likely get -7 and -8 in 2 - 5 seconds elapsed
+
+************
+3 seconds:
+
+array(3) {
+  ["a"]=>
+  float(0.37594274590348)
+  ["s"]=>
+  float(5.266828877103E-8)
+  ["n"]=>
+  int(50)
+}
+
+
+************
+0.1 seconds:
+
+array(3) {
+  ["a"]=>
+  float(0.37594308859509)
+  ["s"]=>
+  float(1.4762182885535E-6)
+  ["n"]=>
+  int(50)
+}
+
+
+*************
+With a "big" sample in that the random sample had lots of choices
+
+array(3) {
+  ["average"]=>
+  float(0.37594286975496)
+  ["standard dev"]=>
+  float(1.2769170046723E-8)
+  ["number / count"]=>
+  int(20)
+}
+************
+smaller:
+
+array(3) {
+  ["a"]=>
+  float(0.37594269050718)
+  ["s"]=>
+  float(2.4046762969733E-7)
+  ["n"]=>
+  int(20)
+}
+*************
+compare:
+0.37594286975496 - big sample
+0.37594269050718 - smaller
+0.37594252882631 - even smaller
+0.37594308859509 - from above, 0.5s
+0.37594274590348 - 3s from above
