@@ -8,7 +8,12 @@
 
 <script>
     
-        function byid(id) { return document.getElementById(id); }
+    function byid(id)    { return document.getElementById(id); }
+    function inn (id, t) { 
+        const o = byid(id);
+        if (!o) return;
+        o.innerHTML = t;
+    }
     
     function geoFindMe() {
 
@@ -18,15 +23,11 @@
     const dates = new Date(position.timestamp).toString();
 
     status.textContent = '';
-    byid('lat').innerHTML = lat;
-    byid('lon').innerHTML = lon;
-    byid('posat').innerHTML = dates;
-    
     position['coords']['asof'] = dates;
     
     const json = JSON.stringify(cloneAsObject(position.coords), null, 2);
     
-    byid('geojson').innerHTML = json;
+    inn('geojson', json);
   }
 
   function error(err) {
@@ -47,8 +48,6 @@
 
 }
 
-geoFindMe();
-
 function cloneAsObject(obj) {
     if (obj === null || !(obj instanceof Object)) {
         return obj;
@@ -66,14 +65,10 @@ function cloneAsObject(obj) {
 </head>
 <body>
     <div>
-        <label>lat / long</label> <span id='lat'></span>      <span id='lon'></span>
+    <button onclick='geoFindMe();'>get location</button>
     </div>
-    <div><label>at / asof</label><span id='posat'></span></div>
-    <div>
-        <label>status</label><span id='status' />
-    </div>
-    <div id='geojson'>
-    </div>
-    <div>v0.0.2</div>
+    <div id='geojson'>    </div>
+    <div id='status' />
+    <div>v0.0.3</div>
 </body>
 </html>
