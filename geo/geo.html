@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>GPS test / example</title>
+
+<script>
+    
+        function byid(id) { return document.getElementById(id); }
+    
+    function geoFindMe() {
+
+  function success(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    status.textContent = '';
+    byid('lat').innerHTML = lat;
+    byid('lon').innerHTML = lon;
+  }
+
+  function error(err) {
+    status.textContent = 'Unable to retrieve your location';
+    byid('status').innerHTML = err.message;
+  }
+
+  if(!navigator.geolocation) {
+    status.textContent = 'Geolocation is not supported by your browser';
+  } else {
+    status.textContent = 'Locating…';
+    navigator.geolocation.getCurrentPosition(success, error);
+
+    return;
+  }
+
+}
+
+geoFindMe();
+</script>
+    
+</head>
+<body>
+    <div>
+        <label>lat / long</label> <span id='lat'></span>      <span id='lon'></span>
+    </div>
+    <div>
+        <label>status</label><span id='status' />
+    </div>
+</body>
+</html>
