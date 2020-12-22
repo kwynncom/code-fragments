@@ -15,10 +15,18 @@
   function success(position) {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
+    const dates = new Date(position.timestamp).toString();
 
     status.textContent = '';
     byid('lat').innerHTML = lat;
     byid('lon').innerHTML = lon;
+    byid('posat').innerHTML = dates;
+    
+    position['coords']['asof'] = dates;
+    
+    const json = JSON.stringify(cloneAsObject(position.coords), null, 2);
+    
+    byid('geojson').innerHTML = json;
   }
 
   function error(err) {
@@ -30,7 +38,9 @@
     status.textContent = 'Geolocation is not supported by your browser';
   } else {
     status.textContent = 'Locating…';
-    navigator.geolocation.getCurrentPosition(success, error);
+    
+    const opts = { enableHighAccuracy: true, maximumAge: 0 };
+    navigator.geolocation.getCurrentPosition(success, error, opts);
 
     return;
   }
@@ -38,6 +48,19 @@
 }
 
 geoFindMe();
+
+function cloneAsObject(obj) {
+    if (obj === null || !(obj instanceof Object)) {
+        return obj;
+    }
+    var temp = (obj instanceof Array) ? [] : {};
+    // ReSharper disable once MissingHasOwnPropertyInForeach
+    for (var key in obj) {
+        temp[key] = cloneAsObject(obj[key]);
+    }
+    return temp;
+}
+
 </script>
     
 </head>
@@ -45,8 +68,12 @@ geoFindMe();
     <div>
         <label>lat / long</label> <span id='lat'></span>      <span id='lon'></span>
     </div>
+    <div><label>at / asof</label><span id='posat'></span></div>
     <div>
         <label>status</label><span id='status' />
     </div>
+    <div id='geojson'>
+    </div>
+    <div>v0.0.2</div>
 </body>
 </html>
