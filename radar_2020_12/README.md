@@ -1,3 +1,30 @@
+I'm starting from https://radar.weather.gov/#/
+
+This is the new radar format as of mid-December, 2020.  I believe you can still get at individual radars, but I might as well parse this new one.
+
+Then I zoom in, centered on Atlanta, with southern TN and Warner Robbins, GA as my N - S bounds.  
+
+Based on the queries I see in the Dev Tools, I created the map queries in w1.php
+
+I need the p1.py transform to go from lat lon to the "SRS=EPSG:3857" format that the map uses.  I *might* be able to use lat lon directly by 
+re-specifying the SRS as mentioned in "GetCapabilities", but I suspect that would cause other problems due to pixel ratios.
+
+With the 3857 format, both the north south and east west difference (x and y) are, in my relevant zoom scale, exactly 156543.033928041
+
+This is a 611.496226281408 ratio from x y coordinates to pixels; otherwise put, 156543.033928041 / 256 pixels = 611.49...
+
+If one uses &TILED=true, you need to know where the Openlayers tiles connect to the 3857 format, or something like that.  I can re-connect with tiles on 
+my own, later.  By turning tiles off, I suspect I have a lot more flexibility in making radar calls.
+
+My current version of w1.php is pretty close to the area I want to fetch for myself.  What I need to figure out next is if one can make more-or-less 
+arbitrary calls as long as one's pixel requests are consistent.  Or does one even need pixels (height width) without tiles?  ANSWER: yes.
+
+So, the next test will be to see if can request something other than multiples of 256 or 128 or whatever.
+
+
+
+***********
+***********
 https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities
 
 results in XML

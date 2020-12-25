@@ -36,6 +36,7 @@ $u .= ',';
 $u .= '4070118.8821290643';
 }
 
+// probably should add agent
 if (1) { // WORKS!  I suspect I don't need an exact x y this time, just the proper ratios
 $u .= '&WIDTH=512'; 
 $u .= '&HEIGHT=512';
@@ -52,6 +53,7 @@ $u .= '4226661.9160571000';
 
 if (1) {
 $res = file_get_contents($u);
+// remember that $http_response_header is defined
 $len = strlen($res);
 file_put_contents('/tmp/wxl1.png', $res);
 }
