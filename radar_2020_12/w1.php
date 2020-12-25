@@ -37,12 +37,13 @@ $u .= '4070118.8821290643';
 }
 
 if (1) { // WORKS!  I suspect I don't need an exact x y this time, just the proper ratios
-$u .= '&WIDTH=512';
+$u .= '&WIDTH=512'; 
 $u .= '&HEIGHT=512';
 $u .= '&SRS=EPSG:3857';
 $u .= '&BBOX=';
 
-$u .= '-9549125.069610499'; /* MUST BE EXACT / STRING!!! */ $u .= ',';
+// The following seems close to the lat lon I want.  
+$u .= '-9549125.069610499'; /* MUST BE EXACT / STRING!!! (or maybe not quite that precise once remove tiled) */ $u .= ',';
 $u .= '3913575.8482010234'; $u .= ',';
 $u .= '-9236039.001754420' ; $u .= ',';
 $u .= '4226661.9160571000';
