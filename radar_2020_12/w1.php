@@ -56,4 +56,5 @@ $res = file_get_contents($u);
 // remember that $http_response_header is defined
 $len = strlen($res);
 file_put_contents('/tmp/wxl1.png', $res);
+echo $u;
 }
