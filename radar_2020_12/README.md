@@ -1,3 +1,8 @@
+https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities
+
+results in XML
+
+********
 This WORKS:
 
 https://epsg.io/transform#s_srs=4326&t_srs=3857&x=-86.0000000&y=32.0000000
@@ -34,3 +39,6 @@ WGS 84 / Pseudo-Mercator -- Spherical Mercator, Google Maps, OpenStreetMap, Bing
 
 Transform Get position on a map
 This is projected coordinate system used for rendering maps in Google Maps, OpenStreetMap, etc. For details see Tile system.
+
+***************8
+***********
