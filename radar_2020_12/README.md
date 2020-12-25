@@ -2,6 +2,9 @@ https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?SERVICE=WMS&VER
 
 results in XML
 
+https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities&TILED=true
+
+
 ********
 This WORKS:
 

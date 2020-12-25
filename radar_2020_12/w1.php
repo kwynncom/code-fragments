@@ -18,8 +18,8 @@ file_put_contents('/tmp/wxl1.png', $res);
 // WORKS!
 }
 
-// BBOX=-9549125.069610499,3913575.8482010234,-9392582.035682458,4070118.8821290643
-$u  = 'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&TILED=true&LAYERS=conus_bref_qcd';
+// removing tiles 
+$u  = 'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=conus_bref_qcd';
 
 if (0) {
 $u .= '&WIDTH=256';
@@ -27,23 +27,30 @@ $u .= '&HEIGHT=256';
 $u .= '&SRS=EPSG:3857';
 $u .= '&BBOX=';
 
-// // -9549125.069610499,3913575.8482010234,-9392582.035682458,4070118.8821290643
-
-
-// MUST BE EXACT / STRING!!!
-$u .= '-9549125.069610499';
+$u .= '-9549125.069610499'; // MUST BE EXACT / STRING!!!
 $u .= ',';
 $u .= '3913575.8482010234';
 $u .= ',';
 $u .= '-9392582.035682458';
 $u .= ',';
 $u .= '4070118.8821290643';
+}
 
-echo $u;
+if (1) { // WORKS!  I suspect I don't need an exact x y this time, just the proper ratios
+$u .= '&WIDTH=512';
+$u .= '&HEIGHT=512';
+$u .= '&SRS=EPSG:3857';
+$u .= '&BBOX=';
+
+$u .= '-9549125.069610499'; /* MUST BE EXACT / STRING!!! */ $u .= ',';
+$u .= '3913575.8482010234'; $u .= ',';
+$u .= '-9236039.001754420' ; $u .= ',';
+$u .= '4226661.9160571000';
+// 400: X,Y values for the tile index were calculated to be {33.499999995754365, 76.50000000174002} which had to be rounded to {33, 77} and exceeds the threshold of 10%. Perhaps the client is using the wrong origin ?
+}
+
 if (1) {
 $res = file_get_contents($u);
 $len = strlen($res);
 file_put_contents('/tmp/wxl1.png', $res);
-}
-
 }
