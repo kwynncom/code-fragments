@@ -1,9 +1,10 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('utils/date.php');
+require_once(__DIR__ . '/utils/date.php');
+require_once(__DIR__ . '/config.php');
 
-class machine_id_internal {
+class machine_id {
     
     const minStrlenW = 7;
     
@@ -17,9 +18,9 @@ class machine_id_internal {
     const ofBase    = '/tmp/';
     const ofPrivate = 'midpr';
     const ofPublic  = 'midpu';
-    const ofsfx     = '_namespace_kwynn_com_2020_1213_mid_1';
+    const ofsfx     = '_namespace_kwynn_com_2020_12_mid_1';
     
-    const midv = 'v0.0.9 - 2020/12/14 11:00pm+ EST GMT -0500';
+    const midv = 'v0.0.11 - 2020/12/26 11:52pm+ EST GMT -0500';
     
     const testUntil = '2015-12-13 19:10';
     
@@ -51,6 +52,17 @@ class machine_id_internal {
 	}
     }
     
+    private static function setMyName(&$aref) {
+	$aref['myname'] = machine_id_validity::get($aref);	
+    }
+    
+    private static function setBootInfo(&$aref) {
+	$uo = uptime();
+	$ts = $uo['Ubest'];
+	$aref['Uboot'] = $ts;
+	$aref['rboot'] = date('r', $ts);
+    }
+    
     public static function get($showstdout = false) {
 	
 	self::doargs();
@@ -58,7 +70,8 @@ class machine_id_internal {
 	$ret = self::getExisting();
 	if (!$ret) {
 	    $a = self::get20();
-	    $ret = self::get30($a); unset($a);
+	    $a30 = self::get30($a); unset($a);
+	    $ret = $a30; unset($a30);
 	}
 	if ($showstdout) var_dump($ret);
 	return $ret;
@@ -96,6 +109,11 @@ class machine_id_internal {
 	$created = mid_creation_date::get($r['isAWS']);
 	$r['increated'] = $created;
 	$r['increatedR'] = date('r', $created);
+
+	self::setBootInfo($r);
+	
+	self::setMyName($r);
+	
 	$p = self::getPublicPath();
 	
 	$json = json_encode($r);
@@ -106,6 +124,7 @@ class machine_id_internal {
     }
     
     private static function outPrivate($ain) {
+
 	$prf = self::getPrivatePath();
 	if (file_exists($prf)) kwas(unlink($prf), "cannot delete existing $prf - machine_id outPrivate()");
 	touch($prf);
@@ -164,4 +183,4 @@ class machine_id_internal {
 
 }
 
-if (didCLICallMe(__FILE__)) machine_id_internal::get(true);
+if (didCLICallMe(__FILE__)) machine_id::get(true);

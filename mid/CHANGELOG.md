@@ -1,4 +1,7 @@
-This code gives a boot session a sequence number and other data and then serves that data to client processes.
+2020/12/26 11:15pm - possibly getting rid of C stuff.  I think it's time to combine mid and bootd and run it at boot.
+
+************
+bootd standalone
 
 HISTORY
 

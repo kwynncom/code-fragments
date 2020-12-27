@@ -4,6 +4,6 @@
 void main()
 {
 	setreuid(geteuid(), getuid());
-	system("sudo php /home/k/sm20/frag/bootd/mid/gethw/c/../midcl.php");
+	system("sudo php /home/user/blah/frag/bootd/mid/gethw/c/../midcl.php");
 	
 }

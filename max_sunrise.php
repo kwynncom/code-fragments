@@ -1,7 +1,8 @@
 <?php
 
 $loc = ['lat' => 34.249685, 'lon' =>  -84.140483, 'name' => 'Sawnee Mountain Preserve, Cumming, GA, USA']; 
-$az = 90.833333;
+$az = 90.833333; // sunrise
+// $az = 108; // astronomical twilight
 
 $now = time();
 
@@ -18,7 +19,7 @@ for ($i=-10; $i < 35; $i++) {
     $sfl   = 3600 * $hrfr;
     $msfr = $sfl - date('i', $risets) * 60 - $rises;
 
-    $risemsd1 = intval(round($msfr * 100));
+    $risemsd1 = intval(floor($msfr * 100));
     $risemsd  = sprintf('%02d', $risemsd1);
     
     $risefr = sprintf('%0.5f', $risefo);

@@ -8,7 +8,7 @@ public static function get($rin) {
 	kwas(isset($rin['private_field_count']), 'private count unset machine id eval');
 	kwas(      $rin['private_field_count'] >= 2, 'insufficent private count machine id eval');
 	if ($rin['hash_of_hash'] === '0d2b4b0bd6a31e756ec58ca4b2e5751c9c4e698315391812312738eabb4aeb6d') {
-	    $mid = 'kwMIDl1';
+	    $mid = 'kwmid20mid';
 	    self::testOut($mid);
 	    return $mid;
 	}
