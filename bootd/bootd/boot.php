@@ -11,25 +11,32 @@ class boot_tracker extends dao_generic_2 {
     const shmSize = 500;
     const shmDatKey = 1;
     const testUntil = '2020-10-15 02:00';
+
     
     private function __construct() {
 	parent::__construct(self::dbName, __FILE__);
 	$this->locko = new sem_lock(__FILE__, 'l');
 	$this->creTabs(['b' => 'boot']);
 	$this->meta10();
+	$this->shma = false;
 	$this->t10();
-	$this->p10();
+    }
+    
+    public function __destruct() {
+	if (!$this->shma) return;
+	kwas(shm_detach($this->shma), 'detach failed - __destruct()' . "\n");
+	// echo("detached\n");
     }
     
     private static function getShmSysv() { 
 	return ftok(__FILE__, self::shmsysvpid); }    
     
-    private function meta10() { $this->bcoll->createIndex(['Uboot' => -1], ['unique' => true]);    }
+    private function meta10() { $this->bcoll->createIndex(['Ubest' => -1], ['unique' => true]);    }
     
     private function p10() {
 	$newn = uptime();
-	$newb = $newn['Uboot'];
-	$r = $this->bcoll->findOne(['Uboot' => ['$gte' => $newb - self::bootTimeMargin, '$lte' => $newb + self::bootTimeMargin]]);
+	$newb = $newn['Ubest'];
+	$r = $this->bcoll->findOne(['Ubest' => ['$gte' => $newb - self::bootTimeMargin, '$lte' => $newb + self::bootTimeMargin]]);
 	if ($r) {
 	    $this->p30($r);
 	    return;
@@ -39,10 +46,10 @@ class boot_tracker extends dao_generic_2 {
 	return;
     }
     
-    private function p20($Uboot) {
-	$dat = $this->bcoll->getseq2(true, $Uboot, false);
-	$dat['Uboot'] = $Uboot;
-	$dat['rboot'] = date('r', $Uboot);
+    private function p20($Ubest) {
+	$dat = $this->bcoll->getseq2(true, $Ubest, false);
+	$dat['Ubest'] = $Ubest;
+	$dat['rbest'] = date('r', $Ubest);
 	$dat['mid'] = machine_id_get::get();
 	$this->bcoll->insertOne($dat);
 	$this->p30($dat);
@@ -50,56 +57,55 @@ class boot_tracker extends dao_generic_2 {
     }
     
     private function p30($din) {
-	$shma = self::getShmSeg('w');
-	shm_put_var($shma, self::shmDatKey, $din);
+	$this->setShmSeg();
+	kwas(shm_put_var($this->shma, self::shmDatKey, $din), "putVar failed p30()\n");
     }
     
-    private static function getShmSeg($rw = 'r') {
-	if ($rw === 'w') $perm = 0666; // This gets thorny because if the segment doesn't exist, a "random" end-user process will try to create it and not have 
-	else		 $perm = 0666; // permission and die.
-	
-	kwas($r = shm_attach(self::getShmSysv(), self::shmSize, $perm), 'attached failed' . "\n");
-	return $r;
-	
+    private function setShmSeg() {
+	if ($this->shma) return $this->shma;
+	kwas($r = shm_attach(self::getShmSysv(), self::shmSize, 0666), 'attached failed' . "\n");
+	$this->shma = $r;
     }
     
-    private static function getI() {
-	$shma = self::getShmSeg();
-	if (      shm_has_var($shma, self::shmDatKey))
-           return shm_get_var($shma, self::shmDatKey);
-	return false;
+    private function getI() {
+	$var = false;
+	$this->setShmSeg();
+	if (      shm_has_var($this->shma, self::shmDatKey))
+           $var = shm_get_var($this->shma, self::shmDatKey);
+	return $var;
 	
     }
     
-    private static function rmShm($rmblock = false) {
-	$shma = self::getShmSeg('w');
-	if (shm_has_var   ($shma, self::shmDatKey))
-	    shm_remove_var($shma, self::shmDatKey);	
+    private function rmShm($rmblock = false) {
+	$this->setShmSeg();
+	if (shm_has_var   ($this->shma, self::shmDatKey)) {
+	    echo("removing var\n");
+	    kwas(shm_remove_var($this->shma, self::shmDatKey),'rm var failed rmShm()');
+	}
 	
 	if ($rmblock) {
-	    kwas(shm_remove($shma), 'failed to rm whole block / segment');
+	    kwas(shm_remove($this->shma), 'failed to rm whole block / segment');
 	    echo('block removed' . "\n");
-	    kwas(shm_detach($shma), 'detach failed');
-	    echo('detached' . "\n");
 	    echo('Exiting...' . "\n");
 	    exit(0);
 	}
     }
     
     public static function get() {
-	self::clean();
-	self::t30();
-	$r = self::getI();
-	if ($r) return $r;
 	$o = new self();
+	$o->clean();
+	$o->t30();
+	$r = $o->getI();
+	if ($r) return $r;
+	$o->p10();
 	$r = $o->getI();
 	return $r;
     }
     
-    private static function clean() {
+    private function clean() {
 	global $argv;
 	
-	if (in_array('-clean', $argv)) self::rmShm(1);
+	if (in_array('-clean', $argv)) $this->rmShm(1);
     }
     
     private function t10() { 
@@ -115,12 +121,12 @@ class boot_tracker extends dao_generic_2 {
 	if (!self::isTest()) return;
 	$this->bcoll->rmSeq2();
 	$this->bcoll->drop();
-	self::rmShm();
+	$this->rmShm();
     }
     
     private static function t30()  { 
 	if (!self::isTest()) return;
-	self::rmShm(); 
+	$this->rmShm(); 
 	
     }
 

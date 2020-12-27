@@ -3,4 +3,5 @@
 require_once('boot.php');
 
 $dat = boot_tracker::get();
-exit(0);
+var_dump($dat);
+
