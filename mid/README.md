@@ -56,3 +56,9 @@ Codename:	focal
 sudo dmidecode | grep 'Release Date: '
 
 BIOS release date
+********
+*************
+systemd reference:
+
+https://transang.me/create-startup-scripts-in-ubuntu/
+https://wiki.archlinux.org/index.php/systemd#Get_current_targets
