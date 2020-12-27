@@ -8,22 +8,31 @@ class boot_tracker extends dao_generic_2 {
     const dbName = 'boot';
     const bootTimeMargin = 3;
     const shmsysvpid = 'm';
-    const shmSize = 500;
+    const shmSize = 200;
     const shmDatKey = 1;
     const testUntil = '2020-10-15 02:00';
 
     
-    private function __construct() {
-	parent::__construct(self::dbName, __FILE__);
-	$this->locko = new sem_lock(__FILE__, 'l');
-	$this->creTabs(['b' => 'boot']);
-	$this->meta10();
+    private function __construct($type = false) {
+	if ($type !== 'get' || $type === 'rodb') {
+	    parent::__construct(self::dbName, __FILE__);
+	    if ($type === 'rodb') {
+		$this->rodb = true;
+		$this->creTabs(['b' => 'boot']);
+		return;
+	    }
+	    $this->locko = new sem_lock(__FILE__, 'l');
+	    $this->creTabs(['b' => 'boot']);
+	    $this->meta10();
+	    $this->t10();
+	    $o->clean();
+	    $o->t30();
+	}
 	$this->shma = false;
-	$this->t10();
     }
     
     public function __destruct() {
-	if (!$this->shma) return;
+	if (!isset($this->shma) || !$this->shma) return;
 	kwas(shm_detach($this->shma), 'detach failed - __destruct()' . "\n");
 	// echo("detached\n");
     }
@@ -37,6 +46,7 @@ class boot_tracker extends dao_generic_2 {
 	$newn = uptime();
 	$newb = $newn['Ubest'];
 	$r = $this->bcoll->findOne(['Ubest' => ['$gte' => $newb - self::bootTimeMargin, '$lte' => $newb + self::bootTimeMargin]]);
+	if ($r && isset($this->rodb) && $this->rodb) return $r;
 	if ($r) {
 	    $this->p30($r);
 	    return;
@@ -44,6 +54,11 @@ class boot_tracker extends dao_generic_2 {
 	$this->p20($newb);
 	
 	return;
+    }
+    
+    public static function getDB() {
+	$o = new self('rodb');
+	return $o->p10();
     }
     
     private function p20($Ubest) {
@@ -92,11 +107,10 @@ class boot_tracker extends dao_generic_2 {
     }
     
     public static function get() {
-	$o = new self();
-	$o->clean();
-	$o->t30();
+	$o = new self('get');
 	$r = $o->getI();
 	if ($r) return $r;
+	$o = new self();
 	$o->p10();
 	$r = $o->getI();
 	return $r;
