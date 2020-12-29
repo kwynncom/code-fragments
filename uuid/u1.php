@@ -13,17 +13,28 @@ class uuidcl {
 	$this->p10();
 	echo $this->raws;
     }
+
     
     private function p10() {
 	$s = '';
 	$i = 0;
 	foreach($this->aa as $r) {
 	    $s .= ++$i . ' *** ' . $r['note'] . "\n";
-	    $b = nanotime();
+	    $b = nanopk();
 	    $t = $r['f']();
-	    $e = nanotime();
+	    $e = nanopk();
 	    $s .= self::toString($t);
-	    $s .= number_format($e - $b);
+	    $d1 = $e['Uns'] - $b['Uns'];
+	    $s .= number_format($d1) . 'ns';
+	    $s .= ' / ';
+	    $d2 = $e['tsc'] - $b['tsc'];
+	    $s .= number_format($d2) . ' CPU ticks = ';
+	    $s .= ' ';
+	    
+	    $rat = $d1 / $d2;
+	    
+	    $s .= sprintf('%0.20f', $rat); // attacker might infer boot time from clock drift *** !!!!! ****
+	    
 	    $s .= "\n";
 	}
 	
@@ -44,15 +55,23 @@ class uuidcl {
     private function d10() {
 	$a = [
 	    ['note' => 'MongoDB OID original and human-readable', 'f' => ['uuidcl', 'oid'], 'cl' => 'pub'],
-	    ['note' => 'my own extension - TSC, PID', 'f' => 'rdtscp', 'cl' => 'cli'],
-	    ['note' => 'my own extension - nanotime', 'f' => 'nanotime', 'cl' => 'pub'],
+	    ['note' => 'x86 TSC, PID - from my PHP extension', 'f' => 'rdtscp', 'cl' => 'cli'],
+	    ['note' => 'nanotime - from my PHP extension', 'f' => 'nanotime', 'cl' => 'pub'],
 	    ['note' => 'time, seconds', 'f' => 'time', 'cl' => 'pub'],
 	    ['note' => 'process ID', 'f' => 'getmypid', 'cl' => 'cli'],
-	    ['note' => 'my new machine ID stuff', 'f' => ['uuidcl', 'mid'], 'cl' => 'cli'],
-	    ['note' => 'rough-yet-absurdly precise kwynn.com' , 'f' => ['uuidcl', 'ec2_phy'], 'cl' => 'cli'],
+	    ['note' => 'machine ID stuff, my own', 'f' => ['uuidcl', 'mid'], 'cl' => 'cli'],
+	    ['note' => 'rough-yet-absurdly precise machine locations' , 'f' => ['uuidcl', 'ec2_phy'], 'cl' => 'pub'],
+	    ['note' => 'base62, in kwutils.php' , 'f' => 'base62', 'cl' => 'pub'],
+	    ['note' => 'random_int()', 'f' => ['uuidcl', 'rint'], 'cl' => 'pub'],
 	    ];
 	
 	$this->aa = $a;
+    }
+    
+    public static function rint($min = PHP_INT_MIN, $max = PHP_INT_MAX, $number_format = true) {
+	$n = random_int($min, $max);
+	if (!$number_format) return $n;
+	return number_format($n);
     }
     
     public static function mid() {
@@ -62,10 +81,15 @@ class uuidcl {
     }
     
     public static function ec2_phy() {
-	$t = file_get_contents(__DIR__ . '/AWS_EC2_loc.txt');
 	$k = '---DATA---';
-	$b = strpos($t, $k);
-	return trim(substr($t, $b + strlen($k)));
+	$s = '';
+	$a = ['kwynn.com' => 'AWS_EC2_loc.txt', 'my local' => 'my_loc_dev_loc.txt'];
+	foreach ($a as $lab => $loc) {
+	    $t = file_get_contents(__DIR__ . '/' . $loc);
+	    $b = strpos($t, $k);
+	    $s .= $lab . "\n" . trim(substr($t, $b + strlen($k))) . "\n";
+	}
+	return trim($s);
     }
     
     public static function oid() {
