@@ -1,0 +1,21 @@
+This is part of the input to a UUID based on the location of Kwynn.com (as of late 2020).
+
+This is almost entirely humorous / geekery.
+
+Kwynn.com is an AWS EC2 instance.  It's in us-east-1.  I suspect it's closer to Ashburn than Herndon, but 
+below is a location I could find.  Again, I don't know if it (or any other EC2 machine) is in the building below; 
+I'm just coming up with something vaguely close to accurate and then making it absurdly precise as if I knew.
+
+Amazon Web Services 12900 Worldgate DR Herndon, VA 20170
+(Virginia, USA)
+
+382 feet is roughly the elevation of the base of the building.
+So I pick an elevation for my machine below.
+
+location "guess" as of 2020/12/29 1:01am EST
+
+---DATA---
+38.955703174767476 -77.396345690863
+427.586763630 feet
+1609221960.485832624 (timestamp)
+ca 2020/12/29 1:06:31am
