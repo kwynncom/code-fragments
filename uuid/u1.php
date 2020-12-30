@@ -6,6 +6,7 @@ require_once_ifex('/opt/kwynn/boot/mid.php');
 class uuidcl {
     
     private $oprs = '';
+    private $pus  = '';
     
     public static function get() {
 	$o = new self();
@@ -14,7 +15,7 @@ class uuidcl {
     private function __construct() {
 	$this->d10();
 	$this->p10();
-	echo $this->raws;
+	echo $this->pus;
     }
 
     private function hpr10(&$s, $pr) {
@@ -23,7 +24,9 @@ class uuidcl {
     }
     
     private function p10() {
-	$s = '';
+	
+	$s = $this->pid();
+
 	$i = 0;
 	foreach($this->aa as $r) {
 	    $lpr = '';
@@ -36,28 +39,26 @@ class uuidcl {
 	    $d2   = $e['tsc'] - $b['tsc'];
 	    $rat  = $d1 / $d2;
 	    $s   .= 'diff ns / diff CPU rounded = ' . round($rat, 1) . "\n";
-	    
-	    $lpr .= number_format($e['tsc']) . "\n";
-	    $lpr .= number_format($b['tsc']) . "\n";
-	    
-	    $nfd2 =  number_format($d2);
-	    
-	    $lpr .= sprintf('%18s', $nfd2) . "\n";
+
+	    $nfd2 =  number_format($d2);	    
+	    $lpr .= sprintf('%25s', number_format($e['tsc'])) . "\n";
+	    $lpr .= sprintf('%25s', number_format($b['tsc'])) . "\n";
+	    $lpr .= sprintf('%25s', $nfd2) . "\n";
     
 	    $nfd1 =  number_format($d1);
 	    
-//	    $lpr .= sprintf('%0.30f', $rat); // attacker might infer boot time from clock drift *** !!!!! **** - so make this private / CLI but part of hash
+	    $lpr .= 'ns / tick = ' . sprintf('%0.50f', $rat) . "\n";
 	    
 	    $s .= number_format($e['Uns']) . "\n";
 	    $s .= number_format($b['Uns']) . "\n";
 	    $s .= sprintf('%25s', $nfd1) . "\n";
-	    $s .= 'core ' . $b['pid'] . ' / ' . $e['pid'];
-	    $s .= "\n";
 	    
 	    $this->hpr10($s, $lpr);
+	    
+	    $s .= 'core ' . $b['pid'] . ' / ' . $e['pid'] . "\n";
 	}
 	
-	$this->raws = $s;
+	$this->pus = $s;
     }
     
     public static function toString($din) {
@@ -77,10 +78,10 @@ class uuidcl {
     
     private function d10() {
 	$a = [
+	    ['note' => 'machine ID stuff, my own', 'f' => ['uuidcl', 'mid']],
 	    ['note' => 'MongoDB OID original and human-readable', 'f' => ['uuidcl', 'oid']],
 	    ['note' => 'time, seconds', 'f' => ['uuidcl', 'time']],
 	    ['note' => 'process ID', 'f' => [$this, 'pid']],
-	    ['note' => 'machine ID stuff, my own', 'f' => ['uuidcl', 'mid']],
 	    ['note' => 'rough-yet-absurdly precise machine locations' , 'f' => ['uuidcl', 'ec2_phy']],
 	    ['note' => 'base62, in kwutils.php' , 'f' => 'base62'],
 	    ['note' => 'random_int()', 'f' => ['uuidcl', 'rint']],
@@ -92,9 +93,9 @@ class uuidcl {
     
     private function pid() {
 	$pid = getmypid();
-	$aud = 'process ID is integer and >= 1, included in string';
+	$aud = 'process ID is integer and >= 1' . "\n";
 	kwas(is_integer($pid) && $pid >= 1, $aud);
-	$this->oprs .= 'process id = ' . $pid . "\n";
+	$this->hpr10($aud, "process id = $pid \n");
 	return $aud;
     }
     
