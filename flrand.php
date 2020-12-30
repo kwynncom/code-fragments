@@ -1,6 +1,10 @@
-<?php
+<?php 
 
-$m10 = pow(10, 19);
+/* The test is the following in "pack" mode: php flrand.php | rngtest
+ * The test appears to be a failure for now, but outputting in binary mode is very helpful.
+ * I will probably keep trying   */
+
+$m10 = pow(10, 17); // I tried several values for this, trying to fill up a 64 bit unsigned int
 
 $s = '';
 
@@ -11,22 +15,28 @@ for ($i=0; $i < 50; $i++) {
     $rat = ($a[$i]['Uns'] - $a[$i - 1]['Uns']) / 
 	   ($a[$i]['tsc'] - $a[$i - 1]['tsc']) ;
     
-    $rp3 = $rat * 1000;
+    if (1) {
+	$rp3 = $rat * 1000;
     
-    $r20 = $rp3 - round($rp3);
-    $r25 = $r20; //  abs($r20);
+	$r20 = $rp3 - round($rp3);
+	$r25 = $r20;
+    }
     
-    // $r30 = sprintf('%0.41f', $r25);
+    $r30 = intval($r20 * $m10);
     
-    $r30 = intval($r25 * $m10);
+    if ($r30 === 0) { 
+	$ignore = 0;
+    }
     
-    // $r40 = sprintf('%020d', $r30);
+    if ($r30 < 0) { 
+	$ignore = 20;
+    }
     
-    $s .= $r30 . "\n";
+    if (0) echo($r30 . "\n");
+    else if (1) echo(number_format($r30) . ' ' . decbin($r30) . "\n");
+    else if (1) {
+	$p = pack('Q', $r30);
+	$l = strlen($p);
+	for($j=0; $j < 8; $j++) echo($p[$j]);
+    }
 }
-
-$p =   pack('Q', $s); // This just goes back and forth as one integer
-$u = unpack('Q', $p);
-for ($i=0; $i < count($u); $i++) echo($u[$i] . "\n");
-
-if (0) for ($i=0; $i < 50; $i++) echo(sprintf('%0.50f', sqrt(2)) . "\n"); // PERFECTLY CONSISTENT!
