@@ -25,7 +25,7 @@ for ($i=0; $i < 50; $i++) {
     $s .= $r30 . "\n";
 }
 
-$p =   pack('Q', $s);
+$p =   pack('Q', $s); // This just goes back and forth as one integer
 $u = unpack('Q', $p);
 for ($i=0; $i < count($u); $i++) echo($u[$i] . "\n");
 
