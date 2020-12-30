@@ -33,7 +33,10 @@ class uuidcl {
 	    
 	    $rat = $d1 / $d2;
 	    
-	    $s .= sprintf('%0.20f', $rat); // attacker might infer boot time from clock drift *** !!!!! ****
+	    $s .= sprintf('%0.30f', $rat); // attacker might infer boot time from clock drift *** !!!!! **** - so make this private / CLI but part of hash
+	    
+	    $s .= "\n";
+	    $s .= number_format($e['Uns']) . ' - ' . number_format($b['Uns']) . ' core ' . $b['pid'] . ' then ' . $e['pid'];
 	    
 	    $s .= "\n";
 	}
@@ -63,9 +66,22 @@ class uuidcl {
 	    ['note' => 'rough-yet-absurdly precise machine locations' , 'f' => ['uuidcl', 'ec2_phy'], 'cl' => 'pub'],
 	    ['note' => 'base62, in kwutils.php' , 'f' => 'base62', 'cl' => 'pub'],
 	    ['note' => 'random_int()', 'f' => ['uuidcl', 'rint'], 'cl' => 'pub'],
+	    ['note' => 'more random',  'f' => ['uuidcl', 'randrand'], 'cl' => 'pub'],	    
 	    ];
 	
 	$this->aa = $a;
+    }
+    
+    public static function randrand($csz = 65) {
+	$l = random_int(70, 500);
+	$s = base62($l);
+	$i = 0;
+	$r = '';
+	do {
+	    $r .= substr($s, $i, $csz) . "\n";
+	    $i += $csz;
+	} while ($i < $l);
+	return trim($r);
     }
     
     public static function rint($min = PHP_INT_MIN, $max = PHP_INT_MAX, $number_format = true) {
