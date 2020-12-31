@@ -9,29 +9,26 @@ class AWSCryptoV {
     const pubf    = 'AWSPubKey_2020_01_1.txt';
     const pubsha256 = 'c02cf542248f66abbea9df49591344d161510d63337b0fd782c4ecd5e959f07a';
     const publen    = 1074;
-    const pubp  = 'https://kwynn.com/t/9/12/sync/services/';
+    const pubp	    = __DIR__ . '/';
     const tmp     = '/tmp/iid_kwns202/';
-    const iiddocs    = ['document', 'rsa2048', 'signature', 'pkcs7'];
+    const iiddocs    = ['document', 'pkcs7'];
     
-    private function init() {
-	$this->alls = '';
-    }
-    
-    public function getPut($inp, $outp, $fn) {
-	$din = file_get_contents($inp); 
-	$this->alls .= $din;
-	if ($fn === self::pubf) {
-	    $hash = hash('sha256', $din);
-	    kwas($hash === self::pubsha256, 'pub AWS key hash fail'); unset($hash);
-	    $l = strlen($din);
-	    kwas($l === self::publen, 'pub AWS key size fail'); unset($l);
-	} else if ($fn === 'document') $this->jsoniddoc = trim($din);
+    public function getPut($inp, $outp) {
 	
-	file_put_contents($outp, $din);
+	if (file_exists($outp)) kwas(unlink($outp), "failed to delete $outp - getPut() AWS ID crypto");
+	$c = file_get_contents($inp); 
+	$b = file_put_contents($outp, $c);
+	kwas(strlen($c) === $b, 'file_put byte fail getPut() AWS crypto');
+	return $c;
     }
 
-    private function sha() {
-	echo('all ID files: ' . hash('sha256', $this->alls) . "\n");
+    
+    private function setValidPub() {
+	$res = $this->getPut(self::pubp . self::pubf, self::tmp . self::pubf, self::pubf);	
+	$hash = hash('sha256', $res);
+	kwas($hash === self::pubsha256, 'pub AWS key hash fail'); unset($hash);
+	$l = strlen($res);
+	kwas($l === self::publen, 'pub AWS key size fail'); unset($l);
     }
     
     private function crypto() {
@@ -39,9 +36,9 @@ class AWSCryptoV {
     if (!file_exists(self::tmp)) mkdir(self::tmp);
     chmod(self::tmp, 0700);
 
-    $this->getPut(self::pubp . self::pubf, self::tmp . self::pubf, self::pubf);
+    $this->setValidPub();
+
     foreach(self::iiddocs as $f) $this->getPut(self::upfx . $f, self::tmp . $f, $f);
-    $this->sha();
     
     $pkfn =  'pkcs7';
     $pks  = "-----BEGIN PKCS7-----\n";
@@ -60,6 +57,10 @@ class AWSCryptoV {
     $c .= ' -noverify ';
 
     echo($c . "\n");
+    
+    echo(shell_exec($c));
+    
+    echo('v 229' . "\n");
     
     exit(0);
     
@@ -99,7 +100,6 @@ class AWSCryptoV {
     return ['iddoc' => $fr2];
 }
     public function __construct() {
-	$this->init();
 	$this->crypto();
     }
 
