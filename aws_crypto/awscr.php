@@ -40,7 +40,7 @@ class AWSCryptoV {
 
     foreach(self::iiddocs as $f) $this->getPut(self::upfx . $f, self::tmp . $f, $f);
     
-    $pkfn =  'pkcs7';
+    $pkfn =  'rsa2048';
     $pks  = "-----BEGIN PKCS7-----\n";
     $pkp = self::tmp . $pkfn;
     $pks .= file_get_contents($pkp);
@@ -106,3 +106,6 @@ class AWSCryptoV {
 }
 
 if (didCLICallMe(__FILE__)) new AWSCryptoV();
+
+// https://medium.com/@bugzeeeeee/cryptographic-adventures-ec2-instance-identity-verification-in-javascript-b0edfad09de9
+    

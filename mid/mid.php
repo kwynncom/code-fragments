@@ -20,7 +20,7 @@ class machine_id {
     const ofPublic  = 'midpu';
     const ofsfx     = '_namespace_kwynn_com_2020_12_mid_1';
     
-    const midv = 'v0.0.11 - 2020/12/26 11:52pm+ EST GMT -0500';
+    const midv = 'v0.0.13 - 2020/12/31 5:23pm+';
     
     const testUntil = '2015-12-13 19:10';
     
@@ -52,9 +52,6 @@ class machine_id {
 	}
     }
     
-    private static function setMyName(&$aref) {
-	$aref['myname'] = machine_id_validity::get($aref);	
-    }
     
     private static function setBootInfo(&$aref) {
 	$uo = uptime();
@@ -100,8 +97,7 @@ class machine_id {
 	    if (self::isPublic($fn)) $r[$k] = $v;
 	}
 	
-	$r['mid']	   = hash('sha256', $ain['private_string']);
-	$r['hash_of_hash'] = hash('sha256', $r['mid']);
+	machine_id_specific::set($ain, $r);
 	$r['midv'] = self::midv;
 	$now = time();
 	$r['at'] = $now;
@@ -111,8 +107,6 @@ class machine_id {
 	$r['increatedR'] = date('r', $created);
 
 	self::setBootInfo($r);
-	
-	self::setMyName($r);
 	
 	$p = self::getPublicPath();
 	
