@@ -5,6 +5,11 @@ bootd standalone
 
 HISTORY
 
+2020/12/30 11:01pm
+
+Starting aws stuff from:
+https://github.com/kwynncom/javascript-synchronized-clock/blob/891e8bc82c13fdfdf343ae1b39a1ea0c8b66dd1c/services/isAWS.php
+
 2020/12/26 11:00pm
 The boot20.php FIFO attempt is a disaster.  The damnest things happen with FIFOs.  Perhaps one day I'll sort it all out.
 
