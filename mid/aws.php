@@ -2,42 +2,62 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class isAWSCmds { 
+class AWSCryptoV { 
     
      
     const upfx    = 'http://169.254.169.254/latest/dynamic/instance-identity/';
     const pubf    = 'AWSPubKey_2020_01_1.txt';
+    const pubsha256 = 'c02cf542248f66abbea9df49591344d161510d63337b0fd782c4ecd5e959f07a';
+    const publen    = 1074;
     const pubp  = 'https://kwynn.com/t/9/12/sync/services/';
     const tmp     = '/tmp/iid_kwns202/';
-    const docs3    = ['document', 'rsa2048', 'signature'];
+    const iiddocs    = ['document', 'rsa2048', 'signature', 'pkcs7'];
     
-    public static function getPut($inp, $outp) {
-	file_put_contents($outp, file_get_contents($inp));
+    private function init() {
+	$this->alls = '';
+    }
+    
+    public function getPut($inp, $outp, $fn) {
+	$din = file_get_contents($inp); 
+	$this->alls .= $din;
+	if ($fn === self::pubf) {
+	    $hash = hash('sha256', $din);
+	    kwas($hash === self::pubsha256, 'pub AWS key hash fail'); unset($hash);
+	    $l = strlen($din);
+	    kwas($l === self::publen, 'pub AWS key size fail'); unset($l);
+	} else if ($fn === 'document') $this->jsoniddoc = trim($din);
+	
+	file_put_contents($outp, $din);
     }
 
-public static function crypto() {
+    private function sha() {
+	echo('all ID files: ' . hash('sha256', $this->alls) . "\n");
+    }
+    
+    private function crypto() {
     
     if (!file_exists(self::tmp)) mkdir(self::tmp);
     chmod(self::tmp, 0700);
+
+    $this->getPut(self::pubp . self::pubf, self::tmp . self::pubf, self::pubf);
+    foreach(self::iiddocs as $f) $this->getPut(self::upfx . $f, self::tmp . $f, $f);
+    $this->sha();
     
     $pkfn =  'pkcs7';
-    
     $pks  = "-----BEGIN PKCS7-----\n";
-    $pks .= file_get_contents(self::upfx . $pkfn);
+    $pkp = self::tmp . $pkfn;
+    $pks .= file_get_contents($pkp);
     $pks .=  "\n-----END PKCS7-----\n";
-    file_put_contents(self::tmp . $pkfn, $pks); unset($pks, $pkfn);
-    
-    self::getPut(self::pubp . self::pubf, self::tmp . self::pubf);
-    foreach(self::docs3 as $f) self::getPut(self::upfx . $f, self::tmp . $f);
+    $pkmp = $pkp . '_mod';
+    file_put_contents($pkmp, $pks); unset($pks, $pkfn);
     
     $c  = 'openssl smime -verify -in ';
-    $c .= self::tmp . 'pkcs7 ';
+    $c .= self::tmp . 'pkcs7_mod ';
     $c .= '-inform PEM -content ';
     $c .= self::tmp . 'document ';
     $c .= '-certfile ';
     $c .= self::tmp . self::pubf;
     $c .= ' -noverify ';
-    $c .= ' 1> /dev/null';
 
     echo($c . "\n");
     
@@ -78,6 +98,11 @@ public static function crypto() {
         
     return ['iddoc' => $fr2];
 }
+    public function __construct() {
+	$this->init();
+	$this->crypto();
+    }
+
 }
 
-if (didCLICallMe(__FILE__)) isAWSCmds::crypto();
+if (didCLICallMe(__FILE__)) new AWSCryptoV();
