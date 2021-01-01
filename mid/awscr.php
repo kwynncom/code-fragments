@@ -21,13 +21,10 @@ class AWSCryptoV {
 	$c = file_get_contents($p); 
 	$b = file_put_contents($outp, $c);
 	kwas(strlen($c) === $b, 'file_put byte fail AWS crypto');
-	
 	$this->$inf = $c;
-	
 	return $c;
     }
 
-    
     private function setValidPub() {
 	$res = $this->getPut(self::pubp, self::pubf, self::tmp . self::pubf, self::pubf);	
 	$hash = hash('sha256', $res);
@@ -38,77 +35,46 @@ class AWSCryptoV {
     
     private function crypto() {
     
-    if (!file_exists(self::tmp)) mkdir(self::tmp);
-    chmod(self::tmp, 0700);
+	if (!file_exists(self::tmp)) mkdir(self::tmp);
+	chmod(self::tmp, 0700);
 
-    $this->setValidPub();
+	$this->setValidPub();
 
-    foreach(self::iiddocs as $f) $this->getPut(self::upfx, $f, self::tmp . $f, $f);
-    
-    echo(machine_id_specific::verifyWithSigs($this->pkcs7, $this->rsa2048, $this->signature) . "\n");
-    
-    $pkfn =  'pkcs7';
-    $pks  = "-----BEGIN PKCS7-----\n";
-    $pkp = self::tmp . $pkfn;
-    $pks .= file_get_contents($pkp);
-    $pks .=  "\n-----END PKCS7-----\n";
-    $pkmp = $pkp . '_mod';
-    file_put_contents($pkmp, $pks); unset($pks, $pkfn);
-    
-    $c  = 'openssl smime -verify -in ';
-    $c .= $pkmp . ' ';
-    $c .= '-inform PEM -content ';
-    $c .= self::tmp . 'document ';
-    $c .= '-certfile ';
-    $c .= self::tmp . self::pubf;
-    $c .= ' -noverify ';
+	foreach(self::iiddocs as $f) $this->getPut(self::upfx, $f, self::tmp . $f, $f);
 
-    echo($c . "\n");
-    
-    echo(shell_exec($c));
-    
-    echo('v 754' . "\n");
-    
-    exit(0);
-    
-    
-    
-    // openssl smime -verify -in $PKCS7 -inform PEM -content $DOCUMENT -certfile AWSpubkey -noverify > /dev/null
-    
-    $c  = '';
-    $c .= 'openssl smime -verify -in ';
-    $c .= $td . $fs[1][1];
-    $c .= ' -inform PEM -content ';
-    $c .= $td . self::iddocnm;
-    $c .= ' -certfile ';
-    $c .= self::awspkf;
-    $c .= ' -noverify ';
-    $c .= ' 2>&1 1> /dev/null';
-     
-    $re = '/^(Verification successful)\s*$/';    
-    $fr['cmd'] = $c;
-    $fr['regex'] = $re;   
-    $fr['result'] = '';
-    
-    $fr2 = [];
-    
-    if (isset($docr['publicRes'])) $fr2['fieldTests'] = $docr['publicRes'];
-    $fr2['cryptoCmd'] = $fr;
-    
-    if (!isAWS())     return ['iddoc' => $fr2];
+	$vsr = machine_id_specific::verifyWithSigs($this->pkcs7, $this->rsa2048, $this->signature);
 
-    $sres = shell_exec($c);
- 
-    preg_match($re, $sres, $matches);
-    kwas(isset($matches[1]), 'AWS crypto match failed');
+	$pkfn =  'pkcs7';
+	$pks  = "-----BEGIN PKCS7-----\n";
+	$pkp = self::tmp . $pkfn;
+	$pks .= file_get_contents($pkp);
+	$pks .=  "\n-----END PKCS7-----\n";
+	$pkmp = $pkp . '_mod';
+	file_put_contents($pkmp, $pks); unset($pks, $pkfn);
 
-    $fr2['cryptoCmd']['result'] = $matches[1];
-        
-    return ['iddoc' => $fr2];
+	$c  = 'openssl smime -verify -in ';
+	$c .= $pkmp . ' ';
+	$c .= '-inform PEM -content ';
+	$c .= self::tmp . 'document ';
+	$c .= '-certfile ';
+	$c .= self::tmp . self::pubf;
+	$c .= ' -noverify ';
+
+	$pd = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+
+	$inpr = proc_open($c, $pd, $pipes);	unset($c, $pd);
+	$docr = fread($pipes[1], 10000);	fclose($pipes[1]);
+	$vrr  = fread($pipes[2], 10000);	fclose($pipes[2]); unset($pipes); proc_close($inpr); unset($inpr);
+	$vr   = trim($vrr); unset($vrr);
+	kwas($vr === 'Verification successful', 'AWS EC2 ID doc verification failed - crypto');
+	echo('v 851' . "\n");
+
+	exit(0);
 }
-    public function __construct() {
-	$this->crypto();
-    }
+
+public function __construct() {
+    $this->crypto();
+}
 
 }
 
