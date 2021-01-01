@@ -10,8 +10,17 @@ function getCPUCount() {
 
 kwas($argc >= 3, 'need 2 program args');
 
-if ($argc >= 4) $pwd = $argv[3];
-else		$pwd = 'cFEmOWWE';
+if ($argc >= 4) {
+    $argp = $argv[3];
+    if ($argp === '-in') {
+	$intoh = file_get_contents('php://stdin');
+	$iinfo = strlen($intoh);
+    }
+    else { $iinfo = $intoh = $argp;     }
+}
+else {
+    $iinfo = $intoh = 'cFEmOWWE';
+}
 
 
 
@@ -22,10 +31,10 @@ $ps = [
     ];
 
 $b = nanotime();
-$h = password_hash($pwd, PASSWORD_ARGON2ID, $ps);  
+$h = password_hash($intoh, PASSWORD_ARGON2ID, $ps);  
 $e = nanotime();
 $ps['h'] = $h;
 $ps['ms'] = number_format(($e - $b) / pow(10, 6));
-$ps['pwd'] = $pwd;
+$ps['input_info'] = $iinfo;
 
 var_dump($ps);

@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('config.php');
 
 class AWSCryptoV { 
     
@@ -11,20 +12,24 @@ class AWSCryptoV {
     const publen    = 1074;
     const pubp	    = __DIR__ . '/';
     const tmp     = '/tmp/iid_kwns202/';
-    const iiddocs    = ['document', 'pkcs7'];
+    const iiddocs    = ['document', 'pkcs7', 'rsa2048', 'signature'];
     
-    public function getPut($inp, $outp) {
+    public function getPut($inp, $inf, $outp) {
+	$p = $inp . $inf;
 	
-	if (file_exists($outp)) kwas(unlink($outp), "failed to delete $outp - getPut() AWS ID crypto");
-	$c = file_get_contents($inp); 
+	if ($inf !== self::pubf && file_exists($outp)) kwas(unlink($outp), "failed to delete $outp - AWS ID crypto");
+	$c = file_get_contents($p); 
 	$b = file_put_contents($outp, $c);
-	kwas(strlen($c) === $b, 'file_put byte fail getPut() AWS crypto');
+	kwas(strlen($c) === $b, 'file_put byte fail AWS crypto');
+	
+	$this->$inf = $c;
+	
 	return $c;
     }
 
     
     private function setValidPub() {
-	$res = $this->getPut(self::pubp . self::pubf, self::tmp . self::pubf, self::pubf);	
+	$res = $this->getPut(self::pubp, self::pubf, self::tmp . self::pubf, self::pubf);	
 	$hash = hash('sha256', $res);
 	kwas($hash === self::pubsha256, 'pub AWS key hash fail'); unset($hash);
 	$l = strlen($res);
@@ -38,9 +43,11 @@ class AWSCryptoV {
 
     $this->setValidPub();
 
-    foreach(self::iiddocs as $f) $this->getPut(self::upfx . $f, self::tmp . $f, $f);
+    foreach(self::iiddocs as $f) $this->getPut(self::upfx, $f, self::tmp . $f, $f);
     
-    $pkfn =  'rsa2048';
+    echo(machine_id_specific::verifyWithSigs($this->pkcs7, $this->rsa2048, $this->signature) . "\n");
+    
+    $pkfn =  'pkcs7';
     $pks  = "-----BEGIN PKCS7-----\n";
     $pkp = self::tmp . $pkfn;
     $pks .= file_get_contents($pkp);
@@ -49,7 +56,7 @@ class AWSCryptoV {
     file_put_contents($pkmp, $pks); unset($pks, $pkfn);
     
     $c  = 'openssl smime -verify -in ';
-    $c .= self::tmp . 'pkcs7_mod ';
+    $c .= $pkmp . ' ';
     $c .= '-inform PEM -content ';
     $c .= self::tmp . 'document ';
     $c .= '-certfile ';
@@ -60,7 +67,7 @@ class AWSCryptoV {
     
     echo(shell_exec($c));
     
-    echo('v 229' . "\n");
+    echo('v 754' . "\n");
     
     exit(0);
     

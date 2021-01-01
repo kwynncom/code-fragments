@@ -31,6 +31,15 @@ public static function set($rin, &$toset) {
     kwas(false, 'not supporting arbitrary AWS instances yet');
 }
 
+public static function verifyWithSigs($p, $r, $s) {
+    static $fixedHash  = '$argon2id$v=19$m=8192,t=40,p=2$RkpTOW8zbU1oZS9GSXptUw$Ewd2N7n5ucjTsDoXKeDn17f53QbfwqmVHL2FcMEc7UI';
+    static $fixedSize = 2718;
+    $a = $p . $r . $s;
+    kwas(strlen($a) === $fixedSize, 'verify sig failed');
+    kwas(password_verify($a, $fixedHash), 'verify sig password fail');
+    return 'verified 3 AWS EC2 ID docs by size and hash';
+}
+
 public static function hash($din) {
     if (!isAWS()) $ps = ['memory_cost' => 2 << 15, 'time_cost' => 5, 'threads' => 12];
     else          $ps = ['memory_cost' => 2 << 13, 'time_cost' => 8, 'threads' => 2];
