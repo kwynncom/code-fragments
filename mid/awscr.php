@@ -41,35 +41,51 @@ class AWSCryptoV {
 	$this->setValidPub();
 
 	foreach(self::iiddocs as $f) $this->getPut(self::upfx, $f, self::tmp . $f, $f);
-
-	$vsr = machine_id_specific::verifyWithSigs($this->pkcs7, $this->rsa2048, $this->signature);
-
-	$pkfn =  'pkcs7';
-	$pks  = "-----BEGIN PKCS7-----\n";
-	$pkp = self::tmp . $pkfn;
-	$pks .= file_get_contents($pkp);
-	$pks .=  "\n-----END PKCS7-----\n";
-	$pkmp = $pkp . '_mod';
-	file_put_contents($pkmp, $pks); unset($pks, $pkfn);
-
-	$c  = 'openssl smime -verify -in ';
-	$c .= $pkmp . ' ';
-	$c .= '-inform PEM -content ';
-	$c .= self::tmp . 'document ';
-	$c .= '-certfile ';
-	$c .= self::tmp . self::pubf;
-	$c .= ' -noverify ';
-
-	$pd = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
-
-	$inpr = proc_open($c, $pd, $pipes);	unset($c, $pd);
-	$docr = fread($pipes[1], 10000);	fclose($pipes[1]);
-	$vrr  = fread($pipes[2], 10000);	fclose($pipes[2]); unset($pipes); proc_close($inpr); unset($inpr);
-	$vr   = trim($vrr); unset($vrr);
-	kwas($vr === 'Verification successful', 'AWS EC2 ID doc verification failed - crypto');
-	echo('v 851' . "\n");
+	$this->allSigs = $this->pkcs7 . $this->rsa2048 . $this->signature;
+	$vsr = machine_id_specific::verifyWithSigsOrDie($this->allSigs);
+	$docFromV = self::getVerifiedDoc();
+	kwas($this->document === $docFromV, 'first and 2nd document read do not match');
+	
+	echo('v 953' . "\n");
 
 	exit(0);
+}
+
+private static function getVerifiedDoc() {
+    $c = self::getVCmd();
+    $pd = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+
+    $inpr = proc_open($c, $pd, $pipes); unset($c, $pd);
+    $docr = fread($pipes[1], 10000);    fclose($pipes[1]);
+    $vrr  = fread($pipes[2], 10000);    fclose($pipes[2]); unset($pipes); proc_close($inpr); unset($inpr);
+    $vr   = trim($vrr); unset($vrr);
+    kwas($vr === 'Verification successful', 'AWS EC2 ID doc verification failed - crypto'); unset($vr);
+    return $docr;
+}
+
+private static function getVCmd() {
+    
+    $pkmp = self::getModdedPKFPath();
+    
+    $c  = 'openssl smime -verify -in ';
+    $c .= $pkmp . ' ';
+    $c .= '-inform PEM -content ';
+    $c .= self::tmp . 'document ';
+    $c .= '-certfile ';
+    $c .= self::tmp . self::pubf;
+    $c .= ' -noverify ';
+    return $c;
+}
+
+private static function getModdedPKFPath() {
+    $pkfn =  'pkcs7';
+    $pks  = "-----BEGIN PKCS7-----\n";
+    $pkp = self::tmp . $pkfn;
+    $pks .= file_get_contents($pkp);
+    $pks .=  "\n-----END PKCS7-----\n";
+    $pkmp = $pkp . '_mod';
+    file_put_contents($pkmp, $pks); unset($pks, $pkfn);    
+    return $pkmp;
 }
 
 public function __construct() {
