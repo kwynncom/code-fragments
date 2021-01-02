@@ -12,4 +12,7 @@ function dist($sin) {
     var_dump(['a' => $r, 'n' => count($r)]);
 }
 
-dist(random_bytes(2000));
+$in = random_bytes(2000); 
+$in = file_get_contents('/tmp/cryd');
+
+dist($in);
