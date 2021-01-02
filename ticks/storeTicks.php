@@ -31,4 +31,4 @@ class ticks_tracker extends dao_generic_2 {
     }
 }
 
-new ticks_tracker();
+if (didCLICallMe(__FILE__)) new ticks_tracker();
