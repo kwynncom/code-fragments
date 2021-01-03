@@ -2,37 +2,45 @@
 
 require_once('/opt/kwynn/mongodb2.php');
 require_once(__DIR__ . '/../../tsnano/chronyParsed.php');
+require_once('triplets.php');
 
 class ticks_tracker extends dao_generic_2 {
     const dbName = 'ticks';
-    const samsize = 50;
-    const tosssize = 4;
     const sleep = 3;
-    const datv  = 2;
+    const datv  = 3;
+    const doFor = 3500;
 
     public function __construct($fromChild = false) {
 	parent::__construct(self::dbName, __FILE__);
-	$this->creTabs(['t' => 'ticks', 'c' => 'chrony']);
+	$this->creTabs(['t' => 'ticks', 'c' => 'chrony', 'm' => 'meta']);
 	if ($fromChild) return;
 	$this->p10();
-	$this->ch10();
-
     }
     
     private function p10() {
+	$until = time() + self::doFor;
+	$i = 1;
 	
-	for($i=0; $i < self::tosssize; $i++) nanopk();
-	$t = nanopk();
-	$t['init'] = true;
-	$npka[] = $t;
-	sleep(self::sleep);
+	do {
+	    $this->p20();
+	    $this->ch10();
+	    $sl = pow(self::sleep, $i);
+	    $tt = time() + $sl;
+	    if ($tt > $until) break;
+	    sleep($sl);
+	} while($i++ < 20);
+    }
+    
+    private function p20() {
+	$r = getStableNanoPK();
+	$d = $r['d'];
+	$m = $r['m'];
+	$d['datv'] = self::datv;
+	$seq = $this->tcoll->getSeq2('idoas');
+	$d['_id' ] = $m['_id' ] = $seq;
+	$this->tcoll->insertOne($d);
+	$this->mcoll->insertOne($m);
 	
-	for($i=1; $i < self::samsize; $i++) $npka[] = nanopk();
-	for($i=0; $i < self::samsize; $i++) {
-	    $npka[$i]['_id'] = $this->tcoll->getSeq2('idoas');
-	    $npka[$i]['datv'] = self::datv;
-	}
-	$this->tcoll->insertMany($npka);	
     }
     
     private function ch10() {
