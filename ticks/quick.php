@@ -2,6 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('stddev.php');
+require_once('triplets.php');
 
 class tick_time_study {
 
@@ -10,21 +11,21 @@ class tick_time_study {
     const million = 1000000;
     
     public function __construct($exec) {
-        $this->doit(3);
+        $this->doit(0.2);
     }
     
     private function doit($elapsed) {
 	
 	$sdo = new stddev();
 	
-	for($i=0; $i < self::initMin; $i++) nanopk();
+	for($i=0; $i < self::initMin; $i++) getStableNanoPK(true);
 	
-	$base = nanopk();	
+	$base = getStableNanoPK(true);
 	usleep($elapsed * self::million);
 	
 	$startS = microtime(1);
 	for($i=0; $i < self::sample; $i++) {
-	    $dat = nanopk();
+	    $dat = getStableNanoPK(true);
 	    $r = self::rat($base, $dat);
 	    $sdo->put($r);
 	} 
