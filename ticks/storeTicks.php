@@ -10,9 +10,10 @@ class ticks_tracker extends dao_generic_2 {
     const sleep = 3;
     const datv  = 2;
 
-    public function __construct() {
+    public function __construct($fromChild = false) {
 	parent::__construct(self::dbName, __FILE__);
 	$this->creTabs(['t' => 'ticks', 'c' => 'chrony']);
+	if ($fromChild) return;
 	$this->p10();
 	$this->ch10();
 

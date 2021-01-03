@@ -10,11 +10,11 @@ class ticks_anal extends ticks_tracker {
     
     public function __construct() {
 	$this->bts = [];
-	parent::__construct(self::dbName, __FILE__);
-	$this->p10();
+	parent::__construct(1);
+	// $this->p10();
 	// $this->dbts10();
 	// $this->d20();
-	$this->d30();
+	// $this->d30();
 	$this->d40();
     }
     
@@ -111,14 +111,9 @@ class ticks_anal extends ticks_tracker {
 		if ($dts === 0) continue;
 		$rat = ($dns / $dts);
 		$dr  = sprintf('%0.15f', $rat);
-		// $ds  = $dr;
-		// $ds .= ' ';
-		// $ds .= 
 		$rk = date('m/d H:i:s', $r['Uns'] / self::bil);
 		if (!isset($raa[$rk])) $raa[$rk] = new stddev();
 		$raa[$rk]->put($rat);
-	    	// $ds .= "\n";
-		// echo($ds);
 		continue;
 	    }
 	}
@@ -134,8 +129,53 @@ class ticks_anal extends ticks_tracker {
 	
     }
     
-    public static function d40() {
+    public function d40() {
+
+	$rmin = strtotime('2021-01-02 16:20') * self::bil;
+	$rmax = strtotime('2021-01-02 16:40') * self::bil;
+
+	$rows = $this->tcoll->find(['Uns' => ['$lte' => $rmax, '$gte' => $rmin]], ['sort' => ['Uns' => 1]]);
 	
+	$raa = [];
+	
+	$i = 0;
+	
+	$skip = 5;
+	
+	$p = false;
+	foreach($rows as $r) {
+	    
+	    if (1) {
+	    if ($p === false) { $p = $r['Uns']; continue; }
+	    echo(($r['Uns'] - $p) . "\n");
+	    $p = $r['Uns'];
+	    continue;
+	    
+	    
+	    echo($r['Uns'] . "\n");
+	    continue;
+	    }
+	    
+	    if ($i++ < $skip) continue;
+	    
+	    if ($i++ === $skip + 1) {
+		$minns = $r['Uns'];
+		$mints = $r['tsc'];
+	    }
+
+	    if ($i++ < $skip + 9) continue;
+	    
+	    $dns = $r['Uns'] - $minns;
+	    $dts = $r['tsc'] - $mints;
+	    if ($dts === 0) continue;
+	    $rat = ($dns / $dts);
+	    $dr  = sprintf('%0.15f', $rat);
+	    $s = '';
+	    $s .= $dns . ' ' . $dts . ' ' . $rat; //  . ' ' . self::nstohu($r['Uns']);
+	    $s .= "\n";
+	    echo $s;
+	    continue;
+	}
     }
     
     public static function nstohu($ns) { 
