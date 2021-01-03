@@ -15,7 +15,8 @@ class ticks_anal extends ticks_tracker {
 	// $this->dbts10();
 	// $this->d20();
 	// $this->d30();
-	$this->d40();
+	// $this->d40();
+	$this->d50();
     }
     
     private function p10() {
@@ -174,6 +175,23 @@ class ticks_anal extends ticks_tracker {
 	    $s .= $dns . ' ' . $dts . ' ' . $rat; //  . ' ' . self::nstohu($r['Uns']);
 	    $s .= "\n";
 	    echo $s;
+	    continue;
+	}
+    }
+    
+    private function d50() {
+	$rmin = strtotime('2021-01-02 21:10') * self::bil;
+	$rmax = strtotime('2025-01-02 16:40') * self::bil;
+
+	$rows = $this->tcoll->find(['Uns' => ['$lte' => $rmax, '$gte' => $rmin]], ['sort' => ['Uns' => 1]]);
+
+	$p = false;
+	foreach($rows as $r) {
+	    if ($p !== false) {
+		$d = abs($r['Uns'] - $p);
+		echo($d . "\n");
+	    }
+	    $p = $r['Uns'];
 	    continue;
 	}
     }
