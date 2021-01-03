@@ -180,7 +180,7 @@ class ticks_anal extends ticks_tracker {
     }
     
     private function d50() {
-	$rmin = strtotime('2021-01-02 21:10') * self::bil;
+	$rmin = strtotime('2020-01-02 21:10') * self::bil;
 	$rmax = strtotime('2025-01-02 16:40') * self::bil;
 
 	$rows = $this->tcoll->find(['Uns' => ['$lte' => $rmax, '$gte' => $rmin]], ['sort' => ['Uns' => 1]]);
