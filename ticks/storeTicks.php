@@ -5,6 +5,10 @@ require_once(__DIR__ . '/../../tsnano/chronyParsed.php');
 
 class ticks_tracker extends dao_generic_2 {
     const dbName = 'ticks';
+    const samsize = 50;
+    const tosssize = 4;
+    const sleep = 3;
+    const datv  = 2;
 
     public function __construct() {
 	parent::__construct(self::dbName, __FILE__);
@@ -16,8 +20,17 @@ class ticks_tracker extends dao_generic_2 {
     
     private function p10() {
 	
-	for($i=0; $i < 50; $i++) $npka[] = nanopk();
-	for($i=0; $i < 50; $i++) $npka[$i]['_id'] = $this->tcoll->getSeq2('idoas');
+	for($i=0; $i < self::tosssize; $i++) nanopk();
+	$t = nanopk();
+	$t['init'] = true;
+	$npka[] = $t;
+	sleep(self::sleep);
+	
+	for($i=1; $i < self::samsize; $i++) $npka[] = nanopk();
+	for($i=0; $i < self::samsize; $i++) {
+	    $npka[$i]['_id'] = $this->tcoll->getSeq2('idoas');
+	    $npka[$i]['datv'] = self::datv;
+	}
 	$this->tcoll->insertMany($npka);	
     }
     

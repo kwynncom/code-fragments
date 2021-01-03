@@ -12,8 +12,10 @@ class ticks_anal extends ticks_tracker {
 	$this->bts = [];
 	parent::__construct(self::dbName, __FILE__);
 	$this->p10();
-	$this->dbts10();
+	// $this->dbts10();
 	// $this->d20();
+	$this->d30();
+	$this->d40();
     }
     
     private function p10() {
@@ -23,13 +25,13 @@ class ticks_anal extends ticks_tracker {
 	
 	foreach($rows as $a) {
 	   $bt = $a['Uns'] - intval(round($a['tsc'] * self::spt10));
-	   $this->bt10($bt);
+	   $this->bt10($bt, $a);
 	}
 
 	return;
     }
     
-    private function bt10($btin) {
+    private function bt10($btin, $allin) {
 	
 	$k = false;
 	
@@ -47,10 +49,7 @@ class ticks_anal extends ticks_tracker {
 	}
 	
 	$this->bts[$k]['sdo']->put($btin);
-
-
-	
-	
+	$this->bts[$k]['all'][] = $allin;
     }
     
     private function dbts10() {
@@ -64,10 +63,84 @@ class ticks_anal extends ticks_tracker {
 	}
     }
     
+    private function d20() {
+	
+	$co = strtotime('2021-01-02 16:30') * self::bil;
+	
+	foreach($this->bts as $k => $a) {
+	    if ($a['boot'] < $co) continue;
+	    $minns = false;
+	    foreach($a['all'] as $i => $r) {
+		if ($i <   4) continue;
+		if ($i === 4) {
+		    $minns = $r['Uns'];
+		    $mints = $r['tsc'];
+		}
+		
+		$dns = $r['Uns'] - $minns;
+		$dts = $r['tsc'] - $mints;
+		if ($dts === 0) continue;
+		$rat = ($dns / $dts);
+		$dr  = sprintf('%0.15f', $rat);
+		$ds  = $dr;
+		$ds .= ' ';
+		$ds .= date('m/d H:i:s', $r['Uns'] / self::bil);
+		$ds .= "\n";
+		echo($ds);
+		continue;
+	    }
+	}
+    }
+    
+    private function d30() {
+	$co = strtotime('2021-01-02 16:30') * self::bil;
+	
+	$raa = [];
+	
+	foreach($this->bts as $k => $a) {
+	    if ($a['boot'] < $co) continue;
+	    $minns = false;
+	    foreach($a['all'] as $i => $r) {
+		if ($i === 0) {
+		    $minns = $r['Uns'];
+		    $mints = $r['tsc'];
+		}
+		
+		$dns = $r['Uns'] - $minns;
+		$dts = $r['tsc'] - $mints;
+		if ($dts === 0) continue;
+		$rat = ($dns / $dts);
+		$dr  = sprintf('%0.15f', $rat);
+		// $ds  = $dr;
+		// $ds .= ' ';
+		// $ds .= 
+		$rk = date('m/d H:i:s', $r['Uns'] / self::bil);
+		if (!isset($raa[$rk])) $raa[$rk] = new stddev();
+		$raa[$rk]->put($rat);
+	    	// $ds .= "\n";
+		// echo($ds);
+		continue;
+	    }
+	}
+
+	foreach($raa as $k => $r) {
+	    $g = $r->get();
+	    unset($g['dat']);
+	    $g['hu'] = $k;
+	    // var_dump($g);
+	    $s = $g['a'] - self::spt10;
+	    echo($s . ' ' . $g['s'] . ' ' . $k . "\n");
+	}
+	
+    }
+    
+    public static function d40() {
+	
+    }
+    
     public static function nstohu($ns) { 
 	$s = intval(round($ns / self::bil));
 	return date('r', $s); 
-	
     } 
     
     // public static function 
