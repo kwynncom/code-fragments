@@ -7,7 +7,7 @@ require_once('triplets.php');
 class ticks_tracker extends dao_generic_2 {
     const dbName = 'ticks';
     const sleep = 3;
-    const datv  = 3;
+    const datv  = 4;
     const doFor = 3500;
 
     public function __construct($fromChild = false) {
@@ -34,13 +34,11 @@ class ticks_tracker extends dao_generic_2 {
     private function p20() {
 	$r = getStableNanoPK();
 	$d = $r['d'];
-	$m = $r['m'];
 	$d['datv'] = self::datv;
 	$seq = $this->tcoll->getSeq2('idoas');
-	$d['_id' ] = $m['_id' ] = $seq;
+	$d['_id' ] = $seq;
 	$this->tcoll->insertOne($d);
-	$this->mcoll->insertOne($m);
-	
+
     }
     
     private function ch10() {

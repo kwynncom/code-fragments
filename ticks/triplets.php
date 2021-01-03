@@ -2,8 +2,8 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-function getStableNanoPK($pkonly = false) {
-    $iter = 20;
+function getStableNanoPK() {
+    $iter = 100000;
     $i = 0;
     $v = $d = $min = PHP_INT_MAX;
 
@@ -12,23 +12,26 @@ function getStableNanoPK($pkonly = false) {
 	for($j=0; $j < 2; $j++) $s[$j] = $r[$j+1]['Uns'] - $r[$j]['Uns'];
 	sort($s);
 	$v = $s[1];
-	$com['ck']  = $r;
-	$com['d'] = $r[1];
-	$com['m']['maxd'] = $v;
-	$com['m']['iter'] = $iter;
-	$com['m']['Uns' ] = $r[1]['Uns'];
-	if ($v < $min) $ret = $com;
-	usleep(random_int(1, 50)); // makes things much "worse"
+	$t = $r[1];
+	$t['maxd'] = $v;
+	$t['maxi'] = $iter;
+	$t['i']    = $i;
+	if ($v < $min) $ret = $t;
+	$rmd = $ret['maxd'];
+	
+	if (1) {
+	if ($i >  5 && $rmd <= 470) break;
+	if ($i > 10 && $rmd <= 478) break;
+	if ($i > 20 && $rmd <= 526) break;
+	}
+	
     } while($i++ < $iter);
-    
-    unset($ret['ck']);
-    
-    if ($pkonly) return $ret['d'];
     
     return $ret;
 }
 
 if (didCLICallMe(__FILE__)) {
     $res = getStableNanoPK();
-    echo($res['m']['maxd'] . "\n");
+    echo($res['i'] . "\n");
+    var_dump($res);
 }
