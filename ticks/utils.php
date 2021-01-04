@@ -10,8 +10,3 @@ function getCPUModel() {
     return $r8;
     
 }
-
-
-// model name	: Intel(R) Xeon(R) CPU           X5650  @ 2.67GHz
-
-    echo(getCPUModel() . "\n");

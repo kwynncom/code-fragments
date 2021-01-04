@@ -11,23 +11,25 @@ class tick_time_study {
     const million = 1000000;
     
     public function __construct($exec) {
-        $this->doit();
+        $this->doit(3);
     }
     
-    private function doit() {
+    private function doit($elapsed) {
 	
 	$sdo = new stddev();
 	
-	for($i=0; $i <= self::sample; $i++) {
-	    $dat = getStableNanoPK();
-	    if ($i === 0) { $base = $dat; continue; }
+	for($i=0; $i < self::initMin; $i++) nanopk();
+	
+	$base = nanopk();
+	usleep($elapsed * self::million);
+	
+	$startS = microtime(1);
+	for($i=0; $i < self::sample; $i++) {
+	    $dat = nanopk();
 	    $r = self::rat($base, $dat);
 	    $sdo->put($r);
 	} 
-	
-	echo(number_format($dat['Uns'] - $base['Uns']) . "\n");
-	
-	
+		
 	var_dump($sdo->get());
 	return;
     }

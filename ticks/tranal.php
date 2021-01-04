@@ -19,8 +19,9 @@ class triplet_anal extends ticks_tracker {
     private function p20() {
 	$maxi = -1;
 	$maxr = false;
-	for($i=0; $i < 80000; $i++) {
+	for($i=0; $i < 1000; $i++) {
 	    $r = getStableNanoPK();
+//	    echo($r['maxd']) . "\n";
 	    $ri = $r['i'];
 	    if ($ri > $maxi) {
 		$maxi = $ri;
@@ -28,7 +29,7 @@ class triplet_anal extends ticks_tracker {
 	    }
 	}
 	
-	echo $maxi . "\n";
+	echo $maxi . "\n"; 	
 	var_dump($maxr);
     }
     

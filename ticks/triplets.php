@@ -1,8 +1,9 @@
 <?php
 
+require_once('cpu_config.php');
 require_once('/opt/kwynn/kwutils.php');
 
-function getStableNanoPK($maxiter = 20, $ranges = false) {
+function getStableNanoPKByModel($maxiter = 20, $ranges = []) {
     
     $v = $d = $min = PHP_INT_MAX;
    
@@ -18,14 +19,17 @@ function getStableNanoPK($maxiter = 20, $ranges = false) {
 	if ($v < $min) $ret = $t;
 	$rmd = $ret['maxd'];
 	
-	if ($ranges) {
-	    if ($i >  5 && $rmd <= 470) break;
-	    if ($i > 10 && $rmd <= 478) break;
-	    if ($i > 20 && $rmd <= 526) break;
-	}
+	foreach($ranges as $rg)
+	    if ($i > $rg['i']) if ($rmd < $rg['m']) return $ret;
+	
     }
     
     return $ret;
+}
+
+function getStableNanoPK() {
+    $res = getStableNanoPKByModel(100000, cpu_tick_config());
+    return $res;
 }
 
 if (didCLICallMe(__FILE__)) {

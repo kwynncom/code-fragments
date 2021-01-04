@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/mongodb2.php');
 require_once(__DIR__ . '/../../tsnano/chronyParsed.php');
-require_once('triplets.php');
+require_once('get.php');
 
 class ticks_tracker extends dao_generic_2 {
     const dbName = 'ticks';
