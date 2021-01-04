@@ -9,46 +9,73 @@ class tick_time_study {
     const initMin = 4;
     const sample = 50;
     const million = 1000000;
+    const rat10 = 0.37594254660507;
     
     public function __construct($exec) {
-        $this->p10();
+	// $this->getStableRat();
+	$this->setBase();
+
+        // $this->p10();
     }
-    
+   
+    private function setBase() {
+	$res = getStableNanoPK();
+	$this->baseuns = $res['Uns'];
+	$this->basetsc = $res['tsc'];
+    }
+        
     private function p10() {
-	$base = getStableNanoPK();
-	for($i=0; $i < 100000; $i++) 
+	
+	for($i=0; $i < 200; $i++) 
 	{
-	    // $res = $this->doit(0.00000001 * pow(1.08,$i), $base);
-	    $res = $this->doit(0.3, $base);
-	    $s = '';
-	    $s .= sprintf('%0.14f', $res['a']);
+
+	    if (0) {
+		$s = '';
+	    $s .= number_format($res['a']);
 	    $s .= ' ';
-	    $s .= $res['s'];
+	    $s .= number_format(intval($res['s']));
+	    }
+	    
+	    if (1) {
+		$s = '';
+		$s .= sprintf('%0.14f', $res['a']);
+		$s .= ' ';
+		$s .= $res['s'];		
+	    }
 	    $s .= "\n";
 		   
 	    echo($s);
 	}
     }
-    
-    private function doit($elapsed = 0, $base) {
-	
-	$sdo = new stddev();
 
-	$res['start'] = $base['Uns'];
-	usleep($elapsed * self::million);
+    private function getStableRat($untilsd = 1E-9) {
+
+	$base = getStableNanoPK();
+	for($i=0; $i < 10; $i++) {
+	    $res = $this->doit($base);
+	    if ($res['s'] < $untilsd) {
+		$res['iter'] = $i;
+		var_dump($res);
+		return $res['a'];
+	    }
+	}
+	    
+	kwas(false, 'tick ration standard deviation fail');
 	
+    }
+    
+    private function doit($base) {
+
+	$sdo = new stddev();
 	for($i=0; $i < self::sample; $i++) {
 	    $dat = getStableNanoPK();
-	    $r = self::rat($base, $dat);
-	    $sdo->put($r);
+	    $rat = self::rat($base, $dat);
+	    $sdo->put($rat);
 	} 
 	
-	$res['end'] = $dat['Uns'];
-	$res['span'] = number_format($res['end'] - $res['start']);
 	$sdr = $sdo->get();
-	$res = array_merge($res, $sdr);
 		
-	return($res);
+	return($sdr);
     }
     
     public static function rat($a, $b) {
@@ -56,6 +83,12 @@ class tick_time_study {
 	$dtk = abs($a['tsc'] - $b['tsc']);
 	if ($dtk === 0) return false;
 	return $ds / $dtk;
+    }
+    
+    public static function resetTimeFromArr($a, $b) {
+	$rat = self::rat($a, $b);
+	$res = intval(round($b['Uns'] - $b['tsc'] * $rat));
+	return $res;
     }
     
 }

@@ -1,0 +1,6 @@
+2021/01/03
+
+Need an EXE / CLI to get a stable base and ratio because running through debugger is too slow.
+
+Then see how TSC and time drift, and see how easy it is to use chrony to correct.
+
