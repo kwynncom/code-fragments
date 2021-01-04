@@ -18,14 +18,14 @@ class tick_time_study {
 	
 	$sdo = new stddev();
 	
-	for($i=0; $i < self::initMin; $i++) nanopk();
+	for($i=0; $i < self::initMin; $i++) getStableNanoPK();
 	
-	$base = nanopk();
+	$base = getStableNanoPK();
 	usleep($elapsed * self::million);
 	
 	$startS = microtime(1);
 	for($i=0; $i < self::sample; $i++) {
-	    $dat = nanopk();
+	    $dat = getStableNanoPK();
 	    $r = self::rat($base, $dat);
 	    $sdo->put($r);
 	} 

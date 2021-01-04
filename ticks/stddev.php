@@ -23,10 +23,10 @@ class stddev {
 	$acc = 0;
 	foreach($this->dat as $v) { 
 	    $acc += pow($v - $avg, 2);
-	    if ($v < $min) $min = $v;
-	    if ($v > $max) $max = $v;
+	    // if ($v < $min) $min = $v;
+	    // if ($v > $max) $max = $v;
 	}
 	$stdd = sqrt($acc / $n);
-	return ['a' => $avg, 's' => $stdd, 'n' => $n, 'min' => $min, 'max' => $max];
+	return ['a' => $avg, 's' => $stdd, 'n' => $n /*, 'min' => $min, 'max' => $max*/];
     }
 }

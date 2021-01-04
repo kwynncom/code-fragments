@@ -11,25 +11,44 @@ class tick_time_study {
     const million = 1000000;
     
     public function __construct($exec) {
-        $this->doit();
+        $this->p10();
     }
     
-    private function doit() {
+    private function p10() {
+	$base = getStableNanoPK();
+	for($i=0; $i < 100000; $i++) 
+	{
+	    // $res = $this->doit(0.00000001 * pow(1.08,$i), $base);
+	    $res = $this->doit(0.3, $base);
+	    $s = '';
+	    $s .= sprintf('%0.14f', $res['a']);
+	    $s .= ' ';
+	    $s .= $res['s'];
+	    $s .= "\n";
+		   
+	    echo($s);
+	}
+    }
+    
+    private function doit($elapsed = 0, $base) {
 	
 	$sdo = new stddev();
+
+	$res['start'] = $base['Uns'];
+	usleep($elapsed * self::million);
 	
-	for($i=0; $i <= self::sample; $i++) {
+	for($i=0; $i < self::sample; $i++) {
 	    $dat = getStableNanoPK();
-	    if ($i === 0) { $base = $dat; continue; }
 	    $r = self::rat($base, $dat);
 	    $sdo->put($r);
 	} 
 	
-	echo(number_format($dat['Uns'] - $base['Uns']) . "\n");
-	
-	
-	var_dump($sdo->get());
-	return;
+	$res['end'] = $dat['Uns'];
+	$res['span'] = number_format($res['end'] - $res['start']);
+	$sdr = $sdo->get();
+	$res = array_merge($res, $sdr);
+		
+	return($res);
     }
     
     public static function rat($a, $b) {

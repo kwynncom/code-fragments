@@ -4,7 +4,7 @@ require_once('storeTicks.php');
 require_once('stddev.php');
 
 class ticks_anal extends ticks_tracker {
-    
+	       // 0.3759425170517
     const spt10 = 0.37594242899798;
     const bil   = 1000000000;
     
