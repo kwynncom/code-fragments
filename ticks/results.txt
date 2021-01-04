@@ -43,3 +43,26 @@
 
 Above are first runs over 18 hours or so: sorted maxd from triplets and then the counter.
 best runtime over 20 iterations, in ns, runtime of nanopk()
+
+Below are "stabilized" tick ratios.  It is fairly stable to 8 decimal places to the right for quite a few seconds, as
+expected with a 7 - 9 ppm clock drift.
+
+0.37594220133889
+0.37594233070650
+0.37594231796227
+0.37594233140061
+0.37594232383695
+0.37594232294905
+0.37594232462948
+0.37594233011881
+0.37594232452000
+0.37594232326631
+0.37594232072035
+0.37594232933073
+0.37594232366597
+0.37594232669762
+0.37594232531515
+0.37594232512743
+0.37594232529438
+0.37594232295366
+
