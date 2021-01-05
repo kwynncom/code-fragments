@@ -19,11 +19,11 @@ class triplet_anal extends ticks_tracker {
     }
     
     private function p30() {
-	for($i=0; $i < 100000; $i++) {
+	for($i=0; $i < 1000; $i++) {
 	    $r = getStableNanoPK();
 	    if ($i === 0) { $p = $r;  continue;    }
 	    $rat = tick_time_study::rat($r, $p);
-	    echo(sprintf('%0.14f', $rat) . "\n");
+	    echo(sprintf('%0.14f', $rat) . ' ' . $p['Unsdif'] . ' ' .  $p['i']  .  "\n");
 	    $p = $r;
 	    usleep(100000);
 	    
