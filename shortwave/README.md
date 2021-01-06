@@ -30,7 +30,14 @@ https://www.nist.gov/time-distribution/radio-station-wwvb/wwvb-antenna-configura
 https://www.nist.gov/time-distribution/radio-station-wwvb
 https://www.nist.gov/pml/time-and-frequency-division/radio-stations/wwvb/wwvb-time-code-format
 
+***********
+try 2:
 
+arecord -f S16_LE -c 2 -r 8000 --device="hw:0,0" -d 2 > /tmp/hwrset1.wav
+
+
+
+*************
  
 // $ arecord -f S32_LE -c 2 -r 48000 --device="hw:0,0" -d 10 > /tmp/hwrset1.wav
 // Recording WAVE 'stdin' : Signed 32 bit Little Endian, Rate 48000 Hz, Stereo
