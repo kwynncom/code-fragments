@@ -9,11 +9,11 @@ $bytesPerSam = 2;
 $channels = 2;
 $sampleRate = 8000;
 $bitsPerSam = $bytesPerSam * 8;
-$duration = 20;
+$duration = 80;
 $cmd = 'arecord -f S' . $bitsPerSam . '_LE -c ' . $channels . ' -r ' . $sampleRate . ' --device="hw:0,0" -d ' . $duration . ' > ' . $file;
 
 // arecord -f S16_LE -c 2 -r 8000 --device="hw:0,0" -d 2 > /tmp/hwrset1.wav
-if (0) {
+if (1) {
 kwas(unlink($file), 'delete failed');
 exec($cmd);
 }
@@ -31,7 +31,7 @@ $l -= 44;
 $min = $minl = PHP_INT_MAX;
 $sto = false;
 
-$soffhun = 4;
+$soffhun = 5;
 $sofbytes = $soffhun * intval(round(($bps / 100))) * $channels * $bytesPerSam;
 
 $ec = 0;
@@ -62,7 +62,10 @@ for($i=($bps * 10) + $sofbytes; $i < $l - 8; $i += $channels * $bytesPerSam) {
 }
 
 function filterStats(&$stin, $i, $d0, $d1) {
-    if ($d0 >= 30 && $d1 >= 30) $d = 1;
+    // if ($d0 >= 30 && $d1 >= 30) $d = 1;
+    // else $d = 0;
+    $sum = $d0 + $d1;
+    if ($sum >= 71) $d = 1;
     else $d = 0;
     
     doStats($stin, $i, $d);
@@ -77,10 +80,10 @@ foreach($sto as $i => $o) {
     $s  = '';    
     $av = $a['a'];
     
-    if ($av > 0.25) $s .= 1;
-    else $s .= 0;
-    
-    $ad = sprintf('%0.5f', $av);
+    if (0) {if ($av > 0.60) $s .= 1;
+    else $s .= 0;}
+    else if (1) $s .= sprintf('%0.5f', $av);
+    else $s .= round($av);
     // $ad = number_format(round($av));
 
     // $s .= $i . ' ';
