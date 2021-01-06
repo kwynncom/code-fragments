@@ -17,6 +17,7 @@ https://github.com/kwynncom/true-random-numbers-from-microphone
 Depending on the settings, I can hear radio wave "whistlers" from that output.  Given the randomness and whistlers, I conclude that the 
 microphone receiver is very electrically sensitive, and I am picking up atmospheric noise.  
 
+WWVB puts out a distinctive pulse.  I believe they said it ranges 17dB and the pulses (higher and lower power) last several 0.1s.
 
 https://www.nist.gov/time-distribution/radio-station-wwvb/wwvb-antenna-configuration-and-power
 https://www.nist.gov/time-distribution/radio-station-wwvb
