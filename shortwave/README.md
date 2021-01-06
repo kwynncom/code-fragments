@@ -11,6 +11,10 @@ antenna given that my math gives me a wavelength of 3.1 miles (186,000 miles per
 The best my microphone can do is 48kHz sampling rate.  My math says that 48kHz and 60kHz meet every 5 cycles.  That is, if I sample at 48kHz and check 
 every 5th sample, I am reading same point in the 60kHz wave cycle every 4th wave.  My microphone only records in stereo. 
 
+Attempt 2: Attempt 1 was based on aligning the waves--a 5:4 ratio or whatever.  My second attempt is to read the average power of each 0.1s.  This shows 
+some promise.  There is still the issue of aligning the pulses, but this time I'm trying to see an accurate 0.2s pulse rather than several orders of magnitude 
+smaller.  
+
 I demonstrated that I can get true random numbers from an empty (no microphone plugged in) microphone jack: 
 https://github.com/kwynncom/true-random-numbers-from-microphone
 
