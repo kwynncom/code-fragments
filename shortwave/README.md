@@ -15,6 +15,9 @@ Attempt 2: Attempt 1 was based on aligning the waves--a 5:4 ratio or whatever.  
 some promise.  There is still the issue of aligning the pulses, but this time I'm trying to see an accurate 0.2s pulse rather than several orders of magnitude 
 smaller.  
 
+Attempt 3: My latest data is with a microphone.  It's possible that the microphone is mono (or broken) and the jack is definitely stereo only, so I may 
+"dump" the 2nd channel.
+
 I demonstrated that I can get true random numbers from an empty (no microphone plugged in) microphone jack: 
 https://github.com/kwynncom/true-random-numbers-from-microphone
 
