@@ -9,20 +9,21 @@ kwas($l === 3840044, 'bad length');
 $wsig = substr($wsig, 44); // head rid of header
 $l -= 44;
 
-for($i= 8 * 48000 * 9; $i < $l - 8; $i += 20) {
+$min = $minl = PHP_INT_MAX;
+
+for($i= 384000 * 2; $i < $l - 8; $i += 8) {
     for($j=0; $j < 2; $j++) {
 	$byte = $i + $j * 4;
 	$subs = substr($wsig, $byte, 4);
 	$u = unpack('l', $subs); // I am unpacking as signed versus unsigned
 	$isigraw = $u[1];
-	$isd = $isigraw;
-	
-	// $iss = procSig($isigraw); // instantaneous signed sig
-	// $isig = round(log(4294967296 - $isigraw));
-	// $isig = number_format(4294967296 - $isigraw);
-	// $isig = log($isigraw);
-	// $isd  = sprintf('%013s', $iss);
-	// $isd  = sprintf('%02.1f', $isig);
+	// $isig = fsig($isigraw);
+	$is10 = $isigraw < 0 ? -$isigraw : $isigraw;
+	if ($isigraw < $min) $min = $isigraw;
+	$isl = log($is10);
+	if ($isl < $minl && $isl > 0) $minl = $isl;
+	// $isd = f20($isl);
+	$isd = $isl;
 	$sec = ($i / 384000);
 	$deg = intval(round((21600000 / $sec))) % 360;
 
@@ -33,22 +34,26 @@ for($i= 8 * 48000 * 9; $i < $l - 8; $i += 20) {
     }
 }
 
+echo('min = '. $min . "\n");
+echo('min log = '. $minl . "\n");
+
 exit(0);
 
-function procSig($sin) {
-    static $ck  = 1 << 31;
+function fsig($sin) {
     
-    if ($ck & $sin) return -(0xffff ^ $sin) + 1;
+    static $min  = -35691520;
+    static $pmin =  35691520 + 1;
+    
+    if ($sin < $min) $sin = 0;
+    $sin += $pmin;
+    
+    return $sin;
 }
 
- 
-// $ arecord -f S32_LE -c 2 -r 48000 --device="hw:0,0" -d 10 > /tmp/hwrset1.wav
-// Recording WAVE 'stdin' : Signed 32 bit Little Endian, Rate 48000 Hz, Stereo
-// 3,840,044 bytes
-// 44 bytes wav header
-// 4 bytes per sample X 2 channels X 48ksamples/s X 10s = 3,840,044
-// 8 bytes per sample X 48k samples
-
-// pack / unpack:  V	unsigned long (always 32 bit, little endian byte order)
-
-// 384,000 bytes / s
+function f20($sin) {
+    
+    $s10 = $sin - 15.179739508624;
+    $s20 = $s10 * 1000;
+    $s30 = intval(round($s20));
+    return $s30;
+}
