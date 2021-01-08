@@ -35,19 +35,31 @@ $l -= 44;
 $min = $minl = PHP_INT_MAX;
 $sto = false;
 
-$soffhun = 5;
+$soffhun = 4;
 $spp60kHz = 0.000016667;
-$peroff = 0.1;
-$sofbytesraw = intval(round(($spp60kHz * $peroff + ($soffhun * ($bpsec / 100))) * $channels * $bytesPerSam));
+$peroff = 0.0;
+$soffFromFileStart = 45;
+$secsoff = $spp60kHz * $peroff + $soffhun / 100 + $soffFromFileStart;
+$bytesoffraw = intval(round($bpsec * $secsoff));
 
-for($i=0; $i < $bytesPerSam; $i++) 
-    if (($sofbytesraw + $i) % $bytesPerSam === 0) { $sofbytes = $sofbytesraw + $i; break;} 
+for($i=0; $i < $bytesPerSam * $channels; $i++) 
+    if (($bytesoffraw + $i) % ($bytesPerSam * $channels) === 0) { $bytesoff = $bytesoffraw + $i; break;} 
 
 $ec = 0;
 
 $bus = [];
 
-for($i=($bpsec * 30) + $sofbytes; $i < $l - 8; $i += (($channels * $bytesPerSam) * 5)) {
+$endat = 47;
+$endatBytes = $bytesoff + ($channels * $bytesPerSam * $bpsec * ($endat - $soffFromFileStart)) - 45;
+
+for($i=$bytesoff; $i < $endatBytes ; $i += (($channels * $bytesPerSam) * 1)) {
+
+    kwas(($i % ($bytesPerSam * $channels)) === 0, 'bad mod');
+    
+    if (0) {
+    echo($soffhun . ' ' . $i . "\n");
+    exit(0);
+    }
     
     $sec = ($i / $bpsec);
     $ti = intval(floor($sec * 10));
@@ -55,13 +67,16 @@ for($i=($bpsec * 30) + $sofbytes; $i < $l - 8; $i += (($channels * $bytesPerSam)
     for($j=0; $j < $channels; $j++) {
 	$byte = $i + $j * $bytesPerSam;
 	$subs = substr($wsig, $byte, $bytesPerSam);
+	try {
+	    kwas(strlen($subs) === $bytesPerSam, 'bad ppsam len');
+	} catch(Exception $ex) { 
+	    kwynn();
+	}
 	$u = unpack($packf, $subs);
 	$isigraw = $u[1];
-	$is10 = $isigraw < 0 ? -$isigraw : $isigraw;
-	// echo($j . ' ' . $is10 . "\n");
+	$is10 = abs($isigraw);
 	if ($j === 0) $j0 = $is10;
 	if ($j === 1) $j1 = $is10;
-	// doStats($sto, $ti, $is10);
    }
    
    if (!isset($bus[$ti])) $bus[$ti] = 0;
@@ -70,25 +85,26 @@ for($i=($bpsec * 30) + $sofbytes; $i < $l - 8; $i += (($channels * $bytesPerSam)
     
 }
 
-$sdo = new stddev();
+// $dbc = pow(10, 17/10); // 17 decibel difference
 
-foreach($bus as $i => $v) $sdo->put($v);
-$sdr = $sdo->get();
-$av = $sdr['a'];
-
+$grtot = 0;
 
 foreach($bus as $i => $v) {
     
-    $d = $v - $av;
+    $grtot += $v;
     
-    if ($d > 0) echo 1;
-    else	echo 0;
-    echo ' ';
-    echo(sprintf('%010d', $d));
-    echo "\n";
+    $vl = log($v, 50);
     
-    // echo(number_format($v - $av) . "\n");
+    $vd = sprintf('%0.3f', $vl );
+    
+    $cut = 5.50;
+    
+    echo(/*($vl > $cut ? 1 : 0) . ' ' . sprintf('%0.2f', ($vl - $cut)) . ' ' . */ $vd . "\n");
     
 }
+
+echo(number_format($grtot) . "\n");
+
+
 
 exit(0);

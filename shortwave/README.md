@@ -30,12 +30,14 @@ https://www.nist.gov/time-distribution/radio-station-wwvb/wwvb-antenna-configura
 https://www.nist.gov/time-distribution/radio-station-wwvb
 https://www.nist.gov/pml/time-and-frequency-division/radio-stations/wwvb/wwvb-time-code-format
 
+As of January 1, 2006 the WWVB broadcast signal has increased the depth of the time code modulation from 10 dB to 17 dB
+https://tf.nist.gov/general/pdf/2139.pdf
+
+
 ***********
 try 2:
 
 arecord -f S16_LE -c 2 -r 8000 --device="hw:0,0" -d 2 > /tmp/hwrset1.wav
-
-
 
 *************
  
