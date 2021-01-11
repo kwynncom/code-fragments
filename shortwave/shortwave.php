@@ -3,7 +3,7 @@
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/../ticks/batch1/stddev.php');
 
-$file = '/tmp/r1.wav';
+$file = '/tmp/r3_ant.wav';
 
 $bytesPerSam = 4;
 $channels = 2;
@@ -35,9 +35,9 @@ $l -= 44;
 $min = $minl = PHP_INT_MAX;
 $sto = false;
 
-$soffhun = 4;
+$soffhun = 8;
 $spp60kHz = 0.000016667;
-$peroff = 0.0;
+$peroff = 0.2;
 $soffFromFileStart = 45;
 $secsoff = $spp60kHz * $peroff + $soffhun / 100 + $soffFromFileStart;
 $bytesoffraw = intval(round($bpsec * $secsoff));
