@@ -1,7 +1,6 @@
 <?php
 
 require_once('cpu_config.php');
-require_once('/opt/kwynn/kwutils.php');
 
 function getStableNanoPKByModel($maxiter = 50, $ranges = []) {
     
