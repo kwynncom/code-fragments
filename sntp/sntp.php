@@ -31,11 +31,7 @@ private static function getall($basep, $sock) {
 }
 
 private static function getBasePacket() {
-    
-    $header  = '';
-    $header .= '00';
-    $header .= sprintf('%03d',decbin(3)); // 3 indicates client
-    $header .= '011';
+    $header  = '00' . sprintf('%03d',decbin(3)) . '011';
     $request_packet = chr(bindec($header)); unset($header);
     for ($j=1; $j < 40; $j++) $request_packet .= chr(0x0);
     return $request_packet;
@@ -65,7 +61,6 @@ private static function getFullPacket($base) {
     $request_packet .= $packed_seconds;
     $request_packet .= $packed_fractional;
     return $request_packet;
-
 }
 
 private static function getTime($sock, $rqpack) {
@@ -100,9 +95,7 @@ private static function getStratum($response) {
 
 private static function sharpen($n) {
     
-    $allSs = [$n['rrs'], $n['rss'], $n['b']['s'], $n['e']['s']];
-    
-    $min = min($allSs); self::veryRecentTSOrDie($min); unset($allSs);
+    $min = min([$n['rrs'], $n['rss'], $n['b']['s'], $n['e']['s']]); 
     
     $ra = [];
     $ra['base'] = $min;
@@ -114,18 +107,12 @@ private static function sharpen($n) {
     return $ra;
 }
 
-public static function veryRecentTSOrDie($iin) {
-    static $now = false;
-    if ($now === false) $now = time();
-    kwas(!(abs($iin - $now) > 20 && isAWS()), 'timestamps too far off');
-}
-
 private static function calcs($r) {
+    $re = [];
     $re['coffset'] = -((($r['rr'] - $r['ls']) + ($r['rs'] - $r['lr'])) / 2); // I am using opposite sign of official
     $re['srvd'   ] = $r['rs'] - $r['rr'];
     $re['outd'   ] = $r['rr'] - $r['ls'];
     $re['ind'    ] = $r['lr'] - $r['rs'];
-    
     return $re;
 }
 }
