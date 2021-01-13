@@ -1,6 +1,7 @@
 <?php
 
 require_once('sntp.php');
+require_once('/opt/kwynn/kwcod.php');
 
 $iter = 1;
 $sdo = new stddev();

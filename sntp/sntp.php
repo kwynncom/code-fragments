@@ -8,9 +8,6 @@ const server = 'kwynn.com';
     
 const bit_max		 = 4294967296;
 const epoch_convert	 = 2208988800;
-const expectedReceiptLen =	   48;
-
-
 
 public function __construct() { 
     $this->basep = $this->getBasePacket();
@@ -55,8 +52,8 @@ private static function getFullPacket($base) {
     $originate_seconds = $lsta['U'] + self::epoch_convert;
     $originate_fractional = intval(round($lsta['Unsof'] * self::bit_max));
     $originate_fractional = sprintf('%010d',$originate_fractional);
-    $packed_seconds = pack('N', $originate_seconds);
-    $packed_fractional = pack("N", $originate_fractional);
+    $packed_seconds    = pack('N', $originate_seconds   );
+    $packed_fractional = pack('N', $originate_fractional);
     $request_packet  = $base; unset($base);
     $request_packet .= $packed_seconds;
     $request_packet .= $packed_fractional;
@@ -64,19 +61,18 @@ private static function getFullPacket($base) {
 }
 
 private static function getTime($sock, $rqpack) {
+    static $expectedReceiptLen = 48;
     $b = nanotime_array();
     if (!fwrite($sock, $rqpack)) throw new Exception ('bad socket write');
-    $response = fread($sock, self::expectedReceiptLen);
+    $response = fread($sock, $expectedReceiptLen);
     $e = nanotime_array();
 
-    kwas(strlen($response) === self::expectedReceiptLen, 'bad SNTP receipt length');
+    kwas(strlen($response) === $expectedReceiptLen, 'bad SNTP receipt length');
     return ['r' => $response, 'b' => $b, 'e' => $e];
 }
 
 private static function parseNTPResponse($response) {
-
     $unpack0 = unpack("N12", $response);
-    
     $r['rrs'] = sprintf('%u', $unpack0[ 9]) - self::epoch_convert; // remote receive packet second-precision ts
     $r['rrf'] = sprintf('%u', $unpack0[10]) / self::bit_max;       // remote receive packet fractional time
     $r['rss'] = sprintf('%u', $unpack0[11]) - self::epoch_convert; // remote sent ...
@@ -99,10 +95,10 @@ private static function sharpen($n) {
     
     $ra = [];
     $ra['base'] = $min;
-    $ra['ls'  ] = $n['b']['s']  - $min  + $n['b']['ns'] / M_BILLION;
-    $ra['lr'  ] = $n['e']['s']  - $min  + $n['e']['ns'] / M_BILLION;
-    $ra['rr'  ] = ($n['rrs']    - $min) + $n['rrf']; // remote received
-    $ra['rs'  ] = ($n['rss']    - $min) + $n['rsf']; // remote sent
+    $ra['ls'  ] = $n['b']['s'] - $min  + $n['b']['ns'] / M_BILLION;
+    $ra['lr'  ] = $n['e']['s'] - $min  + $n['e']['ns'] / M_BILLION;
+    $ra['rr'  ] = ($n['rrs']   - $min) + $n['rrf']; // remote received
+    $ra['rs'  ] = ($n['rss']   - $min) + $n['rsf']; // remote sent
     
     return $ra;
 }
