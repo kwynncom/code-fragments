@@ -8,7 +8,7 @@ function checkNTP() {
 
     global $argv;
     
-    $server = 'time.nist.gov';
+    $server = 'kwynn.com';
     
     if (isset($argv[1])) $server = $argv[1];
     
