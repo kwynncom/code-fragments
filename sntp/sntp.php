@@ -3,68 +3,79 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class sntp_sa {
-    
-const bit_max       = 4294967296;
-const epoch_convert = 2208988800;
-const server = 'kwynn.com';
-const billion = 1000000000;
-const expectedReceiptLen = 48;
 
-public static function get() {
-    $r = self::getall();
-    return $r;
+const server = 'kwynn.com';
+    
+const bit_max		 = 4294967296;
+const epoch_convert	 = 2208988800;
+const expectedReceiptLen =	   48;
+
+
+
+public function __construct() { 
+    $this->basep = $this->getBasePacket();
+    $this->sock  = $this->getsocket();  
 }
 
-private static function getall() {
-    $ps   = self::getPacketAndSocket();
-    $cres = self::get10($ps); unset($ps); // crit as in the critical, time-sensitive processing -- the NTP call itself for one.
-    $pres = self::parseNTPResponse($cres['r']); unset($cres['r']);
-    $ma = array_merge($cres, $pres);
+public function get() { return self::getall($this->basep, $this->sock); }
+
+private static function getall($basep, $sock) {
+    $fullp  = self::getFullPacket($basep) ; unset($basep);
+    $rawres = self::getTime($sock, $fullp); unset($sock );
+    
+    $parsedRes = self::parseNTPResponse($rawres['r']); unset($rawres['r']);
+    $ma = array_merge($rawres, $parsedRes);
     $sres = self::sharpen($ma);
     $calca = self::calcs($sres);
-    return ['calcs' => $calca, 'parsed' => $pres, 'based' => $sres, 'local' => $cres];
+    return ['calcs' => $calca, 'parsed' => $parsedRes, 'based' => $sres, 'local' => $rawres];
 }
 
-private static function getPacketAndSocket() {
+private static function getBasePacket() {
     
-    $header = '00';
+    $header  = '';
+    $header .= '00';
     $header .= sprintf('%03d',decbin(3)); // 3 indicates client
     $header .= '011';
     $request_packet = chr(bindec($header)); unset($header);
     for ($j=1; $j < 40; $j++) $request_packet .= chr(0x0);
+    return $request_packet;
+}
+
+private static function getSocket() {
     set_error_handler('kw_error_handler', E_ALL - E_WARNING);
     $socket = @fsockopen('udp://'. self::server, 123, $err_no, $err_str); 
     kwas($socket, 'cannot open connection to ' . self::server);
     set_error_handler('kw_error_handler', E_ALL);
-    return ['pack' => $request_packet, 'sock' => $socket];
-}
-    
-private static function get10($packsock) {
-    $socket = $packsock['sock'];
-    $request_packet = $packsock['pack'];
     stream_set_timeout($socket, 1);
-    
+    return $socket;
+}
+
+public function __destruct() {  
+    if ($this->sock) fclose($this->sock); 
+}
+
+private static function getFullPacket($base) {
     $lsta = nanopk(NANOPK_U | NANOPK_UNSOF);
     $originate_seconds = $lsta['U'] + self::epoch_convert;
     $originate_fractional = intval(round($lsta['Unsof'] * self::bit_max));
     $originate_fractional = sprintf('%010d',$originate_fractional);
     $packed_seconds = pack('N', $originate_seconds);
     $packed_fractional = pack("N", $originate_fractional);
+    $request_packet  = $base; unset($base);
     $request_packet .= $packed_seconds;
     $request_packet .= $packed_fractional;
-    return self::get20($socket, $request_packet);
+    return $request_packet;
 
 }
 
-private static function get20($sock, $rqpack) {
+private static function getTime($sock, $rqpack) {
     $b = nanotime_array();
     if (!fwrite($sock, $rqpack)) throw new Exception ('bad socket write');
     $response = fread($sock, self::expectedReceiptLen);
     $e = nanotime_array();
-    fclose($sock);
+
     kwas(strlen($response) === self::expectedReceiptLen, 'bad SNTP receipt length');
     return ['r' => $response, 'b' => $b, 'e' => $e];
-    
 }
 
 private static function parseNTPResponse($response) {
@@ -89,28 +100,18 @@ private static function getStratum($response) {
 
 private static function sharpen($n) {
     
-    $ia = [$n['rrs'], $n['rss'], $n['b']['s'], $n['e']['s']];
+    $allSs = [$n['rrs'], $n['rss'], $n['b']['s'], $n['e']['s']];
     
-    $min = min($ia); self::veryRecentTSOrDie($min);
+    $min = min($allSs); self::veryRecentTSOrDie($min); unset($allSs);
     
+    $ra = [];
     $ra['base'] = $min;
-    $ra['ls'  ] = $n['b']['s']  - $min + $n['b']['ns'] / self::billion;
-    $ra['lr'  ] = $n['e']['s']  - $min + $n['e']['ns'] / self::billion;
-    $ra['rr'  ] = ($n['rrs'] - $min) + $n['rrf']; // remote received
-    $ra['rs'  ] = ($n['rss'] - $min) + $n['rsf']; // remote sent
-    $ra['stratum'] = $n['stratum'];
+    $ra['ls'  ] = $n['b']['s']  - $min  + $n['b']['ns'] / M_BILLION;
+    $ra['lr'  ] = $n['e']['s']  - $min  + $n['e']['ns'] / M_BILLION;
+    $ra['rr'  ] = ($n['rrs']    - $min) + $n['rrf']; // remote received
+    $ra['rs'  ] = ($n['rss']    - $min) + $n['rsf']; // remote sent
     
     return $ra;
-}
-
-public static function mtstoa($sin) { // microtime-stamp to array
-    $a1 = explode(' ', $sin);
-    $i  = intval($a1[1]); self::veryRecentTSOrDie($i);
-    $f  = floatval($a1[0]);
-    $ar[0] = $i;
-    $ar[1] = $f;
-    $ar[2] = $i + $f;
-    return $ar;
 }
 
 public static function veryRecentTSOrDie($iin) {
@@ -128,5 +129,3 @@ private static function calcs($r) {
     return $re;
 }
 }
-
-if (didCLICallMe(__FILE__)) sntp_sa::get();
