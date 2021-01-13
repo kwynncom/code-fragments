@@ -1,6 +1,6 @@
 <?php
 
-class stddev {
+class stddev { // 2021/01/12 11:01pm - into kwutils
     public function __construct() {
 	$this->sum = 0;
 	$this->dat = [];

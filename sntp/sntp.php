@@ -12,7 +12,7 @@ const expectedReceiptLen = 48;
 
 public static function get() {
     $r = self::getall();
-    var_dump($r);
+    return $r;
 }
 
 private static function getall() {
@@ -46,7 +46,7 @@ private static function get10($packsock) {
     
     $lsta = nanopk(NANOPK_U | NANOPK_UNSOF);
     $originate_seconds = $lsta['U'] + self::epoch_convert;
-    $originate_fractional = round($lsta['Unsof'] * self::bit_max);
+    $originate_fractional = intval(round($lsta['Unsof'] * self::bit_max));
     $originate_fractional = sprintf('%010d',$originate_fractional);
     $packed_seconds = pack('N', $originate_seconds);
     $packed_fractional = pack("N", $originate_fractional);
@@ -120,10 +120,10 @@ public static function veryRecentTSOrDie($iin) {
 }
 
 private static function calcs($r) {
-    $re['coffset'] = -(round((($r['rr'] - $r['ls']) + ($r['rs'] - $r['lr'])) / 2, 6)); // I am using opposite sign of official
+    $re['coffset'] = -((($r['rr'] - $r['ls']) + ($r['rs'] - $r['lr'])) / 2); // I am using opposite sign of official
     $re['srvd'   ] = $r['rs'] - $r['rr'];
-    $re['outd'   ] = round(($r['rr'] - $r['ls']), 6);
-    $re['ind'    ] = round(($r['lr'] - $r['rs']), 6);
+    $re['outd'   ] = $r['rr'] - $r['ls'];
+    $re['ind'    ] = $r['lr'] - $r['rs'];
     
     return $re;
 }
