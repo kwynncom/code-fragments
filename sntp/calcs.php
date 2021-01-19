@@ -1,11 +1,11 @@
 <?php
 
-require_once('sntp.php');
+require_once('get.php');
 require_once('/opt/kwynn/kwcod.php');
 
-$iter = 1;
+$iter = 0;
 $sdo = new stddev();
-$geto = new sntp_sa();
+$geto = new ntpGet();
 
 for($i=0; $i < $iter; $i++) {
     $va = $geto->get();
