@@ -3,7 +3,7 @@
 require_once('get.php');
 require_once('/opt/kwynn/kwcod.php');
 
-$iter = 0;
+$iter = 1;
 $sdo = new stddev();
 $geto = new ntpGet();
 

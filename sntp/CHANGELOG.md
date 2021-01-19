@@ -1,4 +1,11 @@
-2021/01/18 7:24pm "my time"
+2021/01/18 
+
+9:23pm
+
+A useful MongoDB query in this version, but I'm probably doing the wrong thing.
+
+
+7:24pm "my time"
 
 Days before, I started from https://github.com/kwynncom/sntp-web-display
 

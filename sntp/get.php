@@ -7,17 +7,10 @@ class ntpGet {
     const reset = true;
     const defaultMinPoll = 67;
 
-    public function get() {
-	
-    }
+    public function get() { return $this->dao->get();    }
     
     public function __construct() {
 	$this->dao = new dao_ntp_pool_quota(self::reset ? self::getAllServers() : null);
-    }
-    
-    public static function getI() {
-	
-	
     }
    
     private static function getAllServers() {
@@ -32,8 +25,9 @@ class ntpGet {
 	    if (!isset($a['minpoll'])) $tp['minpoll'] = self::defaultMinPoll;
 	    else		       $tp['minpoll'] = $a['minpoll'];
 	    
+	    $tp['_id'] = $k;
 	    $ps[$k] = $tp;
-//	    $th['pool'] = $k;
+
 	    foreach($th as $thr) {
 		$id = $k . '-' . $thr;
 		$hs[] = [ '_id'  => $id,
@@ -44,8 +38,6 @@ class ntpGet {
 	}
 	
 	return ['pools' => $ps, 'servers' => $hs];
-	
-	
     }
     
     private static function get10() {
@@ -77,6 +69,10 @@ class ntpGet {
 	$a['u0'] = ['0.ubuntu.pool.ntp.org'];	
 	$a['u1'] = ['1.ubuntu.pool.ntp.org'];
 	$a['u2'] = ['2.ubuntu.pool.ntp.org'];
+	$a['kwynn'] = [
+	    'hosts' => ['kwynn.com'],
+	    'minpoll' => -1
+	    ];
 	
 	return $a;
     }
