@@ -4,7 +4,8 @@ require_once('dao.php');
 
 class ntpGet {
     
-    const reset = false;
+    const reset = true;
+    const defaultMinPoll = 67;
 
     public function get() {
 	
@@ -20,19 +21,43 @@ class ntpGet {
     }
    
     private static function getAllServers() {
+	$as = self::get10();
+	$ps = $hs = [];
+	foreach($as as $k => $a) {
+	    $th = $tp = [];
+	    if (isset( $a['hosts'])) 
+		 $th = $a['hosts'];
+	    else $th = $a;
+	    
+	    if (!isset($a['minpoll'])) $tp['minpoll'] = self::defaultMinPoll;
+	    else		       $tp['minpoll'] = $a['minpoll'];
+	    
+	    $ps[$k] = $tp;
+//	    $th['pool'] = $k;
+	    foreach($th as $thr) {
+		$id = $k . '-' . $thr;
+		$hs[] = [ '_id'  => $id,
+		          'pool' => $k,
+			  'server' => $thr
+		    ];
+	    }
+	}
+	
+	return ['pools' => $ps, 'servers' => $hs];
+	
 	
     }
     
     private static function get10() {
 	
 	$nistHosts = [
-	    	'129.6.15.26',
-		'129.6.15.27',
-		'129.6.15.28',
-		'129.6.15.29',
-		'129.6.15.30',
-	    	'[2610:20:6f15:15::26]',
-    		'[2610:20:6f15:15::27]'	  
+	    '129.6.15.26',
+	    '129.6.15.27',
+	    '129.6.15.28',
+	    '129.6.15.29',
+	    '129.6.15.30',
+	    '[2610:20:6f15:15::26]',
+	    '[2610:20:6f15:15::27]'	  
 	];	
 	
 	$a['NIST'] = [ 'minpoll' => 4, 'hosts' => $nistHosts	]; unset($nistHosts);

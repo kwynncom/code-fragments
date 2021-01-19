@@ -9,16 +9,17 @@ class dao_ntp_pool_quota extends dao_generic_2 {
     
     public function __construct($sin) {
 	parent::__construct(self::dbName, __FILE__);
-	$this->creTabs(['u' => 'use', 's' => 'servers']);
+	$this->creTabs(['u' => 'use', 's' => 'servers', 'p' => 'pools']);
 	$this->init($sin);
     }
     
     public function init($srvs) {
-	$k1 = 'asof';
-	$r1 = $this->scoll->findOne([$k1 => $srvs[$k1]]);
-	if ($r1) return;
+	if (!$srvs) return;
 	$this->scoll->drop();
-	$this->scoll->insertOne($srvs);
+	$this->pcoll->drop();
+	$srvs['pools']['_id'] = $this->scoll->getSeq2('idoas');
+	$this->pcoll->insertOne($srvs['pools']);
+	$this->scoll->insertMany($srvs['servers']);
 	
     }
     
