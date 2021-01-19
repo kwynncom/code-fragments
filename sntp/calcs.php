@@ -3,15 +3,15 @@
 require_once('get.php');
 require_once('/opt/kwynn/kwcod.php');
 
-$iter = 1;
+$iter = 5;
 $sdo = new stddev();
-$geto = new ntpGet();
+$geto = new ntpQuotaGet();
 
 for($i=0; $i < $iter; $i++) {
-    $va = $geto->get();
-    $v  = $va['calcs']['coffset'];
+    $ra = $geto->get();
+    $v = $ra['off'];
     $vd = sprintf('%+0.9f', $v);
-    echo($vd . "\n");
+    echo($vd . ' ' . $ra['srv'] .   "\n");
     $sdo->put($v);
 }
 var_dump($sdo->get());

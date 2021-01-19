@@ -1,16 +1,30 @@
 <?php
 
 require_once('dao.php');
+require_once('sntp.php');
 
-class ntpGet {
+class ntpQuotaGet {
     
-    const reset = true;
+    const resetUntil = '2021-01-18 21:46';
     const defaultMinPoll = 67;
+    const defaultPri = 50;
+    const maxTries = 5;
 
-    public function get() { return $this->dao->get();    }
+    public function get() { 
+	$i = 0;
+	do {
+	    $s = $this->dao->get();
+	    $this->geto->setServer($s);
+	    $off = $this->geto->getOffset();
+	    kwynn();
+	} while(!$off && ++$i < self::maxTries);
+	return ['off' => $off, 'srv' => $s];
+	
+    }
     
     public function __construct() {
-	$this->dao = new dao_ntp_pool_quota(self::reset ? self::getAllServers() : null);
+	$this->geto = new sntp_get_actual();
+	$this->dao = new dao_ntp_pool_quota(time() < strtotime(self::resetUntil) ? self::getAllServers() : null);
     }
    
     private static function getAllServers() {
@@ -24,6 +38,9 @@ class ntpGet {
 	    
 	    if (!isset($a['minpoll'])) $tp['minpoll'] = self::defaultMinPoll;
 	    else		       $tp['minpoll'] = $a['minpoll'];
+	    
+	    if (isset($a['pri'])) $tp['pri'] = $a['pri'];
+	    else		  $tp['pri'] = self::defaultPri;
 	    
 	    $tp['_id'] = $k;
 	    $ps[$k] = $tp;
@@ -71,7 +88,8 @@ class ntpGet {
 	$a['u2'] = ['2.ubuntu.pool.ntp.org'];
 	$a['kwynn'] = [
 	    'hosts' => ['kwynn.com'],
-	    'minpoll' => -1
+	    'minpoll' => -1,
+	    'pri' => 70
 	    ];
 	
 	return $a;

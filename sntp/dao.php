@@ -40,8 +40,14 @@ class dao_ntp_pool_quota extends dao_generic_2 {
     
     public function get() {
 	$now = microtime(1);
-	$ps = $this->pcoll->findOne(['$expr' => ['$lt' => ['$lts', ['$subtract' => [$now, '$minpoll']]]]], ['$sort' => ['lts' => 1]]);
-	return;
+	$hu  = date('r', $now);
+	$sorta = ['sort' => ['lts' => 1, 'pri' => -1]];
+	$p = $this->pcoll->findOne(['$expr' => ['$lt' => ['$lts', ['$subtract' => [$now, '$minpoll']]]]], $sorta ); kwas($p, 'no server within quota');
+	$upv = ['lts' => $now, 'hu' => $hu];
+	$this->pcoll->upsert(['_id' => $p['_id']], $upv );
+	$h = $this->scoll->findOne(['pool' => $p['_id']], $sorta); kwas($h, 'no server within quota');
+	$this->scoll->upsert(['_id' => $h['_id']], $upv);
+	return $h['server'];
     }
 
 }

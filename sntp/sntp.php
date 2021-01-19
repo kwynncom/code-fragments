@@ -2,23 +2,28 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class sntp_sa {
-
-const server = 'kwynn.com';
+class sntp_get_actual extends ntpQuotaGet {
     
 const bit_max		 = 4294967296;
 const epoch_convert	 = 2208988800;
 
-public function __construct() { 
+protected function __construct() { 
+    $this->server = $this->sock = false;
     $this->basep = $this->getBasePacket();
-    $this->sock  = $this->getsocket();  
 }
 
-public function get() { return self::getall($this->basep, $this->sock); }
+protected function getOffset() {
+    $r = self::getall($this->basep, $this->socket);
+    if (!$r) return $r;
+    return $r['calcs']['coffset'];
+}
 
-private static function getall($basep, $sock) {
+protected function pget() { return $this->getall($this->basep); }
+
+private function getall($basep) {
     $fullp  = self::getFullPacket($basep) ; unset($basep);
-    $rawres = self::getTime($sock, $fullp); unset($sock );
+    $rawres = $this->getTime($fullp);
+    if (!$rawres) return false;
     
     $parsedRes = self::parseNTPResponse($rawres['r']); unset($rawres['r']);
     $ma = array_merge($rawres, $parsedRes);
@@ -34,17 +39,24 @@ private static function getBasePacket() {
     return $request_packet;
 }
 
-private static function getSocket() {
+protected function setServer($sin) {
+    if ($this->server === $sin) return;
+    $this->server = $sin;
+    $this->setSocket();
+    
+}
+
+private function setSocket() {
     set_error_handler('kw_error_handler', E_ALL - E_WARNING);
-    $socket = @fsockopen('udp://'. self::server, 123, $err_no, $err_str); 
-    kwas($socket, 'cannot open connection to ' . self::server);
+    $socket = @fsockopen('udp://'. $this->server, 123, $err_no, $err_str); 
+    kwas($socket, 'cannot open connection to ' . $this->server);
     set_error_handler('kw_error_handler', E_ALL);
     stream_set_timeout($socket, 1);
-    return $socket;
+    $this->socket = $socket;
 }
 
 public function __destruct() {  
-    if ($this->sock) fclose($this->sock); 
+    if ($this->socket) fclose($this->socket); 
 }
 
 private static function getFullPacket($base) {
@@ -60,14 +72,14 @@ private static function getFullPacket($base) {
     return $request_packet;
 }
 
-private static function getTime($sock, $rqpack) {
+private function getTime($rqpack) {
     static $expectedReceiptLen = 48;
     $b = nanotime_array();
-    if (!fwrite($sock, $rqpack)) throw new Exception ('bad socket write');
-    $response = fread($sock, $expectedReceiptLen);
+    if (!fwrite($this->socket, $rqpack)) throw new Exception ('bad socket write');
+    $response = fread($this->socket, $expectedReceiptLen);
     $e = nanotime_array();
 
-    kwas(strlen($response) === $expectedReceiptLen, 'bad SNTP receipt length');
+    if (strlen($response) !== $expectedReceiptLen) return false;
     return ['r' => $response, 'b' => $b, 'e' => $e];
 }
 
