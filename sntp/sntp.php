@@ -12,24 +12,29 @@ protected function __construct() {
     $this->basep = $this->getBasePacket();
 }
 
-protected function getOffset() {
-    $r = self::getall($this->basep, $this->socket);
-    if (!$r) return $r;
-    return $r['calcs']['coffset'];
-}
-
 protected function pget() { return $this->getall($this->basep); }
+
+private function retErr($msg) {
+    return [
+	'status' => $msg,
+	'server' => $this->server,
+	'ts'   => microtime(1),
+	
+	];
+}
 
 private function getall($basep) {
     $fullp  = self::getFullPacket($basep) ; unset($basep);
     $rawres = $this->getTime($fullp);
-    if (!$rawres) return false;
+    if (!is_array($rawres)) return $this->retErr($rawres);
     
-    $parsedRes = self::parseNTPResponse($rawres['r']); unset($rawres['r']);
+    $parsedRes = $this->parseNTPResponse($rawres['r']); unset($rawres['r']);
+    if (!is_array($parsedRes)) return $this->retErr($parsedRes);
     $ma = array_merge($rawres, $parsedRes);
     $sres = self::sharpen($ma);
     $calca = self::calcs($sres);
-    return ['calcs' => $calca, 'parsed' => $parsedRes, 'based' => $sres, 'local' => $rawres];
+    return ['calcs' => $calca, 'parsed' => $parsedRes, 'based' => $sres, 'local' => $rawres, 
+	'server' => $this->server, 'OK' => true, 'status' => 'OK', 'ts' => microtime(1)];
 }
 
 private static function getBasePacket() {
@@ -75,21 +80,24 @@ private static function getFullPacket($base) {
 private function getTime($rqpack) {
     static $expectedReceiptLen = 48;
     $b = nanotime_array();
-    if (!fwrite($this->socket, $rqpack)) throw new Exception ('bad socket write');
+    if (!fwrite($this->socket, $rqpack)) return 'bad socket write';
     $response = fread($this->socket, $expectedReceiptLen);
     $e = nanotime_array();
 
-    if (strlen($response) !== $expectedReceiptLen) return false;
+    if (strlen($response) !== $expectedReceiptLen) return 'bad len';
     return ['r' => $response, 'b' => $b, 'e' => $e];
 }
 
-private static function parseNTPResponse($response) {
+private function parseNTPResponse($response) {
+
+    $stratum  = self::getStratum($response); 
+    if (!($stratum && intval($stratum) >= 1)) return 'SNTP Kiss of Death (KOD)';
+
     $unpack0 = unpack("N12", $response);
     $r['rrs'] = sprintf('%u', $unpack0[ 9]) - self::epoch_convert; // remote receive packet second-precision ts
     $r['rrf'] = sprintf('%u', $unpack0[10]) / self::bit_max;       // remote receive packet fractional time
     $r['rss'] = sprintf('%u', $unpack0[11]) - self::epoch_convert; // remote sent ...
     $r['rsf'] = sprintf('%u', $unpack0[12]) / self::bit_max;       // ...
-    $stratum  = self::getStratum($response); kwas($stratum && intval($stratum) >= 1, 'SNTP Kiss of Death (KOD)');
     $r['stratum'] = $stratum;
     return $r;
 }

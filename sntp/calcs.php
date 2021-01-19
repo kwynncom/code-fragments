@@ -3,15 +3,26 @@
 require_once('get.php');
 require_once('/opt/kwynn/kwcod.php');
 
-$iter = 5;
-$sdo = new stddev();
+$iter = 3;
 $geto = new ntpQuotaGet();
 
-for($i=0; $i < $iter; $i++) {
-    $ra = $geto->get();
-    $v = $ra['off'];
-    $vd = sprintf('%+0.9f', $v);
-    echo($vd . ' ' . $ra['srv'] .   "\n");
-    $sdo->put($v);
+$ras = $geto->get($iter);
+
+$okr = $badr = [];
+
+foreach($ras as $ra) {
+
+    if (isset($ra['off'])) {
+    	$v =  $ra['off'];
+	$v *= 1000;
+	$vd = sprintf('%+06.2f', $v);
+	$s = ($vd . 'ms ' . $ra['srv'] .   "\n");
+	$okr[] = $s;
+    } else {
+	$s = ($ra['status'] . ' ' . $ra['server'] . "\n");
+	$badr[] = $s;
+    }
 }
-var_dump($sdo->get());
+
+foreach($badr as $s) echo($s);
+foreach($okr  as $s) echo($s);

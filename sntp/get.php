@@ -10,15 +10,22 @@ class ntpQuotaGet {
     const defaultPri = 50;
     const maxTries = 5;
 
-    public function get() { 
+    public function get($nreq = 1) { 
+	$res = [];
 	$i = 0;
+	$iok = 0;
 	do {
 	    $s = $this->dao->get();
 	    $this->geto->setServer($s);
-	    $off = $this->geto->getOffset();
+	    $dat = $this->geto->pget();
+	    $this->dao->put($dat);
+	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s]; $iok++; }
+	    else		     $t = ['status' => $dat['status'], 'server' => $dat['server']];
+	    $res[] = $t;
 	    kwynn();
-	} while(!$off && ++$i < self::maxTries);
-	return ['off' => $off, 'srv' => $s];
+	} while($iok < $nreq && $i < self::maxTries + $nreq);
+	
+	return $res;
 	
     }
     
