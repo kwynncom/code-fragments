@@ -8,25 +8,44 @@ class ntpQuotaGet {
     const resetUntil = '2021-01-18 21:46';
     const defaultMinPoll = 67;
     const defaultPri = 50;
-    const maxTries = 5;
+    const maxFails = 3;
 
     public function get($nreq = 1) { 
 	$res = [];
-	$i = 0;
-	$iok = 0;
+	$ino = $iok = 0;
 	do {
 	    $s = $this->dao->get();
 	    $this->geto->setServer($s);
 	    $dat = $this->geto->pget();
 	    $this->dao->put($dat);
-	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s]; $iok++; }
-	    else		     $t = ['status' => $dat['status'], 'server' => $dat['server']];
+	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s];	    $iok++; }
+	    else		   { $t = ['status' => $dat['status'], 'server' => $dat['server']]; $ino++; }
 	    $res[] = $t;
+	    $this->out($t);
 	    kwynn();
-	} while($iok < $nreq && $i < self::maxTries + $nreq);
+	} while($iok < $nreq && $ino < self::maxFails);
 	
+	$this->badout();
 	return $res;
 	
+    }
+    
+    private function badout() {
+	if (!isset($this->badrd)) return;
+	foreach($this->badrd as $s) echo($s);
+    }
+    
+    private function out($ddin) {
+	if (isset($ddin['off'])) {
+	    $v =  $ddin['off'];
+	    $v *= 1000;
+	    $vd = sprintf('%+06.2f', $v);
+	    $s = ($vd . 'ms ' . $ddin['srv'] .   "\n");
+	    echo($s);
+	} else {
+	    $s = ($ddin['status'] . ' ' . $ddin['server'] . "\n");
+	    $this->badrd[] = $s;
+	}	
     }
     
     public function __construct() {
