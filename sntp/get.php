@@ -2,32 +2,47 @@
 
 require_once('dao.php');
 require_once('sntp.php');
+require_once('/opt/kwynn/kwcod.php');
 
 class ntpQuotaGet {
     
     const resetUntil = '2021-01-18 21:46';
     const defaultMinPoll = 67;
     const defaultPri = 50;
-    const maxFails = 3;
+    const maxFails = 5;
+    const defaultGets = 3;
 
-    public function get($nreq = 1) { 
+    public static function get() {
+	$o = new self();
+	$o->getI();
+    }
+    
+    public function getI() { 
+	$nreq = $this->argN;
 	$res = [];
 	$ino = $iok = 0;
 	do {
-	    $s = $this->dao->get();
+	    $s = $this->dao->get($this->argN > self::defaultGets);
 	    $this->geto->setServer($s);
 	    $dat = $this->geto->pget();
 	    $this->dao->put($dat);
-	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s];	    $iok++; }
+	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s, 'all' => $dat];	    $iok++; }
 	    else		   { $t = ['status' => $dat['status'], 'server' => $dat['server']]; $ino++; }
 	    $res[] = $t;
 	    $this->out($t);
 	    kwynn();
 	} while($iok < $nreq && $ino < self::maxFails);
 	
+	$this->outstats();
+	
 	$this->badout();
 	return $res;
 	
+    }
+    
+    private function outstats() {
+	if ($this->argN <= self::defaultGets) return;
+	var_dump($this->sdo->get());
     }
     
     private function badout() {
@@ -36,11 +51,15 @@ class ntpQuotaGet {
     }
     
     private function out($ddin) {
+	
 	if (isset($ddin['off'])) {
 	    $v =  $ddin['off'];
 	    $v *= 1000;
+	    $this->sdo->put($v);
 	    $vd = sprintf('%+06.2f', $v);
-	    $s = ($vd . 'ms ' . $ddin['srv'] .   "\n");
+	    $nms = self::outnet($ddin['all']);
+	    $nmsd = sprintf('%03d', $nms);
+	    $s = ($vd . ' ' . $nmsd  . ' ' . $ddin['srv'] .   "\n");
 	    echo($s);
 	} else {
 	    $s = ($ddin['status'] . ' ' . $ddin['server'] . "\n");
@@ -48,9 +67,31 @@ class ntpQuotaGet {
 	}	
     }
     
+    private static function outnet($d) {
+	$ns = self::nanoatoi($d['local']['e']) - self::nanoatoi($d['local']['b']);
+	$ms = intval(round($ns / M_MILLION));
+	return $ms;
+    }
+    
+    public static function nanoatoi($ain) {
+	return $ain['s'] * M_BILLION + $ain['ns'];
+
+    }
+    
     public function __construct() {
+	$this->sdo = new stddev();
 	$this->geto = new sntp_get_actual();
 	$this->dao = new dao_ntp_pool_quota(time() < strtotime(self::resetUntil) ? self::getAllServers() : null);
+	$this->setArgs();
+    }
+    
+    private function setArgs() {
+	global $argv;
+	
+	foreach($argv as $a) if (is_numeric($a)) $this->argN = $a;
+	if (!isset($this->argN))
+		   $this->argN = self::defaultGets;
+	
     }
    
     private static function getAllServers() {
@@ -121,3 +162,5 @@ class ntpQuotaGet {
 	return $a;
     }
 }
+
+if (didCLICallMe(__FILE__)) ntpQuotaGet::get();
