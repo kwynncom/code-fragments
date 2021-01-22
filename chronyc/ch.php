@@ -1,7 +1,8 @@
-<?php // v0.0.1 branching 2021/01/21
+<?php
 
 require_once('/opt/kwynn/mongodb2.php');
-require_once('utils/stableTicks.php');
+// require_once('utils/stableTicks.php');
+require_once('hu1.php');
 
 class chrony extends dao_generic_2 {
     
@@ -46,21 +47,8 @@ class chrony extends dao_generic_2 {
     
     private function d10() {
 	echo($this->chraw);
-	$a = $this->pc10();
+	chrony_parse::parse($this->chraw);
 	return;
-    }
-    
-    private function pc10() {
-        $anl = explode("\n", $this->chraw); 
-	$a = [];
-	foreach($anl as $row) {
-	    $ac = explode(' : ', $row);
-	    if (!$ac || count($ac) !== 2) continue;
-	    if (   trim($ac[0]) &&  trim($ac[1]))
-		$a[trim($ac[0])] =  trim($ac[1]);
-	}
-	
-	return $a;
     }
 }
 
