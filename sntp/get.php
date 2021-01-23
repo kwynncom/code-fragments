@@ -3,10 +3,11 @@
 require_once('dao.php');
 require_once('sntp.php');
 require_once('/opt/kwynn/kwcod.php');
+require_once('out.php');
 
 class ntpQuotaGet {
     
-    const resetUntil = '2021-01-22 23:00';
+    const resetUntil = '2021-01-22 23:00 America/New_York';
     const defaultMinPoll = 67;
     const defaultPri = 50;
     const maxFails = 5;
@@ -29,57 +30,22 @@ class ntpQuotaGet {
 	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s, 'all' => $dat];	    $iok++; }
 	    else		   { $t = ['status' => $dat['status'], 'server' => $dat['server']]; $ino++; }
 	    $res[] = $t;
-	    $this->out($t);
+	    $this->out->out($t);
 	    kwynn();
 	} while($iok < $nreq && $ino < self::maxFails);
 	
-	$this->outstats();
+	$this->out->outstats($this->argN > self::defaultGets);
 	
-	$this->badout();
+	$this->out->badout();
 	return $res;
 	
     }
     
-    private function outstats() {
-	if ($this->argN <= self::defaultGets) return;
-	var_dump($this->sdo->get());
-    }
     
-    private function badout() {
-	if (!isset($this->badrd)) return;
-	foreach($this->badrd as $s) echo($s);
-    }
-    
-    private function out($ddin) {
-	
-	if (isset($ddin['off'])) {
-	    $v =  $ddin['off'];
-	    $v *= 1000;
-	    $this->sdo->put($v);
-	    $vd = sprintf('%+06.2f', $v);
-	    $nms = self::outnet($ddin['all']);
-	    $nmsd = sprintf('%03d', $nms);
-	    $s = ($vd . ' ' . $nmsd  . ' ' . $ddin['srv'] .   "\n");
-	    echo($s);
-	} else {
-	    $s = ($ddin['status'] . ' ' . $ddin['server'] . "\n");
-	    $this->badrd[] = $s;
-	}	
-    }
-    
-    private static function outnet($d) {
-	$ns = self::nanoatoi($d['local']['e']) - self::nanoatoi($d['local']['b']);
-	$ms = intval(round($ns / M_MILLION));
-	return $ms;
-    }
-    
-    public static function nanoatoi($ain) {
-	return $ain['s'] * M_BILLION + $ain['ns'];
 
-    }
     
     public function __construct() {
-	$this->sdo = new stddev();
+	$this->out = new ntp_output();
 	$this->geto = new sntp_get_actual();
 	$this->dao = new dao_ntp_pool_quota(time() < strtotime(self::resetUntil) ? self::getAllServers() : null);
 	$this->setArgs();
