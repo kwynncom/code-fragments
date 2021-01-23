@@ -9,8 +9,11 @@ class dao_ntp_pool_quota extends dao_generic_2 {
     
     public function __construct($sin) {
 	parent::__construct(self::dbName, __FILE__);
-	$this->colls = ['s' => 'servers', 'p' => 'pools', 'r' => 'result'];
-	$this->creTabs($this->colls);
+	
+	$this->initcs = ['s' => 'servers', 'p' => 'pools'];
+	
+	$colls = array_merge($this->initcs, ['r' => 'result']);
+	$this->creTabs($colls);
 	$this->init($sin);
     }
     
@@ -26,8 +29,7 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	if (!$now) $now = time();
 	
 	if (!$srvs) return;
-	$cs = $this->colls;
-	unset($cs['u']);
+	$cs = $this->initcs;
 
 	foreach($cs as $c => $n) {
 	    $tc = $c . 'coll';
@@ -58,7 +60,7 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	if (!$q4) $q10 = $q20;
 	else      $q10 = ['$and' => [$q20, $q4]];
 	
-	$sorta = ['sort' => ['lts' => 1, 'pri' => -1]];
+	$sorta = ['sort' => ['lts' => 1]];
 
 	$upv = ['lts' => $now, 'hu' => $hu];	
 	
