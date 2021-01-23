@@ -1,13 +1,17 @@
 <?php
 
 class ntp_output {
-    public function __construct() {
+    public function __construct($isbatch) {
+	$this->tit = 0;
+	$this->barr = [];
+	$this->isbatch = $isbatch;
 	$this->sdo = new stddev();	
     }
     
-    public function outstats($doit) {
-	if (!$doit) return;
-	var_dump($this->sdo->get());
+    public function outFinal() {
+	if (!$this->isbatch) return;
+	$this->bynetd();
+	// var_dump($this->sdo->get());
     }
     
     public function badout() {
@@ -22,20 +26,35 @@ class ntp_output {
 	    $v *= 1000;
 	    $this->sdo->put($v);
 	    $vd = sprintf('%+06.2f', $v);
-	    $nms = self::outnet($ddin['all']);
+	    $nms = $this->outnet($ddin['all']);
 	    $nmsd = sprintf('%03d', $nms);
 	    $s = ($vd . ' ' . $nmsd  . ' ' . $ddin['srv'] .   "\n");
 	    echo($s);
+	    $this->barr[$this->tit++]['dis'] = $s;
 	} else {
 	    $s = ($ddin['status'] . ' ' . $ddin['server'] . "\n");
 	    $this->badrd[] = $s;
-	}	
+	}
     }
     
-    private static function outnet($d) {
-	$ns = self::nanoatoi($d['local']['e']) - self::nanoatoi($d['local']['b']);
-	$ms = intval(round($ns / M_MILLION));
+    private function outnet($d) {
+	$rawe = $d['local']['e'];
+	$rawb = $d['local']['b'];
+	$ns = self::nanoatoi($rawe) - self::nanoatoi($rawb);
+	$msf = $ns / M_MILLION;
+	$this->barr[$this->tit]['netd'] = $msf;
+	$ms = intval(round($msf));
 	return $ms;
+    }
+    
+    private function bynetd() {
+	usort($this->barr, ['self', 'sort']);
+	echo('***********' . "\n");
+	foreach($this->barr as $r) echo($r['dis']);
+    }
+    
+    private static function sort($a, $b) {
+	return $b['netd'] - $a['netd'];
     }
     
     public static function nanoatoi($ain) {

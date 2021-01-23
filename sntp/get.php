@@ -32,17 +32,17 @@ class ntpQuotaGet {
 	    kwynn();
 	} while($iok < $nreq && $ino < self::maxFails);
 	
-	$this->out->outstats($this->argN > self::defaultGets);
+	$this->out->outFinal();
 	
 	$this->out->badout();
 	return $res;
     }
 
     public function __construct() {
-	$this->out = new ntp_output();
 	$this->geto = new sntp_get_actual();
 	$this->dao = new dao_ntp_pool_quota(time() < strtotime(ntp_servers::resetUntil) ? ntp_servers::get() : null);
 	$this->setArgs();
+	$this->out = new ntp_output($this->argN > self::defaultGets);
     }
     
     private function setArgs() {

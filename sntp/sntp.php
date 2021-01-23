@@ -83,8 +83,9 @@ private function getTime($rqpack) {
     if (!fwrite($this->socket, $rqpack)) return 'bad socket write';
     $response = fread($this->socket, $expectedReceiptLen);
     $e = nanotime_array();
+    $len = strlen($response);
 
-    if (strlen($response) !== $expectedReceiptLen) return 'bad len';
+    if ($len !== $expectedReceiptLen) return 'bad len';
     return ['r' => $response, 'b' => $b, 'e' => $e];
 }
 

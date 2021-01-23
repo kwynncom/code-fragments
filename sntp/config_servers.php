@@ -3,7 +3,7 @@
 class ntp_servers {
    
         
-   const resetUntil = '2021-01-22 23:40 America/New_York';
+   const resetUntil = '2021-01-20 00:01 America/New_York';
    const defaultMinPoll = 64;
 
    public static function get() {
@@ -36,11 +36,12 @@ class ntp_servers {
     private static function get10() {
 	
 	$nistHosts = [
-	    '129.6.15.26',
+	    // They are down for the count
+	    /* '129.6.15.26',
 	    '129.6.15.27',
 	    '129.6.15.28',
 	    '129.6.15.29',
-	    '129.6.15.30',
+	    '129.6.15.30', */
 	    '[2610:20:6f15:15::26]',
 	    '[2610:20:6f15:15::27]'	  
 	];	
