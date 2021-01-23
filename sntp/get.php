@@ -6,7 +6,7 @@ require_once('/opt/kwynn/kwcod.php');
 
 class ntpQuotaGet {
     
-    const resetUntil = '2021-01-18 21:46';
+    const resetUntil = '2021-01-22 23:00';
     const defaultMinPoll = 67;
     const defaultPri = 50;
     const maxFails = 5;
@@ -22,7 +22,7 @@ class ntpQuotaGet {
 	$res = [];
 	$ino = $iok = 0;
 	do {
-	    $s = $this->dao->get($this->argN > self::defaultGets);
+	    $s = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6);
 	    $this->geto->setServer($s);
 	    $dat = $this->geto->pget();
 	    $this->dao->put($dat);
@@ -88,7 +88,14 @@ class ntpQuotaGet {
     private function setArgs() {
 	global $argv;
 	
-	foreach($argv as $a) if (is_numeric($a)) $this->argN = $a;
+	$this->ip4 = false;
+	$this->ip6 = false;
+	
+	foreach($argv as $a) 
+	    if (is_numeric($a) && $a > 0) $this->argN = $a;
+	    else if ($a === '-4') $this->ip4 = true;
+	    else if ($a === '-6') $this->ip6 = true;
+
 	if (!isset($this->argN))
 		   $this->argN = self::defaultGets;
 	
@@ -154,7 +161,7 @@ class ntpQuotaGet {
 	$a['u1'] = ['1.ubuntu.pool.ntp.org'];
 	$a['u2'] = ['2.ubuntu.pool.ntp.org'];
 	$a['kwynn'] = [
-	    'hosts' => ['kwynn.com'],
+	    'hosts' => ['kwynn.com', '34.193.238.16', '[2600:1f18:23ab:9500:acc1:69c5:2674:8c03]'],
 	    'minpoll' => -1,
 	    'pri' => 70
 	    ];

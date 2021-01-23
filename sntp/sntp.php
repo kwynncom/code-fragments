@@ -53,7 +53,7 @@ protected function setServer($sin) {
 
 private function setSocket() {
     set_error_handler('kw_error_handler', E_ALL - E_WARNING);
-    $socket = @fsockopen('udp://'. $this->server, 123, $err_no, $err_str); 
+    $socket = fsockopen('udp://'. $this->server, 123, $err_no, $err_str); 
     kwas($socket, 'cannot open connection to ' . $this->server);
     set_error_handler('kw_error_handler', E_ALL);
     stream_set_timeout($socket, 1);
@@ -61,7 +61,7 @@ private function setSocket() {
 }
 
 public function __destruct() {  
-    if ($this->socket) fclose($this->socket); 
+    if (isset($this->socket) && $this->socket) fclose($this->socket); 
 }
 
 private static function getFullPacket($base) {
