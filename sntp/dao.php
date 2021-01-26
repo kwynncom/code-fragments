@@ -45,12 +45,24 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	}
     }
     
+    public function get($hfo, $ip4, $ip6) {
+	try {
+	    return $this->getI($hfo, $ip4, $ip6);
+	} catch(Exception $ex) { return false; 	}
+	
+	
+    }
     
-    public function get($hfo, $ip4, $ip6) { // $hfo === high-frequency polls only
+    
+    private function getI($hfo, $ip4, $ip6) { // $hfo === high-frequency polls only
 	$now = microtime(1);
 	$hu  = date('r', $now);
 	
-	if (!$hfo)  $q20 = ['$expr' => ['$lt' => ['$lts', ['$subtract' => [$now, '$minpoll']]]]];
+	if (!$hfo)  {
+	    $q18 = ['$expr' => ['$lt' => ['$lts', ['$subtract' => [$now, '$minpoll']]]]];
+	    $q23 = ['minpoll' => ['$gte' => 0.9 ]];
+	    $q20 = ['$and' => [$q18, $q23]];
+	}
 	else	    $q20 = ['minpoll' => ['$lte' => 0.001]];
 	
 	$q4 = false;

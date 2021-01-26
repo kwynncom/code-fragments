@@ -22,6 +22,7 @@ class ntpQuotaGet {
 	$ino = $iok = 0;
 	do {
 	    $s = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6);
+	    if (!$s) exit(0);
 	    $this->geto->setServer($s);
 	    $dat = $this->geto->pget();
 	    $this->dao->put($dat);
