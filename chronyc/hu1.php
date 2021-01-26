@@ -4,7 +4,16 @@ require_once('config.php');
 
 class chrony_parse {
 
-    public static function toArray(string $cin) { 
+    const shown = 10;
+    
+    public static function parse(array $biga) {
+	$o = new self();
+	$o->p10($biga);
+	return;
+	
+    }
+
+   public static function toArray(string $cin) { 
         $anl = explode("\n", $cin); 
 	$a = [];
 	foreach($anl as $row) {
@@ -15,27 +24,28 @@ class chrony_parse {
 	}
 	
 	return $a;    
-    }   
+    } 
     
-    public static function parse(string $sin) {
-	$a = self::toArray($sin);
-	$o = new self();
-	$o->p10($a);
-	return;
+    private function p10($biga) {
 	
+	echo(self::head() . "\n");
+	
+	for($i=self::shown; isset($biga[$i]); $i--) {
+	    $this->p20(self::toArray($biga[$i]['ch']));
+	}
     }
     
-    private function p10($a) {
+    private function p20($a) {
 	
 	$pd = self::ago($a);
-
 	$pds = sprintf('%0.1f', $pd / 60); unset($pd);
-	$pdd = $pds; unset($pds);
+	$pdd = sprintf('%4s', $pds); unset($pds);
 	
 	$os = self::off($a);
     
-	$fs = sprintf('%+0.1f', $os * M_MILLION); unset($os);
-	$tdd = $fs; unset($fs);
+	$fsf = sprintf('%+0.1f', $os * M_MILLION); unset($os);
+	// $fds = sprintf('%');
+	$tdd = $fsf; unset($fsf);
 
 	$fd = self::freq($a);
 	
@@ -47,15 +57,13 @@ class chrony_parse {
 	
 	unset($a);
 	$vars = get_defined_vars();
-	
-	echo(self::head() . "\n");
+
 	foreach($vars as $v) echo($v . ' ');
 	echo("\n");
     }
  
     private static function head() {
-	return 'mago  uso    f     rdi     rf   sk   rde';
-
+	return 'mago  uso    f     rdi     rf   sk  rde';
     }
     
     private static function freq20($din) {
@@ -63,31 +71,20 @@ class chrony_parse {
 	$rf  = trim(preg_replace('/[^\d\.\-]/', '', $rfr));
 	return $rf;
     }
-    
-
-    
+   
     private static function root20($din) {
-	
 	$rdr = $din;
 	$rd = trim(preg_replace('/[^\d\.]+/', '', $rdr));
 	$ms = $rd * 1000;
-	
 	$rdd = sprintf('%0.3f', $ms); 
-	
 	return $rdd;
-	
-	
     }
     
     public static function freq($a) {
-	// Frequency       : 7.634 ppm slow
-
 	preg_match('/(^\d+\.\d+) ppm (\w+)/', $a['Frequency'], $matches); 	
-	
 	$sign = '?';
 	if      ($matches[2] === 'fast') $sign = '+';
 	else if ($matches[2] === 'slow') $sign = '-';
-
 	return $sign . $matches[1];	
     }
     
@@ -103,15 +100,11 @@ class chrony_parse {
     
     public static function off($a) {
 	$st = $a['System time'];
-    
 	preg_match('/(^\d+\.\d+) seconds (\w+) of NTP time/', $st, $matches); unset($st); kwas(isset($matches[2]), 'regex fail offset'); 
-    
 	$s = $matches[1];
-
 	$sign = '?';
 	if      ($matches[2] === 'fast') $sign = '+';
 	else if ($matches[2] === 'slow') $sign = '-';
-
 	return $sign . $s;
     }
 }
