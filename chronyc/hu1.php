@@ -44,13 +44,13 @@ class chrony_parse {
 	$os = self::off($a);
     
 	$fsf = sprintf('%+0.1f', $os * M_MILLION); unset($os);
-	// $fds = sprintf('%');
-	$tdd = $fsf; unset($fsf);
+	$fds = sprintf('%7s', $fsf); unset($fsf);
 
 	$fd = self::freq($a);
 	
 	$rdd  = self::root20($a['Root dispersion']);
-	$rfd  = self::freq20($a['Residual freq']);
+	$rfn  = self::freq20($a['Residual freq']);
+	$rfd  = sprintf('%6s', $rfn); unset($rfn);
 	$skd  = self::freq20($a['Skew']);
 	$rde  = self::root20($a['Root delay']);
 	$rdde = ' ' . intval(round($rde)); unset($rde);
@@ -63,7 +63,7 @@ class chrony_parse {
     }
  
     private static function head() {
-	return 'mago  uso    f     rdi     rf   sk  rde';
+	return 'mago     uso    f     rdi     rf   sk  rde';
     }
     
     private static function freq20($din) {
