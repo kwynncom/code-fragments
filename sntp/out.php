@@ -42,7 +42,8 @@ class ntp_output {
 	$rawb = $d['local']['b'];
 	$ns = self::nanoatoi($rawe) - self::nanoatoi($rawb);
 	$msf = $ns / M_MILLION;
-	$this->barr[$this->tit]['netd'] = $msf;
+	$this->barr[$this->tit]['netdf' ] = $msf;
+	$this->barr[$this->tit]['netdns'] = $ns;
 	$ms = intval(round($msf));
 	return $ms;
     }
@@ -54,7 +55,7 @@ class ntp_output {
     }
     
     private static function sort($a, $b) {
-	return $b['netd'] - $a['netd'];
+	return $b['netdns'] - $a['netdns'];
     }
     
     public static function nanoatoi($ain) {
