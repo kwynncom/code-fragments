@@ -7,17 +7,17 @@
 <title>basic web app</title>
 
 <script>
+    
+    function byid(id) { return document.getElementById(id); }
+    
     function shipit(vin) { // value in
 
         const xhr = new XMLHttpRequest(); 
-        xhr.open('GET', 'index.php?v=' + vin);
+        xhr.open('GET', 'server.php?v=' + vin);
         xhr.onreadystatechange = function() { if (this.readyState === 4 && this.status === 200) byid('serverResponse').innerHTML = this.response; }
         xhr.send();       
     }
-
 </script>
-
-
 </head>
 <body>
     <div>
