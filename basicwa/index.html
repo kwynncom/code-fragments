@@ -8,7 +8,11 @@
 
 <script>
     function shipit(vin) { // value in
-        
+
+        const xhr = new XMLHttpRequest(); 
+        xhr.open('GET', 'index.php?v=' + vin);
+        xhr.onreadystatechange = function() { if (this.readyState === 4 && this.status === 200) byid('serverResponse').innerHTML = this.response; }
+        xhr.send();       
     }
 
 </script>
@@ -18,6 +22,8 @@
 <body>
     <div>
         <label>arbitrary text field to go to database:</label> <input type='text' oninput='shipit(this.value);' />
+    </div>
+    <div id='serverResponse'>
     </div>
 </body>
 </html>
