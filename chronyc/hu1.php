@@ -30,16 +30,52 @@ class chrony_parse {
 	$pd = self::ago($a);
 
 	$pds = sprintf('%0.1f', $pd / 60); unset($pd);
-	$pdd = $pds . 'mago'; unset($pds);
+	$pdd = $pds; unset($pds);
 	
 	$os = self::off($a);
     
 	$fs = sprintf('%+0.1f', $os * M_MILLION); unset($os);
-	$tdd = $fs . 'uso'; unset($fs);
+	$tdd = $fs; unset($fs);
 
 	$fd = self::freq($a);
 	
-	echo($tdd . ' ' . $pdd . ' ' . $fd);
+	$rdd  = self::root20($a['Root dispersion']);
+	$rfd  = self::freq20($a['Residual freq']);
+	$skd  = self::freq20($a['Skew']);
+	$rde  = self::root20($a['Root delay']);
+	$rdde = ' ' . intval(round($rde)); unset($rde);
+	
+	unset($a);
+	$vars = get_defined_vars();
+	
+	echo(self::head() . "\n");
+	foreach($vars as $v) echo($v . ' ');
+	echo("\n");
+    }
+ 
+    private static function head() {
+	return 'mago  uso    f     rdi     rf   sk   rde';
+
+    }
+    
+    private static function freq20($din) {
+	$rfr = $din;
+	$rf  = trim(preg_replace('/[^\d\.\-]/', '', $rfr));
+	return $rf;
+    }
+    
+
+    
+    private static function root20($din) {
+	
+	$rdr = $din;
+	$rd = trim(preg_replace('/[^\d\.]+/', '', $rdr));
+	$ms = $rd * 1000;
+	
+	$rdd = sprintf('%0.3f', $ms); 
+	
+	return $rdd;
+	
 	
     }
     

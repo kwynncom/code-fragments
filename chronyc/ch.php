@@ -46,8 +46,8 @@ class chrony extends dao_generic_2 {
     public static function get() { $o = new self();    }
     
     private function d10() {
-	echo($this->chraw);
-	chrony_parse::parse($this->chraw);
+	// $rs = $this->ccoll->find([], ['sort' => ['b' => -1], 'limit' => 40]);
+	chrony_parse::parse($this->chraw /*$rs*/);
 	return;
     }
 }
