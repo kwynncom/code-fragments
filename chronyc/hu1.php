@@ -4,7 +4,8 @@ require_once('config.php');
 
 class chrony_parse {
 
-    const shown = 10;
+    const shown = 20;
+    const ignoreAfterS = 18000;
     
     public static function parse(array $biga) {
 	$o = new self();
@@ -37,23 +38,27 @@ class chrony_parse {
     
     private function p20($a) {
 	
-	$pd = self::ago($a);
-	$pds = sprintf('%0.1f', $pd / 60); unset($pd);
-	$pdd = sprintf('%4s', $pds); unset($pds);
+	$agos = self::ago($a);
+	
+	if ($agos > self::ignoreAfterS) return;
+	
+	$agom = sprintf('%0.1f', $agos / 60); unset($agos);
+	$agod = sprintf('%4s', $agom); unset($agom);
 	
 	$os = self::off($a);
     
-	$fsf = sprintf('%+0.1f', $os * M_MILLION); unset($os);
-	$fds = sprintf('%7s', $fsf); unset($fsf);
+	$of  = sprintf('%+0.1f', $os * M_MILLION); unset($os);
+	$od = sprintf('%7s', $of); unset($of);
 
-	$fd = self::freq($a);
-	
 	$rdd  = self::root20($a['Root dispersion']);
 	$rfn  = self::freq20($a['Residual freq']);
 	$rfd  = sprintf('%6s', $rfn); unset($rfn);
-	$skd  = self::freq20($a['Skew']);
+	$sk10  = self::freq20($a['Skew']);
+	$skd   = sprintf('%6s', $sk10); unset($sk10);
 	$rde  = self::root20($a['Root delay']);
 	$rdde = ' ' . intval(round($rde)); unset($rde);
+	$f10f = self::freq($a);
+	$rd  = sprintf('%7s', $f10f); unset($f10f);
 	
 	unset($a);
 	$vars = get_defined_vars();
@@ -63,7 +68,7 @@ class chrony_parse {
     }
  
     private static function head() {
-	return 'mago     uso    f     rdi     rf   sk  rde';
+	return 'mago     uso   rdi     rf    sk  rde     f';
     }
     
     private static function freq20($din) {
