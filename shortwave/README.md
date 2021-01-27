@@ -1,5 +1,7 @@
 try to receive the WWVB time signal by reading the microphone jack
 
+First, I explain what I'm trying to do with my first several attempts, then an update on 2021/01/27
+
 WWVB is a US NIST (National Institute of Standards and Technology) shortwave radio station that broadcasts a time signal on a 
 60kHz carrier wave, or at channel 60kHz (links below), with 30kW.  It broadcasts from (near) Fort Collins, Colorado.  The 
 specific AM pulses of the signal are described in a link below.
@@ -51,3 +53,16 @@ arecord -f S16_LE -c 2 -r 8000 --device="hw:0,0" -d 2 > /tmp/hwrset1.wav
 // pack / unpack:  V	unsigned long (always 32 bit, little endian byte order)
 
 // 384,000 bytes / s
+
+************************
+
+In my previous attempts, I made huge assumptions about what the numbers meant.  I decided to take another look.  
+
+The following is with no sound / no microphone, at 32 bits, 48,000 samples per second, stereo.  
+
+If I "unpack()" each sample as a signed integer, with a portion of 2 files, my average sample is on the order of -9 million.  The low is 
+between -31 million and -26 million.  The high is positive 100,000 - 300,000.  
+
+The point being that I may have been on the right track, and I might actually get the signal, but I have to calculate the numbers much differently.
+
+I will probably try to start from the minimum and use sample - min as my basis.

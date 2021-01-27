@@ -3,7 +3,7 @@
 class ntp_servers {
    
         
-   const resetUntil = '2021-01-23 18:39 America/New_York';
+   const resetUntil = '2021-01-26 18:00 America/New_York';
    const defaultMinPoll = 64;
 
    public static function get() {
@@ -67,6 +67,8 @@ class ntp_servers {
 	    'hosts' => ['kwynn.com', '34.193.238.16', '[2600:1f18:23ab:9500:acc1:69c5:2674:8c03]'],
 	    'minpoll' => -1,
 	    ];
+	
+	$a['att'] = ['68.94.156.17', '68.94.157.2']; // http://www.dslreports.com/faq/14310
 	
 	return $a;
     }

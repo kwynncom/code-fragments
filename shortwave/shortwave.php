@@ -1,7 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once(__DIR__ . '/../ticks/batch1/stddev.php');
+// require_once(__DIR__ . '/../ticks/batch1/stddev.php');
 
 $file = '/tmp/r3_ant.wav';
 
@@ -9,7 +9,9 @@ $bytesPerSam = 4;
 $channels = 2;
 $sampleRate = 48000;
 $bitsPerSam = $bytesPerSam * 8;
-$duration = 90;
+$duration = 15;
+
+$useBytes = $bytesPerSam;
 
 if      ($bytesPerSam === 4) $packf = 'l';
 else if ($bytesPerSam === 2) $packf = 'S';
@@ -17,7 +19,7 @@ else if ($bytesPerSam === 2) $packf = 'S';
 $cmd = 'arecord -f S' . $bitsPerSam . '_LE -c ' . $channels . ' -r ' . $sampleRate . ' --device="hw:0,0" -d ' . $duration . ' > ' . $file;
 
 // arecord -f S16_LE -c 2 -r 8000 --device="hw:0,0" -d 2 > /tmp/hwrset1.wav
-if (0) {
+if (1) {
 kwas(unlink($file), 'delete failed');
 exec($cmd);
 }
@@ -38,7 +40,7 @@ $sto = false;
 $soffhun = 8;
 $spp60kHz = 0.000016667;
 $peroff = 0.2;
-$soffFromFileStart = 45;
+$soffFromFileStart = 2;
 $secsoff = $spp60kHz * $peroff + $soffhun / 100 + $soffFromFileStart;
 $bytesoffraw = intval(round($bpsec * $secsoff));
 
@@ -49,8 +51,18 @@ $ec = 0;
 
 $bus = [];
 
-$endat = 47;
-$endatBytes = $bytesoff + ($channels * $bytesPerSam * $bpsec * ($endat - $soffFromFileStart)) - 45;
+$endat = 4;
+$endatBytes = $bytesoff + ($bpsec * ($endat - $soffFromFileStart)) - 45;
+kwas($l > $endatBytes, 'overflow 442');
+
+$oi = 0;
+
+if (0) {
+$outt = substr($wsig, $bytesoff);
+file_put_contents('/tmp/rout.wav', $outt); unset($outt);
+}
+
+$sdo = new stddev();
 
 for($i=$bytesoff; $i < $endatBytes ; $i += (($channels * $bytesPerSam) * 1)) {
 
@@ -72,18 +84,33 @@ for($i=$bytesoff; $i < $endatBytes ; $i += (($channels * $bytesPerSam) * 1)) {
 	} catch(Exception $ex) { 
 	    kwynn();
 	}
-	$u = unpack($packf, $subs);
-	$isigraw = $u[1];
-	$is10 = abs($isigraw);
+	
+	if ($useBytes === 1) $isigraw = ord($subs[0]);
+	else {
+	    $u = unpack($packf, $subs);
+	    $isigraw = $u[1];
+	}
+	
+	// if ($oi++ % 100 === 0) 
+	    // echo $isigraw . "\n";
+
+	$is10 = $isigraw;
+	// $is10 = abs($isigraw);
+
 	if ($j === 0) $j0 = $is10;
 	if ($j === 1) $j1 = $is10;
+	$sdo->put($is10);
    }
    
    if (!isset($bus[$ti])) $bus[$ti] = 0;
-   $bus[$ti] += $j0 + $j1;
    
-    
+   if (!is_numeric($j0) || !is_numeric($j1)) {
+       kwynn();
+   }
+   $bus[$ti] += $j0 + $j1;
 }
+
+var_dump($sdo->get());
 
 // $dbc = pow(10, 17/10); // 17 decibel difference
 
@@ -93,13 +120,14 @@ foreach($bus as $i => $v) {
     
     $grtot += $v;
     
-    $vl = log($v, 50);
+    // echo($v) . "\n";
     
+    $vl = log($v, 50);
     $vd = sprintf('%0.3f', $vl );
     
-    $cut = 5.50;
+    // $cut = 5.50;
     
-    echo(/*($vl > $cut ? 1 : 0) . ' ' . sprintf('%0.2f', ($vl - $cut)) . ' ' . */ $vd . "\n");
+    // echo(/*($vl > $cut ? 1 : 0) . ' ' . sprintf('%0.2f', ($vl - $cut)) . ' ' . */ $vd . "\n");
     
 }
 

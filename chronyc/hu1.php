@@ -43,7 +43,7 @@ class chrony_parse {
 	if ($agos > self::ignoreAfterS) return;
 	
 	$agom = sprintf('%0.1f', $agos / 60); unset($agos);
-	$agod = sprintf('%4s', $agom); unset($agom);
+	$agod = sprintf('%5s', $agom); unset($agom);
 	
 	$os = self::off($a);
     
