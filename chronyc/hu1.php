@@ -36,8 +36,18 @@ class chrony_parse {
 	}
     }
     
+    private static function server($rid) {
+	$hd = translateHost($rid);
+	if ($hd === 'kwynn.com') return '';
+	if ($hd === '00000000 ()') return false;
+	return $hd;
+    }
+    
     private function p20($a) {
 	
+	$sd = self::server($a['Reference ID']);
+	if ($sd === false) return;
+		
 	$agos = self::ago($a);
 	
 	if ($agos > self::ignoreAfterS) return;
@@ -46,6 +56,8 @@ class chrony_parse {
 	$agod = sprintf('%5s', $agom); unset($agom);
 	
 	$os = self::off($a);
+
+	if ($os > 0.009999999999) return;
     
 	$of  = sprintf('%+0.1f', $os * M_MILLION); unset($os);
 	$od = sprintf('%7s', $of); unset($of);
@@ -94,9 +106,7 @@ class chrony_parse {
     }
     
     public static function ago($a) {
-	$hd = translateHost($a['Reference ID']);
-	if ($hd === 'kwynn.com') $hd = '';
-	if ($hd) 	echo($hd . "\n");
+
 	$key = 'Ref time (UTC)';
         $ts = strtotime($a[$key] . ' UTC');
 	$d  = time() - $ts;	
@@ -108,8 +118,9 @@ class chrony_parse {
 	preg_match('/(^\d+\.\d+) seconds (\w+) of NTP time/', $st, $matches); unset($st); kwas(isset($matches[2]), 'regex fail offset'); 
 	$s = $matches[1];
 	$sign = '?';
-	if      ($matches[2] === 'fast') $sign = '+';
-	else if ($matches[2] === 'slow') $sign = '-';
-	return $sign . $s;
+	
+	$v = floatval($s);
+	if ($matches[2] === 'slow') $v = -$v;
+	return $v;
     }
 }
