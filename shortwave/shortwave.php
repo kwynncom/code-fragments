@@ -1,7 +1,6 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-// require_once(__DIR__ . '/../ticks/batch1/stddev.php');
 
 $file = '/tmp/t.wav';
 
@@ -9,7 +8,7 @@ $bytesPerSam = 4;
 $channels = 2;
 $sampleRate = 48000;
 $bitsPerSam = $bytesPerSam * 8;
-$duration = 15;
+$duration = 40;
 
 $useBytes = $bytesPerSam;
 
@@ -18,10 +17,10 @@ else if ($bytesPerSam === 2) $packf = 'S';
 
 $cmd = 'arecord -f S' . $bitsPerSam . '_LE -c ' . $channels . ' -r ' . $sampleRate . ' --device="hw:0,0" -d ' . $duration . ' > ' . $file;
 
-// arecord -f S16_LE -c 2 -r 8000 --device="hw:0,0" -d 2 > /tmp/hwrset1.wav
 if (0) {
-// kwas(unlink($file), 'delete failed');
+kwas(unlink($file), 'delete failed');
 exec($cmd);
+exit(0);
 }
 
 $wsig = file_get_contents($file);
@@ -36,13 +35,13 @@ $l -= 44;
 
 $minv = PHP_INT_MAX;
 
-$soffFromFileStart = 3;
-$endat = 3.5;
+$soffFromFileStart = 30;
+$endat = 38;
 
 
-$soffhun = 8;
+$soffhun = 5;
 $spp60kHz = 0.000016667;
-$peroff = 0.2;
+$peroff = 0.4;
 $secsoff = $spp60kHz * $peroff + $soffhun / 100 + $soffFromFileStart;
 $bytesoffraw = intval(round($bpsec * $secsoff));
 
@@ -64,8 +63,8 @@ $outt = substr($wsig, $bytesoff);
 file_put_contents('/tmp/rout.wav', $outt); unset($outt);
 }
 
-for($i=$bytesoff; $i < $endatBytes ; $i += (($channels * $bytesPerSam) * 1)) {
 for($li=0; $li < 2; $li++) {
+for($i=$bytesoff; $i < $endatBytes ; $i += (($channels * $bytesPerSam) * 1)) {
     kwas(($i % ($bytesPerSam * $channels)) === 0, 'bad mod');
     
     $sec = ($i / $bpsec);
@@ -99,28 +98,28 @@ for($li=0; $li < 2; $li++) {
 }
 }
 
-
-// $dbc = pow(10, 17/10); // 17 decibel difference
-
-$grtot = 0;
+$minav = PHP_INT_MAX;
 
 foreach($bus as $i => $a) {
     
-    $base = $a['n'] * $minv * 2;
-    
-    $v10 = ($a['v'] - $base) / $a['n'];
+    $v10 = ($a['v'] / $a['n']);
     $v20 = intval(round($v10));
+    if ($v20 < $minav) $minav = $v20;
+    $bus[$i]['v20'] = $v20;
     
-    echo($v20) . "\n";
-    
-    // $vl = log($v, 50);
-    // $vd = sprintf('%0.3f', $vl );
-    
-    // $cut = 5.50;
-    
-    // echo(/*($vl > $cut ? 1 : 0) . ' ' . sprintf('%0.2f', ($vl - $cut)) . ' ' . */ $vd . "\n");
+
     
 }
 
+foreach($bus as $i => $a) {
+    $v30 = $a['v20'] - $minav;
+    $v40 = number_format($v30);
+    $v50 = sprintf('%10s', $v40);
+    
+    echo($v50) . "\n";
+    
+}
+
+echo('min = ' . number_format($minv) . "\n");
 
 exit(0);

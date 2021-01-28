@@ -52,16 +52,23 @@ protected function setServer($sin) {
 }
 
 private function setSocket() {
+    
+    if (isset(		$this->asocks[$this->server])) {
+	$this->socket = $this->asocks[$this->server];
+	return;
+    }
+    
     set_error_handler('kw_error_handler', E_ALL - E_WARNING);
     $socket = fsockopen('udp://'. $this->server, 123, $err_no, $err_str); 
     kwas($socket, 'cannot open connection to ' . $this->server);
     set_error_handler('kw_error_handler', E_ALL);
     stream_set_timeout($socket, 1);
-    $this->socket = $socket;
+    $this->socket = $this->asocks[$this->server] = $socket;
 }
 
 public function __destruct() {  
-    if (isset($this->socket) && $this->socket) fclose($this->socket); 
+    if (!isset($this->asocks)) return;
+    foreach($this->asocks as $s) fclose($s);
 }
 
 private static function getFullPacket($base) {
