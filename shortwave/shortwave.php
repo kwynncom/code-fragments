@@ -2,13 +2,13 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-$file = '/tmp/t.wav';
+$file = '/tmp/ant.wav';
 
 $bytesPerSam = 4;
 $channels = 2;
 $sampleRate = 48000;
 $bitsPerSam = $bytesPerSam * 8;
-$duration = 40;
+$duration = 90;
 
 $useBytes = $bytesPerSam;
 
@@ -35,8 +35,8 @@ $l -= 44;
 
 $minv = PHP_INT_MAX;
 
-$soffFromFileStart = 30;
-$endat = 38;
+$soffFromFileStart = 70;
+$endat = 75;
 
 
 $soffhun = 5;
@@ -114,7 +114,7 @@ foreach($bus as $i => $a) {
 foreach($bus as $i => $a) {
     $v30 = $a['v20'] - $minav;
     $v40 = number_format($v30);
-    $v50 = sprintf('%10s', $v40);
+    $v50 = sprintf('%11s', $v40);
     
     echo($v50) . "\n";
     

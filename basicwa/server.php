@@ -4,8 +4,9 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '/opt/composer');
 require_once('vendor/autoload.php');
 require_once('/opt/kwynn/kwutils.php');
 
-
-$dat = $_REQUEST['v'];
+if (isset($_REQUEST['v'])) 
+     $dat = $_REQUEST['v'];
+else $dat = 'cli test data, not from client';
 
 $cli = new MongoDB\Client(file_get_contents('/var/mongo_ad1_2021_1.txt'), [], ['typeMap' => ['array' => 'array','document' => 'array', 'root' => 'array']]);
 $coll1  = $cli->selectCollection('kw_webapp1', 'test1');
