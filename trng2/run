@@ -1,2 +1,2 @@
 #! /bin/bash
-php ./index.php | rngtest -c 1
+php ./index.php | rngtest -c 5

@@ -4,7 +4,7 @@ class rand_mic {
     const baseCmd = 'arecord -f S32_LE -c 2 -r 48000 --device="hw:0,0" ';
     const recordStderrMsg1 = "Recording WAVE 'stdin'";
     const byteInterval = 4;
-    const alignByte = self::byteInterval - 3; // the general calculation is more complicated, but I make it a separate const as a start towards general
+    const alignByte = 0; // self::byteInterval - 3; // the general calculation is more complicated, but I make it a separate const as a start towards general
     const discardFirstBytes = 51000;
     const wavHeaderLen = 44;
     const maxReadBuf    = self::discardFirstBytes + self::wavHeaderLen + (1 << 19);
@@ -54,39 +54,46 @@ class rand_mic {
 	static $initBuf = '';
 
 	$initBuf .= $batchin; unset($batchin);
-	if   (!isset($initBuf[$this->randptr])) return true;
+	if   (!isset($initBuf[$this->iptr])) return true;
 
-	$this->obbuf = $initBuf; unset($initBuf);
-	$this->oboffset = 0;
+	$this->objbuf = substr($initBuf, $this->iptr); unset($initBuf, $this->iptr);
+	$this->objptr = 0;
 	return false;
     }
     
     private function readLoop() {
 
-	$this->tdlen = 0;
-	$this->randptr = self::calcInitPtr();
+	$this->iptr = self::calcInitPtr();
 	$discarding = true;
 	
 	while ($batchin = fread($this->inh, self::maxReadBuf)) {
 	    
 	    $batchlen = strlen($batchin);
-	    $this->tdlen += $batchlen;
-	    
+    
 	    if  ($discarding && $this->discardThenInit($batchin)) continue;
-	    else $discarding = false; 
-	
-	    $this->oboffset += strlen($this->obbuf);
-	    $this->obbuf = $batchin; unset($batchin);
+	    else {
+		if ($discarding) {
+		$discarding = false;
+		$this->writeLoop();
+		continue;
+		}
+	    }
+
+	    $this->objbuf = $batchin; unset($batchin);
 	    $this->writeLoop();
+	    $this->objptr = 0;
 	}
     }
     
     private function writeLoop() {
-	
-	while (isset(	      $this->obbuf [$this->randptr - $this->oboffset + self::byteInterval - 1])) {
-	    $dat =     substr($this->obbuf, $this->randptr - $this->oboffset,  self::byteInterval);
+		
+	while (isset(	      $this->objbuf [$this->objptr + self::byteInterval - 1])) {
+	    $dat =     substr($this->objbuf, $this->objptr,  self::byteInterval);
+	    if (!isset($dat[3])) { 
+		kwynn();
+	    }
 	    call_user_func($this->ocb, $dat);
-	    $this->randptr += self::byteInterval;
+	    $this->objptr += self::byteInterval;
 	}
     }
     
