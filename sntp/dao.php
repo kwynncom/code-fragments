@@ -76,7 +76,7 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 
 	$upv = ['lts' => $now, 'hu' => $hu];	
 	
-	if (!$ip4 && !$ip6  && !$xs) {
+	if (!$ip4 && !$ip6 && !$xs) {
 	    $p = $this->pcoll->findOne($q20, $sorta ); kwas($p, 'no server within quota');
 	    $this->pcoll->upsert(['_id' => $p['_id']], $upv );
 	    $h = $this->scoll->findOne(['pool' => $p['_id']], $sorta); kwas($h, 'no server within quota');

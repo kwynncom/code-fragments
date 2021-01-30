@@ -60,7 +60,7 @@ class ntpQuotaGet {
 	    if (is_numeric($a) && $a > 0) $this->argN = $a;
 	    else if ($a === '-4') $this->ip4 = true;
 	    else if ($a === '-6') $this->ip6 = true;
-	    else if ($a === 'o' || $a === '-o') $this->xsvrs = true;
+	    else if ($a === 'o' || $a === '-o') $this->xsrvs = true;
 
 	if (!isset($this->argN)) 
 	    if ($this->xsrvs) $this->argN = self::defaultGets;
