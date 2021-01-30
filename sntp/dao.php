@@ -45,16 +45,16 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	}
     }
     
-    public function get($hfo, $ip4, $ip6) {
+    public function get($hfo, $ip4, $ip6, $xs) {
 	try {
-	    return $this->getI($hfo, $ip4, $ip6);
+	    return $this->getI($hfo, $ip4, $ip6, $xs);
 	} catch(Exception $ex) { return false; 	}
 	
 	
     }
     
     
-    private function getI($hfo, $ip4, $ip6) { // $hfo === high-frequency polls only
+    private function getI($hfo, $ip4, $ip6, $xs) { // $hfo === high-frequency polls only; $xs = external (non Kwynn) servers
 	$now = microtime(1);
 	$hu  = date('r', $now);
 	
@@ -76,7 +76,7 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 
 	$upv = ['lts' => $now, 'hu' => $hu];	
 	
-	if (!$ip4 && !$ip6) {
+	if (!$ip4 && !$ip6  && !$xs) {
 	    $p = $this->pcoll->findOne($q20, $sorta ); kwas($p, 'no server within quota');
 	    $this->pcoll->upsert(['_id' => $p['_id']], $upv );
 	    $h = $this->scoll->findOne(['pool' => $p['_id']], $sorta); kwas($h, 'no server within quota');

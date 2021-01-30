@@ -5,7 +5,7 @@ class rand_mic {
     const recordStderrMsg1 = "Recording WAVE 'stdin'";
     const byteInterval = 4;
     const alignByte = 0; // self::byteInterval - 3; // the general calculation is more complicated, but I make it a separate const as a start towards general
-    const discardFirstBytes = 2 << 21;
+    const discardFirstBytes = 2 << 16;
     const wavHeaderLen = 44;
     const maxReadBuf    = self::discardFirstBytes + self::wavHeaderLen + (1 << 19);
     const pidf = '/tmp/michwr_input.pid';

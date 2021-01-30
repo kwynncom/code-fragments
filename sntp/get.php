@@ -10,6 +10,9 @@ class ntpQuotaGet {
 
     const maxFails = 5;
     const defaultGets = 3;
+    const iServersDefaultGet = 5; // internal (Kwynn) servers default get
+    
+    private $xsrvs = false;
 
     public static function get() {
 	$o = new self();
@@ -21,7 +24,7 @@ class ntpQuotaGet {
 	$res = [];
 	$ino = $iok = 0;
 	do {
-	    $s = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6);
+	    $s = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6, $this->xsrvs);
 	    if (!$s) exit(0);
 	    $this->geto->setServer($s);
 	    $dat = $this->geto->pget();
@@ -40,6 +43,7 @@ class ntpQuotaGet {
     }
 
     public function __construct() {
+	
 	$this->geto = new sntp_get_actual();
 	$this->dao = new dao_ntp_pool_quota(time() < strtotime(ntp_servers::resetUntil) ? ntp_servers::get() : null);
 	$this->setArgs();
@@ -56,9 +60,11 @@ class ntpQuotaGet {
 	    if (is_numeric($a) && $a > 0) $this->argN = $a;
 	    else if ($a === '-4') $this->ip4 = true;
 	    else if ($a === '-6') $this->ip6 = true;
+	    else if ($a === 'o' || $a === '-o') $this->xsvrs = true;
 
-	if (!isset($this->argN))
-		   $this->argN = self::defaultGets;
+	if (!isset($this->argN)) 
+	    if ($this->xsrvs) $this->argN = self::defaultGets;
+	    else	      $this->argN = self::iServersDefaultGet;
 	
     }
 }
