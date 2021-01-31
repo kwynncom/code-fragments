@@ -7,38 +7,40 @@
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
 #include "nanotime.h"
-
-#define PORT	 8080 
+#include "config.h"
 
 int main() { 
 	int sockfd; 
 	struct sockaddr_in	 servaddr; 
 	if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 17)) < 0 ) { perror("socket creation failed"); exit(EXIT_FAILURE); }  // 17 is UDP in /etc/protocols
+
+        struct timeval timeout;      
+        timeout.tv_sec  = 1;
+        timeout.tv_usec = 0;
+
+        if (setsockopt (sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) perror("setsockopt failed\n");
+
 	memset(&servaddr, 0, sizeof(servaddr)); 
 	
 	servaddr.sin_family = AF_INET; 
-	servaddr.sin_port = htons(PORT); 
+	servaddr.sin_port = htons(PORT_KWNTP_NS_2021_01_1); 
 	servaddr.sin_addr.s_addr = INADDR_ANY; 
 	
-	int n, len;
 	char *tomsg = "t"; 
-        long int *buf;
-        char readb[20];
 	
         long b; long e;
+        long r;
+
+        char readb[20];
+        int rcvdmsglen;
+        int servaddrlen = sizeof(servaddr);
 
         b = nanotime();
-	sendto(sockfd, (const char *)tomsg, 2, 
-		0, (const struct sockaddr *) &servaddr, 
-			sizeof(servaddr)); 
-
-	n = recvfrom(sockfd, &readb, 20, 
-				MSG_WAITALL, (struct sockaddr *) &servaddr, 
-                		&len); 
+	sendto(sockfd, (const char *)tomsg, 2, 0, (const struct sockaddr *) &servaddr, servaddrlen); 
+	recvfrom(sockfd, &r, sizeof(r), MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 
         e = nanotime();
-      
 
-	printf("%ld\n%s\n\%ld\n", b, readb, e); 
+	printf("%ld\n%ld\n\%ld\n", b, r, e); 
 
 	close(sockfd); 
 	return 0; 
