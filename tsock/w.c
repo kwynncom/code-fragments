@@ -24,7 +24,9 @@ int main() {
 	
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_port = htons(PORT_KWNTP_NS_2021_01_1); 
-	servaddr.sin_addr.s_addr = INADDR_ANY; 
+	// servaddr.sin_addr.s_addr = INADDR_ANY; 
+
+        servaddr.sin_addr.s_addr = inet_addr("34.193.238.16");
 	
 	char *tomsg = "t"; 
 	
