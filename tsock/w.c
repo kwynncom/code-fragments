@@ -39,7 +39,7 @@ int main() {
         int servaddrlen = sizeof(servaddr);
 
         int i;
-        for (i=0; i < 5; i++) {
+        for (i=0; i < 20; i++) {
             b = nanotime();
             sendto(sockfd, tomsg, 2, 0, (const struct sockaddr *) &servaddr, servaddrlen); 
             recvfrom(sockfd, &r, sizeof(r), MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 

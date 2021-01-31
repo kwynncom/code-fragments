@@ -82,7 +82,7 @@ class chrony_parse {
     }
  
     private static function head() {
-	return ' mago    uso   rdi      rf    sk   rde      f';
+	return ' mago    uso    rdi      rf    sk   rde      f';
     }
     
     private static function freq20($din) {
