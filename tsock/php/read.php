@@ -7,9 +7,11 @@ kwas(socket_bind($sr, '127.0.0.1', 42855), 's bind failed - 620');
 
 for($i=0; $i < 10; $i++) nanotime();
 
+do {
 socket_recvfrom($sr, $buf, 4, 0, $remote_ip, $remote_port);
 $t = nanotime();
 socket_sendto($sr, $t , 19 , 0 , $remote_ip , $remote_port);
+} while(true);
 // socket_write($sr, $t);
 
 /*

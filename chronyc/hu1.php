@@ -66,7 +66,7 @@ class chrony_parse {
 
 	$rdd  = self::root20($a['Root dispersion']);
 	$rfn  = self::freq20($a['Residual freq']);
-	$rfd  = sprintf('%7.2f', $rfn); unset($rfn);
+	$rfd  = sprintf('%8.2f', $rfn); unset($rfn);
 	$sk10  = self::freq20($a['Skew']);
 	$skd   = sprintf('%5.1f', $sk10); unset($sk10);
 	$rde  = self::root20($a['Root delay']);

@@ -27,7 +27,8 @@ int main() {
 	// servaddr.sin_addr.s_addr = INADDR_ANY; 
 
         servaddr.sin_addr.s_addr = inet_addr("34.193.238.16");
-	
+        // servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");	
+
 	const char *tomsg = "t";
 	
         long b; long e;
