@@ -25,13 +25,13 @@ int main() {
     if ( bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ) { perror("bind failed"); exit(EXIT_FAILURE); } 
       
     char buffer[2];
-    int cliaddrlen = sizeof(cliaddr);
+    int cliaddrlen;
 
-    // do {
+    do {
         recvfrom(sockfd, (char *)buffer, 1, 0, ( struct sockaddr *) &cliaddr, &cliaddrlen); 
         long t = nanotime();
         sendto(sockfd, (long int *) &t, sizeof(t), 0, (const struct sockaddr *) &cliaddr, cliaddrlen); 
-    // } while (1);
+    } while (1);
 
     close(sockfd); 
 
