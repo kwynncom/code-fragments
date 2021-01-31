@@ -29,9 +29,15 @@ class ntp_output {
 	    $nms = $this->outnet($ddin['all']);
 	    if ($nms > 99.92) return;
 	    $nmsd = sprintf('%02d', $nms);
-	    $s = ($vd . ' ' . $nmsd /* . ' ' . $ddin['srv']  */ .    "\n");
-	    // echo($s);
+	    $s = $vd . ' ' . $nmsd;
+	    
+	    $isx = $ddin['si']['pool'] !== 'kwynn';
+	    if ($isx) $s .= ' ' . $ddin['si']['pool'] . ' ' . $ddin['si']['server'];
+	    // $s = ($vd . ' ' . $nmsd /* . ' ' . $ddin['srv']  */ .    "\n");
+	    $s .= "\n";
+	    if ($isx) echo($s);
 	    $this->barr[$this->tit++]['dis'] = $s;
+	    kwynn();
 	} else {
 	    $s = ($ddin['status'] . ' ' . $ddin['server'] . "\n");
 	    $this->badrd[] = $s;

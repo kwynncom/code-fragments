@@ -83,7 +83,10 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	}
 	else $h = $this->scoll->findOne($q10, $sorta); kwas($h, 'no server within quota');
 	$this->scoll->upsert(['_id' => $h['_id']], $upv);
-	return $h['server'];
+	
+	$rfs = ['server', 'pool', 'minpoll'];
+	foreach($rfs as $f) $ret[$f] = $h[$f];
+	return $ret;
     }
 
 }

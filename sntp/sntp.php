@@ -45,6 +45,7 @@ private static function getBasePacket() {
 }
 
 protected function setServer($sin) {
+    // kwas($sin, 'should not be false - setServer - 1216');
     if ($this->server === $sin) return;
     $this->server = $sin;
     $this->setSocket();

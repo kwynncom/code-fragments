@@ -24,12 +24,12 @@ class ntpQuotaGet {
 	$res = [];
 	$ino = $iok = 0;
 	do {
-	    $s = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6, $this->xsrvs);
-	    if (!$s) exit(0);
-	    $this->geto->setServer($s);
+	    $si = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6, $this->xsrvs);
+	    if (!$si) exit(0);
+	    $this->geto->setServer($si['server']);
 	    $dat = $this->geto->pget();
 	    $this->dao->put($dat);
-	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'srv' => $s, 'all' => $dat];	    $iok++; }
+	    if (isset($dat['OK'])) { $t = ['off' => $dat['calcs']['coffset'], 'si' => $si, 'all' => $dat];	    $iok++; }
 	    else		   { $t = ['status' => $dat['status'], 'server' => $dat['server']]; $ino++; }
 	    $res[] = $t;
 	    $this->out->out($t);
