@@ -4,8 +4,12 @@ require_once('/opt/kwynn/kwutils.php');
 
 $sr = socket_create (AF_INET, SOCK_DGRAM, SOL_UDP);
 kwas(socket_bind($sr, '127.0.0.1', 42855), 's bind failed - 620');
-socket_read($sr, 4);
+
+for($i=0; $i < 10; $i++) nanotime();
+
+socket_recvfrom($sr, $buf, 4, 0, $remote_ip, $remote_port);
 $t = nanotime();
+socket_sendto($sr, $t , 19 , 0 , $remote_ip , $remote_port);
 // socket_write($sr, $t);
 
 /*
