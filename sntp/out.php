@@ -27,9 +27,10 @@ class ntp_output {
 	    $this->sdo->put($v);
 	    $vd = sprintf('%+06.2f', $v);
 	    $nms = $this->outnet($ddin['all']);
-	    $nmsd = sprintf('%03d', $nms);
-	    $s = ($vd . ' ' . $nmsd  . ' ' . $ddin['srv'] .   "\n");
-	    echo($s);
+	    if ($nms > 99.92) return;
+	    $nmsd = sprintf('%02d', $nms);
+	    $s = ($vd . ' ' . $nmsd /* . ' ' . $ddin['srv']  */ .    "\n");
+	    // echo($s);
 	    $this->barr[$this->tit++]['dis'] = $s;
 	} else {
 	    $s = ($ddin['status'] . ' ' . $ddin['server'] . "\n");
@@ -50,7 +51,7 @@ class ntp_output {
     
     private function bynetd() {
 	usort($this->barr, ['self', 'sort']);
-	echo('***********' . "\n");
+	// echo('***********' . "\n");
 	foreach($this->barr as $r) echo($r['dis']);
     }
     
