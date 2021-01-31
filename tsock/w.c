@@ -11,7 +11,7 @@
 
 int main() { 
 	int sockfd; 
-	struct sockaddr_in	 servaddr; 
+	struct sockaddr_in	 servaddr;
 	if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 17)) < 0 ) { perror("socket creation failed"); exit(EXIT_FAILURE); }  // 17 is UDP in /etc/protocols
 
         struct timeval timeout;      
@@ -28,7 +28,7 @@ int main() {
 
         servaddr.sin_addr.s_addr = inet_addr("34.193.238.16");
 	
-	char *tomsg = "t"; 
+	const char *tomsg = "t";
 	
         long b; long e;
         long r;
@@ -37,12 +37,15 @@ int main() {
         int rcvdmsglen;
         int servaddrlen = sizeof(servaddr);
 
-        b = nanotime();
-	sendto(sockfd, (const char *)tomsg, 2, 0, (const struct sockaddr *) &servaddr, servaddrlen); 
-	recvfrom(sockfd, &r, sizeof(r), MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 
-        e = nanotime();
+        int i;
+        for (i=0; i < 10; i++) {
+            b = nanotime();
+            sendto(sockfd, tomsg, 2, 0, (const struct sockaddr *) &servaddr, servaddrlen); 
+            recvfrom(sockfd, &r, sizeof(r), MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 
+            e = nanotime();
 
-	printf("%ld\n%ld\n\%ld\n", b, r, e); 
+            printf("%ld\n%ld\n\%ld\n", b, r, e); 
+        }
 
 	close(sockfd); 
 	return 0; 
