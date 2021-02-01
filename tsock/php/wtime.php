@@ -19,13 +19,8 @@ $b   = nanotime();
 socket_write($sr, $req);
 $htr = socket_read($sr, 2000);
 $e = nanotime();
-$sti = getTime($htr); unset($htr);
-$avg = ($b + $e) >> 1;
-$d = $sti - $avg;
-$dd = number_format($d);
-$nd = $e - $b;
-$ndd = number_format($nd);
-echo($dd . ' ' . $ndd . "\n");
+$r = getTime($htr);
+echo("$b\n$r\n$e\n");
 }
 
 function getTime($din) {
