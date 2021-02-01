@@ -1,4 +1,2 @@
-C code starting from:
-https://www.geeksforgeeks.org/udp-server-client-implementation-c/
-
-
+https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/ - mostly
+correction / missing .h in: https://aticleworld.com/socket-programming-in-c-using-tcpip/

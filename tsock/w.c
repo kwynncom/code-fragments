@@ -1,53 +1,69 @@
+#include <netdb.h> 
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <unistd.h> 
 #include <string.h> 
-#include <sys/types.h> 
 #include <sys/socket.h> 
-#include <arpa/inet.h> 
-#include <netinet/in.h> 
-#include "nanotime.h"
-#include "config.h"
+#include<arpa/inet.h>
+#include<unistd.h>
 
-int main() { 
-	int sockfd; 
-	struct sockaddr_in	 servaddr;
-	if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 17)) < 0 ) { perror("socket creation failed"); exit(EXIT_FAILURE); }  // 17 is UDP in /etc/protocols
+#define MAX 80 
+#define PORT 8080 
+#define SA struct sockaddr 
+void func(int sockfd) 
+{ 
+    char buff[MAX]; 
+    int n; 
 
-        struct timeval timeout;      
-        timeout.tv_sec  = 1;
-        timeout.tv_usec = 0;
+    int readr, writer;
 
-        if (setsockopt (sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) perror("setsockopt failed\n");
-
-	memset(&servaddr, 0, sizeof(servaddr)); 
-	
-	servaddr.sin_family = AF_INET; 
-	servaddr.sin_port = htons(PORT_KWNTP_NS_2021_01_1); 
-	// servaddr.sin_addr.s_addr = INADDR_ANY; 
-
-        servaddr.sin_addr.s_addr = inet_addr("34.193.238.16");
-        // servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");	
-
-	const char *tomsg = "t";
-	
-        long b; long e;
-        long r;
-
-        char readb[20];
-        int rcvdmsglen;
-        int servaddrlen = sizeof(servaddr);
-
-        int i;
-        for (i=0; i < 20; i++) {
-            b = nanotime();
-            sendto(sockfd, tomsg, 2, 0, (const struct sockaddr *) &servaddr, servaddrlen); 
-            recvfrom(sockfd, &r, sizeof(r), MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 
-            e = nanotime();
-
-            printf("%ld\n%ld\n\%ld\n", b, r, e); 
-        }
-
-	close(sockfd); 
-	return 0; 
+    for (;;) { 
+        bzero(buff, sizeof(buff)); 
+        printf("Enter the string : "); 
+        n = 0; 
+        while ((buff[n++] = getchar()) != '\n') 
+            ; 
+        writer = write(sockfd, buff, sizeof(buff)); 
+        bzero(buff, sizeof(buff)); 
+        readr = read(sockfd, buff, sizeof(buff)); 
+        printf("From Server : %s", buff); 
+        if ((strncmp(buff, "exit", 4)) == 0) { 
+            printf("Client Exit...\n"); 
+            break; 
+        } 
+    } 
 } 
+  
+int main() 
+{ 
+    int sockfd, connfd; 
+    struct sockaddr_in servaddr, cli; 
+  
+    // socket create and varification 
+    sockfd = socket(AF_INET, SOCK_STREAM, 0); 
+    if (sockfd == -1) { 
+        printf("socket creation failed...\n"); 
+        exit(0); 
+    } 
+    else
+        printf("Socket successfully created..\n"); 
+    bzero(&servaddr, sizeof(servaddr)); 
+  
+    // assign IP, PORT 
+    servaddr.sin_family = AF_INET; 
+    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+    servaddr.sin_port = htons(PORT); 
+  
+    // connect the client socket to server socket 
+    if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) { 
+        printf("connection with the server failed...\n"); 
+        exit(0); 
+    } 
+    else
+        printf("connected to the server..\n"); 
+  
+    // function for chat 
+    func(sockfd); 
+  
+    // close the socket 
+    close(sockfd); 
+}
