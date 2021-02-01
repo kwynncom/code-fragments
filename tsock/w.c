@@ -3,33 +3,27 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <sys/socket.h> 
-#include<arpa/inet.h>
-#include<unistd.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include "./udp/nanotime.h"
 
-#define MAX 80 
+#define MAX 20 
 #define PORT 8080 
 #define SA struct sockaddr 
 void func(int sockfd) 
 { 
     char buff[MAX]; 
-    int n; 
-
+    buff[0] = 't';
+    buff[1] = '\0';
     int readr, writer;
+    long b, e, r;
 
-    for (;;) { 
-        bzero(buff, sizeof(buff)); 
-        printf("Enter the string : "); 
-        n = 0; 
-        while ((buff[n++] = getchar()) != '\n') 
-            ; 
+    for (int i=0; i < 20; i++) { 
+        b = nanotime();
         writer = write(sockfd, buff, sizeof(buff)); 
-        bzero(buff, sizeof(buff)); 
-        readr = read(sockfd, buff, sizeof(buff)); 
-        printf("From Server : %s", buff); 
-        if ((strncmp(buff, "exit", 4)) == 0) { 
-            printf("Client Exit...\n"); 
-            break; 
-        } 
+        readr  = read(sockfd, &r, sizeof(r)); 
+        e = nanotime();
+        printf("%ld\n%ld\n\%ld\n", b, r, e); 
     } 
 } 
   
@@ -44,8 +38,6 @@ int main()
         printf("socket creation failed...\n"); 
         exit(0); 
     } 
-    else
-        printf("Socket successfully created..\n"); 
     bzero(&servaddr, sizeof(servaddr)); 
   
     // assign IP, PORT 
@@ -58,8 +50,6 @@ int main()
         printf("connection with the server failed...\n"); 
         exit(0); 
     } 
-    else
-        printf("connected to the server..\n"); 
   
     // function for chat 
     func(sockfd); 
