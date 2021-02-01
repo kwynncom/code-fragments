@@ -9,25 +9,10 @@
 #include <unistd.h>
 #include "./udp/nanotime.h"
 
-#define MAX 20
+#define MAX 2
 #define PORT 8080 
 #define SA struct sockaddr 
   
-void func(int sockfd)  // Function designed for chat between client and server. 
-{ 
-    char buff[MAX]; 
-    int n; 
-    int readr, writer;
-    for (;;) {      // infinite loop for chat 
-        bzero(buff, MAX); 
-        readr = read(sockfd, buff, 1); 
-        bzero(buff, MAX); 
-        long t = nanotime();
-        writer = write(sockfd, &t, sizeof(t)); 
-    } 
-} 
-  
-// Driver function 
 int main() 
 { 
     int sockfd, connfd, len; 
@@ -53,23 +38,32 @@ int main()
         exit(0); 
     } 
   
-    // Now server is ready to listen and verification 
-    if ((listen(sockfd, 5)) != 0) { 
-        printf("Listen failed...\n"); 
-        exit(0); 
-    } 
+    char buff[MAX]; 
+    int n; 
+    int readr, writer;
+    long t;
+
     len = sizeof(cli); 
-  
-    // Accept the data packet from client and verification 
-    connfd = accept(sockfd, (SA*)&cli, &len); 
-    if (connfd < 0) { 
-        printf("server acccept failed...\n"); 
-        exit(0); 
+    if ((listen(sockfd, 5)) != 0) { printf("Listen failed...\n"); exit(0);  } 
+
+    while(1) {
+
+       connfd = accept(sockfd, (SA*)&cli, &len); 
+       if (connfd < 0) { printf("server acccept failed...\n"); exit(0);   } 
+
+       if (!fork()) {
+        close(sockfd); 
+       while (1) {
+        bzero(buff, MAX); 
+        readr = read(connfd, buff, 2); 
+        t = nanotime();
+        writer = write(connfd, &t, sizeof(t)); 
+
+        }
+
+        close(connfd);
+        } else close(connfd);
     } 
-  
-    // Function for chatting between client and server 
-    func(connfd); 
-  
-    // After chatting close the socket 
+
     close(sockfd); 
 }

@@ -27,9 +27,11 @@ int main() {
     char buffer[2];
     int cliaddrlen;
 
+    long t;
+    
     do {
         recvfrom(sockfd, (char *)buffer, 1, 0, ( struct sockaddr *) &cliaddr, &cliaddrlen); 
-        long t = nanotime();
+        t = nanotime();
         sendto(sockfd, (long int *) &t, sizeof(t), 0, (const struct sockaddr *) &cliaddr, cliaddrlen); 
     } while (1);
 

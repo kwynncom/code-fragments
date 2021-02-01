@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include "./udp/nanotime.h"
 
-#define MAX 20 
+#define MAX 2
 #define PORT 8080 
 #define SA struct sockaddr 
 void func(int sockfd) 
@@ -16,14 +16,16 @@ void func(int sockfd)
     buff[0] = 't';
     buff[1] = '\0';
     int readr, writer;
-    long b, e, r;
+    long b, e, timer;
+
+    timer = 0;
 
     for (int i=0; i < 20; i++) { 
         b = nanotime();
         writer = write(sockfd, buff, sizeof(buff)); 
-        readr  = read(sockfd, &r, sizeof(r)); 
+        readr  = read(sockfd, &timer, sizeof(timer)); 
         e = nanotime();
-        printf("%ld\n%ld\n\%ld\n", b, r, e); 
+        printf("%ld\n%ld\n\%ld\n", b, timer, e); 
     } 
 } 
   
@@ -42,6 +44,7 @@ int main()
   
     // assign IP, PORT 
     servaddr.sin_family = AF_INET; 
+    // servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
     servaddr.sin_port = htons(PORT); 
   
