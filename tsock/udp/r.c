@@ -10,6 +10,7 @@
 #include "config.h"
 
 int main() { 
+
     int sockfd; 
     struct sockaddr_in servaddr, cliaddr; 
       
@@ -27,15 +28,27 @@ int main() {
     char buffer[2];
     int cliaddrlen;
 
-    long t;
+    char outbuf[50];
+
+    long t, t0;
+
+    int tsize = sizeof(t0);
     
     do {
         recvfrom(sockfd, (char *)buffer, 1, 0, ( struct sockaddr *) &cliaddr, &cliaddrlen); 
         t = nanotime();
-        sendto(sockfd, (long int *) &t, sizeof(t), 0, (const struct sockaddr *) &cliaddr, cliaddrlen); 
+        memcpy(outbuf, &t, tsize);
+        t0 = nanotime();
+        memcpy(outbuf + tsize, &t0, tsize);
+        sendto(sockfd, &outbuf, tsize << 1, 0, (const struct sockaddr *) &cliaddr, cliaddrlen); 
     } while (1);
 
     close(sockfd); 
 
     return 0; 
 } 
+
+uint64_t nw_order(const uint64_t in) {
+    unsigned char out[8] = {in>>56,in>>48,in>>40,in>>32,in>>24,in>>16,in>>8,in};
+    return *(uint64_t*)out;
+}

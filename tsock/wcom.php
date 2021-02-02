@@ -9,11 +9,28 @@ $a = explode("\n", trim($res));
 
 $a20 = [];
 
-for($i=0; $i < count($a); $i += 3) {
+$acnt = count($a);
+if ($acnt % 4 === 0) {
+    $s2 = true;
+    $groupn = 4;
+}
+else {
+    $s2 = false;
+    $groupn = 3;
+}
+
+for($i=0; $i < $acnt; $i += $groupn) {
 
     $b = $a[0 + $i];
-    $stis = $a[1 + $i];
-    $e = $a[2 + $i];
+    if (!$s2) { 
+	$stis = $a[1 + $i];
+	$e = $a[2 + $i];
+    }
+    else {
+	$stis = ($a[1 + $i] + $a[2 + $i]) >> 1;
+	$e = $a[$i + 3];
+    }
+
 
     $sti = (int)$stis;
     $avg = ($b + $e) >> 1;
@@ -52,4 +69,3 @@ foreach($a20 as $a) echo($a['d']);
 function vsntp_sort($a, $b) {
     return -($a['n'] - $b['n']);
 }
-

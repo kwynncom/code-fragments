@@ -37,15 +37,22 @@ int main() {
         char readb[20];
         int rcvdmsglen;
         int servaddrlen = sizeof(servaddr);
+        int resbufsize = sizeof(r) << 1;
+        char resbuf[resbufsize];
+        long r2;
 
         int i;
         for (i=0; i < 20; i++) {
             b = nanotime();
             sendto(sockfd, tomsg, 2, 0, (const struct sockaddr *) &servaddr, servaddrlen); 
-            recvfrom(sockfd, &r, sizeof(r), MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 
+            int rb = recvfrom(sockfd, resbuf, resbufsize, MSG_WAITALL, (struct sockaddr *) &servaddr, &rcvdmsglen); 
             e = nanotime();
 
-            printf("%ld\n%ld\n\%ld\n", b, r, e); 
+
+            memcpy(&r , resbuf, sizeof(r));
+            memcpy(&r2, resbuf + sizeof(r2), sizeof(r2));
+
+            printf("%ld\n%ld\n%ld\n%ld\n", b, r, r2, e); 
         }
 
 	close(sockfd); 
