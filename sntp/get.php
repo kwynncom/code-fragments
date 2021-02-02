@@ -13,6 +13,7 @@ class ntpQuotaGet {
     const iServersDefaultGet = 5; // internal (Kwynn) servers default get
     
     private $xsrvs = false;
+    private $loc   = false;
 
     public static function get() {
 	$o = new self();
@@ -24,7 +25,7 @@ class ntpQuotaGet {
 	$res = [];
 	$ino = $iok = 0;
 	do {
-	    $si = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6, $this->xsrvs);
+	    $si = $this->dao->get($this->argN > self::defaultGets, $this->ip4, $this->ip6, $this->xsrvs, $this->loc);
 	    if (!$si) exit(0);
 	    $this->geto->setServer($si['server']);
 	    $dat = $this->geto->pget();
@@ -61,6 +62,7 @@ class ntpQuotaGet {
 	    else if ($a === '-4') $this->ip4 = true;
 	    else if ($a === '-6') $this->ip6 = true;
 	    else if ($a === 'o' || $a === '-o') $this->xsrvs = true;
+	    else if ($a === 'l' || $a === '-l') $this->loc = true;
 
 	if (!isset($this->argN)) 
 	    if ($this->xsrvs) $this->argN = self::defaultGets;

@@ -3,9 +3,6 @@
 require_once('/opt/kwynn/kwutils.php');
 
 function doit($dirin) {
-if (0) $type = 'loc';
-else   $type = 'kwy';
-
 
 $res = shell_exec($dirin . '/w');
 $a = explode("\n", trim($res));
@@ -23,19 +20,23 @@ for($i=0; $i < count($a); $i += 3) {
     $ons = -($sti - $avg);
     $ta['o'] = $ons;
 
-    $oms = $ons / M_MILLION;
+    if ($ons > M_MILLION) {
+	$odf = '%+06.2f';
+	$nf  = '%02d';
+    } else {
+	$odf = '%+08.5f';
+	$nf  = '%04.2f';
+    }
     
-    if ($type === 'kwy') $odf = '%+06.2f';
-    else		 $odf = '%+06.3f';
+    $oms = $ons / M_MILLION;
+
     $od  = sprintf($odf, $oms);
 
     $ndns = $e - $b;
     $ta['n'] = $ndns;
     $ndms = $ndns / M_MILLION;
     if ($ndms > 99.92) continue;
-    
-    if ($type === 'kwy') $nf = '%02d';
-    else		 $nf = '%07.5f';
+
     $ndd = sprintf($nf, $ndms);
     $ds = $od . ' ' . $ndd . "\n"; 
     // echo($ds);

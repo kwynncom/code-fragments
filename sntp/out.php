@@ -20,15 +20,27 @@ class ntp_output {
     }
     
     public function out($ddin) {
+
+	$nms = $this->outnet($ddin['all']);
 	
-	if (isset($ddin['off'])) {
+	if (isset($ddin['off']) || $nms < 0.6) {
 	    $v =  $ddin['off'];
+	    
+	    if ($v > M_MILLION) {
+		$odf = '%+06.2f';
+		$nf  = '%02d';
+	    } else {
+		$odf = '%+08.5f';
+		$nf  = '%04.2f';
+	    }
+
+	    
 	    $v *= 1000;
 	    $this->sdo->put($v);
-	    $vd = sprintf('%+06.2f', $v);
-	    $nms = $this->outnet($ddin['all']);
+	    $vd = sprintf($odf, $v);
+
 	    if ($nms > 99.92) return;
-	    $nmsd = sprintf('%02d', $nms);
+	    $nmsd = sprintf($nf, $nms);
 	    $s = $vd . ' ' . $nmsd;
 	    
 	    $isx = $ddin['si']['pool'] !== 'kwynn';
@@ -51,8 +63,10 @@ class ntp_output {
 	$msf = $ns / M_MILLION;
 	$this->barr[$this->tit]['netdf' ] = $msf;
 	$this->barr[$this->tit]['netdns'] = $ns;
-	$ms = intval(round($msf));
-	return $ms;
+	
+	return $msf;
+	// $ms = intval(round($msf));
+	// return $ms;
     }
     
     private function bynetd() {

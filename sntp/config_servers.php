@@ -3,7 +3,7 @@
 class ntp_servers {
    
         
-   const resetUntil = '2021-01-26 18:00 America/New_York';
+   const resetUntil = '2021-02-01 21:41 America/New_York';
    const defaultMinPoll = 64;
 
    public static function get() {
@@ -69,6 +69,8 @@ class ntp_servers {
 	    ];
 	
 	$a['att'] = ['68.94.156.17', '68.94.157.2']; // http://www.dslreports.com/faq/14310
+	$a['localhost'] = ['127.0.0.1'];
+	
 	
 	return $a;
     }

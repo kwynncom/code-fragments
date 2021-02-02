@@ -2,15 +2,22 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
+if (0 || isAWS()) {
+    $server = 'kwynn.com';
+    $url    = '/t/20/10/timeserver/nstimeraw.php';
+}
+else {
+    $server = '127.0.0.1';
+    $url    = '/tsnano/nstimeraw.php';
+}
 
-for($i=0; $i < 20; $i++) nanotime();
-
+for($i=0; $i < 8; $i++) nanotime();
 $sr = socket_create(AF_INET, SOCK_STREAM, 6);
-kwas(socket_connect($sr, 'kwynn.com', 80), 's conn failed - 620');
+kwas(socket_connect($sr, $server, 80), 's conn failed - 620');
 
 $req = '';
-$req .= 'GET /t/20/10/timeserver/nstimeraw.php' . ' HTTP/1.1' . "\r\n";
-$req .= 'Host: kwynn.com' . "\r\n";
+$req .= 'GET ' . $url . ' HTTP/1.1' . "\r\n";
+$req .= 'Host: ' .  $server . "\r\n";
 $req .= 'Connection: keep-alive' . "\r\n";
 $req .= "\r\n";
 

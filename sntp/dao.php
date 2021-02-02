@@ -45,16 +45,16 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	}
     }
     
-    public function get($hfo, $ip4, $ip6, $xs) {
+    public function get($hfo, $ip4, $ip6, $xs, $loc) {
 	try {
-	    return $this->getI($hfo, $ip4, $ip6, $xs);
+	    return $this->getI($hfo, $ip4, $ip6, $xs, $loc);
 	} catch(Exception $ex) { return false; 	}
 	
 	
     }
     
     
-    private function getI($hfo, $ip4, $ip6, $xs) { // $hfo === high-frequency polls only; $xs = external (non Kwynn) servers
+    private function getI($hfo, $ip4, $ip6, $xs, $loc) { // $hfo === high-frequency polls only; $xs = external (non Kwynn) servers
 	$now = microtime(1);
 	$hu  = date('r', $now);
 	
@@ -63,7 +63,8 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 	    $q23 = ['minpoll' => ['$gte' => 0.9 ]];
 	    $q20 = ['$and' => [$q18, $q23]];
 	}
-	else	    $q20 = ['minpoll' => ['$lte' => 0.001]];
+	else if (!$loc) $q20 = ['minpoll' => ['$lte' => 0.001]];
+	else		$q20 = ['_id' => 'localhost'];
 	
 	$q4 = false;
 	if	($ip4) $q4 = ['server' => new MongoDB\BSON\Regex('^(\d{1,3}\.?){4}$')];
@@ -76,7 +77,7 @@ class dao_ntp_pool_quota extends dao_generic_2 {
 
 	$upv = ['lts' => $now, 'hu' => $hu];	
 	
-	if (!$ip4 && !$ip6 && !$xs) {
+	if ((!$ip4 && !$ip6 && !$xs) || $loc) {
 	    $p = $this->pcoll->findOne($q20, $sorta ); kwas($p, 'no server within quota');
 	    $this->pcoll->upsert(['_id' => $p['_id']], $upv );
 	    $h = $this->scoll->findOne(['pool' => $p['_id']], $sorta); kwas($h, 'no server within quota');
