@@ -23,10 +23,10 @@ class ntp_output {
 
 	$nms = $this->outnet($ddin['all']);
 	
-	if (isset($ddin['off']) || $nms < 0.6) {
+	if (isset($ddin['off'])) {
 	    $v =  $ddin['off'];
 	    
-	    if ($v > M_MILLION) {
+	    if ($v > M_MILLION || $nms > 0.6) {
 		$odf = '%+06.2f';
 		$nf  = '%02d';
 	    } else {
