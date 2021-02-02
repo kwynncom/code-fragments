@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "./udp/nanotime.h"
 
-#define MAX 2
+#define OUTBUFMAX 25
 #define PORT 8124 
 #define SA struct sockaddr 
   
@@ -34,13 +34,18 @@ int main()
         exit(0); 
     } 
   
-    char buff[MAX]; 
+    char inbuf;
+    int inbufsz = sizeof(inbuf);
     int n; 
     int readr, writer;
     long t;
 
     len = sizeof(cli); 
     if ((listen(sockfd, 5)) != 0) { printf("Listen failed...\n"); exit(0);  } 
+
+    char outbufs[25];
+
+    int sizet = sizeof(t);
 
     while(1) {
 
@@ -50,10 +55,15 @@ int main()
        if (!fork()) {
         close(sockfd); 
        while (1) {
-        bzero(buff, MAX); 
-        readr = read(connfd, buff, 2); 
+        bzero(outbufs, OUTBUFMAX); 
+        readr = read(connfd, &inbuf, inbufsz);
         t = nanotime();
-        writer = write(connfd, &t, sizeof(t)); 
+        if (inbuf == 'r') writer = write(connfd, &t, sizet); 
+        else {
+            sprintf(outbufs, "%ld\n", t);
+            writer = write(connfd, outbufs, strlen(outbufs));
+            
+        }
 
         }
 

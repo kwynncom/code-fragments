@@ -7,25 +7,33 @@
 #include <unistd.h>
 #include "./udp/nanotime.h"
 
-#define MAX 2
+#define OUTBUFMAX 5
+#define INBUFMAX 25
 #define PORT 8124
 #define SA struct sockaddr 
 void func(int sockfd) 
 { 
-    char buff[MAX]; 
-    buff[0] = 't';
-    buff[1] = '\0';
+    const char smsg = 'd';
+    const int  smsgsize = sizeof(smsg);
     int readr, writer;
     long b, e, timer;
-
     timer = 0;
+    char inbuf[INBUFMAX];
+    char *outfmt;
 
-    for (int i=0; i < 20; i++) { 
+    if (smsg == 'd') outfmt = "%ld\n%s%ld\n";
+    else             outfmt = "%ld\n%ld\n\%ld\n";
+
+    for (int i=0; i < 20; i++) {
+        bzero(inbuf, INBUFMAX); 
         b = nanotime();
-        writer = write(sockfd, buff, sizeof(buff)); 
-        readr  = read(sockfd, &timer, sizeof(timer)); 
+        writer = write(sockfd, &smsg, smsgsize);
+        if (smsg == 'r') readr = read(sockfd, &timer, sizeof(timer));
+        else             readr = read(sockfd, inbuf, INBUFMAX);
         e = nanotime();
-        printf("%ld\n%ld\n\%ld\n", b, timer, e); 
+        if (smsg == 'r') 
+             printf(outfmt, b, timer, e);
+        else printf(outfmt, b, inbuf, e);
     } 
 } 
   

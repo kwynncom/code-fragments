@@ -10,7 +10,7 @@ $a = explode("\n", trim($res));
 $a20 = [];
 
 $acnt = count($a);
-if ($acnt % 4 === 0) {
+if (0 && $acnt % 4 === 0) {
     $s2 = true;
     $groupn = 4;
 }
@@ -42,7 +42,7 @@ for($i=0; $i < $acnt; $i += $groupn) {
 	$nf  = '%02d';
     } else {
 	$odf = '%+08.5f';
-	$nf  = '%04.2f';
+	$nf  = '%05.3f';
     }
     
     $oms = $ons / M_MILLION;

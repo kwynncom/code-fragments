@@ -28,19 +28,13 @@ int main() {
     char buffer[2];
     int cliaddrlen;
 
-    char outbuf[50];
-
-    long t, t0;
-
-    int tsize = sizeof(t0);
+    long t;
+    int sizet = sizeof(t);
     
     do {
         recvfrom(sockfd, (char *)buffer, 1, 0, ( struct sockaddr *) &cliaddr, &cliaddrlen); 
         t = nanotime();
-        memcpy(outbuf, &t, tsize);
-        t0 = nanotime();
-        memcpy(outbuf + tsize, &t0, tsize);
-        sendto(sockfd, &outbuf, tsize << 1, 0, (const struct sockaddr *) &cliaddr, cliaddrlen); 
+        sendto(sockfd, &t, sizet, 0, (const struct sockaddr *) &cliaddr, cliaddrlen); 
     } while (1);
 
     close(sockfd); 
