@@ -21,6 +21,8 @@ class ntp_output {
     
     public function out($ddin) {
 
+	if (!isset($ddin['all'])) return;
+	
 	$nms = $this->outnet($ddin['all']);
 	
 	if (isset($ddin['off'])) {
