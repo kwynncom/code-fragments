@@ -11,7 +11,7 @@
 #include "config.h"
 
 long nanotime();
-int getBoundSock(char *prot);
+int getBoundSock(int isTCP);
 void io_tcp();
 
 void main() {
@@ -20,43 +20,55 @@ void main() {
     if (fpid) prots = "tcp";
     else      prots = "udp";
 
-    int sock = getBoundSock(prots);
-    struct sockaddr_in caddr; // I'm not using but required
+    int isTCP = !strcmp(prots, "tcp");
+
+    int sock = getBoundSock(isTCP);
+    struct sockaddr_in caddr; // only UDP uses
     int caddrsz = sizeof(caddr); // same
-    char inbuf;
+    char inbuf[3];
     int inbufsz = sizeof(inbuf);
     int outbufssz = 30;
     char outbufs[outbufssz];
     int readr, connfd, writer;
     long t;
     int sizet = sizeof(t);
-
-    if (!fpid) exit(0); // not ready for udp yet
-
-    while(1) {
-        if ((connfd = accept(sock, (struct sockaddr  *)&caddr, &caddrsz)) < 0) { printf("server acccept failed...\n"); exit(1);   } 
-        if (!fork()) {
-            close(sock); // child process does not need socket
-            while (1) {
-                bzero(outbufs, outbufssz); 
-                readr = read(connfd, &inbuf, inbufsz);
-                t = nanotime();
-                if (inbuf == 'r') writer = write(connfd, &t, sizet); 
-                else {
-                    sprintf(outbufs, "%ld\n", t);
-                    writer = write(connfd, outbufs, strlen(outbufs));
-                }
-            } // while inner
-            close(connfd);
-        } // if !fork
-        else close(connfd);
-    } // while outer
+ 
+    if (isTCP) {
+        while(1) {
+            if ((connfd = accept(sock, (struct sockaddr  *)&caddr, &caddrsz)) < 0) { printf("server acccept failed...\n"); exit(1);   } 
+            if (!fork()) {
+                close(sock); // child process does not need socket
+                while (1) {
+                    bzero(outbufs, outbufssz); 
+                    readr = read(connfd, &inbuf, inbufsz);
+                    t = nanotime();
+                    if (inbuf[0] == 'r') writer = write(connfd, &t, sizet); 
+                    else {
+                        sprintf(outbufs, "%ld\n", t);
+                        writer = write(connfd, outbufs, strlen(outbufs));
+                    }
+                } // while inner
+                close(connfd);
+            } // if !fork
+            else close(connfd);
+        } // while outer
+    } // TCP
+    else {
+        do {
+            recvfrom(sock, &inbuf, inbufsz, 0 /* flags */, ( struct sockaddr *) &caddr, &caddrsz); 
+            t = nanotime();
+            if (inbuf[0] == 'r') sendto(sock, &t, sizet, 0, (const struct sockaddr *) &caddr, caddrsz); 
+            else {
+                sprintf(outbufs, "%ld\n", t);
+                writer = sendto(sock, outbufs, strlen(outbufs), 0, (const struct sockaddr *) &caddr, caddrsz); 
+            }         
+        } while (1);
+    }
 
     close(sock);
 }
 
-int getBoundSock(char *prots) {
-    int isTCP = !strcmp(prots, "tcp");
+int getBoundSock(int isTCP) {
     struct sockaddr_in saddr;
     int sock, type, prot;
 
@@ -70,10 +82,8 @@ int getBoundSock(char *prots) {
 
     if ((sock = socket(AF_INET, type, prot)) < 0) { perror("socket creation failed"); exit(EXIT_FAILURE); }
     if (bind(sock, (const struct sockaddr *)&saddr, sizeof(saddr)) < 0) { perror("bind failed"); exit(EXIT_FAILURE); }
-    if (isTCP) {
-        printf("I am TCP\n");
-        if ((listen(sock, TCP_CONN_BACKLOG)) != 0) { printf("Listen failed...\n"); exit(0);  } 
-        }
+    if (isTCP) if ((listen(sock, TCP_CONN_BACKLOG)) != 0) { printf("Listen failed...\n"); exit(0);  } 
+        
     return sock;
 }
 
