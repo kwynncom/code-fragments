@@ -6,6 +6,8 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
+#inclue  <string.h> // bzero
+#include <strings.h> // bzero
 #include "nanotime.h"
 #include "config.h"
 
@@ -42,7 +44,3 @@ int main() {
     return 0; 
 } 
 
-uint64_t nw_order(const uint64_t in) {
-    unsigned char out[8] = {in>>56,in>>48,in>>40,in>>32,in>>24,in>>16,in>>8,in};
-    return *(uint64_t*)out;
-}
