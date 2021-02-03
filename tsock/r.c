@@ -61,7 +61,7 @@ int getBoundSock(char *prots) {
     int sock, type, prot;
 
     if (!isTCP) { type = SOCK_DGRAM ; prot = 17; }
-    else        { type = SOCK_STREAM; prot =  0; }
+    else        { type = SOCK_STREAM; prot =  6; }
 
     bzero(&saddr, sizeof(saddr));
     saddr.sin_family = AF_INET; 
