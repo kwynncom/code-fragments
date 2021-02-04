@@ -6,13 +6,9 @@
 #include <stdlib.h> // exit
 #include <string.h> // strcmp
 #include <strings.h> // bzero
-#include <time.h>
 
 #include "config.h"
-
-long nanotime();
-int getBoundSock(int isTCP);
-void io_tcp();
+#include "common.h"
 
 void main() {
     int fpid  = fork();
@@ -22,7 +18,7 @@ void main() {
 
     int isTCP = !strcmp(prots, "tcp");
 
-    int sock = getBoundSock(isTCP);
+    int sock = getBoundSock(isTCP, "");
     struct sockaddr_in caddr; // only UDP uses
     int caddrsz = sizeof(caddr); // same
     char inbuf[3];
@@ -66,29 +62,4 @@ void main() {
     }
 
     close(sock);
-}
-
-int getBoundSock(int isTCP) {
-    struct sockaddr_in saddr;
-    int sock, type, prot;
-
-    if (!isTCP) { type = SOCK_DGRAM ; prot = 17; }
-    else        { type = SOCK_STREAM; prot =  6; }
-
-    bzero(&saddr, sizeof(saddr));
-    saddr.sin_family = AF_INET; 
-    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    saddr.sin_port = htons(PORT);
-
-    if ((sock = socket(AF_INET, type, prot)) < 0) { perror("socket creation failed"); exit(EXIT_FAILURE); }
-    if (bind(sock, (const struct sockaddr *)&saddr, sizeof(saddr)) < 0) { perror("bind failed"); exit(EXIT_FAILURE); }
-    if (isTCP) if ((listen(sock, TCP_CONN_BACKLOG)) != 0) { printf("Listen failed...\n"); exit(0);  } 
-        
-    return sock;
-}
-
-long nanotime() {
-    struct timespec sts;
-    clock_gettime(CLOCK_REALTIME, &sts);
-    return sts.tv_sec * 1000000000 + sts.tv_nsec;
 }
