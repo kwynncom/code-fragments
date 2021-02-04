@@ -28,14 +28,26 @@ private function getall($basep) {
     $fullp  = self::getFullPacket($basep) ; unset($basep);
     $rawres = $this->getTime($fullp);
     if (!is_array($rawres)) return $this->retErr($rawres);
-    
-    $parsedRes = $this->parseNTPResponse($rawres['r']); unset($rawres['r']);
-    if (!is_array($parsedRes)) return $this->retErr($parsedRes);
+    $res = self::getCalcs($rawres, $this->server); 
+    if (!is_array($res)) $this->retErr($res);
+    return $res;
+}
+
+private static function getCalcs($rawres, $server = '') {
+    if (!isset($rawres['r'])) {
+	$t = $rawres;
+	$rawres = [];
+	$rawres['r'] = $t; unset($t);
+    }
+    $parsedRes = self::parseNTPResponse($rawres['r']);
+    if (!isset($rawres['b'])) return $parsedRes;
+    if (count($rawres) > 1) unset($rawres['r']);
+    if (!is_array($parsedRes)) return $parsedRes;
     $ma = array_merge($rawres, $parsedRes);
     $sres = self::sharpen($ma);
     $calca = self::calcs($sres);
     return ['calcs' => $calca, 'parsed' => $parsedRes, 'based' => $sres, 'local' => $rawres, 
-	'server' => $this->server, 'OK' => true, 'status' => 'OK', 'ts' => microtime(1)];
+	'server' => $server, 'OK' => true, 'status' => 'OK', 'ts' => microtime(1)];   
 }
 
 public static function getClientPacket() { return self::getFullPacket(self::getBasePacket()); } 
@@ -100,7 +112,7 @@ private function getTime($rqpack) {
     return ['r' => $response, 'b' => $b, 'e' => $e];
 }
 
-private function parseNTPResponse($response) {
+private static function parseNTPResponse($response) {
 
     $stratum  = self::getStratum($response); 
     if (!($stratum && intval($stratum) >= 1)) return 'SNTP Kiss of Death (KOD)';
