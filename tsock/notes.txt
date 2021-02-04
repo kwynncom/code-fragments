@@ -1,2 +1,4 @@
 https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/ - mostly
 correction / missing .h in: https://aticleworld.com/socket-programming-in-c-using-tcpip/
+
+popen: https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output

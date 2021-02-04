@@ -1,2 +1,2 @@
 long nanotime();
-int getBoundSock(int isTCP, char *baddr);
+int getBoundSock(int isTCP, char *baddr, int port);

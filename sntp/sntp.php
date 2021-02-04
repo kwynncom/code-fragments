@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('get.php'); // needed for standalone to get packet
 
 class sntp_get_actual extends ntpQuotaGet {
     
@@ -36,6 +37,8 @@ private function getall($basep) {
     return ['calcs' => $calca, 'parsed' => $parsedRes, 'based' => $sres, 'local' => $rawres, 
 	'server' => $this->server, 'OK' => true, 'status' => 'OK', 'ts' => microtime(1)];
 }
+
+public static function getClientPacket() { return self::getFullPacket(self::getBasePacket()); } 
 
 private static function getBasePacket() {
     $header  = '00' . sprintf('%03d',decbin(3)) . '011';

@@ -8,7 +8,7 @@
     
 #include "config.h"
     
-int getBoundSock(int isTCP, char *outaddr) {
+int getBoundSock(int isTCP, char *outaddr, int port) {
     struct sockaddr_in saddr;
     int sock, type, prot;
     int isoutaddr = strcmp("", outaddr);
@@ -20,7 +20,7 @@ int getBoundSock(int isTCP, char *outaddr) {
     saddr.sin_family = AF_INET; 
     if (!isoutaddr) saddr.sin_addr.s_addr = htonl(INADDR_ANY);
     else          saddr.sin_addr.s_addr = inet_addr(outaddr); 
-    saddr.sin_port = htons(PORT);
+    saddr.sin_port = htons(port);
 
     if ((sock = socket(AF_INET, type, prot)) < 0) { perror("socket creation failed"); exit(EXIT_FAILURE); }
 
