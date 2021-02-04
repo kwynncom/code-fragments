@@ -50,6 +50,21 @@ private static function getCalcs($rawres, $server = '') {
 	'server' => $server, 'OK' => true, 'status' => 'OK', 'ts' => microtime(1)];   
 }
 
+public static function parsePacket($rawres) {
+    $p = self::parseNTPResponse($rawres);  
+    $fs = ['recv' => ['rrs', 'rrf'], 'send' => ['rss', 'rsf']];
+    $r20 = [];
+    foreach($fs as $name => $vs) 
+	$r20[$name] = $p[$vs[0]] * M_BILLION + intval(round(($p[$vs[1]] * M_BILLION)));
+    
+    $res = array_merge($p, $r20);
+    $res['avg'] = ($res['recv'] + $res['send']) >> 1;
+    $res['internalTime'] = $res['send'] - $res['recv'];
+    return $res;
+    
+    
+}
+
 public static function getClientPacket() { return self::getFullPacket(self::getBasePacket()); } 
 
 private static function getBasePacket() {
