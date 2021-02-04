@@ -2,9 +2,11 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-function doit($dirin) {
+doit();
 
-$res = shell_exec($dirin . '/w');
+function doit() {
+
+$res = file_get_contents("php://stdin");
 $a = explode("\n", trim($res));
 
 $a20 = [];

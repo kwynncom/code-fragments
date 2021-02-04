@@ -11,9 +11,15 @@
 
 #define INBUFMAX 25
 
-int main() 
+void doit();
+
+int main()
 { 
-    int sock = getBoundSock(1, "127.0.0.1");
+    doit();
+}
+
+void doit() {
+    int sock = getBoundSock(0, "127.0.0.1");
 
     const char smsg = 'r';
     const int  smsgsize = sizeof(smsg);

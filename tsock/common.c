@@ -24,6 +24,14 @@ int getBoundSock(int isTCP, char *outaddr) {
 
     if ((sock = socket(AF_INET, type, prot)) < 0) { perror("socket creation failed"); exit(EXIT_FAILURE); }
 
+    if (!isTCP) {
+        struct timeval timeout;      
+        timeout.tv_sec  = 1;
+        timeout.tv_usec = 0;
+
+        if (setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) perror("setsockopt failed\n");
+    }
+    
     if (!isoutaddr) {
 	if (bind(sock, (const struct sockaddr *)&saddr, sizeof(saddr)) < 0) { perror("bind failed"); exit(EXIT_FAILURE); }
 	if (isTCP) if ((listen(sock, TCP_CONN_BACKLOG)) != 0) { printf("Listen failed...\n"); exit(EXIT_FAILURE);  } 
