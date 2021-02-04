@@ -39,7 +39,7 @@ for($i=0; $i < $acnt; $i += $groupn) {
     $ons = -($sti - $avg);
     $ta['o'] = $ons;
 
-    if ($ons > M_MILLION) {
+    if (abs($ons) > M_MILLION) {
 	$odf = '%+06.2f';
 	$nf  = '%02d';
     } else {

@@ -30,7 +30,7 @@ void main() {
     getPacket(&pack);
     int writer;
 
-    int sock = getBoundSock(0, "127.0.0.1", 123);
+    int sock = getBoundSock(0, "34.193.238.16", 123);
     long b = nanotime();
     if (write(sock, pack, SNTP_PLEN) != SNTP_PLEN) { printf("bad write size"); exit(1);}
     if (read (sock, pack, SNTP_PLEN) != SNTP_PLEN) { printf("bad read size"); exit(1);}
