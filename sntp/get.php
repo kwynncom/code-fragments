@@ -14,6 +14,7 @@ class ntpQuotaGet {
     
     private $xsrvs = false;
     private $loc   = false;
+    private $dets = false;
 
     public static function get() {
 	$o = new self();
@@ -48,7 +49,7 @@ class ntpQuotaGet {
 	$this->geto = new sntp_get_actual();
 	$this->dao = new dao_ntp_pool_quota(time() < strtotime(ntp_servers::resetUntil) ? ntp_servers::get() : null);
 	$this->setArgs();
-	$this->out = new ntp_output($this->argN > self::defaultGets);
+	$this->out = new ntp_output($this->argN > self::defaultGets, $this->dets);
     }
     
     private function setArgs() {
@@ -63,6 +64,7 @@ class ntpQuotaGet {
 	    else if ($a === '-6') $this->ip6 = true;
 	    else if ($a === 'o' || $a === '-o') $this->xsrvs = true;
 	    else if ($a === 'l' || $a === '-l') $this->loc = true;
+	    else if ($a === 'd' || $a === '-d') $this->dets = true;
 
 	if (!isset($this->argN)) 
 	    if ($this->xsrvs) $this->argN = self::defaultGets;
