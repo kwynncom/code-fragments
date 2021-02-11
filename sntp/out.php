@@ -109,9 +109,31 @@ class ntp_output {
 	
     }
     
-    
-    
     private function dout($ddin) {
+	$b = $ddin['all']['based'];
+	$sav = ($b['rs'] + $b['rr']) / 2;
+	$b['sav'] = $sav;	
+	$lav = ($b['lr'] + $b['ls']) / 2;
+	$b['lav'] = $lav;
+	
+	$s = '';
+	$fs = [/*'ls',*/ 'sav', 'lav',/*'lr'*/];
+	foreach($fs as $f) {
+	    $x = $b[$f] - $b['ls'];
+	    $xd = round($x * 1000);
+	    $s .= $xd . "\n";
+	}
+	
+	echo($s);
+	
+	exit(0);
+	
+	return;
+    }
+    
+    
+    
+    private function dout10($ddin) {
 	
 	$d = $ddin['all'];
 	
@@ -120,16 +142,13 @@ class ntp_output {
 	$s = '';
 	$si = $b['rs'] - $b['rr'];
 	$sid = round($si * M_MILLION);
-	$s .= $sid;
-	$s .= ' serv internal time (us)';
-	$s .= "\n";
 	
 	$n = $b['lr'] - $b['ls'];
 	$nd = round($n * 1000);
 	$s .= $nd . ' net' . "\n";
 	
-	$av = ($b['rs'] + $b['rr']) / 2;
-	$b['av'] = $av;
+	$sav = ($b['rs'] + $b['rr']) / 2;
+	$b['av'] = $sav;
 	
 	$out = $b['rr'] - $b['ls'];
 	$outd = round($out * 1000);
@@ -138,10 +157,30 @@ class ntp_output {
 	$in = $b['lr'] - $b['rs'];
 	$ind = round($in * 1000);
 	$s .= $ind . ' in ' . "\n";
+
+	$o = $ddin['off'];
+	$od = round($o * 1000);
 	
-	$fs = ['ls', 'av', 'rr'];
+	$s .= $od . ' off' . "\n";
+
+	$lav = ($b['lr'] + $b['ls']) / 2;
+	$lavd = round($lav * 1000);
+	// $s .= $lavd . "\n";
+
+	$b['lav'] = $lav;
 	
-	foreach($fs as $f) $s .= $b[$f] . "\n";
+	$fs = ['ls', 'lav', 'av', 'lr'];
+	foreach($fs as $f) {
+	    $x = $b[$f];
+	    $xd = round($x * 1000);
+	    $s .= $xd . "\n";
+	}
+	
+
+			
+	$s .= $sid;
+	$s .= ' serv internal time (us)';
+	$s .= "\n";
 	
 	echo($s);
 exit(0);	
