@@ -11,4 +11,5 @@ $people = [
         ['name' => 'Bob','species' => 'ogre','age' => 12]
 ];
 $ires = $coll1->insertMany($people);
+echo('Rows (documents) inserted: ' . $ires->getInsertedCount() . "\n");
 exit(0);
