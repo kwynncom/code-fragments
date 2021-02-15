@@ -19,7 +19,7 @@
 	INIT_GVAR.forEach(function(row) {
 	    const tr = cree('tr');
 	    for(const [key, value] of Object.entries(row)) {
-		if (key !== 'age' && key !== 'species' && key !== 'name') continue;
+		if (key === '_id') continue;
 		const td = cree('td');
 		td.innerHTML = value;
 		tr.append(td);
