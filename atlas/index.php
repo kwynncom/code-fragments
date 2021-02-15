@@ -7,12 +7,11 @@
 <title>MongoDB to HTML</title>
 
 <script>
+    <?php require_once('readPeople.php'); ?>
     
-    <!-- 2021/02/14 8:28pm - bug version / or incomplete -->
-    
-    var INIT_GVAR = <?php echo(json_decode($PEOPLE_GLOBAL)); ?>;
+    var INIT_GVAR = <?php echo(json_encode($PEOPLE_GLOBAL)); ?>;
     window.onload = function() {
-	INIT_GVAR.forEach(function()	);
+	INIT_GVAR.forEach(function() {}	);
     }
 </script>
 </head>
