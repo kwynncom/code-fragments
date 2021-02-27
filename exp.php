@@ -9,4 +9,13 @@ function ebo($i) {
     return $v20;
 }
 
-for($i=0; $i < 50; $i++) echo(ebo($i) . " $i\n");
+$sum = 0;
+for($i=0; $i < 50; $i++) {
+    $ebo = ebo($i);
+    $sum += $ebo;
+    $pers = ($i + 1) / $sum;
+    $persd = sprintf('%0.2f', $pers);
+    $perd = 86400 * $pers;
+    $perdd = round($perd);
+    echo(ebo($i) . " $sum $i $persd $perdd\n");
+}
