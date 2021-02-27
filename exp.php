@@ -2,9 +2,9 @@
 
 function ebo($i) {
     
-    static $pow = 1.2;
+    static $pow = 1.3;
     
-    $v10 = 4 - $pow + pow(1.2, $i);
+    $v10 = 4 - $pow + pow($pow, $i);
     $v20 = round($v10);
     return $v20;
 }

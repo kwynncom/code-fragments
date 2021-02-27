@@ -10,43 +10,59 @@
             function byid(id) { return document.getElementById(id); }
             
             class acts {
+                 
                 constructor() {
-                    this.tfac  = 0.7;
+                    this.tfac  = 0.05;
                     this.limit = 4000;
                     this.actv = [];
                     this.doit();
                 }
-                
+        
+                limitf() { return this.tfac * this.limit; }
+        
                 doit() {
-                    this.actv.push(acts.now());
-                    console.log('doit');
+                    const now = acts.now();
+                    this.actv.push(now);
                     this.okat = this.okatf();
+                    console.log(now);
                     this.seti();
-                    this.out10();
-                    // this.mgacts();
-                }
+                 }
                 
-                mgacts() { this.actv = []; }
+                mgacts() { 
+                    // this.actv = []; 
+                }
                 
                 
                 req() {
-                    if (this.actv.length === 0) this.doit();
+                    const now = acts.now();
+                    this.okat = this.okatf(now);
+                    if (now >= this.okat) this.doit();
+                    else this.seti();
 
                     
                 }
                 
-                okatf() {
+                okatf(now) {
                     let r;
-                    const now = acts.now();
-                    if (this.actv.length > 0) r = now + this.limit * this.tfac;
+                    if (this.actv.length > 0) r = this.okatfona();
                     else r = now;
                     return r;
+                }
+                
+                okatfona() {
+                    const pow = 1.3;
+
+                    const v10 = this.limitf() - pow + Math.pow(pow, this.actv.length);
+                    const v20 = Math.round(v10);
+                    const ev10 = this.actv[this.actv.length - 1] + v20;
+                    return ev10;
+                 
                 }
                 
                 seti() {
                     const self = this;
                     this.cleari();
-                    this.setio = setInterval(function() { self.out20(self); }, 53);
+                    this.setio = setInterval(function() { self.out10(self); }, 53);
                 }
                 
                 cleari() {
@@ -55,11 +71,7 @@
 
                 static now() { return new Date().getTime(); }
                 
-                out10() {
-                    const self = this;
-                }
-                
-                out20(oin) {
+                out10(oin) {
                     const d = oin.okat - acts.now();
                     if (d > 0) byid('okate').innerHTML = d;
                     else       {
