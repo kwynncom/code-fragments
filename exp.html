@@ -11,27 +11,35 @@
             
             class acts {
                 constructor() {
-                    this.tfac  = 0.2;
+                    this.tfac  = 0.7;
                     this.limit = 4000;
-                    this.reqv = [];
+                    this.actv = [];
                     this.doit();
-                    this.req();
                 }
                 
                 doit() {
-                    
-                }
-                
-                req() {
-
+                    this.actv.push(acts.now());
+                    console.log('doit');
                     this.okat = this.okatf();
                     this.seti();
                     this.out10();
+                    // this.mgacts();
+                }
+                
+                mgacts() { this.actv = []; }
+                
+                
+                req() {
+                    if (this.actv.length === 0) this.doit();
+
                     
                 }
                 
                 okatf() {
-                    const r = acts.now() + this.limit * this.tfac;
+                    let r;
+                    const now = acts.now();
+                    if (this.actv.length > 0) r = now + this.limit * this.tfac;
+                    else r = now;
                     return r;
                 }
                 
@@ -56,8 +64,8 @@
                     if (d > 0) byid('okate').innerHTML = d;
                     else       {
                         byid('okate').innerHTML = 'OK';
-                        oin.doit();
                         oin.cleari();
+                        oin.mgacts();
                     }
                 }
                 
