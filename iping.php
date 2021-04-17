@@ -6,20 +6,28 @@ $i   = 0;
 
 $ipvs = [4, 6];
 $ok = false;
+$okl = false;
 
-foreach($ipvs as $ipv) 
+foreach($ipvs as $ipv) $gotv[$ipv] = false;
+
+/* 2021/04/16 - The new version almost certainly does not work yet.  The intent of the new is that this will keep running until both IPv4 and IPv6 
+ * ping within a few seconds of each other.  */
+
 do {
+foreach($ipvs as $ipv) {
     echo("Ping attempt, IPv$ipv:\n");
     $cmd = 'ping -' . $ipv . ' ' . ' -c 1 kwynn.com' . ' | ' . 'head -n 2';
     $res = shell_exec($cmd);
     echo $res;
     if (preg_match('/\d+ bytes from/', $res)) { 
 	echo("******************* IPv$ipv OK *****\n");
-	$ok = true; 
+	$gotv[$ipv] = time();
+	$okl = true; 
 	break; 
 	
-    }
-    sleep(1);
+    } else $okl = false;
+    if (!$okl) sleep(1);
+}
 } while(++$i < $max);
 
 if (!$ok) {

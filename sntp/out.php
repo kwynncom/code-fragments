@@ -37,7 +37,7 @@ class ntp_output {
 	    
 	    if ($v > M_MILLION || $nms > 0.6) {
 		$odf = '%+06.2f';
-		$nf  = '%02d';
+		$nf  = '%04.1f';
 	    } else {
 		$odf = '%+08.5f';
 		$nf  = '%04.2f';

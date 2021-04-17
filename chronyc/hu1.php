@@ -32,6 +32,7 @@ class chrony_parse {
 	echo(self::head() . "\n");
 	
 	for($i=self::shown; isset($biga[$i]); $i--) {
+	    if (!isset($biga[$i]['ch'])) continue;
 	    $this->p20(self::toArray($biga[$i]['ch']));
 	}
     }
@@ -70,7 +71,7 @@ class chrony_parse {
 	$sk10  = self::freq20($a['Skew']);
 	$skd   = sprintf('%5.1f', $sk10); unset($sk10);
 	$rde  = self::root20($a['Root delay']);
-	$rdde = sprintf('%4d', intval(round($rde))); unset($rde);
+	$rdde = sprintf('%5.1f', $rde); unset($rde);
 	$f10f = self::freq($a);
 	$f  = sprintf('%8.3f', $f10f); unset($f10f);
 	
