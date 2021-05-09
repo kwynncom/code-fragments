@@ -49,12 +49,19 @@ class ntp_output {
 	    $vd = sprintf($odf, $v);
 
 	    if ($nms > 99.92) return;
+	    
+	    kwas(isset($ddin['all']['based']), 'out line 35 - got here but no val');
+	    
+	    $oi = $this->outin($ddin['all']['based']);
+	    
 	    $nmsd = sprintf($nf, $nms);
-	    $s = $vd . ' ' . $nmsd;
+	    // $s = $vd . ' ' . $nmsd;
+	    $s = $vd . ' ' . $oi;
 	    
 	    $isx = $ddin['si']['pool'] !== 'kwynn';
 	    if ($isx) $s .= ' ' . $ddin['si']['pool'] . ' ' . $ddin['si']['server'];
 	    // $s = ($vd . ' ' . $nmsd /* . ' ' . $ddin['srv']  */ .    "\n");
+	    $s .= ' ' . $nmsd;
 	    $s .= "\n";
 	    if ($isx) echo($s);
 	    $this->soarr[$this->tit++]['dis'] = $s;
@@ -64,6 +71,29 @@ class ntp_output {
 	    $this->badrd[] = $s;
 	}
     }
+    
+    private function outin($d) {
+	
+	$s = '';
+	$a[] = $d['rr'] - $d['ls'];
+	$a[] = $d['lr'] - $d['rs'];
+
+	foreach($a as $i => $v) {
+	    $s .= sprintf('%03.1f', $v * 1000);
+	    if ($i === 0) $s .= ' ';
+	}
+	
+	return $s;
+/* $ddin['all]['based]['ls']
+ls
+lr
+rr
+rs  */	
+	
+	
+	
+    }
+    
     
     private function outnet($d) {
 	$rawe = $d['local']['e'];
