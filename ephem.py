@@ -31,4 +31,3 @@ phase = (mlon.degrees - slon.degrees) % 360.0
 
 print('moon rel to 360 d: {0:.1f}'.format(phase))
 
-
