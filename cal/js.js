@@ -16,6 +16,7 @@ class kwCalendar {
 	de.className = 'kwcald10';
 	const dl = cree('div');
 	dl.innerHTML = tot;
+	dl.className = 'kwcaldl10';
 	de.append(dl);
 	pele.append(de);
     }
