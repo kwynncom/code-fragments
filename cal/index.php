@@ -8,11 +8,12 @@
 <script src='./../utils.js'></script>
 <script src='js.js'></script>
 <script>
-    window.onload = function() { new kwCalendar('kwCalendarParent'); }
+    <?php require_once('dates.php'); ?>
+    window.onload = function() { new kwCalendar('kwCalCalParent', 'kwCalMonthH1', <?php echo(json_encode(kwCalInitDate())); ?>); }
 </script>
 
 <style>
-    #kwCalendarParent  { 
+    #kwCalCalParent  { 
         width: 100%;        
         height: 88vh; 
         display: flex;
@@ -21,13 +22,13 @@
         align-items: flex-start;
     }
     
-    .kwcald10  { width: 13.9%; height: 19.7% ; border: solid black 2px; }
+    .kwcald10  { width: 13.9%; height: 17% ; border: solid black 2px; }
     
     h1 { text-align: center; margin-top:0; margin-bottom: 0.2em; font-size: 125%; }
     
     body { margin: 0.2em; font-family: sans-serif; }
     
-    .kwcaldl10 { margin-top: 0.05em; margin-left: 0.15em; font-size: 80%; 
+    .kwcaldl10 { margin-top: 0.05em; margin-left: 0.15em; font-size: 110%; 
                          text-align: left; 
     }
 
@@ -36,8 +37,8 @@
 </head>
 <body>
     <div>
-        <h1>May 2021 (inaccurate for now; testing)<h1>
-        <div id='kwCalendarParent' />
+        <h1  id='kwCalMonthH1'></h1>
+        <div id='kwCalCalParent' />
     </div>
 </body>
 </html>
