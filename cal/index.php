@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>calendar</title>
 
-<script src='./../utils.js'></script>
+<script src='utils.js'></script>
 <script src='js.js'></script>
 <script>
     <?php require_once('dates.php'); ?>
@@ -28,7 +28,9 @@
     
     body { margin: 0.2em; font-family: sans-serif; }
     
-    .kwcaldl10 { margin-top: 0.05em; margin-left: 0.15em; font-size: 110%; 
+    .kwcaldl10 { margin-top: 0.05em; margin-left: 0.15em; 
+		 font-size: 110%; 
+		 font-weight: bold;
                          text-align: left; 
     }
 
