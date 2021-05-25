@@ -23,11 +23,11 @@
     
     .kwcald10  { width: 13.9%; height: 19.7% ; border: solid black 2px; }
     
-    h1 { text-align: center; margin-top:0; margin-bottom: 0.2em; }
+    h1 { text-align: center; margin-top:0; margin-bottom: 0.2em; font-size: 125%; }
     
     body { margin: 0.2em; font-family: sans-serif; }
     
-    .kwcaldl10 { margin-top: 0.05em; margin-left: 0.15em; font-size: 50%; 
+    .kwcaldl10 { margin-top: 0.05em; margin-left: 0.15em; font-size: 80%; 
                          text-align: left; 
     }
 
@@ -36,7 +36,7 @@
 </head>
 <body>
     <div>
-        <h1>May 2021<h1>
+        <h1>May 2021 (inaccurate for now; testing)<h1>
         <div id='kwCalendarParent' />
     </div>
 </body>
