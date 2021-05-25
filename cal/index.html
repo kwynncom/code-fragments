@@ -8,7 +8,7 @@
 <script src='utils.js'></script>
 <script src='js.js'></script>
 <script>
-    window.onload = function() { new kwCalendar('kwCalCalParent', 'kwCalMonthH1'); }
+    window.onload = function() { new kwCalendar(); }
 </script>
 
 <style>
@@ -37,9 +37,6 @@
 
 </head>
 <body>
-    <div>
-        <h1  id='kwCalMonthH1'></h1>
-        <div id='kwCalCalParent' />
-    </div>
+    <div id='kwCalAncestor' />
 </body>
 </html>

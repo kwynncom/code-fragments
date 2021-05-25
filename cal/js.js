@@ -1,11 +1,39 @@
 class kwCalendar {
-    constructor(parid, h1id, init) {
-	this.pele = byid(parid);
-	this.h1e  = byid(h1id);
-	this.inito = kwCalMonthInfo();
+    constructor(doin) {
+	this.outer10();
+	this.inito = kwCalMonthInfo(doin);
 	this.dayi = 0;
-	this.h1e.innerHTML = this.inito.monthh1;
+	this.poph();
 	this.f10();
+    }
+    
+    poph() {
+	this.h1e.append(this.inito.monthh1);
+	this.h1e.append(this.getArrow(1));
+    }
+    
+    getArrow(diri) {
+	const e = cree('span');
+	e.innerHTML = '>'; // depends on diri for next round
+	const self = this;
+	e.onclick = function() {
+	    const d = new Date(self.inito.year, self.inito.moni + diri, 1);
+	    new kwCalendar(d);
+	}
+	return e;
+    }
+    
+    outer10() {
+	const a = byid('kwCalAncestor');
+	a.innerHTML = '';
+	const h = cree('h1');
+	h.id = 'monthh1';
+	this.h1e = h;
+	const p = cree('div');
+	p.id = 'kwCalCalParent';
+	a.append(h);
+	a.append(p);
+	this.pele = p;
     }
     
     f10() {
@@ -31,20 +59,24 @@ class kwCalendar {
     }
 }
 
-function kwCalMonthInfo() {
+function kwCalMonthInfo(doin) {
     const r = {};
-    const now = new Date();
-    const d1 = new Date(now.getFullYear(), now.getMonth(), 1);
+    let dido; // display date object
+    if (doin) dido = doin;
+    else      dido = new Date();
+    const moni = dido.getMonth();
+    const year = dido.getFullYear();
+    const d1 = new Date(dido.getFullYear(), moni, 1);
     
     r.day1w = d1.getDay();
-    r.dinm  = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    r.monthh1 = monthName(now.getMonth()) + ', ' + now.getFullYear();
+    r.dinm  = new Date(year, moni + 1, 0).getDate();
+    r.monthh1 = monthName(moni) + ', ' + dido.getFullYear();
+    r.moni = moni;
+    r.year   = year;
     return r;
 }
 
 function monthName(mjs0i) { // month JavaScript 0 index
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
+    const monthNames = ["January", "February", "March", "April", "May", "June",	"July", "August", "September", "October", "November", "December" ];
     return monthNames[mjs0i];
 }
