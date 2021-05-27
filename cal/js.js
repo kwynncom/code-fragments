@@ -8,13 +8,16 @@ class kwCalendar {
     }
     
     poph() {
+	this.h1e.append(this.getArrow(-1));
 	this.h1e.append(this.inito.monthh1);
 	this.h1e.append(this.getArrow(1));
     }
     
     getArrow(diri) {
 	const e = cree('span');
-	e.innerHTML = '>'; // depends on diri for next round
+	let arr = '>';
+	if (diri < 0) arr = '<';
+	e.innerHTML = arr; // depends on diri for next round
 	const self = this;
 	e.onclick = function() {
 	    const d = new Date(self.inito.year, self.inito.moni + diri, 1);
