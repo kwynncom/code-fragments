@@ -110,8 +110,8 @@ rs  */
     
     private function bynetd() {
 	usort($this->soarr, ['self', 'sortsimp']);
-	// echo('***********' . "\n");
-	foreach($this->soarr as $r) echo($r['dis']);
+	foreach($this->soarr as $r) if (isset($r['dis']))
+					 echo($r['dis']);
     }
     
     private static function sortsimp($a, $b) {
