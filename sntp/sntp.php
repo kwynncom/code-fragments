@@ -135,8 +135,6 @@ private static function parseNTPResponse($response) {
 
     $stratum  = self::getStratum($response); 
     if (!($stratum && intval($stratum) >= 1)) return 'SNTP Kiss of Death (KOD)';
-
-    $unpack0 = unpack("N12", $response);
     $r = [];
     self::b8tosf($response, 32, $r, 'rrs', 'rrf'); // remote receive time seconds and float
     self::b8tosf($response, 40, $r, 'rss', 'rsf'); // remote sent same
@@ -144,10 +142,25 @@ private static function parseNTPResponse($response) {
     return $r;
 }
 
-public static function b8tosf($bin, $o, &$aref, $sl, $fl) {
+public static function b8tonano($bin, $o, $unp) {
+	$a = [];
+	$sl = 's';
+	$fl = 'f';
+	self::b8tosf($bin, $o, $a, $sl, $fl, $unp);
+	return self::ivr($a[$fl]) + self::ivr($a[$sl]);
+
+}
+
+public static function ivr($vin, $mult = M_BILLION) {
+	return intval(round($vin * $mult));
+}
+
+public static function b8tosf($bin, $o, &$aref, $sl, $fl, $unpin = 'N') {
     $len = strlen($bin);
     $str = substr($bin, $o, 8); unset($bin, $o);
-    $un  = unpack('N2', $str) ; unset($str);
+	$slen2 = strlen($str);
+	$unpp = $unpin . '2';
+    $un  = unpack($unpp, $str) ; unset($str);
     $aref[$sl] = $un[1] - self::epoch_convert;
     $aref[$fl] = $un[2] / self::bit_max;
 }

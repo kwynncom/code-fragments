@@ -5,4 +5,4 @@ clean :
 	rm *.o sntp
 
 test :
-	php test.php ; php test.php
+	php wrap.php ; php wrap.php

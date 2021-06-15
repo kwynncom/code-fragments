@@ -18,7 +18,7 @@ void main(void) {
     if (read (sock, pack, SNTP_PLEN) != SNTP_PLEN) { printf("bad read size - 140"); exit(1);}
     e = nanotime();
 
+    fwrite(pack, SNTP_PLEN, 1, stdout);
     fwrite(&b, sizeof(b), 1, stdout);
     fwrite(&e, sizeof(e), 1, stdout);
-    fwrite(&pack, SNTP_PLEN, 1, stdout);
 }
