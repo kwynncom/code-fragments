@@ -1,14 +1,14 @@
 #include <time.h>   // timespec struct
 #include <stdlib.h> // exit()
+#include "time.h"
 
-void timeUFF(unsigned long *u, double *fr) {
-// time_t tv_sec	whole seconds (valid values are >= 0)
-// long   tv_nsec	nanoseconds (valid values are [0, 999999999])
+void timeUFF(uint32_t *u, double *f) {
+                      // 123456789
+   const long billion = 1000000000;
 
     struct timespec sts;
-    int cgr = clock_gettime(CLOCK_REALTIME, &sts);
-    if (cgr != 0) exit(cgr);
+    if (clock_gettime(CLOCK_REALTIME, &sts) != 0) exit(8129);
 
-    *u  = (unsigned long)      sts.tv_sec;                      // 123456789
-    *fr = (double) (((double)  sts.tv_nsec) / (double) 1000000000);
+    *u = (uint32_t) sts.tv_sec;     
+    *f = (double  ) sts.tv_nsec / billion;
 }

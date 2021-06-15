@@ -1,1 +1,3 @@
-void timeUFF(long *u, double *fr);
+#include <stdint.h>
+
+void timeUFF(uint32_t *u, double *f);

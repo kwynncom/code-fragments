@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "time.h"
-void main(void) {
-    unsigned long s;
-    double fr;
-    
-    timeUFF(&s, &fr);
 
-    printf("%lu %0.9lf\n", s, fr);
+void main(void) {
+    uint32_t s;
+    double   f;
+    
+    timeUFF(&s, &f);
+
+    printf("%d %0.9f\n", s, f);
 }
