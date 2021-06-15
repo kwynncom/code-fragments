@@ -145,6 +145,7 @@ private static function parseNTPResponse($response) {
 }
 
 public static function b8tosf($bin, $o, &$aref, $sl, $fl) {
+    $len = strlen($bin);
     $str = substr($bin, $o, 8); unset($bin, $o);
     $un  = unpack('N2', $str) ; unset($str);
     $aref[$sl] = $un[1] - self::epoch_convert;
