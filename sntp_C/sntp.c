@@ -1,7 +1,7 @@
 #include <math.h> // round()
 #include <stdlib.h> // malloc()
 #include "time.h"
-#include "packet.h"
+#include "sntp.h"
 
 unsigned char *getSNTPPacket (void) {
     const uint32_t bit_max       = 4294967295;
@@ -13,8 +13,8 @@ unsigned char *getSNTPPacket (void) {
 
     pack = (unsigned char *)malloc(SNTP_PLEN);
 
-    pack[0] = '#'; // see PHP version
-    for(i=0; i <= 39; i++) pack[i] = 0;
+    pack [0] = '#'; // see PHP version
+    for(i=1; i <= 39; i++) pack[i] = 0x0;
 
     timeUFF(&secs, &frac);
     u32itobes(secs + epoch_convert, pack, 40);

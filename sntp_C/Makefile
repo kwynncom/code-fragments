@@ -1,5 +1,5 @@
-sntp : t10.c packet.c time.c
-	gcc -o sntp t10.c packet.c time.c -lm
+sntp : main.c sntp.c time.c socket.c
+	gcc -o sntp main.c sntp.c time.c socket.c -lm
 
 clean : 
 	rm *.o sntp
