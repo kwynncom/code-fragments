@@ -1,9 +1,14 @@
+#include <stdio.h>  // probably just for testing
+#include <string.h> // same
 #include "time.h"
+
+void u32itobes(uint32_t n, unsigned char *b, int o);
+
 void main(void) {
     unsigned char p[48];
     p[0] = '#'; // see PHP version
     int i = 0;
-    for(i=0; i <= 39; i++) p[i] = 0;
+    for(i=0; i <= 39; i++) p[i] = 'x'; // testing only
 
     uint32_t  s;
     uint32_t ss;
@@ -14,21 +19,33 @@ void main(void) {
 
     timeUFF(&s, &f);
 
-    for(i=0; i < 4; i++) {
-        ir = 3 - i;
-        sb[ir] = (sf >> ir) & 0xff; 
-    }
+    u32itobes(s, p, 40);
 
+// TESTING ONLY
+
+    unsigned char pt[49];
+    strcpy(pt, p);
+    pt[48] = 0;
+
+    printf("%s\n", pt);
+    
+
+}
+
+void u32itobes(uint32_t n, unsigned char *b, int o) {
 /* 
 bytes[0] = (n >> 24) & 0xFF;
 bytes[1] = (n >> 16) & 0xFF;
 bytes[2] = (n >> 8) & 0xFF;
 bytes[3] = n & 0xFF;
 */
-    
+    int ir;
+    int i;
 
-}
+    for(i=0; i < 4; i++) {
+        ir = 3 - i;
+        b[ir + o] = (n >> (ir * 8)) & 0xff; 
+    }
 
-void u32itobes(uint32_t n, unsigned char *b, int o) {
 
 }

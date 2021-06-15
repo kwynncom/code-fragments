@@ -137,12 +137,18 @@ private static function parseNTPResponse($response) {
     if (!($stratum && intval($stratum) >= 1)) return 'SNTP Kiss of Death (KOD)';
 
     $unpack0 = unpack("N12", $response);
-    $r['rrs'] = sprintf('%u', $unpack0[ 9]) - self::epoch_convert; // remote receive packet second-precision ts
-    $r['rrf'] = sprintf('%u', $unpack0[10]) / self::bit_max;       // remote receive packet fractional time
-    $r['rss'] = sprintf('%u', $unpack0[11]) - self::epoch_convert; // remote sent ...
-    $r['rsf'] = sprintf('%u', $unpack0[12]) / self::bit_max;       // ...
+    $r = [];
+    self::b8tosf($response, 32, $r, 'rrs', 'rrf'); // remote receive time seconds and float
+    self::b8tosf($response, 40, $r, 'rss', 'rsf'); // remote sent same
     $r['stratum'] = $stratum;
     return $r;
+}
+
+public static function b8tosf($bin, $o, &$aref, $sl, $fl) {
+    $str = substr($bin, $o, 8); unset($bin, $o);
+    $un = unpack('N2', $str);   unset($str);
+    $aref[$sl] = $un[1] - self::epoch_convert;
+    $aref[$fl] = $un[2] / self::bit_max;
 }
 
 private static function getStratum($response) {
