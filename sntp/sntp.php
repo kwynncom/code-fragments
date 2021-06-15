@@ -107,7 +107,7 @@ public function __destruct() {
 }
 
 private static function getFullPacket($base) {
-    $lsta = nanopk(NANOPK_U | NANOPK_UNSOF);
+    $lsta = nanopk(NANOPK_U | NANOPK_UNSOF); // integer seconds and float fraction of seconds
     $originate_seconds = $lsta['U'] + self::epoch_convert; // whole / integer UNIX Epoch seconds converted to NTP Epoch
     $originate_fractional = intval(round($lsta['Unsof'] * self::bit_max)); // 0.84830 fractional seconds as a fraction of binary 1111...111 for 32 unsigned bits
     $originate_fractional = sprintf('%010d',$originate_fractional); // make sure precisely 10 zero filled decimal digits
