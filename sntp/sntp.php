@@ -5,7 +5,7 @@ require_once('get.php'); // needed for standalone to get packet
 
 class sntp_get_actual extends ntpQuotaGet {
     
-const bit_max		 = 4294967296;
+const bit_max		 = 4294967295;
 const epoch_convert	 = 2208988800;
 
 protected function __construct() { 
@@ -146,7 +146,7 @@ private static function parseNTPResponse($response) {
 
 public static function b8tosf($bin, $o, &$aref, $sl, $fl) {
     $str = substr($bin, $o, 8); unset($bin, $o);
-    $un = unpack('N2', $str);   unset($str);
+    $un  = unpack('N2', $str) ; unset($str);
     $aref[$sl] = $un[1] - self::epoch_convert;
     $aref[$fl] = $un[2] / self::bit_max;
 }

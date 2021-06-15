@@ -1,5 +1,9 @@
+#include <math.h> // round()
+
 #include <stdio.h>  // probably just for testing
 #include <string.h> // same
+#include <stdlib.h> // same - exit()
+
 #include "time.h"
 
 void u32itobes(uint32_t n, unsigned char *b, int o);
@@ -16,18 +20,28 @@ void main(void) {
     uint32_t sf;
     unsigned char sb[4];
     int ir;
+                           
+    const uint32_t bit_max = 4294967295;
+    uint32_t intf;
+    long round1;
+    double m10;
+
 
     timeUFF(&s, &f);
 
     u32itobes(s, p, 40);
 
-// TESTING ONLY
+    m10 = f * bit_max;
 
-    unsigned char pt[49];
-    strcpy(pt, p);
-    pt[48] = 0;
+    intf = (uint32_t)round(m10);
 
-    printf("%s\n", pt);
+    intf = (uint32_t)round1;
+
+    // u32itobes(intf, p, 44);
+
+    printf("%d %012u %f %f\n", s, (uint32_t)lround(m10), f, m10);
+
+    // for (i=0; i < 48; i++) printf("%c", p[i]);
     
 
 }
@@ -44,7 +58,8 @@ bytes[3] = n & 0xFF;
 
     for(i=0; i < 4; i++) {
         ir = 3 - i;
-        b[ir + o] = (n >> (ir * 8)) & 0xff; 
+        // ir = i;
+        b[ir + o] = (n >> (i * 8)) & 0xff; 
     }
 
 
