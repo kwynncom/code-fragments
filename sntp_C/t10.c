@@ -21,27 +21,28 @@ void main(void) {
     unsigned char sb[4];
     int ir;
                            
-    const uint32_t bit_max = 4294967295;
     uint32_t intf;
     long round1;
     double m10;
-
+    const uint32_t bit_max       = 4294967295;
+    const uint32_t epoch_convert = 2208988800;
 
     timeUFF(&s, &f);
 
-    u32itobes(s, p, 40);
+    u32itobes(s + epoch_convert, p, 40);
 
     m10 = f * bit_max;
 
-    intf = (uint32_t)round(m10);
+//    intf = (uint32_t)round(m10);
+//    intf = (uint32_t)round1;
 
-    intf = (uint32_t)round1;
+    intf = (uint32_t)lround(f * bit_max);
 
-    // u32itobes(intf, p, 44);
+    u32itobes(intf, p, 44);
 
-    printf("%d %012u %f %f\n", s, (uint32_t)lround(m10), f, m10);
+//    printf("%d %012u %f %f\n", s, intf, f, m10);
 
-    // for (i=0; i < 48; i++) printf("%c", p[i]);
+    for (i=0; i < 48; i++) printf("%c", p[i]);
     
 
 }
