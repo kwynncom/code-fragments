@@ -13,7 +13,7 @@ void main(void) {
     int i = 0;
 
     pack[0] = '#'; // see PHP version
-    for(i=0; i <= 39; i++) pack[i] = 'x'; // **!*!*! use xs for testing only 
+    for(i=0; i <= 39; i++) pack[i] = 0;
 
     timeUFF(&secs, &frac);
     u32itobes(secs + epoch_convert, pack, 40);
