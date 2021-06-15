@@ -68,9 +68,13 @@ public static function parsePacket($rawres) {
 public static function getClientPacket() { return self::getFullPacket(self::getBasePacket()); } 
 
 private static function getBasePacket() {
-    $header  = '00' . sprintf('%03d',decbin(3)) . '011';
+    //      no warn / n/a             SNTP  v      3 = client
+    $header  = '00' . sprintf('%03d',decbin(4)) . '011';
+    // we now have 8 bits    00100011 or decimal 35 or ASCII # character
     $request_packet = chr(bindec($header)); unset($header);
-    for ($j=1; $j < 40; $j++) $request_packet .= chr(0x0);
+    // now in raw byte form
+    
+    for ($j=1; $j <= 39; $j++) $request_packet .= chr(0x0); // 39 bytes of raw 0 after #, or 40 bytes so far
     return $request_packet;
 }
 
@@ -104,15 +108,15 @@ public function __destruct() {
 
 private static function getFullPacket($base) {
     $lsta = nanopk(NANOPK_U | NANOPK_UNSOF);
-    $originate_seconds = $lsta['U'] + self::epoch_convert;
-    $originate_fractional = intval(round($lsta['Unsof'] * self::bit_max));
-    $originate_fractional = sprintf('%010d',$originate_fractional);
-    $packed_seconds    = pack('N', $originate_seconds   );
+    $originate_seconds = $lsta['U'] + self::epoch_convert; // whole / integer UNIX Epoch seconds converted to NTP Epoch
+    $originate_fractional = intval(round($lsta['Unsof'] * self::bit_max)); // 0.84830 fractional seconds as a fraction of binary 1111...111 for 32 unsigned bits
+    $originate_fractional = sprintf('%010d',$originate_fractional); // make sure precisely 10 zero filled decimal digits
+    $packed_seconds    = pack('N', $originate_seconds   );     // N = unsigned long (always 32 bit, big endian byte order) - turn into 4 raw bytes
     $packed_fractional = pack('N', $originate_fractional);
     $request_packet  = $base; unset($base);
     $request_packet .= $packed_seconds;
     $request_packet .= $packed_fractional;
-    return $request_packet;
+    return $request_packet; // we now have 48 bytes with the final 8 bytes representing the outgoing local timestamp
 }
 
 private function getTime($rqpack) {
