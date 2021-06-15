@@ -2,7 +2,7 @@
 
 require_once('./../sntp/sntp.php');
 
-$r = popen('./a.out', 'r');
+$r = popen('./sntp', 'r');
 $s = fread($r, 48); kwas(strlen($s) === 48, 'popen not 48 bytes');
 pclose($r); unset($r);
 $a = [];
