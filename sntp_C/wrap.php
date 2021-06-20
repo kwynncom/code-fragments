@@ -44,15 +44,22 @@ exit(0);
 }
 
 function mytest($p) {
-	for($i=0; $i < 6; $i++) {
-		for($j=0; $j < 8; $j++) echo(sprintf('%02s', 
-			dechex(
-					ord($p[$j + $i * 8])) 
-			) 
-			. ' ');
-
-		$hex = substr($p, 40, 8);
-		echo(' ' . bin2hex($hex));
+	for($i=5; $i < 6; $i++) {
+		//for($j=0; $j < 8; $j++) {
+			$lp = substr($p, 44, 4);
+			$upn = unpack('N', $lp);
+			$d = $upn[1];
+			$b10 = sprintf('%032s', decbin($d));
+			$br10 = '';
+			for($i=0; $i < 32; $i++) $br10[$i] = $b10[32- $i - 1];
+			$d20 = bindec($br10);
+			$p20 = pack('N', $d20);
+			$upn20 = unpack('N', $p20);
+			$d30 = $upn20[1];
+			echo($d30 . "\n");
+			// echo(bindec($br10) . "\n");
+			
+		// }
 		echo("\n");
 	}
 }
