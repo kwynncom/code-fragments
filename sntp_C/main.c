@@ -4,21 +4,38 @@
 #include "sntp.h"
 #include "socket.h"
 #include "time.h"
+#include "config.h"
+
+void sntp_get(int n, int sock, long int *loc, unsigned char *rem);
+void sntp_setup();
 
 void main(void) {
-    const unsigned char *res = getSNTPPacket();
-    char *pack;
-    int writer;
-    long b, e;
-    int sock = getBoundSock("34.193.238.16"); // 0 means UDP, which it must be for NTP
+	sntp_setup();
+}
 
-    pack = getSNTPPacket();
-    b = nanotime();
-    if (write(sock, pack, SNTP_PLEN) != SNTP_PLEN) { printf("bad write size"); exit(1);}
-    if (read (sock, pack, SNTP_PLEN) != SNTP_PLEN) { printf("bad read size - 140"); exit(1);}
-    e = nanotime();
+void sntp_setup() {
+    int sock = getBoundSock(KW_DEFAULT_NTP_SERVER);
+	unsigned char **packs;
+	long int *loc;
+	const int n = KW_DEFAULT_NTP_N_POLLS;
+	
+	packs = (unsigned char **   )malloc(n * sizeof(char *  ));
+	loc   = (long int *)malloc(n * sizeof(long int) * 2);
 
-    fwrite(pack, SNTP_PLEN, 1, stdout);
+	int i;
+	for(i=0; i < n; i++) packs[i] = malloc(SNTP_PLEN);
+	for(i=0; i < n; i++) sntp_get(n, sock, loc + i * 2, packs[i]);
+
+    /* fwrite(pack, SNTP_PLEN, 1, stdout);
     fwrite(&b, sizeof(b), 1, stdout);
-    fwrite(&e, sizeof(e), 1, stdout);
+    fwrite(&e, sizeof(e), 1, stdout); */
+}
+
+void sntp_get(int n, int sock, long int *loc, unsigned char *pack) {
+    popSNTPPacket(pack);
+    loc[0] = nanotime();
+    if (write(sock, pack, SNTP_PLEN) != SNTP_PLEN) pack[0] = 0;
+    if (read (sock, pack, SNTP_PLEN) != SNTP_PLEN) pack[0] = 0;
+    loc[1] = nanotime();
+
 }
