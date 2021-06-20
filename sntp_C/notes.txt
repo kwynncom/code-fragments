@@ -13,3 +13,18 @@ getting:
 1750185596
 1750185538 - seconds later
 1750185490 - more seconds
+***********
+try again:
+1617791510
+1701677590 - seconds later, as 'N' (big ending, 32 bit, unsigned), grabbing byte 44 - 47
+*********
+byte 40 - 43;
+
+1905779892
+1591259981
+*************
+40 - 47, Q: THAT IS PROMISING!!!! - it includes a distorted view of the fraction, but much, much closer
+
+1624231131786646321
+1624231146644603885
+1624231158495823634
