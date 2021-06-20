@@ -6,7 +6,7 @@ require_once('get.php'); // needed for standalone to get packet
 class sntp_get_actual extends ntpQuotaGet {
     
 const bit_max		 = 4294967295;
-const epoch_convert	 = 2208988800;
+const epoch_convert	 = 2208988800; // 0x83aa7e80
 
 protected function __construct() { 
     $this->server = $this->sock = false;
@@ -163,6 +163,35 @@ public static function b8tosf($bin, $o, &$aref, $sl, $fl, $unpin = 'N') {
     $un  = unpack($unpp, $str) ; unset($str);
     $aref[$sl] = $un[1] - self::epoch_convert;
     $aref[$fl] = $un[2] / self::bit_max;
+	return  $aref[$sl] * M_BILLION + intval(round($aref[$fl])) * M_BILLION;;
+}
+
+public static function b8tonsC($bin, $o) {
+
+// 33 4d bf 14 58 35 8a 16 
+// 8b 07 69 1a 58 35 8a 16 
+// bc 50 66 57 e9 35 8a 16
+
+    $len = strlen($bin);
+
+	if ($len < 8) return 0;
+    $fs = substr($bin, $o    , 4);
+	$ss = substr($bin, $o + 4, 4);
+	self::sntpToHex($fs);
+	self::sntpToHex($ss);
+    $unf  = unpack('V', $fs) ; unset($str);
+    $f = $unf[1] / self::bit_max;
+	$uns  = unpack('V', $ss) ;
+
+    $s = $uns[1] - self::epoch_convert; // reverse numerical indexes
+
+	return $s * M_BILLION + intval(round($f)) * M_BILLION;
+}
+
+public static function sntpToHex($sin) {
+	$s = '';
+	for($j=0; $j < strlen($sin); $j++) $s .= sprintf('%02s', dechex(ord($sin[$j]))) . ' ';
+	return $s;
 }
 
 private static function getStratum($response) {
