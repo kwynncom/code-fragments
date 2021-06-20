@@ -7,7 +7,7 @@ doit();
 function doit() {
 
 $count = 1;
-$itlen = 48 + 8 + 8;
+$itlen = 48; //  + 8 + 8;
 $totlen = $itlen * $count;
 
 $r = popen('./sntp', 'r');
@@ -21,7 +21,7 @@ for($i=0; $i < $count; $i++) {
 $s = substr($wr, $itlen * $i, $itlen);
 
  mytest(substr($wr, 0, 48));
-// exit(0);
+exit(0);
 
 $unpch = 'KwC1';
 
@@ -45,7 +45,14 @@ exit(0);
 
 function mytest($p) {
 	for($i=0; $i < 6; $i++) {
-		for($j=0; $j < 8; $j++) echo(sprintf('%02s', dechex(ord($p[$j + $i * 8]))) . ' ');
+		for($j=0; $j < 8; $j++) echo(sprintf('%02s', 
+			dechex(
+					ord($p[$j + $i * 8])) 
+			) 
+			. ' ');
+
+		$hex = substr($p, 40, 8);
+		echo(' ' . bin2hex($hex));
 		echo("\n");
 	}
 }

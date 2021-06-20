@@ -33,16 +33,16 @@ void u32itobe(uint32_t n, unsigned char *b, int o) {
 void sntp_doit(const int n, char *addr) {
     int sock = getBoundSock(addr);
 	unsigned char **packs;
-	unsigned long int *locs;
+	unsigned long *locs;
 	
 	packs = (unsigned char **   )malloc(n * sizeof(unsigned char *  ));
-	int locsz = sizeof(unsigned long int) * 2;
+	int locsz = sizeof(unsigned long) * 2;
 	const int locssz = n * locsz;
-	locs   = (unsigned long int *)malloc(locssz);
+	locs   = (unsigned long  *)malloc(locssz);
 
 	int i;
 	for(i=0; i < n; i++) {
-		packs[i] = malloc(SNTP_PLEN);
+		packs[i] = (char *)malloc(SNTP_PLEN);
 		memset(packs[i], 0, SNTP_PLEN);
 	}	
 
@@ -50,11 +50,12 @@ void sntp_doit(const int n, char *addr) {
 
 	for(i=0; i < n; i++) {
 		fwrite(packs + i, SNTP_PLEN, 1, stdout);
-		fwrite(locs  + i, locsz    , 1, stdout);
+		// fwrite(locs + i * 2	   , sizeof(unsigned long), 1, stdout);
+		// fwrite(locs + i * 2 + 1, sizeof(unsigned long), 1, stdout);
 	}
 }
 
-void sntp_get(int n, int sock, unsigned long int *loc, unsigned char *pack) {
+void sntp_get(int n, int sock, unsigned long *loc, unsigned char *pack) {
     popSNTPPacket(pack);
     loc[0] = nanotime();
     if (write(sock, pack, SNTP_PLEN) != SNTP_PLEN) ; // not sure I care about write errors

@@ -13,7 +13,7 @@ void timeUFF(uint32_t *u, double *f) {
     *f = (double  ) sts.tv_nsec / billion;
 }
 
-long nanotime() {
+unsigned long nanotime() {
     struct timespec sts;
     if (clock_gettime(CLOCK_REALTIME, &sts) != 0) exit(8131);
     return sts.tv_sec * 1000000000 + sts.tv_nsec;
