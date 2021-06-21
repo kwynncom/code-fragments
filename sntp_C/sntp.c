@@ -8,11 +8,11 @@
 #include "socket.h"
 
 void sntp_get(int n, int sock, unsigned long *loc, char *pack) {
-    // popSNTPPacket(pack);
-    loc[0] = nanotime();
+	popSNTPPacket(pack);
+    // loc[0] = nanotime();
     if (write(sock, pack, SNTP_PLEN) != SNTP_PLEN) ; // not sure I care about write errors
-    if (read (sock, pack, SNTP_PLEN) != SNTP_PLEN) { memset(pack, 0, SNTP_PLEN); printf("read error");}
-    loc[1] = nanotime();
+    if (read (sock, pack, SNTP_PLEN) != SNTP_PLEN) { memset(pack, 0xff, SNTP_PLEN);  }
+    // loc[1] = nanotime();
 }
 void popSNTPPacket (char *pack) {
     const uint32_t bit_max       = 4294967295;
@@ -22,6 +22,7 @@ void popSNTPPacket (char *pack) {
     int i = 0;
 
     pack[0] = '#'; // see PHP version; 0x23
+	memset(pack + 1, 0, SNTP_PLEN - 1);
 
     timeUFF(&secs, &frac);
     u32itobe(secs + epoch_convert, pack, 24);
@@ -48,8 +49,8 @@ void sntp_doit(const int n, char *addr) {
 
 	int i;
 	for(i=0; i < n; i++) {
-		packs[i] = malloc(SNTP_PLEN);
-		memset(packs[i], 'x', SNTP_PLEN);
+		packs[i] = (char *)malloc(SNTP_PLEN);
+		memset(packs[i], 0, SNTP_PLEN);
 	}	
 
 	for(i=0; i < n; i++) sntp_get(n, sock, locs + i * 2, packs[i]);
@@ -60,5 +61,3 @@ void sntp_doit(const int n, char *addr) {
 		// fwrite(locs + i * 2 + 1, sizeof(unsigned long), 1, stdout);
 	}
 }
-
-

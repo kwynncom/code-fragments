@@ -22,7 +22,7 @@ pclose($r); unset($r);
 
 }
 
-sleep(1);
+// sleep(1);
 
 }
 exit(0);
@@ -62,9 +62,11 @@ function myunpack($s) {
 function mytest($p) {
 	$lp = substr($p, 40, 8);
 
+	if (0) {
 	myunpack($lp);
 
-	return; /// *****
+	return; // *****
+	}
 
 	$upn = unpack('Q', $lp);
 	$d10 = $upn[1];
