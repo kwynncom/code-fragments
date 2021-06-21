@@ -42,7 +42,7 @@ void sntp_doit(const int n, char *addr) {
 
 	int i;
 	for(i=0; i < n; i++) {
-		packs[i] = (char *)malloc(SNTP_PLEN);
+		packs[i] = (unsigned char *)malloc(SNTP_PLEN);
 		memset(packs[i], 0, SNTP_PLEN);
 	}	
 

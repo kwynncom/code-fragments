@@ -10,9 +10,10 @@ $count = 1;
 $itlen = 48; //  + 8 + 8;
 $totlen = $itlen * $count;
 
-for($j=0; $j < 10; $j++) {
+echo('1234567890123456789012345678901234567890123456789012345678901234' . "\n");
+for($j=0; $j < 17; $j++) {
 for($i=0; $i < $count; $i++) {
-$r = popen('./sntp', 'r');
+$r = popen('./sntp', 'rb');
 $wr = fread($r, $totlen); kwas(strlen($wr) === $totlen, "sntp wrap fread not $totlen bytes");
 pclose($r); unset($r);
 
@@ -32,6 +33,12 @@ function mytest($p) {
 	$upn = unpack('Q', $lp);
 	$d10 = $upn[1];
 
+	echo($d10);
+
+	$b10 = decbin($d10);
+	$f10 = sprintf('%064s', $b10);
+	if (0) echo($f10);
+
 	if (0) echo($upn[1] . "\n");
 
 	if(0) {
@@ -40,8 +47,8 @@ function mytest($p) {
 	}
 
 
-	if (1) {
-		$s10 = $d10 >> 32;
+	if (0) {
+		$s10 = $d10; //  >> 32;
 		echo($s10 . "\n");
 
 		if (0) {$u20 = unpack('V', $s10);
@@ -49,5 +56,7 @@ function mytest($p) {
 		echo(decbin($d20) . "\n");}
 
 	}
+
+	echo("\n");
 
 }
