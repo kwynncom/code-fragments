@@ -24,7 +24,19 @@ byte 40 - 43;
 1591259981
 *************
 40 - 47, Q: THAT IS PROMISING!!!! - it includes a distorted view of the fraction, but much, much closer
+Q = 64 bit unsigned long machine byte order
 
 1624231131786646321
 1624231146644603885
 1624231158495823634
+1624231314708068138 - this is with P rather than Q, which may or may not be more definite.  It works, in any event.
+1624232085419382752 - ca 20 mintutes later
+1624232604509494368 - 7 minutes after that (roughly)
+1624233006905637075 - another 4
+***********
+
+11100100 01111010 01000111 01110001 - seeking
+00110001 00111000 00110111 00110011 - getting
+12345678 90123456 78901234 56789012
+*************
+40 - 47 J gets me negative numbers, even though it should be unsigned
