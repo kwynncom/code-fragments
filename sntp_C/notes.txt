@@ -1,3 +1,13 @@
+2021/06/21 1:11am my time
+
+What part of my own rule #1 do I not understand!?!  Never dev without a debugger.  I got the C debugger working in Netbeans 12.4 in Ubuntu 21.04.  
+I moved over to that machine and had it working in a relatively few minutes.  
+
+It's not at all done.  But it is finally giving the right number when run through wrap.php.  It's only giving the seconds, not the fraction, so far.  
+
+
+
+***************
 1,624,211,497 + 2,208,988,800 = 3833200297 = 0xE479FEA9 = 
 1234567890123456789012345678901234567890123456789012345678901234
 11100100011110011111111010101001 - seeking

@@ -1,6 +1,7 @@
 <?php
 
-require_once('./../sntp/sntp.php');
+require_once('/opt/kwynn/kwutils.php');
+// require_once('./../sntp/sntp.php');
 
 doit();
 
@@ -68,7 +69,7 @@ function mytest($p) {
 	return; // *****
 	}
 
-	$upn = unpack('Q', $lp);
+	$upn = unpack('N2', $lp);
 	$d10 = $upn[1];
 
 	if (0) echo($d10);
