@@ -1,7 +1,7 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
-// require_once('./../sntp/sntp.php');
+require_once('/opt/kwynn/kwutils.php'); // if standalone
+require_once('./../sntp/sntp.php'); // otherwise the above is required from here
 
 doit();
 
@@ -80,7 +80,7 @@ function mytest($p) {
 
 	if (0) echo(mystrbin2hex($b10));
 
-	$f10 = sprintf('%064s %016s %d', $b10, mystrbin2hex($b10), $d10);
+	$f10 = sprintf('%064s %016s %d %d', $b10, mystrbin2hex($b10), $d10, ($d10 - 2208988800)); // 2208988800 = Unix Epoch - NTP time
 	if (1) echo($f10);
 
 	if (0) echo($upn[2]);
