@@ -5,3 +5,4 @@ function kwas(v, msg) {
 		throw msg;
 	}
 }
+function time() { return (new Date().getTime()); } 
