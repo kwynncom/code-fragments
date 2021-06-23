@@ -23,6 +23,7 @@ class kwior {
 		kwas(this.ele.id, 'kwior - ele must have id');
 		const self = this;
 		this.ele.oninput = function() { self.oninput(); }
+		this.ele.onblur  = function() { self.onblur (); }
 	}
 	
 	oninput() {
@@ -33,10 +34,19 @@ class kwior {
 		this.ctov = setInterval(function () { self.send(); }, this.contSend);
 	}
 
+	clearInterval() {
+		const temp = this.ctov; // does not fix race condition but might mitigate it
+		this.ctov = false;
+		clearInterval(temp);
+	}
+
+	onblur() { this.clearInterval(); }
+
 	send() {
 		const tosend = this.ele.value;
+		console.log(this.ele.id + ' - checking send');
 		if (tosend === this.okv) return;
-		console.log(this.ele.id + ' - send');
+		console.log(this.ele.id + ' - SEND');
 		this.okv = this.ele.value;
 		
 	}
