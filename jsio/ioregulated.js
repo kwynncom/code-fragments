@@ -5,21 +5,19 @@ class kwior {
 		this.contSend = 2003; // same
 	}
 	
-	static setAllEles() {
-		document.querySelectorAll('input[type=text], textarea').forEach(function(e) {
-			const o = new kwior(e);
-		});
-	}
+	static setAllEles() { document.querySelectorAll('input[type=text], textarea').forEach(function(e) { new kwior(e);	}); }
+	
+	static setEle(id)  { new kwior(byid(id));	}
 	
 	constructor(ele) { 
 		this.ele = ele;
 		this.config();
 		this.init();
-		this.setEle();
+		this.setEleOb();
 
 	}
 	
-	setEle() {
+	setEleOb() {
 		kwas(this.ele.id, 'kwior - ele must have id');
 		const self = this;
 		this.ele.oninput = function() { self.oninput(); }
