@@ -31,21 +31,25 @@ class kwior {
 		if (this.wtov) clearTimeout(this.wtov);
 		this.wtov = setTimeout (function () { self.send(); }, this.waitSend);
 		if  (this.ctov) return;
-		this.ctov = setInterval(function () { self.send(); }, this.contSend);
+		this.ctov = setInterval(function () { self.send(); self.checkInterval(); }, this.contSend);
 	}
 
 	clearInterval() {
-		const temp = this.ctov; // does not fix race condition but might mitigate it
+		if (this.ctov) clearInterval(this.ctov);
 		this.ctov = false;
-		clearInterval(temp);
 	}
 
-	onblur() { this.clearInterval(); }
+	onblur() { /* this.clearInterval(); */ }
+	
+	checkInterval() {
+		if (this.isokv()) this.clearInterval();
+	}
+	
+	isokv() { return this.ele.value === this.okv; }
 
 	send() {
-		const tosend = this.ele.value;
 		console.log(this.ele.id + ' - checking send');
-		if (tosend === this.okv) return;
+		if (this.isokv()) return;
 		console.log(this.ele.id + ' - SEND');
 		this.okv = this.ele.value;
 		
