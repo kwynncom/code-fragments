@@ -1,38 +1,50 @@
 class kwior {
 	
 	config() {
-		this.waitSend =  300;
-		this.contSend = 2000;
+		this.waitSend =  307; // prime number
+		this.contSend = 2003; // same
 	}
 	
-	constructor(eid) { 
-		kwas(eid, 'kwior must be given id');
-		this.eid = eid;
+	static setAllEles() {
+		document.querySelectorAll('input[type=text], textarea').forEach(function(e) {
+			const o = new kwior(e);
+		});
+	}
+	
+	constructor(ele) { 
+		this.ele = ele;
 		this.config();
 		this.init();
+		this.setEle();
+
+	}
+	
+	setEle() {
+		kwas(this.ele.id, 'kwior - ele must have id');
+		const self = this;
+		this.ele.oninput = function() { self.oninput(); }
 	}
 	
 	oninput() {
-		
-		this.incnt++;
-		this.ints = time();
-		
-		// const sendimm = time() - this.sendts > this.contSend;
-		
 		const self = this;
-
-		if (this.tov) clearTimeout(this.tov);
-		this.tov = setTimeout(function () { self.send(); }, this.waitSend);
+		if (this.wtov) clearTimeout(this.wtov);
+		this.wtov = setTimeout (function () { self.send(); }, this.waitSend);
+		if  (this.ctov) return;
+		this.ctov = setInterval(function () { self.send(); }, this.contSend);
 	}
-	
+
 	send() {
-		this.sendts = time();
-		console.log(this.eid + ' - send');
+		const tosend = this.ele.value;
+		if (tosend === this.okv) return;
+		console.log(this.ele.id + ' - send');
+		this.okv = this.ele.value;
+		
 	}
 	
 	init() { 
-		this.sendts = 0;
-		this.ints   = 0;
-		this.incnt  = 0;
+		this.wtov = false;
+		this.ctov = false;
+		this.sendingv = false;
+		this.okv = false;
 	}
 }
