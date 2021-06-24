@@ -9,11 +9,12 @@ class kwior_21_1 {
 	
 	static setAllEles() { document.querySelectorAll('input[type=text], textarea').forEach(function(e) { new kwior(e);	}); }
 	
-	static setEle(e, cb)  { new kwior_21_1(e, cb);	}
+	static setEle(e, cb, htrid)  { new kwior_21_1(e, cb, htrid);	}
 	
-	constructor(ele, cb) { 
+	constructor(ele, cb, htrid) { 
 		this.ele = ele;
 		this.sendCB = cb;
+		this.responseE = byid(htrid);
 		this.config();
 		this.init();
 		this.setEleOb();
@@ -57,7 +58,14 @@ class kwior_21_1 {
 		if (this.isokv()) return;
 		if (this.isTO()) return;
 		console.log(this.ele.id + ' - SEND');
-		this.sendCB(this.ele);
+		const self = this;
+		const erf = function(j,t) { self.evalResponse(j,t); }
+		this.sendCB(this.ele, erf);
+	}
+	
+	evalResponse(j, t) {
+		console.log('er 604');
+		if (!j) this.responseE.innerHTML = t;
 	}
 	
 	onOKSend(vv) {
