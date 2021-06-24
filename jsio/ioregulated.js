@@ -26,6 +26,9 @@ class kwior_21_1 {
 	}
 	
 	oninput() {
+		
+		this.msgo.change();
+		
 		const self = this;
 		this.lastits = time();
 		if (this.wtov) clearTimeout(this.wtov);

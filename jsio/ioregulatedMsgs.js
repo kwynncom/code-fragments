@@ -6,14 +6,12 @@ class kwior_21_1_messages {
 	}
 	
 	init() { this.gen('No changes made.');	}
-	
-	sending() {
-		this.gen('saving...', 'yellow');
-	}
-	
-	err(o) {
+	sending() { this.gen('saving...', 'yellow');}
+	err(o) { 
 		if (o && o.msg) this.gen(o.msg, 'red');
 	}
+	
+	change() { this.gen('waiting...', 'yellow'); }
 	
 	ok(v) {
 		if (v !== this.vele.value) return;
@@ -24,7 +22,6 @@ class kwior_21_1_messages {
 		this.mase.innerHTML = t;
 		if (!c) return;
 		this.vele.style.backgroundColor = c;
-		
 	}
 	
 }
