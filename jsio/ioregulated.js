@@ -9,14 +9,13 @@ class kwior_21_1 {
 	
 	static setAllEles() { document.querySelectorAll('input[type=text], textarea').forEach(function(e) { new kwior(e);	}); }
 	
-	static setEle(e, cb, htrid)  { new kwior_21_1(e, cb, htrid);	}
+	static setEle(e, cb, mreid)  { new kwior_21_1(e, cb, mreid);	}
 	
-	constructor(ele, cb, htrid) { 
+	constructor(ele, cb, mreid) { 
 		this.ele = ele;
 		this.sendCB = cb;
-		this.responseE = byid(htrid);
 		this.config();
-		this.init();
+		this.init(mreid);
 		this.setEleOb();
 	}
 	
@@ -58,24 +57,33 @@ class kwior_21_1 {
 		if (this.isokv()) return;
 		if (this.isTO()) return;
 		console.log(this.ele.id + ' - SEND');
-		const self = this;
-		const erf = function(j,t) { self.evalResponse(j,t); }
-		this.sendCB(this.ele, erf);
+		this.msgo.sending();
+		this.sendCB(this.ele, this.erf);
 	}
 	
 	evalResponse(o) {
-		if (!o || !o.kwdbss || !o.kwdbss === 'OK' || !o.v) this.responseE.innerHTML = o.msg;
-		this.okv = o.v;
+		if (!o || !o.kwdbss || !o.kwdbss === 'OK' || o.v === false || typeof o.v !== 'string') {
+			this.msgo.err(o);
+			return;
+		}
+		
+		const v = o.v;
+		
+		this.okv = v;
+		this.msgo.ok(v);
 	}
 	
 	onOKSend(vv) {
 		this.okv = vv;		
 	}
 	
-	init() { 
+	init(mrid) { 
 		this.wtov = false;
 		this.ctov = false;
 		this.sendingv = false;
 		this.okv = false;
+		this.msgo = new kwior_21_1_messages(mrid, this.ele);
+		const self = this;
+		this.erf = function(j,t) { self.evalResponse(j,t); };
 	}
 }
