@@ -16,7 +16,17 @@ function receive() {
 		throw $ex;
 	}
 
-	$dao = new dao_jsio_example();
-	$dao->put($a);
-	
+	$dbr = 'you should not get this response - receive() jsio ex';
+	try {
+		$dao = new dao_jsio_example();
+		$dbr = $dao->putOrDie($a);
+	} catch(Exception $ex) {
+		http_response_code(500); // 500 === interval server error
+		throw $ex;
+	}
+
+	header('Content-Type: application/json');
+	echo(json_encode($dbr));
+	exit(0);
+		
 }

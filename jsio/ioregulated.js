@@ -63,9 +63,9 @@ class kwior_21_1 {
 		this.sendCB(this.ele, erf);
 	}
 	
-	evalResponse(j, t) {
-		console.log('er 604');
-		if (!j) this.responseE.innerHTML = t;
+	evalResponse(o) {
+		if (!o || !o.kwdbss || !o.kwdbss === 'OK' || !o.v) this.responseE.innerHTML = o.msg;
+		this.okv = o.v;
 	}
 	
 	onOKSend(vv) {

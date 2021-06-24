@@ -1,10 +1,17 @@
+function responseTextParse(t) {
+	let o = false;
+	try { o = JSON.parse(t); } catch(ex) {  }
+	if (!o) o = { 'kwdbss' : 'ERROR', 'msg' : t };
+	return o;
+}
+
 function send(ein, cb) {
     
     const burl = 'server.php?XDEBUG_SESSION_START=netbeans-xdebug';
     const XHR = new XMLHttpRequest(); 
     XHR.open('POST', burl);
     XHR.onloadend = function() {
-		cb(this.responseJSON, this.responseText);
+		cb(responseTextParse(this.responseText));
     }
     
 	const sob = {};
