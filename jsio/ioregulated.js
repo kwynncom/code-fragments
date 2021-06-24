@@ -1,43 +1,50 @@
-class kwior {
+class kwior_21_1 {
 	
 	config() {
-		this.waitSend =  307; // prime number
-		this.contSend = 2003; // same
+		this.waitSend  =  307; // prime number
+		this.contSend  = 2003; // same
+		this.timeoutS  =    7;
+		this.timeoutms =  this.timeoutS * 1000;
 	}
 	
 	static setAllEles() { document.querySelectorAll('input[type=text], textarea').forEach(function(e) { new kwior(e);	}); }
 	
-	static setEle(id)  { new kwior(byid(id));	}
+	static setEle(e, cb)  { new kwior_21_1(e, cb);	}
 	
-	constructor(ele) { 
+	constructor(ele, cb) { 
 		this.ele = ele;
+		this.sendCB = cb;
 		this.config();
 		this.init();
 		this.setEleOb();
-
 	}
 	
 	setEleOb() {
 		kwas(this.ele.id, 'kwior - ele must have id');
 		const self = this;
 		this.ele.oninput = function() { self.oninput(); }
-		this.ele.onblur  = function() { self.onblur (); }
 	}
 	
 	oninput() {
 		const self = this;
+		this.lastits = time();
 		if (this.wtov) clearTimeout(this.wtov);
 		this.wtov = setTimeout (function () { self.send(); }, this.waitSend);
 		if  (this.ctov) return;
 		this.ctov = setInterval(function () { self.send(); self.checkInterval(); }, this.contSend);
 	}
 
+	isTO() {
+		if (time() - this.lastits < this.timeoutms) return false;
+		
+		this.clearInterval();
+		return true;
+	}
+
 	clearInterval() {
 		if (this.ctov) clearInterval(this.ctov);
 		this.ctov = false;
 	}
-
-	onblur() { /* this.clearInterval(); */ }
 	
 	checkInterval() {
 		if (this.isokv()) this.clearInterval();
@@ -48,9 +55,13 @@ class kwior {
 	send() {
 		console.log(this.ele.id + ' - checking send');
 		if (this.isokv()) return;
+		if (this.isTO()) return;
 		console.log(this.ele.id + ' - SEND');
-		this.okv = this.ele.value;
-		
+		this.sendCB(this.ele);
+	}
+	
+	onOKSend(vv) {
+		this.okv = vv;		
 	}
 	
 	init() { 
