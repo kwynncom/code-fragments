@@ -31,7 +31,11 @@ class chrony_parse {
 	
 	echo(self::head() . "\n");
 	
-	for($i=self::shown; isset($biga[$i]); $i--) {
+	$cba = count($biga);
+	if ($cba < self::shown) $i = $cba - 1;
+	else					$i = self::shown;
+	
+	for($i; isset($biga[$i]); $i--) {
 	    if (!isset($biga[$i]['ch'])) continue;
 	    $this->p20(self::toArray($biga[$i]['ch']));
 	}
