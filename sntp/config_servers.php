@@ -3,7 +3,7 @@
 class ntp_servers {
    
         
-   const resetUntil = '2021-02-02 02:17 America/New_York';
+   const resetUntil = '2021-07-04 02:20 America/New_York';
    const defaultMinPoll = 64;
 
    public static function get() {
