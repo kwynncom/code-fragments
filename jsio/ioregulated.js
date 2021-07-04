@@ -1,4 +1,4 @@
-class kwior_21_1 {
+class kwior {
 	
 	config() {
 		this.waitSend  =  307; // prime number
@@ -9,7 +9,7 @@ class kwior_21_1 {
 	
 	static setAllEles() { document.querySelectorAll('input[type=text], textarea').forEach(function(e) { new kwior(e);	}); }
 	
-	static setEle(e, cb, mreid)  { new kwior_21_1(e, cb, mreid);	}
+	static setEle(e, cb, mreid)  { new kwior(e, cb, mreid);	}
 	
 	constructor(ele, cb, mreid) { 
 		this.ele = ele;
@@ -85,7 +85,7 @@ class kwior_21_1 {
 		this.ctov = false;
 		this.sendingv = false;
 		this.okv = false;
-		this.msgo = new kwior_21_1_messages(mrid, this.ele);
+		this.msgo = new kwior_messages(mrid, this.ele);
 		const self = this;
 		this.erf = function(j,t) { self.evalResponse(j,t); };
 	}
