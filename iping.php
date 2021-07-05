@@ -1,44 +1,41 @@
 #! /usr/bin/php
 <?php
 
-$max = 600;
-$i   = 0;
+class iping {
 
-$ipvs = [4, 6];
+	const maxTries    = 200;
+	const okIfWithinS =   3; // success if both 4 and 6 are successful within that many seconds
 
-$gotv[4] = -5000;
-$gotv[6] = -4000;
-
-$ok = false;
-
-do {
-	foreach($ipvs as $ipv) {
-		echo("IPv$ipv: ");
-		$cmd = 'ping -' . $ipv . ' ' . ' -c 1 kwynn.com' . ' | ' . 'head -n 2';
-		$res = shell_exec($cmd);
-		echo $res;
-		if (preg_match('/\d+ bytes from/', $res)) { 
-			echo("** IPv$ipv OK *****\n");
-			$gotv[$ipv] = time();
-			if (abs($gotv[4] - $gotv[6]) < 3) {
-				$ok = true;
-				echo("** BOTH OK ***\n");
-				break 2; 
-			}
-		} else sleep(1);
+	public static function doit() { 
+		if (self::doitI10()) 
+			 echo("** BOTH OK ***\n");
+		else die('gave up after ' . self::maxTries . "\n");
 	}
 
-} while(++$i < $max);
+	public static function doitI10() { // I for internal, 10 so that I can create 05 or 20, like 1980s BASIC lines
 
-if (!$ok) {
-    echo("gave up after $max tries\n");
-    exit(53); // arbitrary error number
-}
+		$ipvs = [4, 6];
+		
+		$gotat    = [];
+		$gotat[4] = -1; // see README note "$gotat-init"
+		$gotat[6] = PHP_INT_MIN + abs($gotat[4]); // same - see note
 
-/* initial test:
-php iping.php
-* install and test:
-chmod 755 iping.php
-sudo cp iping.php /usr/bin/iping
-iping
-*/
+		$i   = 0;
+		
+		while($i++ <= self::maxTries) {
+			foreach($ipvs as $ipv) {
+				echo("IPv$ipv: ");
+				$cmd = $ipv . ' ' . ' -c 1 kwynn.com' . ' | ' . 'head -n 2';
+				$res = shell_exec($cmd);
+				echo $res;
+				if (preg_match('/\d+ bytes from/', $res)) { 
+					echo("** IPv$ipv OK *****\n");
+					$gotat[$ipv] = time();
+					if (abs($gotat[4] - $gotat[6]) < self::okIfWithinS) return true;
+				} else sleep(1);
+			}
+		}
+	} // doit()
+} // class
+
+iping::doit();
