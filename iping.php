@@ -1,6 +1,9 @@
 #! /usr/bin/php
 <?php // init ping - ping until success or $max attempts see installation notes below
 
+// Kwynn 2021/07/05 5:00pm EDT / UTC -4 - note that this version doesn't quite work.  It is betwixt and between.  The version from weeks ago works 
+// fine.  Hopefully I'll change this one as I want it soon.
+
 $max = 600;
 $i   = 0;
 
