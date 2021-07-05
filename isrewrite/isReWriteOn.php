@@ -3,31 +3,38 @@ class apacheModuleCheck {
 	
 	const defMod = 'mod_rewrite';
 	const actKey = 'ApacheModEnCk';
-	const allowOthers = false;
-	const testThisFileUntil = '2021/07/02 03:00 America/New_York';
+	const testUntil = '2021/07/05 02:00 America/New_York';
 	
-	public function __construct($fin) { 
+	public function __construct($fin = false, $ordie = false) { 
 		if (!$this->thisFileOK ($fin)) return; unset($fin);
-		$this->init10(); 		
+		if ($ordie) { $this->ordie = true; $this->doEc = true; }
+		$this->setFromExternalIfOK(); 
 		$this->cki(); 	
 	}
 	
-	private function thisFileOK($fin) {
-		if ($fin !== __FILE__) return true;
-		$d = time() - strtotime(self::testThisFileUntil);
-		if ($d < 0) return true;
-		return false;
+	public static function orDie() {
+		$o = new self(false, true);
 	}
 	
-	public static function isABeforeB() {
-	
+	private function thisFileOK($fin) {
+		if ($fin !== __FILE__)  return true;
+		return self::istestTime();
+
 	}
 
-	private function init10() {
+	private static function isTestTime() {
+		$d = time() - strtotime(self::testUntil);
+		if ($d < 0) return true;
+		return false;		
+	}
+	
+	private function setFromExternalIfOK() {
+		
+		if (!self::isTestTime()) return;
+		
 		if (!self::rqe(self::actKey)) return;
 		
-		$mod = false;
-		if (self::allowOthers) $mod = self::rqe('mod');
+		$mod = self::rqe('mod');
 		if (!$mod)			   $mod = self::defMod;
 		
 		$this->mod = $mod; unset($mod);
@@ -35,14 +42,11 @@ class apacheModuleCheck {
 		else					$this->doEc = false;
 		if (self::rqe('ordie')) $this->ordie = true;
 		else					$this->ordie = false;
-		// if (self::rqe('textHeaders')) $this->txthe = true;
-		// else						  $this->txthe = false;
-
 	}
 
 	private function cki() {
 		
-		if (!isset($this->mod)) return;
+		if (!isset($this->mod)) $this->mod = self::defMod;
 
 		$moin = $this->mod;
 		
@@ -75,9 +79,6 @@ class apacheModuleCheck {
 		return in_array($moin, apache_get_modules());
 	
 	}
-	
-//	public static function ck() { new self(); } 
-	
 }
 
 new apacheModuleCheck(__FILE__);
