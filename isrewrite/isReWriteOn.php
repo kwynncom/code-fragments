@@ -3,14 +3,34 @@ class apacheModuleCheck {
 	
 	const defMod = 'mod_rewrite';
 	const actKey = 'ApacheModEnCk';
+	const allowOthers = false;
+	const testThisFileUntil = '2021/07/02 03:00 America/New_York';
 	
-	public function __construct() { $this->init10(); 		$this->cki(); 	}
+	public function __construct($fin) { 
+		if (!$this->thisFileOK ($fin)) return; unset($fin);
+		$this->init10(); 		
+		$this->cki(); 	
+	}
+	
+	private function thisFileOK($fin) {
+		if ($fin !== __FILE__) return true;
+		$d = time() - strtotime(self::testThisFileUntil);
+		if ($d < 0) return true;
+		return false;
+	}
+	
+	public static function isABeforeB() {
+	
+	}
 
 	private function init10() {
 		if (!self::rqe(self::actKey)) return;
-		$mod = self::rqe('mod');
-		if (!$mod) $this->mod = self::defMod;
-		else	   $this->mod = $mod;
+		
+		$mod = false;
+		if (self::allowOthers) $mod = self::rqe('mod');
+		if (!$mod)			   $mod = self::defMod;
+		
+		$this->mod = $mod; unset($mod);
 		if (self::rqe('echo'))  $this->doEc = true;
 		else					$this->doEc = false;
 		if (self::rqe('ordie')) $this->ordie = true;
@@ -60,11 +80,11 @@ class apacheModuleCheck {
 	
 }
 
-new apacheModuleCheck();
+new apacheModuleCheck(__FILE__);
 
 /* tests:
-http://sm20/frag/isReWriteOn.php?XDEBUG_SESSION_START=netbeans-xdebug&ApacheModEnCk=1&echo=1
-http://sm20/frag/isReWriteOn.php?XDEBUG_SESSION_START=netbeans-xdebug&ApacheModEnCk=1&echo=1&mod=mod_watchdog
-http://sm20/frag/isReWriteOn.php?XDEBUG_SESSION_START=netbeans-xdebug&ApacheModEnCk=1&echo=1&ordie=1
+http://sm20/frag/isrewrite/isReWriteOn.php?XDEBUG_SESSION_START=netbeans-xdebug&ApacheModEnCk=1&echo=1
+http://sm20/frag/isrewrite/isReWriteOn.php?XDEBUG_SESSION_START=netbeans-xdebug&ApacheModEnCk=1&echo=1&mod=mod_watchdog
+http://sm20/frag/isrewrite/isReWriteOn.php?XDEBUG_SESSION_START=netbeans-xdebug&ApacheModEnCk=1&echo=1&ordie=1
 
  */
