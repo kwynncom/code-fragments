@@ -1,3 +1,8 @@
+Firefox does seem to wait until the browser is closed, not the tab.  That is what is documented, but I wondered.
+*****
+Firefox does what I expect with sessions.  I suspect I can change the session chaching settings to get Chorme to do what I want.
+I am trying to isolate a specific network connection with a session.
+*******
 using a "random" cookie as opposed to a session seems to do what I want, or at least much closer.
 *******
 I am trying to create a session and / or cookie that will truly delete with each connection loss.  

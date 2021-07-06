@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>connection isolation test</title>
+
+<script>
+	window.onload = function() {
+		const neto = new XMLHttpRequest();
+		const max = 5; // otherwise gets really obnoxious
+		let i = 0;
+		const siid = setInterval(function() { 
+			neto.open('GET', 'server.php?blah=1'); // must be open before send, so can't ID connection that way
+			neto.send(); 
+			if (++i >= max) clearInterval(siid);
+		} , 700);
+	
+	}
+</script>
+
+</head>
+<body>
+	
+</body>
+</html>
