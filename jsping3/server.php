@@ -1,0 +1,1 @@
+<?php echo(intval(round(microtime(1) * 1000)));
