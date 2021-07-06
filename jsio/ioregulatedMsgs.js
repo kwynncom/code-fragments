@@ -1,4 +1,4 @@
-class kwior_21_1_messages {
+class kwior_messages {
 	constructor(mid, vele) {
 		this.mase = byid(mid);
 		this.vele = vele;

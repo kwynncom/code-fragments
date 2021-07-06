@@ -1,10 +1,14 @@
 <?php
 
-// the default of 0 doesn't seem to go away easily upon browser restart
+$key = 'test5';
 
-// session_start(['cookie_lifetime' => 1]);
-// session_destroy();
-// setcookie("PHPSESSID", "", time() - 3600);
+if (isset($_COOKIE[$key])) {
+	exit(0);
+
+}
+
+setcookie($key, date('H_i_s'), time() + 15);
+
 
 exit(0);
 

@@ -1,0 +1,6 @@
+using a "random" cookie as opposed to a session seems to do what I want, or at least much closer.
+*******
+I am trying to create a session and / or cookie that will truly delete with each connection loss.  
+Round one did not go as planned.
+I think I'll try another cookie name as opposed to a session.
+
