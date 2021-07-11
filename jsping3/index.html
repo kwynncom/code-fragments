@@ -6,25 +6,69 @@
 
 <title>JavaScript ping 3</title>
 
-<script src='utils.js'></script>
+<style>
+	body { font-family: monospace; }
+	td   { text-align: right; }
+</style>
+<script src='utils.js' ></script>
+<script src='ping10.js'></script>
 <script>
+
+	class runningDC {
 		
-	class do1ping {
-		constructor(cbf) { // 2021/07/11 10:39pm PDT Saturday
-			const no = new XMLHttpRequest();
+		constructor() {
 			const self = this;
-			no.onloadend = function() { 
-				cbf(self.b, time(), parseInt(this.responseText)); 
+			this.bar = [];
+			setInterval(function() { self.disp(); }, 170);
+		}
+		
+		reg(stin, e) {
+			const o = { 't' : stin, 'e' : e};
+			this.bar.unshift(o);
+		}
+		
+		disp() {
+			for (let i=0; i < this.bar.length; i++) this.disp20(this.bar[i].t, this.bar[i].e)
+		}
+		
+		
+		disp20(stin, e) {
+			const d = time() - stin;
+			const p = 2;
+
+			const n1 = roundTo(d/ 1000, p);
+			const s    = n1.toFixed(p);
+			e.innerHTML = s;
+		}		
+	}
+
+	var KW_G_rdco = new runningDC();
+	
+	class draw1Ping {
+		constructor(tbid) {
+			this.tb = byid(tbid);
+			this.do10(); 
+		}
+		
+		do10() {
+			const tr = cree('tr');
+			this.tb.prepend(tr);
+			const tdst = cree('td');
+			for (let i=0; i < 4; i++) {
+				const td = cree('td');
+				tr.append(td);
+				new do1ping(function(b,e,st) {
+					const d = e - b;
+					td.innerHTML = d;
+					KW_G_rdco.reg(st, tdst);
+				}
+				);
 			}
-			no.open('GET', 'server.php');
-			this.b = time();
-			no.send();
+			tr.append(tdst);
 		}
 	}
-	
-	function cb10(b, e, st) {
-		return;
-	}
+
+
 	
 </script>
 
@@ -32,7 +76,19 @@
 </head>
 <body>
 	<div>
-		<button onclick='new do1ping(cb10);'>ping</button>
+		<button onclick='new draw1Ping("tb10");	'>ping</button>
 	</div>
+	<div>
+		<table>
+			<tbody id='tb10'>
+			</tbody>
+		</table>
+	</div>
+	<script>
+	window.onload = function() {
+		new draw1Ping('tb10');	
+	}
+	</script>
+		
 </body>
 </html>
