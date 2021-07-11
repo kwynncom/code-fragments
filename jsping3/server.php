@@ -1,1 +1,4 @@
-<?php echo(intval(round(microtime(1) * 1000)));
+<?php 
+
+header('Content-Type: text/plain');
+echo(intval(round(microtime(1) * 1000)));

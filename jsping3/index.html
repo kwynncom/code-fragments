@@ -6,38 +6,32 @@
 
 <title>JavaScript ping 3</title>
 
-<script src='./../jsio/utils.js'></script>
+<script src='utils.js'></script>
 <script>
-	
-	class do1Ping {
-		constructor() {
-			const no = new XMLHttpRequest();
-			const self = this;
-			no.onloadend = function() { self.parseRes(this.responseText, time()); }
-			no.open('GET', 'server.php');
-			this.b = time();
-			no.send();
+		
+	function do1ping(cbf) { // 2021/07/10 8:57pm PDT Saturday (UTC -7)
+		const no = new XMLHttpRequest();
+		const self = this;
+		no.timeout = 5000;
+		no.onloadend = function() { 
+			cbf(self.b, parseInt(this.responseText), time()); 
 		}
-		
-		parseRes(t, e) {
-			const d = e - this.b;
-			const st = parseInt(t);
-			return;
-		
-		}
-
-	
-		
+		no.open('GET', 'server.php');
+		this.b = time();
+		no.send();
 	}
 	
-	var G_PINGO = new do1Ping();
-	window.onload = function() {
-	//	G_PINGO.get();
+	function cb10(b,e,st) {
+		return;
 	}
+	
 </script>
 
 
 </head>
 <body>
+	<div>
+		<button onclick='do1ping(cb10);'>ping</button>
+	</div>
 </body>
 </html>
