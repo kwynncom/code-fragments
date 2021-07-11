@@ -10,10 +10,12 @@
 <script>
 		
 	class do1ping {
-		constructor(cbf) { // 2021/07/11 10:19pm PDT Saturday
+		constructor(cbf) { // 2021/07/11 10:39pm PDT Saturday
 			const no = new XMLHttpRequest();
 			const self = this;
-			no.onloadend = function() { cbf(self.b, time(), parseInt(this.responseText)); }
+			no.onloadend = function() { 
+				cbf(self.b, time(), parseInt(this.responseText)); 
+			}
 			no.open('GET', 'server.php');
 			this.b = time();
 			no.send();
