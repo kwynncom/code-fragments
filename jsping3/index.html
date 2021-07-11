@@ -9,19 +9,18 @@
 <script src='utils.js'></script>
 <script>
 		
-	function do1ping(cbf) { // 2021/07/10 8:57pm PDT Saturday (UTC -7)
-		const no = new XMLHttpRequest();
-		const self = this;
-		no.timeout = 5000;
-		no.onloadend = function() { 
-			cbf(self.b, parseInt(this.responseText), time()); 
+	class do1ping {
+		constructor(cbf) { // 2021/07/11 10:19pm PDT Saturday
+			const no = new XMLHttpRequest();
+			const self = this;
+			no.onloadend = function() { cbf(self.b, time(), parseInt(this.responseText)); }
+			no.open('GET', 'server.php');
+			this.b = time();
+			no.send();
 		}
-		no.open('GET', 'server.php');
-		this.b = time();
-		no.send();
 	}
 	
-	function cb10(b,e,st) {
+	function cb10(b, e, st) {
 		return;
 	}
 	
@@ -31,7 +30,7 @@
 </head>
 <body>
 	<div>
-		<button onclick='do1ping(cb10);'>ping</button>
+		<button onclick='new do1ping(cb10);'>ping</button>
 	</div>
 </body>
 </html>
