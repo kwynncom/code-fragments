@@ -7,8 +7,11 @@
 <title>JavaScript ping 3</title>
 
 <style>
-	body { font-family: monospace; }
-	td   { text-align: right; }
+	body	{ font-family: monospace; }
+	td		{ text-align: right; font-size: 2vw; min-width: 2ex; padding-left: 0.1ex; }
+	.eldi	{ font-size: 2.7vw; padding-left: 2ex; }
+	.btni10 { font-size: 3.0vw; }
+
 </style>
 <script src='utils.js' ></script>
 <script src='ping10.js'></script>
@@ -19,7 +22,9 @@
 		constructor() {
 			const self = this;
 			this.bar = [];
-			setInterval(function() { self.disp(); }, 170);
+			this.intervaln = 170;
+			this.itern = 0;
+			setInterval(function() { self.disp(); }, self.intervaln);
 		}
 		
 		reg(d, ce, de) {
@@ -35,11 +40,18 @@
 		}
 		
 		disp() {
-			for (let i=this.bar.length - 1; i >= 0; i--) {
-				const r = this.bar[i];
+			
+			const grn = KW_G_groupn;
+			const rown = parseInt(Math.floor(this.bar.length / grn ));
+			
+			this.itern++;
+			
+			for (let i=rown - 1; i >= 0; i--) {
+				const ri = ((i + 1) * grn) - 1;
+				const r  = this.bar[ri];
 				if (!r) continue;
 				if (!r.active) continue;
-				this.disp20(i); 
+				this.disp20(ri, rown - 1 === i); 
 			}
 		}
 		
@@ -50,63 +62,38 @@
 			else return false;
 		}
 		
-		disp20(i) {
+		disp20(i, isfirst) {
 			const d = this.diff(i);
 			let s = '--';
-			if (d !== false) { 
-				const p = 2;
-
-				const n1 = roundTo(d/ 1000, p);
-				s    = n1.toFixed(p);
-			} else this.bar[i].active = false;
-			
+			if (d !== false) s = this.ndisp30(d, isfirst);
+			else this.bar[i].active = false;
+						
+			if (!s) return;
+						
 			this.bar[i].e.innerHTML = s;
-		}		
-	}
-
-	var KW_G_rdco = new runningDC();
-	
-	class draw1Ping {
-		constructor(tbid) {
-			this.tb = byid(tbid);
-			this.do10();
 		}
 		
-		do10() {
-			const tr = cree('tr');
-			this.tb.prepend(tr);
-			const tdst = cree('td');
-			const pos = [];
-			let i = 0;
-			const self = this;
-			for (i=0; i < 4; i++) {
-				const td = cree('td');
-				tr.append(td);
-				pos[i] = new do1ping(function(d) {
-										KW_G_rdco.reg   (d, tdst, td);
-										self.iter1();
-									 }
-				);
+		ndisp30(d, isfirst) {
+
+			let s;
+
+			if (d < 3000 || (isfirst && d < 30000)) {
+				const p = 2
+				const n1 = roundTo(d / 1000, p);
+				s    = n1.toFixed(p);
+			} else if (1) {
+				if (this.itern % 9 !== 0) return false;
+				s = Math.round(d / 1000) + '&nbsp;&nbsp;&nbsp;';
 			}
-			tr.append(tdst);
-			this.pos = pos;
-			this.iterInit();
-
+			
+			return s;
 		}
-		
-		iterInit() {
-			this.iteri = 0;
-			this.pos[this.iteri].ping();			
-		}
-		
-		iter1() {
-			if (this.pos[++this.iteri]) this.pos[this.iteri].ping();
-		}
-		
-		
 	}
 
-
+	var KW_G_rdco   = new runningDC();
+	var KW_G_groupn = 4;
+	
+	function do1PingF(tbid) { new draw1Ping(tbid, KW_G_rdco, KW_G_groupn); }
 	
 </script>
 
@@ -114,7 +101,7 @@
 </head>
 <body>
 	<div>
-		<button onclick='new draw1Ping("tb10");	'>ping</button>
+		<button onclick='do1PingF("tb10");' class='btni10'>ping</button>
 	</div>
 	<div>
 		<table>
@@ -122,11 +109,7 @@
 			</tbody>
 		</table>
 	</div>
-	<script>
-	window.onload = function() {
-		new draw1Ping('tb10');	
-	}
-	</script>
+	<script>window.onload = function() { do1PingF('tb10');	}</script>
 		
 </body>
 </html>
