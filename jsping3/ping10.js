@@ -2,16 +2,16 @@ class do1ping {
 	constructor(cbf) {
 		const no = new XMLHttpRequest();
 		const self = this;
-		no.onloadend = function() {
+		no.onloadend = function () {
 			const e = time();
 			const st = parseInt(this.responseText);
 			const d = st - self.b + e - st;
-			cbf(d); 
+			cbf(d);
 		}
 		no.open('GET', 'server.php');
 		this.no = no;
 	}
-	
+
 	ping() {
 		this.b = time();
 		this.no.send();
@@ -31,16 +31,17 @@ class draw1Ping {
 		this.tb.prepend(tr);
 		const tdst = cree('td');
 		tdst.className = 'eldi';
+		tdst.innerHTML = '&nbsp;';
 		const pos = [];
 		let i = 0;
 		const self = this;
-		for (i=0; i < this.groupn; i++) {
+		for (i = 0; i < this.groupn; i++) {
 			const td = cree('td');
 			tr.append(td);
-			pos[i] = new do1ping(function(d) {
-									self.diob.reg(d, tdst, td);
-									self.iter1();
-								 }
+			pos[i] = new do1ping(function (d) {
+				self.diob.reg(d, tdst, td);
+				self.iter1();
+			}
 			);
 		}
 		tr.append(tdst);
@@ -50,9 +51,12 @@ class draw1Ping {
 
 	iterInit() {
 		this.iteri = 0;
-		this.pos[this.iteri].ping();			
+		this.pos[this.iteri].ping();
 	}
 
-	iter1() { if (this.pos[++this.iteri]) this.pos[this.iteri].ping(); }
+	iter1() {
+		if (this.pos[++this.iteri])
+			this.pos[this.iteri].ping();
+	}
 }
 	

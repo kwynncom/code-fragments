@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
 <title>JavaScript ping 3</title>
 
 <style>
 	body	{ font-family: monospace; }
-	td		{ text-align: right; font-size: 2vw; min-width: 2ex; padding-left: 0.1ex; }
-	.eldi	{ font-size: 2.7vw; padding-left: 2ex; }
-	.btni10 { font-size: 3.0vw; }
+	td		{ text-align: right; font-size: 4vw; min-width: 2ex; padding-left: 0.4ex; }
+	.eldi	{ font-size: 6vw; padding-left: 1.2ex; }
+	.btni10 { font-size: 5vw; }
+	tbody   { /* visibility: hidden; */ }
 
 </style>
 <script src='utils.js' ></script>
@@ -24,6 +25,7 @@
 			this.bar = [];
 			this.intervaln = 170;
 			this.itern = 0;
+			this.toff  = 0;
 			setInterval(function() { self.disp(); }, self.intervaln);
 		}
 		
@@ -62,8 +64,16 @@
 			else return false;
 		}
 		
+		adjn(d) {
+			if (d === false) return;
+			if (d >= 0) return;
+			
+			this.toff = Math.abs(d);
+		}
+		
 		disp20(i, isfirst) {
 			const d = this.diff(i);
+			this.adjn(d);
 			let s = '--';
 			if (d !== false) s = this.ndisp30(d, isfirst);
 			else this.bar[i].active = false;
@@ -78,6 +88,7 @@
 			let s;
 
 			if (d < 3000 || (isfirst && d < 30000)) {
+				d += this.toff;
 				const p = 2
 				const n1 = roundTo(d / 1000, p);
 				s    = n1.toFixed(p);
