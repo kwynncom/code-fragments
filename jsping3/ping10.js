@@ -4,10 +4,16 @@ class do1ping {
 		const self = this;
 		no.onloadend = function() {
 			const e = time();
-			cbf(self.b, e, parseInt(this.responseText)); 
+			const st = parseInt(this.responseText);
+			const d = st - self.b + e - st;
+			cbf(d); 
 		}
 		no.open('GET', 'server.php');
+		this.no = no;
+	}
+	
+	ping() {
 		this.b = time();
-		no.send();
+		this.no.send();
 	}
 }

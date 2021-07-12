@@ -22,23 +22,45 @@
 			setInterval(function() { self.disp(); }, 170);
 		}
 		
-		reg(stin, e) {
-			const o = { 't' : stin, 'e' : e};
-			this.bar.unshift(o);
+		reg(d, ce, de) {
+			this.disp1e(d, de);
+			const o = { 'asof' : time() + d, 'd' : d, 'e' : ce, 'active' : true};
+			this.bar.push(o);
+		}
+		
+		disp1e(d, ele) {
+			let s = '--';
+			if (!Number.isNaN(d)) s = d; 
+			ele.innerHTML = s;
 		}
 		
 		disp() {
-			for (let i=0; i < this.bar.length; i++) this.disp20(this.bar[i].t, this.bar[i].e)
+			for (let i=this.bar.length - 1; i >= 0; i--) {
+				const r = this.bar[i];
+				if (!r) continue;
+				if (!r.active) continue;
+				this.disp20(i); 
+			}
 		}
 		
+		diff(i) { 	
+			const d = time() - this.bar[i].asof;
+			const isnum = !Number.isNaN(d);
+			if (isnum) return d;
+			else return false;
+		}
 		
-		disp20(stin, e) {
-			const d = time() - stin;
-			const p = 2;
+		disp20(i) {
+			const d = this.diff(i);
+			let s = '--';
+			if (d !== false) { 
+				const p = 2;
 
-			const n1 = roundTo(d/ 1000, p);
-			const s    = n1.toFixed(p);
-			e.innerHTML = s;
+				const n1 = roundTo(d/ 1000, p);
+				s    = n1.toFixed(p);
+			} else this.bar[i].active = false;
+			
+			this.bar[i].e.innerHTML = s;
 		}		
 	}
 
@@ -47,25 +69,41 @@
 	class draw1Ping {
 		constructor(tbid) {
 			this.tb = byid(tbid);
-			this.do10(); 
+			this.do10();
 		}
 		
 		do10() {
 			const tr = cree('tr');
 			this.tb.prepend(tr);
 			const tdst = cree('td');
-			for (let i=0; i < 4; i++) {
+			const pos = [];
+			let i = 0;
+			const self = this;
+			for (i=0; i < 4; i++) {
 				const td = cree('td');
 				tr.append(td);
-				new do1ping(function(b,e,st) {
-					const d = e - b;
-					td.innerHTML = d;
-					KW_G_rdco.reg(st, tdst);
-				}
+				pos[i] = new do1ping(function(d) {
+										KW_G_rdco.reg   (d, tdst, td);
+										self.iter1();
+									 }
 				);
 			}
 			tr.append(tdst);
+			this.pos = pos;
+			this.iterInit();
+
 		}
+		
+		iterInit() {
+			this.iteri = 0;
+			this.pos[this.iteri].ping();			
+		}
+		
+		iter1() {
+			if (this.pos[++this.iteri]) this.pos[this.iteri].ping();
+		}
+		
+		
 	}
 
 

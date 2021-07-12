@@ -1,4 +1,9 @@
 <?php 
 
 header('Content-Type: text/plain');
-echo(intval(round(microtime(1) * 1000)));
+
+$out = '';
+if (1) $out = intval(round(microtime(1) * 1000));
+
+echo($out);
+unset($out);
