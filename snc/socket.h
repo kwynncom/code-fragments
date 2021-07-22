@@ -1,1 +1,1 @@
-int getUDPSock(char *baddr, int port);
+int getOutboundUDPSock(char *baddr, int port);
