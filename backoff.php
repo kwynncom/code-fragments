@@ -4,12 +4,32 @@ require_once('/opt/kwynn/kwutils.php');
 
 new backoff();
 
+class usebo {
+	public function __construct() {
+		$this->init();
+		$this->doit();
+	}
+
+	private function init() {
+		
+	}
+	
+	private function doit() {
+		for ($i=0; $i < 30; $i++) {
+			$r = $this->okin();
+			$this->rep10();
+		}
+		
+	}	
+	
+}
+
+
 class backoff {
 	
 	const mind = 4;
 	const maxd  = 1200;
-	
-	private $usa;
+	const scale = 360;
 
 	
 	public function __construct() {
@@ -36,18 +56,27 @@ class backoff {
 	}
 	
 	private function init10() {
-		$this->usa = [];
-		$this->basei = 0;
+		$this->cav = 0;
+		$this->cari = 0;
 		$this->baset = nanotime();
 	}
 	
 	private function doit() {
 		for ($i=0; $i < 30; $i++) {
-			$this->doit10();
+			$r = $this->okin();
 			$this->rep10();
-			$this->reset();
 		}
 		
+	}
+	
+	private function okin() {
+		if ($this->cav++ === 0) return true;
+		$ac = $this->cav - $this->cari;
+		if ($ac <= 1) return true;
+		$x = $this->x($this->cav);
+		$this->reset($x);
+		$scx = $x * self::scale;
+		return $scx;
 	}
 	
 	private function rep10() {
@@ -58,7 +87,7 @@ class backoff {
 		$sm1 = $this->usa[$c - 1];
 		$sm2 = $this->usa[$c - 2];
  
-		$xi = round($this->x($c - 1 - $this->basei));
+		$xi = round($this->x($c - 1 - $this->cari));
 		
 		echo($c . ' ' . $xi . ' ' . number_format($sm1 - $sm2) . "\n");
 	}
@@ -69,8 +98,7 @@ class backoff {
 		$this->sleep();
 	}
 	
-	private function x($nin) {
-		$n = $nin; unset($nin);
+	private function x($n) {
 		$n = intval(round($n)) - 1; 
 		$n = intval(round(self::mind * pow(1.297, $n)));	
 		$n = $this->limit($n);
@@ -84,15 +112,13 @@ class backoff {
 		else return $n;
 	}
 	
-	private function reset() {
-		$c = count($this->usa);
-		$x = $this->x($c - $this->basei); 
+	private function reset($x) {
 		if ($x < self::maxd) return;
-		$this->basei = count($this->usa);
+		$this->cari = $this->cav;
 	}
 	
 	private function sleep() {
-		$v10 = $this->x(count($this->usa) - $this->basei);
+		$v10 = $this->x(count($this->usa) - $this->cari);
 		$v20 = $v10 * 360;
 		usleep($v20);
 	}
