@@ -2,43 +2,48 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-new backoff();
+new usebo();
 
 class usebo {
 	public function __construct() {
 		$this->init();
 		$this->doit();
+		$this->repcon();
 	}
 
 	private function init() {
-		
+		$this->boo = new backoff();
+		$this->baset = nanotime(); // for reporting only
 	}
 	
 	private function doit() {
-		for ($i=0; $i < 30; $i++) {
-			$r = $this->okin();
-			$this->rep10();
+		for ($i=0; $i < 60; $i++) {
+			$r = $this->boo->okin();
+			if ($r === true) {  $this->douse(0); continue; }
+			kwas(is_integer($r) && $r > 0);
+			usleep($r);
+			$this->douse($r);
 		}
-		
-	}	
-	
-}
 
-
-class backoff {
-	
-	const mind = 4;
-	const maxd  = 1200;
-	const scale = 360;
-
-	
-	public function __construct() {
-		$this->init10();
-		$this->doit();
-		$this->rep50();
 	}
 	
-	private function rep50() {
+	private function douse($delay) {
+		$this->usa[] = nanotime();	
+		$this->repit($delay);
+	}
+	
+	private function repit($delay) {
+		$c = count($this->usa);
+		
+		if (!isset($this->usa[$c - 2])) return;
+		
+		$sm1 = $this->usa[$c - 1];
+		$sm2 = $this->usa[$c - 2];
+		
+		echo($c . ' ' . $delay . ' ' /* . number_format($sm1 - $sm2) */ . "\n");
+	}
+	
+	private function repcon() {
 		$c = count($this->usa);
 		if ($c < 2) return;
 		$e = $this->usa[$c - 1] - $this->baset;
@@ -55,74 +60,44 @@ class backoff {
 		
 	}
 	
-	private function init10() {
+}
+
+
+class backoff {
+	
+	const mind = 4;
+	const maxd  = 1200;
+	const scale = 3600;
+
+	
+	public function __construct() {
 		$this->cav = 0;
 		$this->cari = 0;
-		$this->baset = nanotime();
 	}
 	
-	private function doit() {
-		for ($i=0; $i < 30; $i++) {
-			$r = $this->okin();
-			$this->rep10();
-		}
-		
-	}
-	
-	private function okin() {
+	public function okin() {
 		if ($this->cav++ === 0) return true;
 		$ac = $this->cav - $this->cari;
 		if ($ac <= 1) return true;
-		$x = $this->x($this->cav);
+		$x = $this->x($ac);
 		$this->reset($x);
 		$scx = $x * self::scale;
 		return $scx;
 	}
 	
-	private function rep10() {
-		$c = count($this->usa);
-		
-		if (!isset($this->usa[$c - 2])) return;
-		
-		$sm1 = $this->usa[$c - 1];
-		$sm2 = $this->usa[$c - 2];
- 
-		$xi = round($this->x($c - 1 - $this->cari));
-		
-		echo($c . ' ' . $xi . ' ' . number_format($sm1 - $sm2) . "\n");
-	}
-	
-	private function doit10() {
-		$d = nanotime();
-		$this->usa[] = $d;
-		$this->sleep();
-	}
-	
 	private function x($n) {
 		$n = intval(round($n)) - 1; 
-		$n = intval(round(self::mind * pow(1.297, $n)));	
+		$n = intval(round(self::mind * pow(1.05, $n)));	
 		$n = $this->limit($n);
 		if ($n < self::mind) return self::mind;
 		return $n;
 	}
 	
-	private function limit($n) {
-		$lim = self::maxd;
-		if ($n > $lim) return $lim;
-		else return $n;
-	}
+	private function limit($n) { return $n > self::maxd ? self::maxd : $n; }
 	
 	private function reset($x) {
 		if ($x < self::maxd) return;
 		$this->cari = $this->cav;
 	}
-	
-	private function sleep() {
-		$v10 = $this->x(count($this->usa) - $this->cari);
-		$v20 = $v10 * 360;
-		usleep($v20);
-	}
-	
-	
 }
 
