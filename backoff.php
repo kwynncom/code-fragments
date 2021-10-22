@@ -17,8 +17,8 @@ class usebo {
 	}
 	
 	private function doit() {
-		for ($i=0; $i < 50; $i++) {
-			$r = $this->boo->next();
+		for ($i=0; $i < 300; $i++) {
+			$r = $this->boo->next($i);
 			$this->douse($i, $r);
 		}
 	}
@@ -37,7 +37,7 @@ class usebo {
 		$iuf = count($this->rec) / $this->totd;
 		$sca = $iuf * 3600;
 		$iui = intval(round($sca));
-		echo($iui . ' iter per unit scaled' . "\n");
+		echo($iui . ' iter per hour' . "\n");
 	}
 }
 
@@ -51,9 +51,19 @@ class backoff {
 		$this->cav = 0;
 		$this->cari = 0;
 	}
+
+	private function setIndex($n) {
+		if ($n === false) {
+			$this->cav++;
+			return;
+		}
+		kwas(is_integer($n) && $n >= 0, 'bad incoming index');
+		$this->cav = $n;
+	}
 	
-	public function next() {
-		$ac = $this->cav++ - $this->cari;
+	public function next($iin = false) {
+		$this->setIndex($iin); unset($iin);
+		$ac = $this->cav - $this->cari;
 		$x = $this->x($ac);
 		$this->reset($x);
 		return $x;
