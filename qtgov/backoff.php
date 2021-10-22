@@ -12,7 +12,7 @@ class usebo {
 	}
 
 	private function init() {
-		$this->boo = new backoff(4, 1200, 1.2);
+		$this->boo = new backoff(1.2, 4, 1200);
 		$this->totd = 0;
 	}
 	
@@ -44,10 +44,10 @@ class usebo {
 
 class backoff {
 	
-	public function __construct($mind, $maxd, $pow) {
+	public function __construct($pow, $mind, $maxd = PHP_INT_MAX) {
+		$this->powv = $pow;
 		$this->mind = $mind;
 		$this->maxd = $maxd;
-		$this->powv = $pow;
 		$this->cav = 0;
 		$this->cari = 0;
 	}
