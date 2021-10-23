@@ -5,15 +5,52 @@ require_once('config.php');
 
 class callSNTP extends callSNTPConfig {
 
-	const simShell = false;
-	const mustBeAfter = 1634878511762238252;
+	const simShell = 0;
+	const rescnt   = 4;
+	
+	private function simShell() {
+		if (isAWS()) return false;
+		if (!self::simShell) return false;
+		$t = $r[0] = nanotime();
+		$r[1] = $t + intval(round(self::toleranceNS * 0.999));
+		$r[2] = $r[1];
+		$r[3] = $t;
+		return json_encode($r);
+	}
 	
 	private function __construct($ip = self::defaultIP) {
 		$this->ip = $ip;
+		$this->tt = nanotime();
 		$this->init();
 		$this->doit();
+		$this->calcs();
 	}
 
+	private function calcs() {
+		if (!isset($this->ores['raw'])) return;
+		$or  =	   $this->ores;
+		$a   =	$or['raw'];
+		$min = $or['min'] = min($a);
+		for($i=0; $i < 2; $i++) $or['relmss'][$i] = self::fms($a[$i] - $min);
+		$avgns = (($a[3] + $a[0]) >> 1);
+		$avgs = self::fms($avgns - $min);
+		$or['relmss'][2] = $avgs;
+		for($i=2; $i <= 3; $i++) $or['relmss'][$i + 1] = self::fms($a[$i] - $min);
+		$avgsns = ($a[2] + $a[1]) >> 1;
+		$d = $avgns - $avgsns;
+		$or['d'] = $d / M_MILLION;
+		$or['out'] = self::fms($a[1] - $a[0]);
+		$or['in']  = self::fms($a[3] - $a[2]);
+		$this->ores = $or;
+	}
+	
+	public static function fms($ns) {
+		$mss = sprintf('%0.4f', $ns / M_MILLION);
+		$r   = sprintf('%8s', $mss);
+		return $r;
+				
+	}
+	
 	private function init() {
 		$this->ores = false;
 		if (!isAWS()) $pp = self::locPath;
@@ -26,9 +63,7 @@ class callSNTP extends callSNTPConfig {
 	
 	private function doit() {
 		$cmd = trim(self::cmd . ' ' . $this->path . ' ' . $this->ip);
-		if (self::simShell) $r = '[1634880687753702139,1634880687797246864,1634880687797327204,1634880687815166145]'; 
-		else 
-			 $r = shell_exec($cmd);
+		if (!($r = $this->simShell())) $r = shell_exec($cmd);
 		$a = json_decode(trim($r));
 		$this->setValid($a);
 	}
@@ -38,11 +73,12 @@ class callSNTP extends callSNTPConfig {
 		if (count($a) !== self::rescnt) return;
 		for($i=0; $i <    self::rescnt; $i++) {
 			if (!is_integer($a[$i])) return;
-			if ($a[$i] < self::mustBeAfter) return;
+			$d = abs($a[$i] - $this->tt);
+			if ($d > self::toleranceNS) return;
 		}
 		
 		if ($i !== self::rescnt) return;
-		$this->ores = $a;
+		$this->ores['raw'] = $a;
 		return;
 	}
 	
