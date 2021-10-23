@@ -2,6 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('config.php');
+require_once('validIP.php');
 
 class callSNTP extends callSNTPConfig {
 
@@ -18,9 +19,7 @@ class callSNTP extends callSNTPConfig {
 		return json_encode($r);
 	}
 	
-	private function __construct($ip = self::defaultIP) {
-		$this->ip = $ip;
-		$this->tt = nanotime();
+	private function __construct() {
 		$this->init();
 		$this->doit();
 		$this->calcs();
@@ -38,9 +37,14 @@ class callSNTP extends callSNTPConfig {
 		for($i=2; $i <= 3; $i++) $or['relmss'][$i + 1] = self::fms($a[$i] - $min);
 		$avgsns = ($a[2] + $a[1]) >> 1;
 		$d = $avgns - $avgsns;
-		$or['d'] = $d / M_MILLION;
+		$or['dsns'] = $d;
+		$or['ds'  ] = $d / M_BILLION;
+		$or['dsms'] = $d / M_MILLION;
 		$or['out'] = self::fms($a[1] - $a[0]);
 		$or['in']  = self::fms($a[3] - $a[2]);
+		
+		$or['r'] = date('r');
+		
 		$this->ores = $or;
 	}
 	
@@ -53,16 +57,33 @@ class callSNTP extends callSNTPConfig {
 	
 	private function init() {
 		$this->ores = false;
-		if (!isAWS()) $pp = self::locPath;
-		else kwas(false, 'not set for AWS / live yet');	
-		$p = $pp . self::file;
-		kwas(is_readable($p));
-		$this->path = $p;
+		$this->setIP();
+		$this->setCmd();
+	}
+	
+	private function setIP() {
+		global $argv;
+		global $argc;
 		
+		kwas($argc >= 2, 'need an IP argument');
+		$ip = $argv[1];
+		$this->ip = validIPOrDie($ip);
+	}
+	
+	private function setCmd() {
+		if (!isAWS()) {
+			$locpp = self::locPath;
+			$locp = $locpp . self::file;
+			kwas(is_readable($locp));
+			$this->cmd = self::loccmd . ' ' . $locp . ' ' . $this->ip;
+			return;
+		}
+		
+		$this->cmd = self::file . ' ' . $this->ip;
 	}
 	
 	private function doit() {
-		$cmd = trim(self::cmd . ' ' . $this->path . ' ' . $this->ip);
+		$cmd = trim($this->cmd);
 		if (!($r = $this->simShell())) $r = shell_exec($cmd);
 		$a = json_decode(trim($r));
 		$this->setValid($a);
@@ -71,9 +92,11 @@ class callSNTP extends callSNTPConfig {
 	private function setValid($a) {
 		if (!is_array($a)) return;
 		if (count($a) !== self::rescnt) return;
+
+		$now = nanotime();
 		for($i=0; $i <    self::rescnt; $i++) {
 			if (!is_integer($a[$i])) return;
-			$d = abs($a[$i] - $this->tt);
+			$d = abs($a[$i] - $now);
 			if ($d > self::toleranceNS) return;
 		}
 		
@@ -90,4 +113,9 @@ class callSNTP extends callSNTPConfig {
 	}
 
 }
-if (didCLICallMe(__FILE__)) print_r(callSNTP::get());
+if (didCLICallMe(__FILE__)) {
+	$d = callSNTP::get();
+	print_r($d);
+	// var_dump($d);
+	unset($d);
+}
