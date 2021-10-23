@@ -15,6 +15,8 @@ function validIPOrDie($ip) {
 			, 'bad IP preg'	);
 	
 	if ($ip4m) {
+		// 123.456.789.012
+		kwas($sl <= 15, 'ipv4 too big');
 		$ip4 = ip2long($ip);
 		kwas($ip4 && $ip4 > 0, 'ipv4 failed'); 
 	}
