@@ -80,11 +80,7 @@ class nist_servers extends dao_generic_2 {
 	}
 	
 	private function getServer() {
-		$da = $this->scoll->distinct('id', ['lastused' => ['$exists' => false]]);
-		$n  = count($da);
-		if ($n === 0 || $n === self::srvn) $q = [];
-		else $q = ['id' => ['$in' => $da]];
- 		$sa = $this->scoll->findOne($q, ['sort' => ['lastused' => 1], 'projection' => ['id' => 1, 'ip' => 1, '_id' => 0]]);
+ 		$sa = $this->scoll->findOne([], ['sort' => ['lastused' => 1], 'projection' => ['id' => 1, 'ip' => 1, '_id' => 0]]);
 		return $sa;
 	}
 	
