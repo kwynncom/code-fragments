@@ -101,9 +101,12 @@ class nist_servers extends dao_generic_2 {
 		return;
 	}
 	
+	public function getIP() { return $this->regIP; }
+	
 	public static function regGet() {
 		$o = new self();
+		return $o->getIP();
 	}
 }
 
-if (didCLICallMe(__FILE__)) nist_servers::regGet();
+if (didCLICallMe(__FILE__)) echo(nist_servers::regGet());
