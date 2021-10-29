@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-new usebo();
+// new usebo();
 
 class usebo {
 	public function __construct() {

@@ -2,25 +2,43 @@
 
 require_once('/opt/kwynn/mongodb2.php');
 require_once('/opt/kwynn/lock.php');
+require_once('validIP.php');
+require_once('backoff.php');
 
 class nist_servers extends dao_generic_2 {
 
-    const dbName = 'time21';
+    const dbName = 'sntp3';
 	const srvn = 7;
 	const ip4n = 5;
 	const ip6n = 2;
+	const baseip4 = '129.6.15.';
+	const baseip6 = '2610:20:6f15:15::';
+	
 	const ipbase = 26;
 	const org = 'NIST';
+	
+	const backe = 1.2;
+	const mind  = 4;
+	const maxs  = 1200;
 	
 	private function __construct() {
 		$this->locko = new sem_lock(__FILE__);
 		$this->locko->lock();
+		$this->regIP = false;
+		$this->boo = new backoff(self::backe, self::mind, self::maxs);
 		parent::__construct(self::dbName, __FILE__);
-		$this->creTabs(['s' => 'servers']);
+		$this->creTabs(['s' => 'servers', 'u' => 'use']);
+		$this->devReset();
 		$this->insertSrvs();
+		$this->set();
+		$this->locko->unlock();
 	}
 	
-	public function __destruct() { $this->locko->unlock(); } // must be public or permission error; not entirely sure why
+	private function devReset() {
+		if (isAWS()) return;
+		if (strtotime('2021-10-28 02:50') < time()) return;
+		$this->scoll->drop();
+	}
 	
 	private function insertSrvs() {
 		if ($this->scoll->count() === self::srvn) return;
@@ -28,8 +46,8 @@ class nist_servers extends dao_generic_2 {
 		$this->scoll->createIndex(['id' => 1], ['unique' => true]);
 		$this->scoll->createIndex(['ip' => 1], ['unique' => true]);
 
-		$base4 = '129.6.15.';
-		$base6 = '2610:20:6f15:15::';
+		$base4 = self::baseip4;
+		$base6 = self::baseip6;
 		$si   = self::ipbase;
 		for ($i=0; $i < self::ip4n; $i++, $si++) {
 			if (true		    ) $this->ins1($base4, $si);
@@ -42,11 +60,49 @@ class nist_servers extends dao_generic_2 {
 	
 	private function ins1($base, $i) {
 		$ip = $base . $i;
+		validIPOrDie($ip);
 		$dat = [];
 		$dat['org' ] = self::org;
 		$dat['ip'] = $ip;
 		$dat['id'] = $dat['_id'] = self::org . '-' . 'v' . (strlen($ip) === 11 ? 4 : 6) . '-' . $i;
 		$this->scoll->insertOne($dat);	
+	}
+	
+	private function ck10() {
+		$n10  = $this->ucoll->count();
+		$ws = $this->boo->next($n10); unset($n10);
+		$goodt = microtime(1) - $ws;
+		$q  = ['us' => ['$gt' => $goodt]];
+		$n  = $this->ucoll->count($q);
+		if ($n === 0) return TRUE;
+		return false;
+		
+	}
+	
+	private function getServer() {
+		$da = $this->scoll->distinct('id', ['lastused' => ['$exists' => false]]);
+		$n  = count($da);
+		if ($n === 0 || $n === self::srvn) $q = [];
+		else $q = ['id' => ['$in' => $da]];
+ 		$sa = $this->scoll->findOne($q, ['sort' => ['lastused' => 1], 'projection' => ['id' => 1, 'ip' => 1, '_id' => 0]]);
+		return $sa;
+	}
+	
+	private function set() {
+		
+		if (!$this->ck10()) return;
+
+		$s = $this->getServer();
+		$d['sid'] = $id = $s['id'];
+		$ip      = $s['ip'];
+		$d['us'] = microtime(1);
+		$d['r']  = date('r');
+		$d['_id'] = date('H:i:s-d-m-Y') . '-' . $id;
+				
+		$this->ucoll->insertOne($d);
+		$this->scoll->updateOne(['id' => $id], ['$set' => ['lastused' => $d['us'], 'lur' => date('r')]]);
+		$this->regIP = $ip;
+		return;
 	}
 	
 	public static function regGet() {
