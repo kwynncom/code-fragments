@@ -4,7 +4,7 @@
 
 	$a = [  'time_cost'      => $argv[1],
 			'threads'        => $argv[2],
-			'memory_cost_mb' => $argv[3]];
+			'memory_cost' => $argv[3]];
 	
 	$a['pass'] = $pwd = trim(shell_exec('base62 40'));
 
