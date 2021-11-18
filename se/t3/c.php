@@ -11,24 +11,13 @@ if (!isxon()) {
 //  Returns the type of the file. Possible values are fifo, char, dir, block, link, file, socket and unknown. 
 
 $f = '/tmp/st3';
-
 $c = $cp . "\n";
 
-do {
-	$h = fopen($f, 'w');
-	fwrite($h, $c, strlen($c));	
-
-	$ih = fopen('/tmp/o', 'r');
-	$rr = fread ($ih, 29);
-	$l = strlen($rr);
-	if ($l !== 29) continue;
-	if (file_exists($rr)) {
-		$r = file_get_contents($rr);
-		unlink($rr);
-		break;
-	}
-} while(1);
-echo($r);
+$h = fopen($f, 'w');
+fwrite($h, $c, strlen($c));	
+$ih = fopen('/tmp/o', 'r');
+$rr = fread ($ih, 29);
+echo($rr . "\n");
 exit(0);
 
 function isxon() { 

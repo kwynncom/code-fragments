@@ -20,7 +20,6 @@ while (1) {
 	file_put_contents($of, $r);
 	echo('bwr' . "\n");
 	$oh = fopen('/tmp/o', 'w+');
-	kwas(fwrite($oh, $of, 29) === 29, 'bad write');
+	fwrite($oh, $r, strlen($r));
 	echo('awr' . "\n");
-	// fclose($oh);
 }
