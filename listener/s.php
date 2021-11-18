@@ -20,6 +20,7 @@ while(1) {
 	$l  = strlen($sout);
 	$rout = fopen($fout, 'w+' );
 	if (!$rout) die('rout open fail');
+	sleep(5);
 	if (fwrite($rout, $sout, $l) !== $l) die('write fail');
 	fflush($rout);
 	fclose($rout);
