@@ -7,6 +7,9 @@ if (!isxon()) {
 	exit(0);
 }
 
+//  filetype(string $filename): string|false
+//  Returns the type of the file. Possible values are fifo, char, dir, block, link, file, socket and unknown. 
+
 $f = '/tmp/st3';
 
 $c = $cp . "\n";

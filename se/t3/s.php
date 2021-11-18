@@ -4,14 +4,12 @@ require_once('/opt/kwynn/kwutils.php');
 
 $f = '/tmp/st3';
 
-	$oh = fopen('/tmp/o', 'w+');
-
 while (1) {
 	$h = fopen($f, 'r');
 	$t = trim(fgets($h));
 	fclose($h);
 	echo("\ncmd: $t\n");
-	if ($t !== 'date') {
+	if (!$t) {
 		continue;
 	}
 	echo('bex' . "\n");
@@ -21,6 +19,7 @@ while (1) {
 	$of = '/tmp/' . sprintf('%020d', $n['tsc']) . '_' . sprintf('%03d', $n['pid']);
 	file_put_contents($of, $r);
 	echo('bwr' . "\n");
+	$oh = fopen('/tmp/o', 'w+');
 	kwas(fwrite($oh, $of, 29) === 29, 'bad write');
 	echo('awr' . "\n");
 	// fclose($oh);
