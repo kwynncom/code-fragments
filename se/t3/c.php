@@ -1,6 +1,6 @@
 <?php
 
-$cp = 'date';
+$cp = 'iping';
 
 if (!isxon()) {
 	echo(shell_exec($cp));
@@ -16,8 +16,9 @@ $c = $cp . "\n";
 $h = fopen($f, 'w');
 fwrite($h, $c, strlen($c));	
 $ih = fopen('/tmp/o', 'r');
-$rr = fread ($ih, 29);
-echo($rr . "\n");
+$rr = fread ($ih, 1000);
+echo($rr);
+echo('at ' . date('r') . "\n");
 exit(0);
 
 function isxon() { 

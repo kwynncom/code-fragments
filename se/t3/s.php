@@ -4,7 +4,7 @@ require_once('/opt/kwynn/kwutils.php');
 
 $f = '/tmp/st3';
 
-echo("v520\n");
+echo("v526\n");
 while (1) {
 	$h = fopen($f, 'r');
 	$t = trim(fgets($h));
@@ -13,4 +13,6 @@ while (1) {
 	$r = shell_exec($t);
 	$oh = fopen('/tmp/o', 'w+');
 	fwrite($oh, $r, strlen($r));
+	fflush($oh);
+	fclose($oh);
 }
