@@ -9,6 +9,7 @@ $fout = '/tmp/out';
 $lo->lock();
 $rinn = fopen($finn, 'w+');
 if (!$rinn) die('open fail');
+fflush($rinn);
 if (!fwrite($rinn, 'x', 1)) die('write fail');
 echo(file_get_contents($fout));
 fclose($rinn);

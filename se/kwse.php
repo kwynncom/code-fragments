@@ -36,35 +36,25 @@ class kw_shell_exec_cl {
 			$lo  = new sem_lock($f15);
 			$lo->lock();
 			file_put_contents($f10, $c);
-			$this->exres = shell_exec(__FILE__ . ' exec ' . $h . ' > /dev/null 2>&1 &');
-			$rinn = fopen($finn, 'w+'); if (!$rinn) die('open fail');
-			if (!fwrite($rinn, 'x', 1)) die('write fail');
+			$this->exres = shell_exec(__FILE__ . ' exec ' . $h . ' > ' . '/dev/null' .  ' 2>&1 &');
+			// $rinn = fopen($finn, 'w+'); if (!$rinn) die('open fail');
+			// if (!fwrite($rinn, 'x', 1)) die('write fail');
 			echo(file_get_contents($fout));
-			fclose($rinn);
+			// fclose($rinn);
 			$lo->unlock();
 			unset($lo);
 		} else {
 			$c = file_get_contents($f10);
-		
-			while(1) {
-				$rinn = fopen($finn, 'r');
-				if (!$rinn) die('rinn open fail');
-				$t = fread($rinn, 1);
-				$l = strlen($t);
-				$us = microtime(1);
-				echo('read' . " $l $us\n");
-				fclose($rinn);
-				if (!$l) continue;
-				$sout = shell_exec($c . ' > ' . $fout . ' &');
-		
-				exit(0);
-			}
-			
+			$r = shell_exec($c);
+			file_put_contents($fout, $r);
+			exit(0);
+		}
+
+				return file_get_contents($f20);
 
 		}
 		
-		return file_get_contents($f20);
-	}
+	
 	
 	public function getRes() { return $this->exres; }
 	
