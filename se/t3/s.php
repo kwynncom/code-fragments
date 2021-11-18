@@ -1,20 +1,27 @@
 <?php
 
+require_once('/opt/kwynn/kwutils.php');
+
 $f = '/tmp/st3';
 
-$h = fopen($f, 'w+');
-fflush($h);
-
-$oh = fopen('/tmp/o', 'w+');
-fflush($oh);
+	$oh = fopen('/tmp/o', 'w+');
 
 while (1) {
+	$h = fopen($f, 'r');
 	$t = trim(fgets($h));
-	if ($t !== 'date') continue;
+	fclose($h);
+	echo("\ncmd: $t\n");
+	if ($t !== 'date') {
+		continue;
+	}
+	echo('bex' . "\n");
 	$r = shell_exec($t);
-	$md5 = md5($t);
-	file_put_contents('/tmp/' . $md5, $r);
-	fflush($oh);
-	fwrite($oh, 'OK4', 3);
-	fflush($oh);
+	echo('aex' . "\n");
+	$n = nanopk();
+	$of = '/tmp/' . sprintf('%020d', $n['tsc']) . '_' . sprintf('%03d', $n['pid']);
+	file_put_contents($of, $r);
+	echo('bwr' . "\n");
+	kwas(fwrite($oh, $of, 29) === 29, 'bad write');
+	echo('awr' . "\n");
+	// fclose($oh);
 }

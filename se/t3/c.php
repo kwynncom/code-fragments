@@ -8,17 +8,23 @@ if (!isxon()) {
 }
 
 $f = '/tmp/st3';
-$h = fopen($f, 'w+');
-fflush($h);
 
 $c = $cp . "\n";
-fwrite($h, $c, strlen($c));
 
-$ih = fopen('/tmp/o', 'r');
-if (($rr = fread ($ih, 3)) !== 'OK4') die('not OK = ' . $rr);
-$resf = '/tmp/' . md5($cp);
-$r = file_get_contents($resf);
-unlink($resf);
+do {
+	$h = fopen($f, 'w');
+	fwrite($h, $c, strlen($c));	
+
+	$ih = fopen('/tmp/o', 'r');
+	$rr = fread ($ih, 29);
+	$l = strlen($rr);
+	if ($l !== 29) continue;
+	if (file_exists($rr)) {
+		$r = file_get_contents($rr);
+		unlink($rr);
+		break;
+	}
+} while(1);
 echo($r);
 exit(0);
 
