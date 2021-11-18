@@ -1,0 +1,7 @@
+2021/11/18 2:37am Thursday
+
+The problem comes from the debugging being the same parent process.
+
+I think my idea of using the md5 of the command will work in a different context.  The idea will be to turn any kw_shell_exec into a 
+semi-service or quasi-service--something that can be easily started from the command line as a separate process tree.  Then client 
+debugging will be undisturbed.

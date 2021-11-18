@@ -8,51 +8,26 @@ class kw_shell_exec_cl {
 	const dexec = 'iping';
 	
 	private function __construct($c) {
+		$this->exres = '';
 		$this->exCmd = $c;
-		$this->do10();
+		$this->exres = $this->do10();
 	}
 	
 	private function do10() {
-		
-		global $argv;
-		global $argc;
-		
 		$c = $this->exCmd;
-		$h = $this->exCmdH = md5($c);
-		// $c = 'php ' . __DIR__ . '/sea.php ' . $h;
+		$n = nanopk();
+		// $f = self::bpath . $n['tsc'] . '_' . $n['pid'];
+		$f = '/dev/null';
+		$pc = $c . ' > ' . $f . ' 2>&1 & echo $! ';
+		$pid = trim(shell_exec($pc));
 		
-		$f05 =  self::bpath . $h; 
-		$fres = $f05 . '_res.txt';
-		$f10 = $f05 . '_cmd.txt';
-		$f15 = $f05 . '_lock';
-		file_put_contents($f15, '');
-		$finn = $f05 . '_inn';
-		$fout = $f05 . '_out';
-		foreach([$finn, $fout] as $f) {
-			if (!file_exists($f)) posix_mkfifo($f, 0600);
-		}
+		$tc = "tail -f --pid=$pid /dev/null";
+		echo($tc);
+		shell_exec($tc);
 		
-		if ($argc < 2 || $argv[1] !== 'exec') {
-			$lo  = new sem_lock($f15);
-			$lo->lock();
-			file_put_contents($f10, $c);
-			$this->exres = shell_exec(__FILE__ . ' exec ' . $h . ' > ' . '/dev/null' .  ' 2>&1 &');
-			// $rinn = fopen($finn, 'w+'); if (!$rinn) die('open fail');
-			// if (!fwrite($rinn, 'x', 1)) die('write fail');
-			echo(file_get_contents($fout));
-			// fclose($rinn);
-			$lo->unlock();
-			unset($lo);
-		} else {
-			$c = file_get_contents($f10);
-			$r = shell_exec($c);
-			file_put_contents($fout, $r);
-			exit(0);
-		}
+		// return file_get_contents($f);
 
-				return file_get_contents($f20);
-
-		}
+	}
 		
 	
 	
