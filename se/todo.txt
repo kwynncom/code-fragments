@@ -1,0 +1,5 @@
+have script either demand starting a server separately or else 
+start the server once and demand rerunning
+Need a pid file that is not a FIFO
+probably a lock file for my own sem_lock()
+
