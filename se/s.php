@@ -13,6 +13,5 @@ while (1) {
 	$r = shell_exec($t);
 	$oh = fopen('/tmp/o', 'w+');
 	fwrite($oh, $r, strlen($r));
-	fflush($oh);
 	fclose($oh);
 }
