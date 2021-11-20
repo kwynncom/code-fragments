@@ -15,3 +15,16 @@ shell_exec(__FILE__ . ' exec ' . $h . ' > /dev/null 2>&1 &');
 ***
 probably a lock file for my own sem_lock()
 -- actually, no.  The point of this exercise is to debug one thing at a time.  Locking using __FILE__ is fine.
+******
+But on a Unix system there are lots of jobs which run independently for long periods of time. They achieve this by:
+
+1) they are first started, say as pid 1234, and try to fork, say to pid 1235 after calling fork, pid 1234 exits
+2) pid 1235 will become the daemon - it closes all its open fds including those for stdin, stdout and stderr
+3) pid 1235 now calls setsid(), this dissociates this process from the tree of processes which led to its creation (and typically makes it a child of the 'init' process).
+
+You can do all this in a PHP script, assuming you've got the posix and pcntl extensions. However in my experience its usually a lot simpler to ask an existing daemon to run the script for you:
+
+
+print `echo /usr/bin/php -q longThing.php | at now`;
+
+http://symcbean.blogspot.com/2010/02/php-and-long-running-processes.html

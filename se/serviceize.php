@@ -20,11 +20,30 @@ class serviceize {
 		$f = $this->ifi;
 		$this->loob = $lo = new sem_lock($f);
 		try {$lo->lock();
-			$pc = '(nohup ' . $this->exCmd . ') & echo $! ';
-			echo($pc);
+			ignore_user_abort(true);
+			// $pc =  'bash ' . __DIR__ . '/size.bash > /dev/null';
+			$pc = 'sleep 116 > /dev/null &';
+
 			
-			$pid = trim(shell_exec($pc)); $pid = intval($pid); kwas($pid >= 1, 'bad pid');
-			file_put_contents($f, $pid);
+			if (pcntl_fork() === 0) {
+				echo($pc);
+				exec($pc);
+	
+			// echo("\n" . 'setsid = ' . "$ss\n");
+			
+			fclose(STDIN);
+			fclose(STDOUT);
+			fclose(STDERR);
+
+			$ss = posix_setsid();
+			sleep(500);
+			// if ($ss === -1) die('bad setsid()');
+			}
+			else sleep(2);
+			// exit(0);
+			// sleep(20);
+		//	$pid = trim(shell_exec($pc)); $pid = intval($pid); kwas($pid >= 1, 'bad pid');
+		//	file_put_contents($f, $pid);
 		} catch(Exception $ex) { } finally { $lo->unlock(); if (isset($ex)) throw $ex;	}
 		return;		
 	}
@@ -41,4 +60,4 @@ class serviceize {
 	}
 }
 
-if (didCLICallMe(__FILE__)) serviceize::doit('sleep 100');
+if (didCLICallMe(__FILE__)) serviceize::doit('sleep 128');
