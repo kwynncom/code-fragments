@@ -17,37 +17,47 @@ class kw_shell_exec_cl {
 	}
 	
 	private function do10() {
-		
 		$this->setFiles();
-		exit(0); // ****
+		if ($this->iamsrv) {
+			$this->start10(); 
+		}
+		else $this->startc10();
 		
-		$c = $this->exCmd;
-		$n = nanopk();
-		// $f = self::bpath . $n['tsc'] . '_' . $n['pid'];
-		$f = '/dev/null';
-		$pc = $c . ' > ' . $f . ' 2>&1 & echo $! ';
-		$pid = trim(shell_exec($pc));
-		
-		$tc = "tail -f --pid=$pid /dev/null";
-		echo($tc);
-		shell_exec($tc);
-		
-		// return file_get_contents($f);
-
 	}
 		
 	private function setFiles() {
 		$this->setFileBase();
 		$this->sf20();
-		if ($this->iamsrv) $this->start10(); // server
 	}
+	
+	private function startc10() {
+
+		$c = $this->exCmd . "\n";
+		self::rpt('cfocto');
+		$h = fopen($this->fctos, 'w');
+		self::rpt('cfoctopw');
+		fwrite($h, $c, strlen($c));	
+		self::rpt('cfoctopow');
+		$ih = fopen($this->fstoc, 'r');
+		self::rpt('cfocao');
+		$rr = fread ($ih, 10000);
+		echo($rr);
+		echo('at ' . date('r') . "\n");
+		exit(0);
+	}
+	
+	private static function rpt($msg) { echo($msg . "\n"); }
 	
 	private function start10() {
 		while (1) {
+			self::rpt('sfocto');
 			$h = fopen($this->fctos, 'r');
 			$t = trim(fgets($h));
+			self::rpt('t = ' . $t);
 			fclose($h);
 			if (!$t) continue;
+			
+			self::rpt('prese');
 			$r = shell_exec($t);
 			$oh = fopen($this->fstoc, 'w+');
 			fwrite($oh, $r, strlen($r));
@@ -57,15 +67,18 @@ class kw_shell_exec_cl {
 	
 	private function sf20() {
 		$this->locko = new sem_lock(__FILE__);
-		$this->locko->lock();
 		$fs = ['ctos', 'stoc'];
 		foreach($fs as $fsfx) {
 			$f = $this->fbase . $fsfx;
 			$this->{'f' . $fsfx} = $f;
-			if (file_exists($f)) { self::vf30orDie($f); continue; }
-			posix_mkfifo($f, 0600);
+			if ($this->iamsrv) {
+				$this->locko->lock();
+				if (file_exists($f)) { self::vf30orDie($f); $this->locko->unlock(); continue; }
+				posix_mkfifo($f, 0600);
+				$this->locko->unlock();
+			}
 		}
-		$this->locko->unlock();
+
 	}
 	
 	private static function vf30orDie($f) {
@@ -96,7 +109,7 @@ class kw_shell_exec_cl {
 		$iss = self::issrv();
 		if (!$iss) {
 			if (!$c) $c = self::dexec;
-			if (!self::isxon()) return shell_exec($c);
+			if (!self::isxon() && 0) return shell_exec($c);
 		}
 		$o = new self($c, $iss);
 		return $o->getRes();
