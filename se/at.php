@@ -1,3 +1,3 @@
 <?php
 
-exec('echo sleep 315 | at now > /dev/null 2>&1');
+shell_exec('echo sleep 316 | at now > /dev/null 2>&1');

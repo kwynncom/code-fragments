@@ -1,7 +1,15 @@
+The "at" command may solve one of the problems.
+As for the original debugging problem, perhaps the solution is to do 
+kw_php_shell_exec();
+This may work with an interface that demands the within-calling-PHP-memory-space version.  If the 
+idea is to keep from tripping on PHP when debugging PHP, then write the called scripts such that they can 
+easily be called as functions and methods rather than a shell script.
+
+***********
 have script either demand starting a server separately or else 
 start the server once and demand rerunning
 Need a pid file that is not a FIFO
-
+***********
 shell_exec(__FILE__ . ' exec ' . $h . ' > /dev/null 2>&1 &');
 
 		$f = '/dev/null';
