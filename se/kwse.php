@@ -6,8 +6,8 @@ class kw_shell_exec_cl {
 	
 	const bpath = '/tmp/';
 	const dexec = 'iping';
-	
 	const fbase = '/tmp/kwex_';
+	const maxoutbytes = 100000;
 	
 	private function __construct($c, $iamsrv) {
 		$this->iamsrv = $iamsrv;
@@ -33,31 +33,21 @@ class kw_shell_exec_cl {
 	private function startc10() {
 
 		$c = $this->exCmd . "\n";
-		self::rpt('cfocto');
 		$h = fopen($this->fctos, 'w');
-		self::rpt('cfoctopw');
 		fwrite($h, $c, strlen($c));	
-		self::rpt('cfoctopow');
 		$ih = fopen($this->fstoc, 'r');
-		self::rpt('cfocao');
-		$rr = fread ($ih, 10000);
+		$rr = fread ($ih, self::maxoutbytes);
 		echo($rr);
-		echo('at ' . date('r') . "\n");
 		exit(0);
 	}
 	
-	private static function rpt($msg) { echo($msg . "\n"); }
-	
 	private function start10() {
 		while (1) {
-			self::rpt('sfocto');
 			$h = fopen($this->fctos, 'r');
 			$t = trim(fgets($h));
-			self::rpt('t = ' . $t);
 			fclose($h);
 			if (!$t) continue;
 			
-			self::rpt('prese');
 			$r = shell_exec($t);
 			$oh = fopen($this->fstoc, 'w+');
 			fwrite($oh, $r, strlen($r));
@@ -66,16 +56,19 @@ class kw_shell_exec_cl {
 	}
 	
 	private function sf20() {
-		$this->locko = new sem_lock(__FILE__);
+		
+		$iss = $this->iamsrv;
 		$fs = ['ctos', 'stoc'];
+	
 		foreach($fs as $fsfx) {
 			$f = $this->fbase . $fsfx;
 			$this->{'f' . $fsfx} = $f;
-			if ($this->iamsrv) {
-				$this->locko->lock();
-				if (file_exists($f)) { self::vf30orDie($f); $this->locko->unlock(); continue; }
+			if ($iss) {
+				if (file_exists($f)) { 
+					self::vf30orDie($f);  
+					continue; 
+				}
 				posix_mkfifo($f, 0600);
-				$this->locko->unlock();
 			}
 		}
 
@@ -122,5 +115,5 @@ class kw_shell_exec_cl {
 function kw_shell_exec($cmd = '') { return kw_shell_exec_cl::doit($cmd); }
 
 
-if (didCLICallMe(__FILE__)) echo(kw_shell_exec('php -v'));
+if (didCLICallMe(__FILE__)) echo(kw_shell_exec('iping'));
 
