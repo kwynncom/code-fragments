@@ -1,5 +1,7 @@
 have script either demand starting a server separately or else 
 start the server once and demand rerunning
 Need a pid file that is not a FIFO
-probably a lock file for my own sem_lock()
 
+***
+probably a lock file for my own sem_lock()
+-- actually, no.  The point of this exercise is to debug one thing at a time.  Locking using __FILE__ is fine.
