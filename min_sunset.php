@@ -6,16 +6,14 @@ $az = 90.833333; // sunrise
 
 $now = time();
 
-$goDaysAhead = 40;
-
 $res = [];
-for ($i=-10; $i < $goDaysAhead; $i++) {
+for ($i=-10; $i < 35; $i++) {
 
     $forts = strtotime($i . ' days', $now);
     $gmto = -5 + date('I', $forts);
-    $risets = date_sunrise($forts, SUNFUNCS_RET_TIMESTAMP, $loc['lat'], $loc['lon'], $az, $gmto);
+    $risets = date_sunset($forts, SUNFUNCS_RET_TIMESTAMP, $loc['lat'], $loc['lon'], $az, $gmto);
     $rises  = intval(date('s', $risets));
-    $risefo = date_sunrise($forts, SUNFUNCS_RET_DOUBLE   , $loc['lat'], $loc['lon'], $az, $gmto);
+    $risefo = date_sunset($forts, SUNFUNCS_RET_DOUBLE   , $loc['lat'], $loc['lon'], $az, $gmto);
     $tmpa['hrfl'] = $risefo;
     $hrfr  = $risefo - intval(date('g', $risets));
     $sfl   = 3600 * $hrfr;
@@ -33,18 +31,18 @@ for ($i=-10; $i < $goDaysAhead; $i++) {
 }
 
 $d = '';
-for ($i=-10; $i < $goDaysAhead; $i++) {
+for ($i=-10; $i < 35; $i++) {
      $d .= $res[$i]['d'];
-     if (isMax($res, $i)) $d .= ' *** MAX / LATEST SUNRISE ***';
+     if (isMin($res, $i)) $d .= ' *** MIN / EARLIEST SUNSET ***';
      $d .= "\n";
 }
 
 echo $d;
 
-function isMax($a, $i) {
+function isMin($a, $i) {
     for($j=-1; $j <= 1; $j++) if (!isset($a[$i+$j])) return false;
-    if (	$a[$i-1]['hrfl'] < $a[$i]['hrfl']
-	    &&	$a[$i+1]['hrfl'] < $a[$i]['hrfl']) return true;
+    if (	$a[$i-1]['hrfl'] > $a[$i]['hrfl']
+	    &&	$a[$i+1]['hrfl'] > $a[$i]['hrfl']) return true;
     return false;
     
     
