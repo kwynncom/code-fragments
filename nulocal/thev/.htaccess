@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^ https://%{HTTP_HOST}:9999/?%{QUERY_STRING} [L,NE]

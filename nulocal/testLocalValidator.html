@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>title</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+<script>
+window.onload = function() { setNuValKw20220110(); }
+
+function setNuValKw20220110() {
+    const es = qsa('a[data-sethtnu="iamNuValKw20220110"]');
+    if (!es || !es.length || es.length < 1) return;
+    const pre = '/t/22/01/nutest/thev/?doc=';
+    const q   = location.href;
+    const url = pre + q;
+    for (let i=0; i < es.length; i++) es.item(i).href = url;    
+}
+</script>
+
+</head>
+<body>
+    <p><a data-sethtnu="iamNuValKw20220110">HTML validate</a>
+        
+    </p>
+</body>
+</html>
