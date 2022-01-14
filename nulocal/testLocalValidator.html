@@ -4,7 +4,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>title</title>
+<title>local HTML validator test</title>
 
 <style>
     body { font-family: sans-serif; }
@@ -12,21 +12,26 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 <script>
-window.onload = function() { setNuValKw20220110(); }
+// 2022/01/13 23:29
+    
+document.addEventListener("DOMContentLoaded", function(){ cl('hi 1'); });
 
-function setNuValKw20220110() {
+document.addEventListener("DOMContentLoaded", function(){
     const es = qsa('a[data-sethtnu="iamNuValKw20220110"]');
     if (!es || !es.length || es.length < 1) return;
     const pre = '/t/22/01/nutest/thev/?doc=';
     const q   = location.href;
     const url = pre + q;
-    for (let i=0; i < es.length; i++) es.item(i).href = url;    
-}
+    for (let i=0; i < es.length; i++) es.item(i).href = url;      
+});
+
+document.addEventListener("DOMContentLoaded", function(){ cl('hi 2'); });
+
 </script>
 
 </head>
 <body>
-    <p><a data-sethtnu="iamNuValKw20220110">HTML validate</a>
+    <p><a>HTML validate</a>
         
     </p>
 </body>
