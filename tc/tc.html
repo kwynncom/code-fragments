@@ -8,7 +8,10 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 <script>
-    function onStartBtn() { kwjss.sobf('server?start=1'); }
+    function onStartBtn() { kwjss.sobf('server?start=1', {}, pop10); }
+    function pop10(din) {
+        byid('etest1').value = din.hr;
+    }
 </script>
 
 <style>
@@ -19,7 +22,9 @@
     <div>
         <button onclick='onStartBtn();'>start</button>
     </div>
-        
+    <table>
+        <tr><td><input type='time' id='etest1' /></td></tr>
+    </table>
        
 </body>
 </html>
