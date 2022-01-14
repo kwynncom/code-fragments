@@ -8,9 +8,10 @@ public function do10() {
 	if (isrv('start')) {
 		$now = time();
 		$r = [];
-		$r['U' ] = date('U', $now);
-		$r['db'] = date('Y-m-d', $now);
-		$r['hr'] = date('H:i');
+		$r['U' ]  = date('U'	, $now);
+		$r['db']  = date('Y-m-d', $now);
+		$r['hr']  = date('H:i'  , $now);
+		$r['dow'] = date('D'	, $now);
 		kwjae($r);
 	} // if
 } // func
