@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'> <!-- 2021/12/26 20:03 EST -->
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>n weeks to flatten the curve</title>
+
+<script>
+    // /t/21/07/ping3/utils.js
+    window.onload = function() {
+        const startTSms   = 1584374400000;
+        const msInWeek    = 592200000;
+        const weeksfl  = ((new Date).getTime() - startTSms) / msInWeek;
+        const weeksp1 = Math.floor(weeksfl);
+        document.getElementById('weeksFlattenCurve').innerHTML = weeksp1;
+    }
+</script>
+<style>
+    body { font-family: sans-serif; }
+</style>
+</head>
+<body>
+    
+    <p>This is week <span id='weeksFlattenCurve'>94+</span> to flatten the curve.</p>
+   
+    <p>Monday, March 16, 2020 12:00:00 PM GMT-04:00 === 1584374400</p>
+<p>
+    <a href='https://www.cnbc.com/2021/03/16/covid-a-year-later-trumps-15-days-to-slow-the-spread-pledge-shows-how-little-we-knew.html'>Mar 16 2020</a>
+    <a href='https://www.youtube.com/watch?v=HK2ypT2xweA'>Mar 18, 2020</a>
+</p>
+</body>
+</html>
