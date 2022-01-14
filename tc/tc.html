@@ -6,14 +6,21 @@
 
 <title>timecard</title>
 
+<script src='/opt/kwynn/js/utils.js'></script>
+<script>
+    function onStartBtn() { kwjss.sobf('server?start=1'); }
+</script>
+
 <style>
     body { font-family: sans-serif; }
 </style>
 </head>
 <body>
-    <table>
+    <div>
+        <button onclick='onStartBtn();'>start</button>
+    </div>
         
-    </table>
+       
 </body>
 </html>
 
