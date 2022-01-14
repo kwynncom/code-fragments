@@ -4,35 +4,41 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>local HTML validator test</title>
+<title>title</title>
 
 <style>
     body { font-family: sans-serif; }
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
-<script>
-// 2022/01/13 23:29
-    
-document.addEventListener("DOMContentLoaded", function(){ cl('hi 1'); });
-
+<script>  // note that W3 version is still uri NOT "doc"
 document.addEventListener("DOMContentLoaded", function(){
+    const host = '/t/22/01/nutest/thev/';
     const es = qsa('a[data-sethtnu="iamNuValKw20220110"]');
-    if (!es || !es.length || es.length < 1) return;
-    const pre = '/t/22/01/nutest/thev/?doc=';
-    const q   = location.href;
-    const url = pre + q;
-    for (let i=0; i < es.length; i++) es.item(i).href = url;      
+    let e = false, i = 0;
+    while (e = es.item(i++)) e.href = host + '?doc=' + location.href;      
 });
 
-document.addEventListener("DOMContentLoaded", function(){ cl('hi 2'); });
+document.addEventListener("DOMContentLoaded", function(){
+    const host = '/t/22/01/nutest/thev/';
+    const es = qsa('a');
+    let e = false, i = 0;
+    while (e = es.item(i++)) {
+        const oa = e.href;
+        if (oa.search(/^https?:\/\/validator\.w3\.org\/check/) < 0) continue;
+        e.href = host + '?doc=' + location.href;      
+    }
+});
 
 </script>
 
 </head>
 <body>
-    <p><a>HTML validate</a>
-        
-    </p>
+    <p><a data-sethtnu="iamNuValKw20220110">HTML validate</a></p>
+    <p><a href='https://validator.w3.org/check?uri=referer'>w3 https</a></p>
+    <p><a href='http://validator.w3.org/check?uri=referer'>w3 http </a></p>
+    <p><a href='/'>should not be affected</a></p>
+    <p><a href='https://gab.com'>should not be affected</a></p>    
+    <p><a href='https://rense.com'>should not be affected</a></p>  
 </body>
 </html>
