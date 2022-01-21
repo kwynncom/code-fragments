@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>chat</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+<script>
+    class send {
+        constructor() {
+            kwjss.sobf('server.php', {'t' : byid('ta10').value });
+        }
+    }
+</script>
+
+</head>
+<body>
+    <div>
+        <textarea id='ta10'></textarea>
+        <button onclick='new send();'>send</button> (or enter key)
+    </div>
+</body>
+</html>
+
