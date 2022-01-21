@@ -12,18 +12,54 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 <script>
-    class send {
+    class sendcl {
         constructor() {
-            kwjss.sobf('server.php', {'t' : byid('ta10').value });
+            this.ta = byid('ta10'); 
+            this.btn = byid('sendBtn');
+            this.msgi = 0;
         }
+        
+        send() {
+            const ta = this.ta;
+            const btn = this.btn;
+            
+            ta.readonly = ta.disabled = btn.disabled = true;
+            const v = ta.value;
+            const i = ++this.msgi;
+            kwjss.sobf('server.php', {'t' : v, 'i' : i });
+            const d = cree('div');
+            d.innerHTML =  '<div>' +  v + '</div>';
+            d.dataset.msgi = i;
+            d.style.opacity = '0.3';
+            d.style.color = 'blue';
+            byid('wholeChat').append(d)
+            ta.value = '';
+            ta.readonly = ta.disabled = btn.disabled = false;            
+        }
+      
     }
+  
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const co = new sendcl();
+        const f = function() { co.send(); };
+        byid('sendBtn').onclick = f;
+        byid('ta10').addEventListener('keyup', ({key}) => {
+            if (key === 'Enter') {
+               f();
+            }
+        });
+    });
+    
 </script>
 
 </head>
 <body>
     <div>
         <textarea id='ta10'></textarea>
-        <button onclick='new send();'>send</button> (or enter key)
+        <button id='sendBtn'>send</button> (or enter key)
+    </div>
+    <div style='overflow: scroll' id='wholeChat'>
+        
     </div>
 </body>
 </html>
