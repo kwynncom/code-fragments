@@ -6,9 +6,6 @@
 
 <title>moon phase</title>
 
-<style>
-    body { font-family: sans-serif; }
-</style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
@@ -58,7 +55,8 @@ class moon {
     }
 }
 window.addEventListener('DOMContentLoaded', () => {   
-    new displayMoon(); 
+    new displayMoon();
+    new moonCal();
 });
 
 class displayMoon {
@@ -87,15 +85,51 @@ class displayMoon {
     }
 }
 
-</script>
+class moonCal {
+    constructor() { this.do10(); }
+    do10() {
+        const now = time();
+        for (let i=0; i <= 31; i++) {
+            const tr = cree('tr');
+            const at = now + i * 86400000;
+            const mo = new moon(at);
+            this.do20(at, tr);
+            byid('tbody10').append(tr);
+            this.do30(tr, mo);
+        }
+    }
     
+    do30(tr, mo) {
+        const td = cree('td');
+        td.innerHTML = mo.fractionFromNew0V;
+        tr.append(td);
+        
+    }
+
+                  // fractionFromNew0V    
+    do20(at, tr) {
+        const dob = new Date(at);
+        const td10 = cree('td');
+        td10.innerHTML = dob.toString();
+        tr.append(td10);
+    }
+    
+}
+</script>
+
+<style>
+    body { font-family: sans-serif; }
+    td   { font-family: monospace; }
+</style>
+
+
 </head>
 <body>
-    <div>v12-0003</div>
+    <div style='display: none'>v</div>
     <div id='per10'></div>
     <table>
         <thead>
-            <tr><th>at</th><th>f</th></tr>
+            <tr><th>at</th><th>f</th><th>phase</th></tr>
         </thead>
         <tbody id='tbody10'>
         </tbody>
