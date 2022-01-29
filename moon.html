@@ -6,6 +6,7 @@
 
 <title>moon phaseWhole</title>
 
+<link rel='stylesheet' href='moon.css'>
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
@@ -121,7 +122,7 @@ class moonCal {
             const mo = new moon(at);
             this.do20(tr, at);
             this.do22(tr, mo);
-            this.do25(tr, mo);
+            // this.do25(tr, mo);
             this.do30(tr, mo);
             byid('tbody10').append(tr);
       }
@@ -134,18 +135,19 @@ class moonCal {
         s += 'rgb(' + byte + ',' + byte + ',' + byte + ')';
         const td = cree('td');
         const span = cree('span');
-       
-        // const c = '&#11044;'; // solid circle
-        // const c = '&xcirc;'; // outlined circle
+
         const c = mo.muni;
         const tdbg = ((75 * ill * 1.5));
         
-        span.innerHTML = c;
         span.style.backgroundColor = 'rgb(' + tdbg + ',' + tdbg + ',' + tdbg + ')';
-        span.style.width = '2.8ex';
-        span.style.textAlign = 'center';
-        span.style.display = 'inline-block';
-        // span.style.opacity = ill * 3 > 1 ? 1 : ill * 3;
+        
+        span.className = 'mocl10';
+        
+        const span20 = cree('span');
+        span.append(span20);
+        span20.innerHTML = c;
+            
+        span20.style.opacity = ill * 3 > 1 ? 1 : ill * 3;
         td.append(span);
         tr.append(td);
     }
@@ -160,9 +162,9 @@ class moonCal {
     }
     
     do30(tr, mo) {
-        const td = cree('td');
+        /*const td = cree('td');
         td.innerHTML = mo.fractionFromNew0V.toFixed(2);
-        tr.append(td);
+        tr.append(td); */
         const td20 = cree('td');
         td20.innerHTML = mo.phaseWhole;
         tr.append(td20);
@@ -180,19 +182,15 @@ class moonCal {
 }
 </script>
 
-<style>
-    body { font-family: sans-serif; }
-    td   { font-family: monospace; }
-</style>
-
-
 </head>
 <body>
     <div style='display: none'>v</div>
     <div id='per10'></div>
     <table>
         <thead>
-            <tr><th>at</th><th></th><th>f</th><th>phase</th></tr>
+            <tr><th>at</th><th></th>
+            <!--    <th>f</th><th>phase</th> -->
+            </tr>
         </thead>
         <tbody id='tbody10'>
         </tbody>
