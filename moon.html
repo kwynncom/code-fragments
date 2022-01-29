@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>moon phase</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+
+function moonCycleFractionFromNew0() {
+    const julianUNIXEpoch = 2440587.5;
+    const msinday = 86400000;
+    const nowms = time();
+    const jd = (nowms / msinday) + julianUNIXEpoch;
+    const moonth = 29.5305888531;
+    const newMoon_2000_0106_Gregorian = 2451550.1;
+    const edays = jd - newMoon_2000_0106_Gregorian;
+    const moonths = edays / moonth;
+    const floor = Math.floor(moonths);
+    const  perToNew = moonths - floor;
+    return perToNew;
+}
+
+window.addEventListener('DOMContentLoaded', () => {   new displayMoon(); });
+
+class displayMoon {
+    
+    config() {
+        this.e10 = byid('per10');
+        this.dinterval = 300;
+    }
+    
+    constructor() {
+        this.config();
+        this.onInt();
+        this.setInt();
+    }
+
+    onInt() {
+        const p = moonCycleFractionFromNew0();
+        const pd = p.toFixed(7);
+        this.e10.innerHTML = pd;
+    }
+
+    setInt() {
+        const self = this;
+        setInterval(() => { self.onInt(); }, this.dinterval);       
+    }
+}
+
+</script>
+    
+</head>
+<body>
+    <div>v10-2313</div>
+    <div id='per10'></div>
+    
+    <!--
+    https://stackoverflow.com/questions/11759992/calculating-jdayjulian-day-in-javascript
+    https://en.wikipedia.org/wiki/Lunar_month
+    // I copied very small parts by eye and hand, then confirmed stuff elsewhere
+    https://jasonsturges.medium.com/moons-lunar-phase-in-javascript-a5219acbfe6e
+    -->
+</body>
+</html>
