@@ -4,7 +4,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>moon phase</title>
+<title>moon phaseWhole</title>
 
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -15,12 +15,13 @@ class moon {
     
     constructor(at) {
         const f     = this.fractionFromNew0V = moon.fractionFromNew0(at);
-        this.phase  = moon.calcPhase(f);
-        this.pillum = moon.calcIllum(f);
+        this.setPhase(f);
+        this.fillum = moon.calcIllum(f);
     }
     
     static calcIllum(f) {
-        
+        const i = (0.5 - Math.abs(f  - 0.5)) * 2;
+        return i;
     }
 
     static fractionFromNew0(nowmsin) {
@@ -41,17 +42,42 @@ class moon {
     
     static getMoonth() { return 29.5305888531; }
     
-    static calcPhase(p) {
+    setPhase(p) {
         let ph = '';
+        let dir;
+            
         const fulld = 1 / moon.getMoonth();
-        if   (p <= 0.5) ph += 'waxing ';
-        else            ph += 'waning ';
         
-        if (Math.abs(p - 0.5) <= fulld    ) ph += 'full';
-        else if (p <= 0.25 || p >= 0.75 ) ph += 'crescent';
-        else                              ph += 'gibbous';
+        if   (p <= 0.5) dir = 'waxing';
+        else            dir = 'waning';
         
-        return ph;
+        ph += dir + ' ';
+        
+        if      (Math.abs(p - 0.5) <= fulld) {
+            this.phpr = 'full';
+            this.muni = '&#127765;';
+            
+        }
+        else if (Math.abs(p - 1.0) <= fulld) {
+            this.phpr = 'new';
+            this.muni = '&#127761;';
+        }
+        else if (p <= 0.25 || p >= 0.75 ) {
+            if (dir === 'waning') this.muni = '&#127768;'
+            else                  this.muni = '&#127762;'
+            this.phpr = 'crescent';
+        }
+        else {
+            if (dir === 'waxing') this.muni = '&#127764;';
+            else                  this.muni = '&#127766;';
+            this.phpr = 'gibbous';
+        }
+        
+        ph += this.phpr;
+        
+        this.phdir = dir;
+        
+        this.phaseWhole = ph;
     }
 }
 window.addEventListener('DOMContentLoaded', () => {   
@@ -89,14 +115,48 @@ class moonCal {
     constructor() { this.do10(); }
     do10() {
         const now = time();
-        for (let i=0; i <= 31; i++) {
+        for (let i=0; i <= 45; i++) {
             const tr = cree('tr');
             const at = now + i * 86400000;
             const mo = new moon(at);
-            this.do20(at, tr);
-            byid('tbody10').append(tr);
+            this.do20(tr, at);
+            this.do22(tr, mo);
+            this.do25(tr, mo);
             this.do30(tr, mo);
-        }
+            byid('tbody10').append(tr);
+      }
+    }
+    
+    do22(tr, mo) {
+        const ill  = mo.fillum;
+        const byte = parseInt(Math.round(mo.fillum * 255));
+        let s = '';
+        s += 'rgb(' + byte + ',' + byte + ',' + byte + ')';
+        const td = cree('td');
+        const span = cree('span');
+       
+        // const c = '&#11044;'; // solid circle
+        // const c = '&xcirc;'; // outlined circle
+        const c = mo.muni;
+        const tdbg = ((75 * ill * 1.5));
+        
+        span.innerHTML = c;
+        span.style.backgroundColor = 'rgb(' + tdbg + ',' + tdbg + ',' + tdbg + ')';
+        span.style.width = '2.8ex';
+        span.style.textAlign = 'center';
+        span.style.display = 'inline-block';
+        // span.style.opacity = ill * 3 > 1 ? 1 : ill * 3;
+        td.append(span);
+        tr.append(td);
+    }
+    
+    do25(tr, mo) {
+       const f = mo.fillum;
+       const d = parseInt(Math.round(f * 100));
+       const td = cree('td');
+       td.innerHTML = d;
+       tr.append(td);
+       
     }
     
     do30(tr, mo) {
@@ -104,13 +164,13 @@ class moonCal {
         td.innerHTML = mo.fractionFromNew0V.toFixed(2);
         tr.append(td);
         const td20 = cree('td');
-        td20.innerHTML = mo.phase;
+        td20.innerHTML = mo.phaseWhole;
         tr.append(td20);
         
     }
 
                   // fractionFromNew0V    
-    do20(at, tr) {
+    do20(tr, at) {
         const dob = new Date(at);
         const td10 = cree('td');
         td10.innerHTML = dob.toString().substring(0,10);
@@ -132,7 +192,7 @@ class moonCal {
     <div id='per10'></div>
     <table>
         <thead>
-            <tr><th>at</th><th>f</th><th>phase</th></tr>
+            <tr><th>at</th><th></th><th>f</th><th>phase</th></tr>
         </thead>
         <tbody id='tbody10'>
         </tbody>
