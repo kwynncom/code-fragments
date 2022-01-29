@@ -14,27 +14,59 @@
 
 <script>
 
-function moonCycleFractionFromNew0() {
-    const julianUNIXEpoch = 2440587.5;
-    const msinday = 86400000;
-    const nowms = time();
-    const jd = (nowms / msinday) + julianUNIXEpoch;
-    const moonth = 29.5305888531;
-    const newMoon_2000_0106_Gregorian = 2451550.1;
-    const edays = jd - newMoon_2000_0106_Gregorian;
-    const moonths = edays / moonth;
-    const floor = Math.floor(moonths);
-    const  perToNew = moonths - floor;
-    return perToNew;
-}
+class moon {
+    
+    constructor(at) {
+        const f     = this.fractionFromNew0V = moon.fractionFromNew0(at);
+        this.phase  = moon.calcPhase(f);
+        this.pillum = moon.calcIllum(f);
+    }
+    
+    static calcIllum(f) {
+        
+    }
 
-window.addEventListener('DOMContentLoaded', () => {   new displayMoon(); });
+    static fractionFromNew0(nowmsin) {
+        let nowms;
+        if (nowmsin) nowms = nowmsin;
+        else         nowms = time();
+        const julianUNIXEpoch = 2440587.5;
+        const msinday = 86400000;
+        const jd = (nowms / msinday) + julianUNIXEpoch;
+        const moonth = moon.getMoonth();
+        const newMoon_2000_0106_Gregorian = 2451550.1;
+        const edays = jd - newMoon_2000_0106_Gregorian;
+        const moonths = edays / moonth;
+        const floor = Math.floor(moonths);
+        const  perToNew = moonths - floor;
+        return perToNew;
+    }
+    
+    static getMoonth() { return 29.5305888531; }
+    
+    static calcPhase(p) {
+        let ph = '';
+        const fulld = 1 / moon.getMoonth();
+        if   (p <= 0.5) ph += 'waxing ';
+        else            ph += 'waning ';
+        
+        if (Math.abs(p - fulld) <= 1    ) ph += '(full)';
+        else if (p <= 0.25 || p >= 0.75 ) ph += 'crescent';
+        else                              ph += 'gibbous';
+        
+        return ph;
+    }
+}
+window.addEventListener('DOMContentLoaded', () => {   
+    new displayMoon(); 
+});
 
 class displayMoon {
     
     config() {
         this.e10 = byid('per10');
-        this.dinterval = 300;
+        this.dinterval = 150;
+        this.decright = 8;
     }
     
     constructor() {
@@ -44,8 +76,8 @@ class displayMoon {
     }
 
     onInt() {
-        const p = moonCycleFractionFromNew0();
-        const pd = p.toFixed(7);
+        const p = moon.fractionFromNew0(time());
+        const pd = p.toFixed(this.decright);
         this.e10.innerHTML = pd;
     }
 
@@ -59,8 +91,15 @@ class displayMoon {
     
 </head>
 <body>
-    <div>v10-2313</div>
+    <div>v12-0003</div>
     <div id='per10'></div>
+    <table>
+        <thead>
+            <tr><th>at</th><th>f</th></tr>
+        </thead>
+        <tbody id='tbody10'>
+        </tbody>
+    </table>
     
     <!--
     https://stackoverflow.com/questions/11759992/calculating-jdayjulian-day-in-javascript
