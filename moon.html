@@ -47,7 +47,7 @@ class moon {
         if   (p <= 0.5) ph += 'waxing ';
         else            ph += 'waning ';
         
-        if (Math.abs(p - fulld) <= 1    ) ph += '(full)';
+        if (Math.abs(p - 0.5) <= fulld    ) ph += '(full)';
         else if (p <= 0.25 || p >= 0.75 ) ph += 'crescent';
         else                              ph += 'gibbous';
         
@@ -101,8 +101,11 @@ class moonCal {
     
     do30(tr, mo) {
         const td = cree('td');
-        td.innerHTML = mo.fractionFromNew0V;
+        td.innerHTML = mo.fractionFromNew0V.toFixed(2);
         tr.append(td);
+        const td20 = cree('td');
+        td20.innerHTML = mo.phase;
+        tr.append(td20);
         
     }
 
