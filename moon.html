@@ -8,7 +8,6 @@
 
 <!-- 
 https://kwynn.com/t/22/01/moon.html
-2022/01/29 19:29 : fixed text-align
 -->
 
 <style>
@@ -32,6 +31,20 @@ class moon {
         const f     = this.fractionFromNew0V = moon.fractionFromNew0(at);
         this.setPhase(f);
         this.fillum = moon.calcIllum(f);
+        this.quart  = moon.getMoonth() / 4;
+        this.moonth = moon.getMoonth();
+        this.setPhaseCalcs(f);
+        return;
+    }
+    
+    setPhaseCalcs(f) {
+        const daysOfMoon = f * this.moonth;
+        const quarterF   = daysOfMoon / this.quart;
+        const quarterI   = Math.floor(quarterF);
+        this.quarter     = parseInt(quarterI) + 1;
+        this.phaseDays   = daysOfMoon - quarterI * this.quart;
+        this.phasePercent = this.phaseDays / this.quart;
+        return;
     }
     
     static calcIllum(f) {
@@ -60,6 +73,7 @@ class moon {
     setPhase(p) {
         let ph = '';
         let dir;
+        let phpr;
             
         const fulld = 1 / moon.getMoonth();
         
@@ -69,29 +83,29 @@ class moon {
         ph += dir + ' ';
         
         if      (Math.abs(p - 0.5) <= fulld) {
-            this.phpr = 'full';
+            phpr = 'full';
             this.muni = '&#127765;';
             
         }
         else if (Math.abs(p - 1.0) <= fulld) {
-            this.phpr = 'new';
+            phpr = 'new';
             this.muni = '&#127761;';
         }
         else if (p <= 0.25 || p >= 0.75 ) {
             if (dir === 'waning') this.muni = '&#127768;'
             else                  this.muni = '&#127762;'
-            this.phpr = 'crescent';
+            phpr = 'crescent';
         }
         else {
             if (dir === 'waxing') this.muni = '&#127764;';
             else                  this.muni = '&#127766;';
-            this.phpr = 'gibbous';
+            phpr = 'gibbous';
         }
         
-        ph += this.phpr;
+        this.phaseProper = phpr;
         
-        this.phdir = dir;
-        
+        ph += phpr;
+         
         this.phaseWhole = ph;
     }
 }
@@ -129,6 +143,7 @@ class displayMoon {
 class moonCal {
     constructor() { this.do10(); }
     do10() {
+        
         const now = time();
         for (let i=0; i <= 45; i++) {
             const tr = cree('tr');
@@ -136,7 +151,6 @@ class moonCal {
             const mo = new moon(at);
             this.do20(tr, at);
             this.do22(tr, mo);
-            // this.do25(tr, mo);
             this.do30(tr, mo);
             byid('tbody10').append(tr);
       }
@@ -153,7 +167,9 @@ class moonCal {
         const c = mo.muni;
         const tdbg = ((75 * ill * 1.5));
         
-        span.style.backgroundColor = 'rgb(' + tdbg + ',' + tdbg + ',' + tdbg + ')';
+        const ca = this.color(mo);
+        
+        span.style.backgroundColor = ca[1];
         
         span.className = 'mocl10';
         
@@ -161,9 +177,27 @@ class moonCal {
         span.append(span20);
         span20.innerHTML = c;
             
-        span20.style.opacity = ill * 3 > 1 ? 1 : ill * 3;
+        span20.style.opacity = ca[0];
         td.append(span);
         tr.append(td);
+    }
+    
+    color(mo) {
+
+        const ill = mo.fillum;
+        let bg = this.gray((ill * 100) / 3);
+        let op = ill * 3 > 1 ? 1 : ill * 3;
+        
+       /* if (mo.quarter === 4) {
+            if (mo.phasePercent > 0.6) { bg = 30; op = 0.2; }
+        } */
+            
+        return [op,bg];
+    }
+    
+    gray(p) { 
+       const c = parseInt(Math.round(p / 100 * 255)); 
+       return 'rgb(' + c + ',' + c + ',' + c + ')';        
     }
     
     do25(tr, mo) {
@@ -176,21 +210,25 @@ class moonCal {
     }
     
     do30(tr, mo) {
-        /*const td = cree('td');
-        td.innerHTML = mo.fractionFromNew0V.toFixed(2);
-        tr.append(td); */
-        const td20 = cree('td');
-        td20.innerHTML = mo.phaseWhole;
-        tr.append(td20);
         
-    }
+        let v = mo.phaseWhole;
+        if   (this.pph === v) v = '';
+        else  this.pph =   v;
+        
+        const td20 = cree('td');
+        td20.innerHTML = v;
+        tr.append(td20);
+     }
 
-                  // fractionFromNew0V    
     do20(tr, at) {
         const dob = new Date(at);
         const td10 = cree('td');
         td10.innerHTML = dob.toString().substring(0,10);
         tr.append(td10);
+    }
+    
+    colors() {
+        
     }
     
 }
