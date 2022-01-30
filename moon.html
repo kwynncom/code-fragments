@@ -19,6 +19,8 @@ td   { font-family: monospace; }
     display   : inline-block;
     padding: 0.5ex;
 }
+
+table {   border-collapse: separate; }
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -42,8 +44,8 @@ class moon {
         const quarterF   = daysOfMoon / this.quart;
         const quarterI   = Math.floor(quarterF);
         this.quarter     = parseInt(quarterI) + 1;
-        this.phaseDays   = daysOfMoon - quarterI * this.quart;
-        this.phasePercent = this.phaseDays / this.quart;
+        this.phaseDay   = daysOfMoon - quarterI * this.quart;
+        this.phasePercent = this.phaseDay / this.quart;
         return;
     }
     
@@ -162,6 +164,8 @@ class moonCal {
         let s = '';
         s += 'rgb(' + byte + ',' + byte + ',' + byte + ')';
         const td = cree('td');
+        td.style.backgroundColor = 'black';
+        td.style.border = 'black';
         const span = cree('span');
 
         const c = mo.muni;
@@ -185,12 +189,14 @@ class moonCal {
     color(mo) {
 
         const ill = mo.fillum;
-        let bg = this.gray((ill * 100) / 3);
+        let bg = this.gray(0); // this.gray((ill * 100) / 3);
         let op = ill * 3 > 1 ? 1 : ill * 3;
-        
-       /* if (mo.quarter === 4) {
-            if (mo.phasePercent > 0.6) { bg = 30; op = 0.2; }
-        } */
+       
+       if (mo.phaseProper === 'new') op = 0.5;
+       else 
+       if (mo.quarter === 1 && 1) {
+            op = mo.phaseDay * 8 / 100 + 0.4;
+       }
             
         return [op,bg];
     }
