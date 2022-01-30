@@ -21,6 +21,9 @@ td   { font-family: monospace; }
 }
 
 table {   border-collapse: separate; }
+
+.cspan {
+}
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -40,11 +43,11 @@ class moon {
     }
     
     setPhaseCalcs(f) {
-        const daysOfMoon = f * this.moonth;
-        const quarterF   = daysOfMoon / this.quart;
+        const dayOfMoon = this.dayOfMoon = f * this.moonth;
+        const quarterF   = dayOfMoon / this.quart;
         const quarterI   = Math.floor(quarterF);
         this.quarter     = parseInt(quarterI) + 1;
-        this.phaseDay   = daysOfMoon - quarterI * this.quart;
+        this.phaseDay   = dayOfMoon - quarterI * this.quart;
         this.phasePercent = this.phaseDay / this.quart;
         return;
     }
@@ -81,6 +84,8 @@ class moon {
         
         if   (p <= 0.5) dir = 'waxing';
         else            dir = 'waning';
+        
+        this.direction = dir;
         
         ph += dir + ' ';
         
@@ -173,32 +178,55 @@ class moonCal {
         
         const ca = this.color(mo);
         
-        span.style.backgroundColor = ca[1];
+        span.style.backgroundColor = 'black';
         
         span.className = 'mocl10';
         
         const span20 = cree('span');
         span.append(span20);
         span20.innerHTML = c;
+        span20.className = 'cspan';
             
-        span20.style.opacity = ca[0];
+        span20.style.opacity = ca;
         td.append(span);
         tr.append(td);
     }
     
     color(mo) {
+        
+        const pp = mo.phaseProper;
+        let pd = parseInt(Math.ceil(mo.phaseDay));
+        if (mo.direction === 'waning') pd = 9 - pd;
 
-        const ill = mo.fillum;
-        let bg = this.gray(0); // this.gray((ill * 100) / 3);
-        let op = ill * 3 > 1 ? 1 : ill * 3;
-       
-       if (mo.phaseProper === 'new') op = 0.5;
-       else 
-       if (mo.quarter === 1 && 1) {
-            op = mo.phaseDay * 8 / 100 + 0.4;
-       }
-            
-        return [op,bg];
+        if (mo.phaseProper === 'new') return 0.35;
+
+        if (pp === 'crescent')
+        switch(pd) {
+            case 1 : return 0.25;
+            case 2 : return 0.35;
+            case 3 : return 0.55;
+            case 4 : return 0.58;
+            case 5 : return 0.65;
+            case 6 : return 0.78;
+            case 7 : return 1;
+            default : return 1;
+        }
+    
+        if (pp === 'gibbous')
+        switch(pd) {
+            case 1 : return 0.70;
+            case 2 : return 0.75;
+            case 3 : return 0.83;
+            case 4 : return 0.88;
+            case 5 : return 0.93;
+            case 6 : return 1;
+            case 7 : return 1;
+            case 8 : return 1;
+         }
+    
+        
+        return 1;
+
     }
     
     gray(p) { 
