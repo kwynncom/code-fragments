@@ -3,13 +3,18 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class moon { 
+	
+	const tfile = '/tmp/kwmoonv2022011.json';
+	
 	public function __construct() {
-		$t = $this->do10();
-		$this->do20($t);
+		$a = $this->do10();
+		return;
+		
 	}
 	
 	function do10() {
-		return trim(shell_exec('python3 ' . __DIR__ . '/moon.py'));
+		if (is_readable(self::tfile)) return json_decode(file_get_contents(self::tfile), 1);
+		return $this->do20(trim(shell_exec('python3 ' . __DIR__ . '/moon.py')));
 	}
 	
 	function do20($t) {
@@ -24,12 +29,11 @@ class moon {
 		$r = [];
 		foreach($a['z'] as $i => $p) {
 			$ts = strtotime($p);
-			$r[$p] = [$a['n'][$i], $a['t'][$i], $ts, date('r', $ts)]; unset($ts);
-		}
-		unset($i, $p, $a);
+			$r[$p] = [intval($a['n'][$i]), $a['t'][$i], $ts, date('r', $ts)]; unset($ts);
+		} 	unset($i, $p, $a);
 		
-		
-		return;
+		file_put_contents(self::tfile, json_encode($r));
+		return $r;
 		
 	}
 	
