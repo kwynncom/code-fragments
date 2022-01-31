@@ -10,12 +10,20 @@ class moon extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs(['m' => 'moon']);
 		$this->mcoll->createIndex(['U' => 1], ['unique' => true]);
-		$a = $this->do10();
+		$this->do10();
 		return;
 		
 	}
 	
+	function already() {
+		$now = time();
+		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - 86400 * 27]])) return false;
+		if (!$this->mcoll->findOne(['U' => ['$gte' => $now - 86400 * 45]])) return false;
+		return true;
+	}
+	
 	function do10() {
+		if ($this->already()) return;
 		return $this->do20(trim(shell_exec('python3 ' . __DIR__ . '/moon.py')));
 	}
 	
