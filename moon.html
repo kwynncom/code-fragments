@@ -63,7 +63,8 @@ class moon {
         else         nowms = time();
         const julianUNIXEpoch = 2440587.5;
         const msinday = 86400000;
-        const jd = (nowms / msinday) + julianUNIXEpoch;
+        const epdays = (nowms / msinday);
+        const jd = epdays + julianUNIXEpoch;
         const moonth = moon.getMoonth();
         const newMoon_2000_0106_Gregorian = 2451550.1;
         const edays = jd - newMoon_2000_0106_Gregorian;
@@ -143,28 +144,30 @@ class displayMoon {
 
     setInt() {
         const self = this;
-        setInterval(() => { self.onInt(); }, this.dinterval);       
+        // setInterval(() => { self.onInt(); }, this.dinterval);       
     }
 }
 
 class moonCal {
     constructor() { this.do10(); }
     
-    baseADJ() {
-        const no   = new Date();
-        const eodo = new Date(no.getFullYear(), no.getMonth(), no.getDate(), 0, 0, 0, 999);
-        const tzoms = eodo.getTimezoneOffset() * 60000;
-        return eodo.getTime() - tzoms;
+    baseADJ(no, i) {
+        const eodo = new Date(no.getFullYear(), no.getMonth(), no.getDate() + i, 23, 59, 59, 999);
+        // const tzoms = eodo.getTimezoneOffset() * 60000;
+        return eodo;
     }
     
     do10() {
-        
-        const baset = this.baseADJ();
+        const no   = new Date();        
         for (let i=0; i <= 120; i++) {
             const tr = cree('tr');
-            const at = baset + i * 86400000;
-            const mo = new moon(at);
-            this.do20(tr, at);
+            const dob = this.baseADJ(no, i);
+            const mo = new moon(dob.getTime());
+            if (i === 0) {
+                this.pdir = mo.direction;
+                this.pppr  = this.phaseProper;
+            }
+            this.do20(tr, dob);
             this.do22(tr, mo);
             this.do30(tr, mo);
             byid('tbody10').append(tr);
@@ -253,19 +256,36 @@ class moonCal {
     
     do30(tr, mo) {
         
-        let v = mo.phaseWhole;
-        if   (this.pph === v) v = '';
-        else  this.pph =   v;
+        const nowdir = mo.direction;
+        const nowppr = mo.phaseProper;
+        let v = '';
+        if   (this.pdir !== nowdir) {
+            if (mo.direction === 'waxing') v = 'new';
+            else                           v = 'full';
+        }
+        
+        if (     (nowppr === 'crescent' && this.pppr === 'gibbous' )
+             ||  (nowppr === 'gibbous'  && this.pppr === 'crescent') ) {
+         
+                if (mo.direction === 'waxing') v = 'gibbous';
+                else                           v = 'crescent';
+        }
+        
+        this.pdir = nowdir;
+        this.pppr = nowppr;
         
         const td20 = cree('td');
         td20.innerHTML = v;
+        
+        const td30 = cree('td');
+        inht(td30, mo.fractionFromNew0V);
         tr.append(td20);
+        tr.append(td30);
      }
 
-    do20(tr, at) {
-        const dob = new Date(at);
+    do20(tr, dob) {
         const td10 = cree('td');
-        td10.innerHTML = dob.toString().substring(0,10);
+        td10.innerHTML = dob.toString(); // .substring(0,10);
         tr.append(td10);
     }
     
