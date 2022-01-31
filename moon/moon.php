@@ -5,19 +5,17 @@ require_once('/opt/kwynn/kwutils.php');
 class moon extends dao_generic_3 { 
 	
 	const dbname = 'moon';
-		
-	const tfile = '/tmp/kwmoonv2022011.json';
 	
 	public function __construct() {
 		parent::__construct(self::dbname);
 		$this->creTabs(['m' => 'moon']);
+		$this->mcoll->createIndex(['U' => 1], ['unique' => true]);
 		$a = $this->do10();
 		return;
 		
 	}
 	
 	function do10() {
-	//	if (is_readable(self::tfile)) return json_decode(file_get_contents(self::tfile), 1);
 		return $this->do20(trim(shell_exec('python3 ' . __DIR__ . '/moon.py')));
 	}
 	
@@ -31,18 +29,19 @@ class moon extends dao_generic_3 {
 		preg_match_all('/\d/', $aa[2], $ms[2]); unset($aa);
 		$a['n'] = $ms[2][0]; unset($ms);
 		$r = [];
-		foreach($a['z'] as $i => $p) {
-			$ts = strtotime($p);
+		foreach($a['z'] as $i => $z) {
+			$U = strtotime($z);
 			$n  = intval($a['n'][$i]);
-			$id = $p . '-mph-' . $n;
-			$row = [$n, $a['t'][$i], $ts, date('r', $ts)]; 
-			$row['_id'] = $id;
-			$r[$id] = $row;
-			$this->mcoll->upsert(['ts' => $ts], $row); unset($ts);
+			$t = $a['t'][$i];
+			$r = date('r', $U);
+			$_id =  $z . '-mph-' . $n;
+			// $r[$_id] = $row;
+			$dat = get_defined_vars(); 
+			unset($dat['a'], $dat['i']);
+			kwynn();
+			$this->mcoll->upsert(['_id' => $_id], $dat, 1, false); unset($U, $dat, $n, $r, $t, $z, $_id);
 		} 	unset($i, $p, $a);
 		
-		file_put_contents(self::tfile, json_encode($r));
-		return $r;
 		
 	}
 	
