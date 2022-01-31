@@ -150,22 +150,19 @@ class displayMoon {
 class moonCal {
     constructor() { this.do10(); }
     
-    todayMidnightLocalO() {
-        // new Date(year, monthIndex, day)
+    baseADJ() {
         const no   = new Date();
-        const mido = new Date(no.getFullYear(), no.getMonth(), no.getDay());
-        return mido;
+        const eodo = new Date(no.getFullYear(), no.getMonth(), no.getDate(), 0, 0, 0, 999);
+        const tzoms = eodo.getTimezoneOffset() * 60000;
+        return eodo.getTime() - tzoms;
     }
     
     do10() {
-        const nowO = new Date();
-        const tzom = nowO.getTimezoneOffset();
-        const tzoh = tzom / 60;
-        // const tzod = tzoh / 24;
-        const nowadj = nowO.getTime() + tzom * 60000;
+        
+        const baset = this.baseADJ();
         for (let i=0; i <= 120; i++) {
             const tr = cree('tr');
-            const at = nowadj + i * 86400000;
+            const at = baset + i * 86400000;
             const mo = new moon(at);
             this.do20(tr, at);
             this.do22(tr, mo);
