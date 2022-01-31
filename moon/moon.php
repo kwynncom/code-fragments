@@ -11,7 +11,14 @@ class moon extends dao_generic_3 {
 		$this->creTabs(['m' => 'moon']);
 		$this->mcoll->createIndex(['U' => 1], ['unique' => true]);
 		$this->do10();
-		$this->do30();
+		$r30 = $this->do30();
+		$this->do40($r30);
+		return;
+		
+	}
+	
+	function do40($a) {
+		$ia = $a[0];
 		return;
 		
 	}
@@ -22,7 +29,7 @@ class moon extends dao_generic_3 {
 		$max = $now + 86400 * 50;
 		$q = "db.getCollection('moon').find({'\$and' : [{'U' : {'\$gte' : $min}}, {'U' : {'\$lt' : $max}}]})";
 		$res = dbqcl::q(self::dbname, $q);
-		return;
+		return $res;
 	}
 	
 	function already() {
