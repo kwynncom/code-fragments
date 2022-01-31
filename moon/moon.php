@@ -2,18 +2,22 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class moon { 
+class moon extends dao_generic_3 { 
 	
+	const dbname = 'moon';
+		
 	const tfile = '/tmp/kwmoonv2022011.json';
 	
 	public function __construct() {
+		parent::__construct(self::dbname);
+		$this->creTabs(['m' => 'moon']);
 		$a = $this->do10();
 		return;
 		
 	}
 	
 	function do10() {
-		if (is_readable(self::tfile)) return json_decode(file_get_contents(self::tfile), 1);
+	//	if (is_readable(self::tfile)) return json_decode(file_get_contents(self::tfile), 1);
 		return $this->do20(trim(shell_exec('python3 ' . __DIR__ . '/moon.py')));
 	}
 	
@@ -29,7 +33,12 @@ class moon {
 		$r = [];
 		foreach($a['z'] as $i => $p) {
 			$ts = strtotime($p);
-			$r[$p] = [intval($a['n'][$i]), $a['t'][$i], $ts, date('r', $ts)]; unset($ts);
+			$n  = intval($a['n'][$i]);
+			$id = $p . '-mph-' . $n;
+			$row = [$n, $a['t'][$i], $ts, date('r', $ts)]; 
+			$row['_id'] = $id;
+			$r[$id] = $row;
+			$this->mcoll->upsert(['ts' => $ts], $row); unset($ts);
 		} 	unset($i, $p, $a);
 		
 		file_put_contents(self::tfile, json_encode($r));
