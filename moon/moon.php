@@ -18,7 +18,7 @@ class moon extends dao_generic_3 {
 	function already() {
 		$now = time();
 		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - 86400 * 27]])) return false;
-		if (!$this->mcoll->findOne(['U' => ['$gte' => $now - 86400 * 45]])) return false;
+		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + 86400 * 45]])) return false;
 		return true;
 	}
 	
