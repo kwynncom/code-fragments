@@ -11,14 +11,24 @@ class moon extends dao_generic_3 {
 		$this->creTabs(['m' => 'moon']);
 		$this->mcoll->createIndex(['U' => 1], ['unique' => true]);
 		$this->do10();
+		$this->do30();
 		return;
 		
 	}
 	
+	function do30() {
+		$now = time();
+		$min = $now - 86400 *  9;
+		$max = $now + 86400 * 50;
+		$q = "db.getCollection('moon').find({'\$and' : [{'U' : {'\$gte' : $min}}, {'U' : {'\$lt' : $max}}]})";
+		$res = dbqcl::q(self::dbname, $q);
+		return;
+	}
+	
 	function already() {
 		$now = time();
-		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - 86400 * 27]])) return false;
-		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + 86400 * 45]])) return false;
+		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - 86400 * 32]])) return false;
+		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + 86400 * 55]])) return false;
 		return true;
 	}
 	
@@ -43,14 +53,10 @@ class moon extends dao_generic_3 {
 			$t = $a['t'][$i];
 			$r = date('r', $U);
 			$_id =  $z . '-mph-' . $n;
-			// $r[$_id] = $row;
 			$dat = get_defined_vars(); 
 			unset($dat['a'], $dat['i']);
-			kwynn();
 			$this->mcoll->upsert(['_id' => $_id], $dat, 1, false); unset($U, $dat, $n, $r, $t, $z, $_id);
 		} 	unset($i, $p, $a);
-		
-		
 	}
 	
 	public static function ppyarr($s) {

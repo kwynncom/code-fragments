@@ -4,7 +4,7 @@ from skyfield import almanac
 ts = load.timescale()
 eph = load('/opt/de421.bsp')
 
-t0 = ts.now() - 33
+t0 = ts.now() - 42
 t1 = t0 + 100
 t, y = almanac.find_discrete(t0, t1, almanac.moon_phases(eph))
 
