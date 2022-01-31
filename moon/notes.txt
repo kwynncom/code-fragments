@@ -1,0 +1,29 @@
+https://rhodesmill.org/skyfield/installation.html
+pip install skyfield
+don't have it....
+sudo apt update
+sudo apt install python3-pip
+pip install skyfield
+# it in turn installs NumPy
+  WARNING: The scripts f2py, f2py3 and f2py3.9 are installed in '/home/k/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+# ?
+python3 -m skyfield
+Skyfield version: 1.41
+jplephem version: 2.17
+sgp4 version: 2.20
+Built-in leap seconds table ends with leap second at: 2016-12-31 23:59:60 UTC
+Built-in ∆T table from finals2000A.all covers: 1973-01-01 to 2022-12-17
+
+Run my old ephem.py with this:
+planets = load('/opt/de421.bsp')
+
+Then move the bsp file and change that line.
+With no params it auto-downloads.
+
+python3 ephem.py
+Mars from earth
+18h 19m 44.42s
+-23deg 50' 21.7"
+2.17123 au
+moon rel to 360 d: 345.1
