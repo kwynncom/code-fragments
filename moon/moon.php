@@ -66,10 +66,11 @@ class moon extends dao_generic_3 {
 			if ($d20ts > $ala[0]['U']) {
 				$ta = array_shift($ala);
 				$ta['pd'] = 1;
+				$this->cl10($ta); 
 				$d = $now - $ta['U'];
 				if (   ($d > 0 && $d < $min) 
 					|| ($d < 0 && $d > -$max) )
-					$this->phcha[] = $this->cl10($ta); unset($d);
+					$this->phcha[] = $ta; unset($d);
 			} else {
 				$ta['pd']++;
 				$this->cl10($ta);

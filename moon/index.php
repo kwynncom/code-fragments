@@ -30,52 +30,9 @@ table {   border-collapse: separate; }
 
 <script>
 
-class moon {
-    
-    setPhase(p) {
-        let ph = '';
-        let dir;
-        let phpr;
-            
-        const fulld = 1 / moon.getMoonth();
-        
-        if   (p <= 0.5) dir = 'waxing';
-        else            dir = 'waning';
-        
-        this.direction = dir;
-        
-        ph += dir + ' ';
-        
-        if      (Math.abs(p - 0.5) <= fulld) {
-            phpr = 'full';
-            this.muni = '&#127765;';
-            
-        }
-        else if (Math.abs(p - 1.0) <= fulld) {
-            phpr = 'new';
-            this.muni = '&#127761;';
-        }
-        else if (p <= 0.25 || p >= 0.75 ) {
-            if (dir === 'waning') this.muni = '&#127768;'
-            else                  this.muni = '&#127762;'
-            phpr = 'crescent';
-        }
-        else {
-            if (dir === 'waxing') this.muni = '&#127764;';
-            else                  this.muni = '&#127766;';
-            phpr = 'gibbous';
-        }
-        
-        this.phaseProper = phpr;
-        
-        ph += phpr;
-         
-        this.phaseWhole = ph;
-    }
-}
+
 
 window.addEventListener('DOMContentLoaded', () => {   
-    // new displayMoon();
     new moonCal();
 }); 
 
@@ -83,7 +40,13 @@ class moonCal {
     constructor() { this.do10(); }
     
 	getuni(ain) {
-		if (ain.pd === 1 && ain.n === 0) return '&#127761;';
+		if (ain.n === 0 && ain.pd === 1) return '&#127761;';
+		if (ain.n === 0)				 return '&#127762;';
+		if (ain.n === 1)				 return '&#127764;';
+		if (ain.n === 2 && ain.pd === 1) return '&#127765;';
+		if (ain.n === 2)				 return '&#127766;';
+		if (ain.n === 3)				 return '&#127768;';
+		// if (ain.
 		
 	}
 	
@@ -95,7 +58,6 @@ class moonCal {
         for (let i=0; i <= 45; i++) {
             const tr = cree('tr');
             this.do22(tr, cala[i]);
-            // this.do30(tr, mo);
             byid('tbody10').append(tr);
       }
     }
@@ -110,34 +72,32 @@ class moonCal {
         td.style.backgroundColor = 'black';
         td.style.border = 'black';
         const span = cree('span');
-
-        const c = this.getuni(ain);
-        
-//        const ca = this.color(mo);
-        
-        span.style.backgroundColor = 'black';
         
         span.className = 'mocl10';
         
         const span20 = cree('span');
         span.append(span20);
-        span20.innerHTML = c;
+        span20.innerHTML =  this.getuni(ain);;
         span20.className = 'cspan';
             
-        // span20.style.opacity = ca;
+        span20.style.opacity = this.getOpacity(ain);
         td.append(span);
         tr.append(td);
+		
+		const tdl = cree('td');
+		if (ain.t && ain.pd === 1) inht(tdl, ain.t + ' ' + ain.hut);
+		tr.append(tdl);
     }
     
-    color(mo) {
-        
-        const pp = mo.phaseProper;
-        let pd = parseInt(Math.ceil(mo.phaseDay));
-        if (mo.direction === 'waning') pd = 9 - pd;
+    getOpacity(ain) {
+		let pd = ain.pd;
+		
+		const n = ain.n;
+		
+        if (n >= 2) pd = 9 - pd;
+        if (n === 0 || pd === 1) return 0.35;
 
-        if (mo.phaseProper === 'new') return 0.35;
-
-        if (pp === 'crescent')
+        if (n === 0 || n === 3)
         switch(pd) {
             case 1 : return 0.25;
             case 2 : return 0.35;
@@ -148,9 +108,9 @@ class moonCal {
             case 7 : return 1;
             default : return 1;
         }
-    
-        if (pp === 'gibbous')
-        switch(pd) {
+  
+       if (n === 1 || n === 2)
+        switch(pd) { 
             case 1 : return 0.70;
             case 2 : return 0.75;
             case 3 : return 0.83;
@@ -160,14 +120,9 @@ class moonCal {
             case 7 : return 1;
             case 8 : return 1;
          }
-    
         
         return 1;
-
     }
-
-
-
    
 }
 </script>
