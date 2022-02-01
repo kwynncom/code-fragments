@@ -10,6 +10,7 @@ class moon extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs(['m' => 'moon']);
 		$this->mcoll->createIndex(['U' => 1], ['unique' => true]);
+		$this->phca = [];
 		$this->do10();
 		$r30 = $this->do30();
 		$this->do40($r30);
@@ -20,52 +21,64 @@ class moon extends dao_generic_3 {
 	function cl10(&$ar) {
 		
 		$ak  = ['n', 't', 'pd', 'isq'];
-		$pkt = ['z', 'U', 'r'];
+		$pkt = ['z', 'U', 'r', 'hut', 'hud'];
 		$pk = kwam($ak, $pkt); unset($pkt);
 		
 		$tar = $ar;
 		
 		foreach($tar as $f => $ignore) {
 			if ($tar['pd'] !== 1) { if (!in_array($f, $ak)) unset($ar[$f]); }
-			else				  { if (!in_array($f, $pk)) unset($ar[$f]); }
+			else  {					if (!in_array($f, $pk)) unset($ar[$f]); 
+									$ar['hut'] = date('g:i A', $ar['U']);	}
 		}
 	
 		return $ar;
 	}
 	
+	static function hud($din) { return $din->format('D M d'); }
+	
 	function do40($ala) {
 
+		static $min =  9 * 86400;
+		static $max =  9 * 86400;
+		
 		$d10 = new DateTime();
 		$d10->setTimestamp($ala[0]['U']);
 		$d20 = new DateTime($d10->format('Y-m-d 23:59:59.999999')); unset($d10);
+		$now = time();
 		
-		for ($i=1; $i <= 9; $i++) {
-			if ($d20->getTimestamp() > $ala[0]['U']) {
+		
+		for ($i=1; $i <= 55; $i++) {
+			
+			$d20ts = $d20->getTimestamp();
+			
+			if ($d20ts > $ala[0]['U']) {
 				$ta = array_shift($ala);
 				$ta['pd'] = 1;
-				$this->phca[] = $this->cl10($ta);
+				$d = $now - $ta['U'];
+				if (   ($d > 0 && $d < $min) 
+					|| ($d < 0 && $d > -$max) )
+					$this->phca[] = $this->cl10($ta); unset($d);
 			} else {
 				$ta['pd']++;
 				$this->cl10($ta);
 			}
 
-			$r[$d20->format('D M d')] = $ta;
+			$hud = $ta['hud'] = self::hud($d20);
+			if ($d20ts >= $now) $r[$hud] = $ta; unset($d20ts);
 			$d20->add(new DateInterval('P1D'));
 			continue;
-		} unset($ta, $d20, $i, $ala);
+		} unset($ta, $d20, $i, $ala, $now, $min, $max, $d20ts);
+		
+		$this->cala = $r; unset($r);
 		
 		return;
-		
-
-			
-			
-		
 	}
 	
 	function do30() {
 		$now = time();
 		$min = $now - 86400 *  9;
-		$max = $now + 86400 * 50;
+		$max = $now + 86400 * 60;
 		$res = $this->mcoll->find(['$and' => [['U' => ['$gte' => $min]], ['U' => ['$lt' => $max]]]]);
 		return $res;
 	}
@@ -73,7 +86,7 @@ class moon extends dao_generic_3 {
 	function already() {
 		$now = time();
 		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - 86400 * 32]])) return false;
-		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + 86400 * 55]])) return false;
+		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + 86400 * 65]])) return false;
 		return true;
 	}
 	
