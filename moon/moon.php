@@ -17,9 +17,48 @@ class moon extends dao_generic_3 {
 		
 	}
 	
-	function do40($a) {
-		$ia = $a[0];
+	function cl10(&$ar) {
+		
+		$ak  = ['n', 't', 'pd', 'isq'];
+		$pkt = ['z', 'U', 'r'];
+		$pk = kwam($ak, $pkt); unset($pkt);
+		
+		$tar = $ar;
+		
+		foreach($tar as $f => $ignore) {
+			if ($tar['pd'] !== 1) { if (!in_array($f, $ak)) unset($ar[$f]); }
+			else				  { if (!in_array($f, $pk)) unset($ar[$f]); }
+		}
+	
+		return $ar;
+	}
+	
+	function do40($ala) {
+
+		$d10 = new DateTime();
+		$d10->setTimestamp($ala[0]['U']);
+		$d20 = new DateTime($d10->format('Y-m-d 23:59:59.999999')); unset($d10);
+		
+		for ($i=1; $i <= 9; $i++) {
+			if ($d20->getTimestamp() > $ala[0]['U']) {
+				$ta = array_shift($ala);
+				$ta['pd'] = 1;
+				$this->phca[] = $this->cl10($ta);
+			} else {
+				$ta['pd']++;
+				$this->cl10($ta);
+			}
+
+			$r[$d20->format('D M d')] = $ta;
+			$d20->add(new DateInterval('P1D'));
+			continue;
+		} unset($ta, $d20, $i, $ala);
+		
 		return;
+		
+
+			
+			
 		
 	}
 	
@@ -27,8 +66,7 @@ class moon extends dao_generic_3 {
 		$now = time();
 		$min = $now - 86400 *  9;
 		$max = $now + 86400 * 50;
-		$q = "db.getCollection('moon').find({'\$and' : [{'U' : {'\$gte' : $min}}, {'U' : {'\$lt' : $max}}]})";
-		$res = dbqcl::q(self::dbname, $q);
+		$res = $this->mcoll->find(['$and' => [['U' => ['$gte' => $min]], ['U' => ['$lt' => $max]]]]);
 		return $res;
 	}
 	
