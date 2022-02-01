@@ -30,39 +30,68 @@ table {   border-collapse: separate; }
 
 <script>
 
+class lunation {
+    
+    config() {
+        this.e10 = byid('per10');
+        this.dinterval = 150;
+        this.decright = 8;
+    }
+    
+    constructor(ain) {
+		this.thea = ain;
+        this.config();
+        this.onInt();
+        this.setInt();
+    }
+	
+	calc() {
+		const a = this.thea;
+		const l = a.length;
+		let bi = 0;
+		let ai = 1;
+		const t = time();
+		
+		while (!(      t >= a[bi]['ms']
+					&& t <  a[ai]['ms']
+					)) {bi++; ai++; }
+			
+		const span = a[ai]['ms'] - a[bi]['ms'];
+		const prog = t -		   a[bi]['ms'];
+		const perc = prog / span;
+		const phas = a[bi]['n'];
+		const v100 = (phas + perc) * 0.25;
+		return v100;
+	} 
 
+    onInt() {
+        const p = this.calc();
+        const pd = p.toFixed(this.decright);
+        this.e10.innerHTML = pd;
+    }
 
-window.addEventListener('DOMContentLoaded', () => {   
-    new moonCal();
+    setInt() {
+        const self = this;
+        setInterval(() => { self.onInt(); }, this.dinterval);       
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {   		
+	const monabig = <?php echo(moon::get()); ?>;
+	new moonCal (monabig.cala);
+	new lunation(monabig.phcha);
 }); 
 
 class moonCal {
-    constructor() { this.do10(); }
-    
-	getuni(ain) {
-		if (ain.n === 0 && ain.pd === 1) return '&#127761;';
-		if (ain.n === 0)				 return '&#127762;';
-		if (ain.n === 1)				 return '&#127764;';
-		if (ain.n === 2 && ain.pd === 1) return '&#127765;';
-		if (ain.n === 2)				 return '&#127766;';
-		if (ain.n === 3)				 return '&#127768;';
-		// if (ain.
-		
-	}
-	
-    do10() {
-		
-		const monabig = <?php echo(moon::get()); ?>;
-		const cala = monabig.cala;
-		
+    constructor(cala) {  
         for (let i=0; i <= 45; i++) {
             const tr = cree('tr');
             this.do22(tr, cala[i]);
             byid('tbody10').append(tr);
-      }
-    }
-    
-    do22(tr, ain) {
+      }	
+	}
+
+	do22(tr, ain) {
 		
 		const tdd = cree('td');
 		tdd.innerHTML = ain.hud;
@@ -85,45 +114,46 @@ class moonCal {
         tr.append(td);
 		
 		const tdl = cree('td');
-		if (ain.t && ain.pd === 1) inht(tdl, ain.t + ' ' + ain.hut);
+		if (ain.t && ain.pd === 1) inht(tdl, ain.hut + ' ' + ain.t);
 		tr.append(tdl);
     }
-    
+ 
+	getuni(ain) {
+		if (ain.n === 0 && ain.pd === 1) return '&#127761;';
+		if (ain.n === 0)				 return '&#127762;';
+		if (ain.n === 1)				 return '&#127764;';
+		if (ain.n === 2 && ain.pd === 1) return '&#127765;';
+		if (ain.n === 2)				 return '&#127766;';
+		if (ain.n === 3)				 return '&#127768;';
+	}
+ 
     getOpacity(ain) {
 		let pd = ain.pd;
-		
 		const n = ain.n;
 		
-        if (n >= 2) pd = 9 - pd;
-        if (n === 0 || pd === 1) return 0.35;
+        if (n >= 2) pd = 9 - pd; // reverse for waning
 
-        if (n === 0 || n === 3)
-        switch(pd) {
+		if (n === 0 || pd === 1) return 0.35; // new
+
+        if (n === 0 || n === 3) switch(pd) { // crescent
             case 1 : return 0.25;
             case 2 : return 0.35;
             case 3 : return 0.55;
             case 4 : return 0.58;
             case 5 : return 0.65;
             case 6 : return 0.78;
-            case 7 : return 1;
-            default : return 1;
         }
   
-       if (n === 1 || n === 2)
-        switch(pd) { 
+       if (n === 1 || n === 2) switch(pd) { // gibbous
             case 1 : return 0.70;
             case 2 : return 0.75;
             case 3 : return 0.83;
             case 4 : return 0.88;
             case 5 : return 0.93;
-            case 6 : return 1;
-            case 7 : return 1;
-            case 8 : return 1;
          }
         
         return 1;
     }
-   
 }
 </script>
 
@@ -135,28 +165,12 @@ class moonCal {
         <a style='padding-left: 5ex;' href='https://www.timeanddate.com/moon/usa/atlanta'>T&D</a>
     </p>
     
-    <p>Abandon ship!  Well, that was fun.  <a href='/t/7/11/blog.html#2022_0130_abandon_lunar_ship'>I explain my folly</a>.  
-        
-    </p>
-    
-    <p>The running number [when this was sort of working] is [was thought to be] the fraction of the moon's phase where 0 is new and 0.5 is full 
+    <p>The running number is the fraction of the moon's phase where 0 is new and 0.5 is full 
         and 0.99 is new again.</p>
     <p id='per10'></p>
     <table>
-        <!-- <thead>
-            <tr><th>at</th><th></th>
-              <th>f</th><th>phase</th> 
-            </tr>
-        </thead> -->
         <tbody id='tbody10'>
         </tbody>
     </table>
-    
-    <!--
-    https://stackoverflow.com/questions/11759992/calculating-jdayjulian-day-in-javascript
-    https://en.wikipedia.org/wiki/Lunar_month
-    // I copied very small parts by eye and hand, then confirmed stuff elsewhere
-    https://jasonsturges.medium.com/moons-lunar-phase-in-javascript-a5219acbfe6e
-    -->
 </body>
 </html>

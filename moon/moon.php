@@ -40,7 +40,9 @@ class moon extends dao_generic_3 {
 		foreach($tar as $f => $ignore) {
 			if ($tar['pd'] !== 1) { if (!in_array($f, $ak)) unset($ar[$f]); }
 			else  {					if (!in_array($f, $pk)) unset($ar[$f]); 
-									$ar['hut'] = date('g:i A', $ar['U']);	}
+				$ar['hut'] = date('g:i A', $ar['U']);	
+				$ar['ms' ] = $ar['U'] * 1000;
+			}
 		}
 	
 		return $ar;
