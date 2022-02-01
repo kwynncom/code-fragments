@@ -6,6 +6,17 @@ class moon extends dao_generic_3 {
 	
 	const dbname = 'moon';
 	
+	public static function get() {
+		$o = new self();
+		return $o->getI();
+	}
+	
+	public function getI() {
+		$ra = ['cala' => $this->cala, 'phcha' => $this->phcha];
+		$j  = json_encode($ra);
+		return $j;
+	}
+	
 	public function __construct() {
 		parent::__construct(self::dbname);
 		$this->creTabs(['m' => 'moon']);
@@ -58,14 +69,14 @@ class moon extends dao_generic_3 {
 				$d = $now - $ta['U'];
 				if (   ($d > 0 && $d < $min) 
 					|| ($d < 0 && $d > -$max) )
-					$this->phca[] = $this->cl10($ta); unset($d);
+					$this->phcha[] = $this->cl10($ta); unset($d);
 			} else {
 				$ta['pd']++;
 				$this->cl10($ta);
 			}
 
 			$hud = $ta['hud'] = self::hud($d20);
-			if ($d20ts >= $now) $r[$hud] = $ta; unset($d20ts);
+			if ($d20ts >= $now) $r[] = $ta; unset($d20ts);
 			$d20->add(new DateInterval('P1D'));
 			continue;
 		} unset($ta, $d20, $i, $ala, $now, $min, $max, $d20ts);

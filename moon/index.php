@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>  <?php require_once('moon.php'); ?>
 <html lang='en'>
 <head>
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
@@ -31,50 +31,6 @@ table {   border-collapse: separate; }
 <script>
 
 class moon {
-    
-    constructor(at) {
-        const f     = this.fractionFromNew0V = moon.fractionFromNew0(at);
-        this.setPhase(f);
-        this.fillum = moon.calcIllum(f);
-        this.quart  = moon.getMoonth() / 4;
-        this.moonth = moon.getMoonth();
-        this.setPhaseCalcs(f);
-        return;
-    }
-    
-    setPhaseCalcs(f) {
-        const dayOfMoon = this.dayOfMoon = f * this.moonth;
-        const quarterF   = dayOfMoon / this.quart;
-        const quarterI   = Math.floor(quarterF);
-        this.quarter     = parseInt(quarterI) + 1;
-        this.phaseDay   = dayOfMoon - quarterI * this.quart;
-        this.phasePercent = this.phaseDay / this.quart;
-        return;
-    }
-    
-    static calcIllum(f) {
-        const i = (0.5 - Math.abs(f  - 0.5)) * 2;
-        return i;
-    }
-
-    static fractionFromNew0(nowmsin) {
-        let nowms;
-        if (nowmsin) nowms = nowmsin;
-        else         nowms = time();
-        const julianUNIXEpoch = 2440587.5;
-        const msinday = 86400000;
-        const epdays = (nowms / msinday);
-        const jd = epdays + julianUNIXEpoch;
-        const moonth = moon.getMoonth();
-        const newMoon_2000_0106_Gregorian = 2451550.1;
-        const edays = jd - newMoon_2000_0106_Gregorian;
-        const moonths = edays / moonth;
-        const floor = Math.floor(moonths);
-        const  perToNew = moonths - floor;
-        return perToNew;
-    }
-    
-    static getMoonth() { return 29.5305888531; }
     
     setPhase(p) {
         let ph = '';
@@ -117,78 +73,47 @@ class moon {
         this.phaseWhole = ph;
     }
 }
-/*
+
 window.addEventListener('DOMContentLoaded', () => {   
-    new displayMoon();
+    // new displayMoon();
     new moonCal();
-}); */
-
-class displayMoon {
-    
-    config() {
-        this.e10 = byid('per10');
-        this.dinterval = 150;
-        this.decright = 8;
-    }
-    
-    constructor() {
-        this.config();
-        this.onInt();
-        this.setInt();
-    }
-
-    onInt() {
-        const p = moon.fractionFromNew0(time());
-        const pd = p.toFixed(this.decright);
-        this.e10.innerHTML = pd;
-    }
-
-    setInt() {
-        const self = this;
-        // setInterval(() => { self.onInt(); }, this.dinterval);       
-    }
-}
+}); 
 
 class moonCal {
     constructor() { this.do10(); }
     
-    baseADJ(no, i) {
-        const eodo = new Date(no.getFullYear(), no.getMonth(), no.getDate() + i, 23, 59, 59, 999);
-        // const tzoms = eodo.getTimezoneOffset() * 60000;
-        return eodo;
-    }
-    
+	getuni(ain) {
+		if (ain.pd === 1 && ain.n === 0) return '&#127761;';
+		
+	}
+	
     do10() {
-        const no   = new Date();        
-        for (let i=0; i <= 120; i++) {
+		
+		const monabig = <?php echo(moon::get()); ?>;
+		const cala = monabig.cala;
+		
+        for (let i=0; i <= 45; i++) {
             const tr = cree('tr');
-            const dob = this.baseADJ(no, i);
-            const mo = new moon(dob.getTime());
-            if (i === 0) {
-                this.pdir = mo.direction;
-                this.pppr  = this.phaseProper;
-            }
-            this.do20(tr, dob);
-            this.do22(tr, mo);
-            this.do30(tr, mo);
+            this.do22(tr, cala[i]);
+            // this.do30(tr, mo);
             byid('tbody10').append(tr);
       }
     }
     
-    do22(tr, mo) {
-        const ill  = mo.fillum;
-        const byte = parseInt(Math.round(mo.fillum * 255));
-        let s = '';
-        s += 'rgb(' + byte + ',' + byte + ',' + byte + ')';
+    do22(tr, ain) {
+		
+		const tdd = cree('td');
+		tdd.innerHTML = ain.hud;
+		tr.append(tdd);
+		
         const td = cree('td');
         td.style.backgroundColor = 'black';
         td.style.border = 'black';
         const span = cree('span');
 
-        const c = mo.muni;
-        const tdbg = ((75 * ill * 1.5));
+        const c = this.getuni(ain);
         
-        const ca = this.color(mo);
+//        const ca = this.color(mo);
         
         span.style.backgroundColor = 'black';
         
@@ -199,7 +124,7 @@ class moonCal {
         span20.innerHTML = c;
         span20.className = 'cspan';
             
-        span20.style.opacity = ca;
+        // span20.style.opacity = ca;
         td.append(span);
         tr.append(td);
     }
@@ -240,60 +165,10 @@ class moonCal {
         return 1;
 
     }
-    
-    gray(p) { 
-       const c = parseInt(Math.round(p / 100 * 255)); 
-       return 'rgb(' + c + ',' + c + ',' + c + ')';        
-    }
-    
-    do25(tr, mo) {
-       const f = mo.fillum;
-       const d = parseInt(Math.round(f * 100));
-       const td = cree('td');
-       td.innerHTML = d;
-       tr.append(td);
-       
-    }
-    
-    do30(tr, mo) {
-        
-        const nowdir = mo.direction;
-        const nowppr = mo.phaseProper;
-        let v = '';
-        if   (this.pdir !== nowdir) {
-            if (mo.direction === 'waxing') v = 'new';
-            else                           v = 'full';
-        }
-        
-        if (     (nowppr === 'crescent' && this.pppr === 'gibbous' )
-             ||  (nowppr === 'gibbous'  && this.pppr === 'crescent') ) {
-         
-                if (mo.direction === 'waxing') v = 'gibbous';
-                else                           v = 'crescent';
-        }
-        
-        this.pdir = nowdir;
-        this.pppr = nowppr;
-        
-        const td20 = cree('td');
-        td20.innerHTML = v;
-        
-        const td30 = cree('td');
-        inht(td30, mo.fractionFromNew0V);
-        tr.append(td20);
-        tr.append(td30);
-     }
 
-    do20(tr, dob) {
-        const td10 = cree('td');
-        td10.innerHTML = dob.toString(); // .substring(0,10);
-        tr.append(td10);
-    }
-    
-    colors() {
-        
-    }
-    
+
+
+   
 }
 </script>
 
