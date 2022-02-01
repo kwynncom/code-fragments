@@ -1,11 +1,24 @@
 https://rhodesmill.org/skyfield/installation.html
+*******
+Round 2 - global installation...
+sudo -H pip install skyfield
+sudo -u www-data python3 /.../t/22/01/moon/moon.py
+# works!
+
+**********
+sudo -u www-data python3 /.../t/22/01/moon/moon.py
+Traceback (most recent call last):
+  File "/.../t/22/01/moon/moon.py", line 1, in <module>
+    from skyfield.api import load
+*********
+
 pip install skyfield
 don't have it....
 sudo apt update
 sudo apt install python3-pip
 pip install skyfield
 # it in turn installs NumPy
-  WARNING: The scripts f2py, f2py3 and f2py3.9 are installed in '/home/k/.local/bin' which is not on PATH.
+  WARNING: The scripts f2py, f2py3 and f2py3.9 are installed in '/home/[user]/.local/bin' which is not on PATH.
   Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
 # ?
 python3 -m skyfield

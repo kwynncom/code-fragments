@@ -106,7 +106,7 @@ class moon extends dao_generic_3 {
 	
 	function do10() {
 		if ($this->already()) return;
-		return $this->do20(trim(shell_exec('python3 ' . __DIR__ . '/moon.py')));
+		return $this->do20(trim(shell_exec('/usr/bin/python3 ' . __DIR__ . '/moon.py')));
 	}
 	
 	function do20($t) {
