@@ -52,9 +52,11 @@ class lunation {
 		let ai = 1;
 		const t = time();
 		
-		while (!(      t >= a[bi]['ms']
+		while (		(!(      t >= a[bi]['ms']
 					&& t <  a[ai]['ms']
-					)) {bi++; ai++; }
+					))
+				&&  ai < 30 // 17:25 - prevent possible infinite loop
+				) {bi++; ai++; }
 			
 		const span = a[ai]['ms'] - a[bi]['ms'];
 		const prog = t -		   a[bi]['ms'];
@@ -133,7 +135,7 @@ class moonCal {
 		
         if (n >= 2) pd = 9 - pd; // reverse for waning
 
-		if (n === 0 || pd === 1) return 0.35; // new
+		if (n === 0 && pd === 1) return 0.35; // new
 
         if (n === 0 || n === 3) switch(pd) { // crescent
             case 1 : return 0.25;
@@ -161,16 +163,33 @@ class moonCal {
 <body>
     <p>
         <a href='/'>home</a>
-        <a style='padding-left: 5ex;' href='/t/6/07/ql/quick_links.html'>ql</a>
-        <a style='padding-left: 5ex;' href='https://www.timeanddate.com/moon/usa/atlanta'>T&D</a>
+        <a    style='padding-left: 5ex;' href='/t/6/07/ql/quick_links.html'>ql</a>
+        <a    style='padding-left: 5ex;' href='https://www.timeanddate.com/moon/usa/atlanta'>T&D</a>
+		<span style='padding-left: 2ex;'>more info at bottom</span>
     </p>
     
-    <p>The running number is the fraction of the moon's phase where 0 is new and 0.5 is full 
-        and 0.99 is new again.</p>
-    <p id='per10'></p>
+    <div>
+	<p id='per10'></p>
     <table>
         <tbody id='tbody10'>
         </tbody>
     </table>
+	</div>
+	<div>
+	<p>The running number is the fraction of the moon's lunation where 0 is new and 0.5 is full and 0.99 is almost new again.  This new moon 
+		fraction number is global / timezone independent.  As for the dates and times:
+	</p>
+	<p><?php echo('UTC ' . date('P, T, e') . '.'); ?>
+		New York is simply the reference city for the timezone.  I am far from New York, deep in the Confederacy.  
+		
+	</p>
+	
+	</div>
+	
+<div class='htvd'>
+    <a href="https://validator.w3.org/check?uri=https://kwynn.com/t/22/01/moon/"><img
+        src="/t/5/02/html5_valid.jpg"
+        alt="HTML5 validation check" width="103" height="36" /></a>
+</div>
 </body>
 </html>
