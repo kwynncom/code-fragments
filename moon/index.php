@@ -7,7 +7,7 @@
 <title>moon phase</title>
 
 <!-- 
-https://kwynn.com/t/22/01/moon.html
+https://kwynn.com/t/22/01/moon/
 -->
 
 <style>
@@ -87,10 +87,11 @@ window.addEventListener('DOMContentLoaded', () => {
 }); 
 
 class moonCal {
-    constructor(cala) {  
-        for (let i=0; i <= 45; i++) {
+    constructor(cala) {
+		let v;
+        for (let i=0; v = cala[i]; i++) {
             const tr = cree('tr');
-            this.do22(tr, cala[i]);
+            this.do22(tr, v);
             byid('tbody10').append(tr);
       }	
 	}

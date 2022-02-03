@@ -5,6 +5,11 @@ require_once('/opt/kwynn/kwutils.php');
 class moon extends dao_generic_3 { 
 	
 	const dbname = 'moon';
+	const safePhD  = 9;
+	const calcDays = 45;
+	const maxDaysNeeded = self::safePhD + self::calcDays;
+	const extraDays = 50;
+	const newAlmanacIfDays = self::maxDaysNeeded + self::extraDays;
 	
 	public static function get() {
 		$o = new self();
@@ -52,7 +57,7 @@ class moon extends dao_generic_3 {
 	
 	function do40($ala) {
 
-		static $minMax =  10 * 86400;
+		static $minMax =  self::safePhD * DAY_S;
 		
 		$d10 = new DateTime();
 		$d10->setTimestamp($ala[0]['U']);
@@ -60,7 +65,7 @@ class moon extends dao_generic_3 {
 		$now = time();
 		
 		
-		for ($i=1; $i <= 55; $i++) {
+		for ($i=1; $i <= self::calcDays; $i++) {
 			
 			$d20ts = $d20->getTimestamp();
 			
@@ -90,16 +95,16 @@ class moon extends dao_generic_3 {
 	
 	function do30() {
 		$now = time();
-		$min = $now - 86400 *  9;
-		$max = $now + 86400 * 60;
+		$min = $now - DAY_S *  self::safePhD;
+		$max = $now + DAY_S * (self::safePhD + self::calcDays);
 		$res = $this->mcoll->find(['$and' => [['U' => ['$gte' => $min]], ['U' => ['$lt' => $max]]]]);
 		return $res;
 	}
 	
 	function already() {
 		$now = time();
-		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - 86400 * 32]])) return false;
-		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + 86400 * 65]])) return false;
+		if (!$this->mcoll->findOne(['U' => ['$lte' => $now - DAY_S * self::safePhD]]))		 return false;
+		if (!$this->mcoll->findOne(['U' => ['$gte' => $now + DAY_S * self::newAlmanacIfDays]])) return false;
 		return true;
 	}
 	
