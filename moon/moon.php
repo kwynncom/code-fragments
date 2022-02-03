@@ -52,8 +52,7 @@ class moon extends dao_generic_3 {
 	
 	function do40($ala) {
 
-		static $min =  9 * 86400;
-		static $max =  9 * 86400;
+		static $minMax =  10 * 86400;
 		
 		$d10 = new DateTime();
 		$d10->setTimestamp($ala[0]['U']);
@@ -70,8 +69,8 @@ class moon extends dao_generic_3 {
 				$ta['pd'] = 1;
 				$this->cl10($ta); 
 				$d = $now - $ta['U'];
-				if (   ($d > 0 && $d < $min) 
-					|| ($d < 0 && $d > -$max) )
+				if (   ($d > 0 && $d <  $minMax) 
+					|| ($d < 0 && $d > -$minMax) )
 					$this->phcha[] = $ta; unset($d);
 			} else {
 				$ta['pd']++;
@@ -82,7 +81,7 @@ class moon extends dao_generic_3 {
 			if ($d20ts >= $now) $r[] = $ta; unset($d20ts);
 			$d20->add(new DateInterval('P1D'));
 			continue;
-		} unset($ta, $d20, $i, $ala, $now, $min, $max, $d20ts);
+		} unset($ta, $d20, $i, $ala, $now, $minMax, $d20ts);
 		
 		$this->cala = $r; unset($r);
 		

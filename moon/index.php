@@ -22,8 +22,7 @@ td   { font-family: monospace; }
 
 table {   border-collapse: separate; }
 
-.cspan {
-}
+.per20p { padding-right: 1ex; }
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -34,6 +33,7 @@ class lunation {
     
     config() {
         this.e10 = byid('per10');
+		this.e20 = byid('per20');
         this.dinterval = 150;
         this.decright = 8;
     }
@@ -70,6 +70,8 @@ class lunation {
         const p = this.calc();
         const pd = p.toFixed(this.decright);
         this.e10.innerHTML = pd;
+		const raf = p * 24;
+		inht(this.e20, raf.toFixed(1));
     }
 
     setInt() {
@@ -169,18 +171,31 @@ class moonCal {
     </p>
     
     <div>
-	<p id='per10'></p>
+		<p>
+			<span class='per20p'><span id='per20'></span> hrs RA offset</span>
+			<span id='per10'></span>
+	</p>
     <table>
         <tbody id='tbody10'>
         </tbody>
     </table>
 	</div>
 	<div>
-	<p>The running number is the fraction of the moon's lunation where 0 is new and 0.5 is full and 0.99 is almost new again.  This new moon 
-		fraction number is global / timezone independent.  As for the dates and times:
+		
+		<p>The hours RA (right ascension) offset is that between the moon and sun as seen from earth, where 24 hours right ascension is the entire 360&deg; 
+			of the sky (every hour RA of sky is 15&deg; of sky).  A full moon is 12 hours or 180&deg; apart between sun and moon.  (I display the absolute value 
+			of the number.)  The RA offset is calculated as the following number times 24.
+		</p>
+	<p>The constantly running number is the fraction of the moon's lunation (lunar month) where 0 is new and 0.5 is full and 0.99 is almost new again.  This new 
+		moon fraction number and the RA offset are global / timezone independent.  As for the dates and times:
 	</p>
 	<p><?php echo('UTC ' . date('P, T, e') . '.'); ?>
 		New York is simply the reference city for the timezone.  I am far from New York, deep in the Confederacy.  
+		
+	</p>
+	
+	<p>I link to a <a href='https://github.com/kwynncom/code-fragments/tree/b2f4d6ef6aa97ac95a6a3f63c2f58af42c425388/moon'>
+			specific version of the source code</a> because I will probably move the code.
 		
 	</p>
 	
