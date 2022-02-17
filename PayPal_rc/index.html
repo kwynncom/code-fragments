@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>donate with PayPal</title>
+   
+<script src="https://www.paypal.com/sdk/js?client-id=AWl-30TUCncQRKsQR9NwzJl1AAUi-_7X28FZ3i_8v9sJyDnSo9audXbMBaMDEltp75V9r_kXh-Czp9Xl">/* sandbox client ID */</script>
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+    
+function payment_complete(d) {
+    const e = byid('xres10');
+    if (d.status !== 'COMPLETED') { inht(e, 'status = ' + dets.status); return; }
+    let s = '';
+    s += 'Thank you!  Details: ';
+   
+    let i = 0;
+    try { 
+        for(i=0; i < d.purchase_units.length; i++) {
+            const r = d.purchase_units[i];
+            const a = parseFloat(r.amount.value);
+            if (      r.amount.currency_code === 'USD') s += '$';
+            else s += r.amount.currency_code + ' ';
+            s += a.toFixed(2) + ' donated.  ';
+         }
+    } catch (ex) {
+        
+    }
+
+    s += 'PayPal transaction ID ' + d.id;
+    s += ' on ' + d.create_time + '.  ';
+
+    inht(e, s);
+        
+    const ie = byid('amin');
+    ie.readonly = ie.disabled = true;
+    byid('paypal-button-container').style.visibility = 'hidden';
+    byid('instr').style.visibility = 'hidden';
+}
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    [paypal.FUNDING.PAYPAL].forEach(function(fundingSource) {
+        const button = paypal.Buttons({ 
+            fundingSource: fundingSource,  
+            style: { height: 55 }, 
+            createOrder: function(data, actions) {
+              return actions.order.create({
+                purchase_units: [{"amount" : {"currency_code" : "USD", "value" : byid('amin').value }}]
+              });
+            },
+           onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                payment_complete(details);
+            });
+            }
+        });
+        if (button.isEligible()) { button.render('#paypal-button-container'); }
+    });
+});
+
+</script>
+
+<style>
+    body  { font-family: sans-serif; }
+    input { text-align: left; width: 6ex; font-size: 170%; font-family: monospace; }
+    .frns { padding-right: 0.5ex; font-size: 130%; }
+    #paypal-button-container { width: 10em; margin-top: 2ex;}
+    .instr { display: inline-block; }
+    #xres10 { font-size: 120%; }
+</style>
+
+</head>
+<body>
+    <section>
+        <h1>donate with PayPal</h1>
+        
+        <div class='inpar'><span class='frns'>$</span><input type='number' min='1' step='1' id='amin' />
+            <div class='instr' id='instr'>enter an amount and then click the PayPal button to donate.</div>
+            
+        </div>
+        
+            <div id='paypal-button-container'></div>
+            
+            <div id='xres10'>&nbsp;</div>
+        
+        <p>It appears that VeVe uses US Dollars, so I hope it's ok to do it that way.  (I've seen IP addresses from quite a few countries and 
+            most of the continents.)
+            
+        </p>
+    </section>
+</body>
+</html>
