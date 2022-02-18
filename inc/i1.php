@@ -15,14 +15,29 @@ class test_seq extends dao_generic_3 implements fork_worker {
 	public static function shouldSplit (int $low, int $high, int $cpuCount) : bool { return true; }
 	public  function workitI (int $low, int $high) {
 		$t = [];
+		
 		for ($i = $low; $i <= $high; $i++) {
-			$r = nanopk();
-			$s = '';
-			foreach($r as $v) $s .= $v;
+			
 			$a = [];
-			$a['_id'] = $s;
+
+			if (1) {
+				$r = nanopk();
+				if (0) {
+					$s = '';
+					foreach($r as $v) $s .= $v . '_';
+					$a['_id'] = $s;
+				}
+				else {
+					$o = (object) $r;
+					$a = new stdClass();
+					$a->_id = $o;
+				}
+				// $a = kwam($a, $r);
+			
+			}
 			$t[] = $a;
 		}
+
 		$this->ncoll->insertMany($t);
 	}
 	
