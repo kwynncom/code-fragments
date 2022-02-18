@@ -5,6 +5,7 @@ require_once('/opt/kwynn/kwutils.php');
 class mcrT20 {
 	
 	const maxcpus = 600; // AWS has a 192 core processor as of early 2022
+	const testcpus = 12;
 
 	public static function CPUCount() { return self::getValidCPUCount(shell_exec('grep -c processor /proc/cpuinfo'));   }
     
@@ -43,24 +44,30 @@ private function setVOR(array $a, int $s, int $e) {
 	$an = count($a); kwas($an >= 1 && $an <= $this->theon, 'bad array count kw ranges');
 	kwas($a[0]['l'] === $s, 'bad start ranges kw');
 	kwas($a[$an - 1]['h'] === $e, 'bad end ranges kw');
+	kwas($a[$an - 1]['l'] <= 
+		 $a[$an - 1]['h'], 'bad ranges 2254 kw');
 	
+	$l = $s; 
+	$tot = 0;
 	for($i=0; $i < $an; $i++) {
-		
-		
+		kwas($a[$i]['l'] <= $a[$i]['h'], 'bad iter ranges kw 2254');
+		$tot += $a[$i]['h'] - $a[$i]['l'] + 1;
+		if ($i === $an - 1) break;
+		kwas($a[$i + 1]['l'] === $a[$i]['h'] + 1);
 	}
 	
+	kwas($tot === ($e - $s + 1), 'bad sum ranges kw');
 	$this->oares = $a;
-	
 	
 }
 
-public static function get(int $s, int $e, int $n = 0) {
+public static function get(int $s, int $e, $n = false) {
 	$o = new self($s, $e, $n);
 	return $o->getR();
 }
 
 private function setN(int $n) {
-	if (!$n) $n = self::CPUCount(); kwas(self::getValidCPUCount($n), 'bad cpu / divide by count');
+	if ($n === false) $n = self::CPUCount(); kwas(self::getValidCPUCount($n), 'bad cpu / divide by count');
 	$this->theon = $n;
 	
 }
@@ -78,9 +85,7 @@ public function do10(int $s, int $e) {
 	for ($ite = 0, $l=$s; $ite < $this->theon; $ite++) {
 		unset($s);
 
-/*		if ($l >= $e) {
-			$res
-		} */
+		if ($l > $e) return $res;
 		
 		$res[$ite]['l'] = $l;
 		$th = $l + $inc;
@@ -102,8 +107,8 @@ public function do10(int $s, int $e) {
 
     public static function tests() {
 	$ts = [
-		// [-1,0],
-		// [0,0, 0],
+		[-1,0],
+		[0,0, 0],
 		[0,0],
 		[1,2],
 		[1592696603, 1603313775],
@@ -122,23 +127,23 @@ public function do10(int $s, int $e) {
 		
 	    ];
 	
-
-	$max = count($ts) - 1;
-	
-	for ($i=0; $i <= 0; $i++) {
-	$t = $ts[$i];
-	if (!isset($t[2])) $t[2] = 12;
-	try {
-	    $res = self::get($t[0], $t[1], $t[2]);
-	    $out = [];
-	    $out['in'] = $t;
-	    $out['out'] = $res;
-	    print_r($out);
-	} catch (Exception $ex) {
-	    throw $ex;
+	for ($i=0; $i < count($ts); $i++) {
+		$t = $ts[$i];
+		if (!isset($t[2])) $t[2] = self::testcpus;
+		try {
+			$out = [];
+			$out['in'] = $t;
+			$res = self::get($t[0], $t[1], $t[2]);
+			$out['out'] = $res;
+			print_r($out);
+		} catch (Exception $ex) {
+			print_r($out);
+			echo($ex->getMessage() . "\n");
+		}
+		
+		print("*************\n");
 	}
-	}
-    } // func
+} // func
 	
 }
 
