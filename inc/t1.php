@@ -10,8 +10,7 @@ class test_seq extends dao_generic_3 implements fork_worker {
 		parent::__construct(self::dbname);
 		$this->creTabs('seq');
 		if ($init) {
-			$this->scoll->upsert(['seqName' => 'boo'], ['seq' => 0]);
-			$this->scoll->createIndex(		      ['seqName' => 1], ['unique' => true]);
+			$this->scoll->updateOne(['_id' => 'boo'], ['$set' => ['seq' => 0]], ['upsert' => true]);
 		}
 		
 	}
@@ -21,7 +20,7 @@ class test_seq extends dao_generic_3 implements fork_worker {
 		if (!is_numeric($low) || !is_numeric($high)) return;
 		if ($low < 1 || $high < 1) return;
 		for ($i = $low; $i <= $high; $i++) 
-			$this->scoll->findOneAndUpdate(['seqName' => 'boo'], [ '$inc' =>  ['seq' => 1 ]]);
+			$this->scoll->findOneAndUpdate(['_id' => 'boo'], [ '$inc' =>  ['seq' => 1 ]], ['returnNewDocument' => true]);
 	}
 	
 	public static function workit  (int $low, int $high, int $workerN) { 
@@ -31,7 +30,9 @@ class test_seq extends dao_generic_3 implements fork_worker {
 
 	public static function kickoff() {
 		new self(true);
-		fork::dofork(true, 1, 200000, 'test_seq'); // , self::lfin, self::dbname, self::colla, $this->fts1);		
+		$n = random_int(1, M_MILLION);
+		echo("$n\n");
+		fork::dofork(true, 1, $n, 'test_seq'); // , self::lfin, self::dbname, self::colla, $this->fts1);		
 	}
 
 	
