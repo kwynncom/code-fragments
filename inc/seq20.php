@@ -21,13 +21,27 @@ class test_seq extends dao_generic_3 implements fork_worker {
 		$wi = 0;
 		
 		for ($i = $low; $i <= $high; $i++) {
-			$sn = 'sn' . ($snn + random_int(0, $cpun));
-			$sr = $this->scoll->findOneAndUpdate(['_id' => $sn], [ '$inc' =>  ['seq' => 1 ]], 
-								['upsert' => true,  'returnDocument' => MongoDB\Operation\FindOneAndUpdate::RETURN_DOCUMENT_AFTER]);
-			$snn = $sr['seq'];
-		
+			$sn = $snn + random_int(0, $cpun * 1);
+			$snn = $this->getSeqProtected('base');
+			$this->getSeqProtected($sn);		
 		}
 	}
+	
+	public function getSeqProtected($sn) {
+		for ($i=0; $i < 1; $i++) {
+			
+			try {
+				$sr = $this->scoll->findOneAndUpdate(['_id' => $sn], [ '$inc' =>  ['seq' => 1 ]], 
+									['upsert' => true,  'returnDocument' => MongoDB\Operation\FindOneAndUpdate::RETURN_DOCUMENT_AFTER]);
+				return $sr['seq'];	
+			}
+			catch (Exception $ex) {	}
+		}
+		
+		kwas(false, 'duplicate');
+
+	}
+	
 	
 	public static function workit  (int $low, int $high, int $workerN) { 
 		$o = new self();
@@ -36,8 +50,6 @@ class test_seq extends dao_generic_3 implements fork_worker {
 
 	public static function kickoff() {
 		new self(true);
-		$n = random_int(1, M_MILLION);
-		echo("$n\n");
 		fork::dofork(true, 1, 6000, 'test_seq'); // , self::lfin, self::dbname, self::colla, $this->fts1);		
 	}
 
