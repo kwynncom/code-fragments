@@ -21,14 +21,14 @@ class test_seq extends dao_generic_3 implements fork_worker {
 		$wi = 0;
 		
 		for ($i = $low; $i <= $high; $i++) {
-			$sn = $snn + random_int(0, $cpun * 1);
+			$sn = $snn + random_int(0, $cpun);
 			$snn = $this->getSeqProtected('base');
 			$this->getSeqProtected($sn);		
 		}
 	}
 	
 	public function getSeqProtected($sn) {
-		for ($i=0; $i < 1; $i++) {
+		for ($i=0; $i < 2; $i++) {
 			
 			try {
 				$sr = $this->scoll->findOneAndUpdate(['_id' => $sn], [ '$inc' =>  ['seq' => 1 ]], 
@@ -50,7 +50,9 @@ class test_seq extends dao_generic_3 implements fork_worker {
 
 	public static function kickoff() {
 		new self(true);
-		fork::dofork(true, 1, 6000, 'test_seq'); // , self::lfin, self::dbname, self::colla, $this->fts1);		
+		$n = random_int(1, M_MILLION);
+		echo("$n\n");
+		fork::dofork(true, 1, $n, 'test_seq'); // , self::lfin, self::dbname, self::colla, $this->fts1);		
 	}
 
 	
