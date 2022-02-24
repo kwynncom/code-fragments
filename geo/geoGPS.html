@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>GPS test / example</title>
+
+<script>
+    
+    function byid(id)    { return document.getElementById(id); }
+    function inn (id, t) { 
+        const o = byid(id);
+        if (!o) return;
+        o.innerHTML = t;
+    }
+    
+    function geoFindMe() {
+
+  function success(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    
+    inn('lat', lat); inn('lon', lon);
+    
+    const dates = new Date(position.timestamp).toString();
+
+    status.textContent = '';
+    position['coords']['asof'] = dates;
+    
+    const json = JSON.stringify(cloneAsObject(position.coords), null, 2);
+    
+    inn('geojson', json);
+  }
+
+  function error(err) {
+    status.textContent = 'Unable to retrieve your location';
+    byid('status').innerHTML = err.message;
+  }
+
+  if(!navigator.geolocation) {
+    status.textContent = 'Geolocation is not supported by your browser';
+  } else {
+    status.textContent = 'Locating…';
+    
+    const opts = { enableHighAccuracy: true, maximumAge: 0 };
+    navigator.geolocation.getCurrentPosition(success, error, opts);
+
+    return;
+  }
+
+}
+
+function cloneAsObject(obj) {
+    if (obj === null || !(obj instanceof Object)) {
+        return obj;
+    }
+    var temp = (obj instanceof Array) ? [] : {};
+    // ReSharper disable once MissingHasOwnPropertyInForeach
+    for (var key in obj) {
+        temp[key] = cloneAsObject(obj[key]);
+    }
+    return temp;
+}
+
+</script>
+    
+</head>
+<body>
+    <div>
+    <button onclick='geoFindMe();'>get location</button>
+    </div>
+    <div id='geojson'>    </div>
+    <div id='status'></div>
+    <div><span id='lat'></span> <span id='lon'></span>
+    </div>
+    <div>v0.0.4</div>
+</body>
+</html>
