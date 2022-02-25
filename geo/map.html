@@ -39,13 +39,22 @@ class mapuse {
     
     init() {
         this.map.on('click', (ev) => {this.click(ev); });
-        this.map.on('mousemove', this.actll);        
+        this.map.on('mousemove', this.actll);
+        byid('rmbtn').onclick = () => { this.click('rm'); }
     }
     
     click(e) {
+        if (this.marker) this.map.removeLayer(this.marker);
+        if (e === 'rm') {
+            byid('rmp').style.visibility = 'hidden';
+            this.map.on('mousemove', this.actll);
+            return;
+        }
+        
         this.actll(e);
         this.map.off('mousemove');
         this.marker = L.marker([e.latlng['lat'], e.latlng['lng']]).addTo(this.map);
+        byid('rmp').style.visibility = 'visible';
     }
     
     actll(e) {
@@ -57,7 +66,7 @@ class mapuse {
             if (i === 0) s += '   ';
         }
 
-        byid('latlone').value = s;
+        byid('latlone').innerHTML = s;
     }
 }
 
@@ -86,20 +95,27 @@ html, body, #mappar {
     left: 50%;
     transform: translate(-50%, 0);
 }
-/* https://stackoverflow.com/questions/1776915/how-can-i-center-an-absolutely-positioned-element-in-a-div
-answered Apr 30, 2014 at 9:54 by ProblemsOfSumit */
 
 #lligp { 
     position: absolute;
     height: 15%;
     width: 100%;
 }
-input { 
+#latlone { 
         font-size: 130%; 
         padding-top: 0.2ex;
         padding-bottom: 0.2ex;
         width: 23ex;
         text-align: center;
+}
+
+#rmp {
+    position: absolute;
+    top: 1em;
+    font-family: monospace;
+    left: 50%;
+    transform: translate(-50%, 0);
+    visibility: hidden;
 }
 
 </style>
@@ -108,8 +124,11 @@ input {
 <body>
     <div id='mappar'>
         <div id='lligp'>
+            <div id='rmp'>
+            <button id='rmbtn'>rm</button>
+            </div>
         <div id='llipar'>
-            <input type='text' id='latlone' size='25'/>
+            <span id='latlone'></span>
         </div>
         </div>
         <div id='map'></div>
