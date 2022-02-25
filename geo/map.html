@@ -9,43 +9,81 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+<link rel="stylesheet" href="/opt/leaflet/leaflet.css"
    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
    crossorigin=""/>
 
- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+ <script src="/opt/leaflet/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
 
 <script>
 
-function onMapClick(e) {
-    alert("You clicked the map at " + e.latlng);
+function actll(e) {
+    
+    const fs = ['lat', 'lng'];
+    let s = '';
+    for (let i=0; i < 2; i++) {
+        s += e.latlng[fs[i]].toFixed(6);
+        if (i === 0) s += '   ';
+    }
+    
+    byid('latlone').value = s;
 }
     
-window.addEventListener('DOMContentLoaded', (event) => {
-    var map = L.map('map').setView([51.505, -0.09], 13);
-    L.tileLayer('https://b.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox/streets-v11',
-    tileSize: 512,
-    zoomOffset: -1,
-    accessToken: 'your.mapbox.access.token'
-}).addTo(map);
+window.addEventListener('DOMContentLoaded', () => {
+    const map = L.map('map').setView([34.23, -84.16], 8);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
+    }).addTo(map);
 
-map.on('click', onMapClick);
+    map.on('click', actll);
 
 });
 </script>
 
 <style>
-    #map { height: 70vh; }
+    
+html, body, #mappar {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+    
+    
+#map { 
+    height: 85%;
+    width: inherit;
+    position: absolute;
+    bottom: 0;
+}
+
+#llipar {
+    position: absolute;
+    top: 1em;
+    height: 15%;
+    font-family: monospace;
+    display: inline-block;
+}
+
+input { 
+        font-size: 150%; 
+        padding-top: 0.5ex;
+        padding-bottom: 0.5ex;
+        width: 23ex;
+        text-align: center;
+}
+
 </style>
 
 </head>
 <body>
-    <div id='map'></div>
+    <div id='mappar'>
+        <div id='llipar'>
+            <input type='text' id='latlone' size='25'/>
+        </div>
+        <div id='map'></div>
+    </div>
 </body>
 </html>
 
