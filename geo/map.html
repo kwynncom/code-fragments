@@ -38,6 +38,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }).addTo(map);
 
     map.on('click', actll);
+    map.on('mousemove', actll);
 
 });
 </script>
@@ -60,16 +61,24 @@ html, body, #mappar {
 
 #llipar {
     position: absolute;
-    top: 1em;
-    height: 15%;
+    bottom: 0.5em;
     font-family: monospace;
-    display: inline-block;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
+/* https://stackoverflow.com/questions/1776915/how-can-i-center-an-absolutely-positioned-element-in-a-div
+answered Apr 30, 2014 at 9:54
+ProblemsOfSumit */
 
+#lligp { 
+    position: absolute;
+    height: 15%;
+    width: 100%;
+}
 input { 
-        font-size: 150%; 
-        padding-top: 0.5ex;
-        padding-bottom: 0.5ex;
+        font-size: 130%; 
+        padding-top: 0.2ex;
+        padding-bottom: 0.2ex;
         width: 23ex;
         text-align: center;
 }
@@ -79,8 +88,10 @@ input {
 </head>
 <body>
     <div id='mappar'>
+        <div id='lligp'>
         <div id='llipar'>
             <input type='text' id='latlone' size='25'/>
+        </div>
         </div>
         <div id='map'></div>
     </div>
