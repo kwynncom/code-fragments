@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>Russian flag HTML experiments</title>
+
+<style>
+    body { font-family: sans-serif; }
+    
+    h2            { margin-top: 0.1ex; margin-bottom: 0.5ex; }
+    h2.uni        {                    margin-bottom: 0ex;   }
+    h2.svg        { margin-top: 1.2ex; margin-bottom: 0.1ex; }
+    section.notes { margin-top: 1em  ;                       }
+    ul            { margin-top: 0.1ex;                       }
+    
+    .ruuni10 { font-size: 8vw; margin-top: 0; vertical-align: top; display: inline-block; }
+    .svg10 { border: 1px solid black; width: 20vw; }
+    .d101 { background:             white; height: 33.33333%;  }
+    .d102 { background: rgb(  0, 50, 160); height: 33.33333%; }
+    .d103 { background: rgb(218, 41,  28); height: 33.33333333333333333333%; }
+    .dp10 { border: 1px solid black;  height: 6.6666em; width: 10em; display: inline-block; }
+ 
+    
+    
+</style>
+</head>
+<body>
+    <div><p>Lest I neglect the US flag, see my US flag project part <a href='/t/20/06/flag/pt1/'>1</a> and <a href='/t/20/06/flag/pt2/'>2</a>.  </p> </div>
+
+    <section>
+        <h2 class='uni'>Unicode</h2>
+        <!-- <div class='ruuni10'>&#xfe4ec;</div> -->
+        <div class='ruuni10'>&#127479;&#127482;</div>
+    </section>
+    
+    <section>
+        <h2>raw HTML</h2>
+        <div class='dg10'>
+    <div class='dp10'>
+        <div class='d101'>&nbsp;</div>
+        <div class='d102'>&nbsp;</div>
+        <div class='d103'>&nbsp;</div>
+    </div>
+        </div>
+        
+    </section>
+    
+    <section>
+        <h2 class='svg'>SVG</h2>
+        <div><img class='svg10' src='Russian_flag.svg' alt='Russian flag'/></div>
+    </section>
+
+    <section class='notes'>
+        <h2>notes</h2>
+        <ul>
+            <li>Width to length ratio of 2:3, per WikiP below.</li>
+            <li>Russian flag <a href='https://en.wikipedia.org/wiki/Flag_of_Russia#Colour_specifications'>spec with CSS colors</a></li> 
+            <li><a href='https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg'>SVG</a> file</li>
+            <li>The shorter / fewer-byte Unicode characters don't work.  The above does.  The working version is 3 bytes or 6 hex digits rather than 2 / 4.</li>
+        </ul>
+    </section>
+</body>
+</html>
+
