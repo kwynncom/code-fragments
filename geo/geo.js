@@ -5,7 +5,6 @@ function geoFindMe() {
         const lon = position.coords.longitude;
 
         KWG_MAPU.setll('set', lat, lon);
-        inht('latlone', lat + ' ' + lon);
     }
 
     function error(err) { inht('latlone', 'error');  }
