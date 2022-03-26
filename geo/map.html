@@ -9,87 +9,14 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
-<link rel="stylesheet" href="/opt/leaflet/leaflet.css"
-   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-   crossorigin=""/>
+<link rel="stylesheet" href="/opt/leaflet/leaflet.css" 
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
 
- <script src="/opt/leaflet/leaflet.js"
-   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+<script src="/opt/leaflet/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
-
-<script>
-
-
-    
-window.addEventListener('DOMContentLoaded', () => {
-    
-    const map = L.map('map').setView([33.58, -78.0], 4.5);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
-    }).addTo(map);
-
-    new mapuse(map);
-});
-
-class mapuse {
-    
-    constructor(map) {
-        this.map = map;
-        this.init();
-    }
-    
-    init() {
-        this.map.on('click', (ev) => {this.click(ev); });
-        this.map.on('mousemove', this.actll);
-        byid('rmbtn').onclick = () => { this.click('rm'); }
-        byid('namei').oninput = (ele) => { 
-            this.namef(ele.currentTarget); 
-        }
-    }
-    
-    namef(e) {
-          const s = e.value;
-        const re1 = /^[\w\s\-\.]*$/;
-        const re2 = /\S/;
-        const r = re1.test(s) && re2.test(s);
-        if (!r) {
-            e.setCustomValidity('bad char');
-            byid('saveb').disabled = true;
-        }
-        else {
-            e.setCustomValidity('');
-            byid('saveb').disabled = false;
-        }
-    }
-    
-    click(e) {
-        if (this.marker) this.map.removeLayer(this.marker);
-        if (e === 'rm') {
-            byid('rmp').style.visibility = 'hidden';
-            this.map.on('mousemove', this.actll);
-            return;
-        }
-        
-        this.actll(e);
-        this.map.off('mousemove');
-        this.marker = L.marker([e.latlng['lat'], e.latlng['lng']]).addTo(this.map);
-        byid('rmp').style.visibility = 'visible';
-    }
-    
-    actll(e) {
-
-        const fs = ['lat', 'lng'];
-        let s = '';
-        for (let i=0; i < 2; i++) {
-            s += e.latlng[fs[i]].toFixed(6);
-            if (i === 0) s += '   ';
-        }
-
-        byid('latlone').innerHTML = s;
-    }
-}
-
-</script>
+  
+<script src='map.js'></script>
+<script src='geo.js'></script>
 
 <style>
     
@@ -99,6 +26,8 @@ html, body, #mappar {
     height: 100%;
     width: 100%;
     position: relative;
+    margin-top: 0;
+    padding-top: 0;
 }
     
     
@@ -121,11 +50,17 @@ html, body, #mappar {
     position: absolute;
     height: 14%;
     width: 100%;
+    font-size: 0;
+    top: 0;
+    padding-top: 0;
+    margin-top: 0;
+    display: inline-block;
 }
 #latlone { 
-        font-size: 130%; 
+        line-height: 3.2vh;
+        font-size: 3vh; 
         padding-top: 0.2ex;
-        padding-bottom: 0.2ex;
+        padding-bottom: 0.5ex;
         display: inline-block;
         width: 25ex;
         text-align: center;
@@ -135,11 +70,13 @@ html, body, #mappar {
     position: absolute;
     top: 0.2em;
     font-family: monospace;
-    /* visibility: hidden; */
-    font-size: 130%;
+    font-size: 0;
     left: 50%;
     width: 100%;
     transform: translate(-50%, 0);
+    margin-top: 0;
+    padding-top: 0;
+    top: 0;
 }
 
 #namei {
@@ -151,17 +88,26 @@ html, body, #mappar {
 button { 
     display: inline-block; 
 }
+
+label { font-size: 2.5vh; padding-right: 0.5ex; }
+
+.instr10 { font-size: 3vh;  }
+
+body { font-family: sans-serif; }
+
 </style>
 
 </head>
 <body>
     <div id='mappar'>
         <div id='lligp'>
-            <div id='rmp'>
+            <div class='instr10'>click / touch map to set point or <button onclick='geoFindMe();'>GPS</button></div>
+            <div id='rmp' style='display: none'>
                 <label>name</label>
                 <input type='text' size='6' maxlength='6' id='namei' />
                 <button id='saveb' disabled='disabled'>save</button>
-                <button id='rmbtn'>rm</button>
+                <button id='rmbtn' disabled='disabled'>rm mark</button>
+                <button style='margin-left: 1ex; ' onclick='geoFindMe();'>GPS</button>
             </div>
             <div id='llipar'>
                 <span id='latlone'></span>
