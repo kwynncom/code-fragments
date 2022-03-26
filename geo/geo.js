@@ -11,7 +11,7 @@ function geoFindMe() {
 
     if(!navigator.geolocation) {    } 
     else {
-      const opts = { enableHighAccuracy: true, maximumAge: 30000, timeout: 10000, };
+      const opts = { enableHighAccuracy: true };
       navigator.geolocation.getCurrentPosition(success, error, opts);
     }
 }
