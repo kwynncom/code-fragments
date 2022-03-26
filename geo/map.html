@@ -91,7 +91,8 @@ button {
 
 label { font-size: 2.5vh; padding-right: 0.5ex; }
 
-.instr10 { font-size: 3vh;  }
+.instr10 { font-size: 3vh; margin-top: 0.2ex; }
+.orGPS   { font-size: 3vh;  }
 
 body { font-family: sans-serif; }
 
@@ -101,7 +102,7 @@ body { font-family: sans-serif; }
 <body>
     <div id='mappar'>
         <div id='lligp'>
-            <div class='instr10'>click / touch map to set point or <button onclick='geoFindMe();'>GPS</button></div>
+            <div class='instr10'>click / touch map to set point or <button class='orGPS' onclick='geoFindMe();'>GPS</button></div>
             <div id='rmp' style='display: none'>
                 <label>name</label>
                 <input type='text' size='6' maxlength='6' id='namei' />

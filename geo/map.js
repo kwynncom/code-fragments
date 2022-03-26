@@ -4,7 +4,8 @@ window.addEventListener('DOMContentLoaded', () => {
     
     const map = L.map('map').setView([33.58, -78.0], 4.5);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 19,
     }).addTo(map);
 
     KWG_MAPU = new mapuse(map);
@@ -55,8 +56,9 @@ class mapuse {
         this.map.off('mousemove');
         this.marker = L.marker([lat, lon]).addTo(this.map);
         const cz = this.map.getZoom();
-        let sz = 12;
-        if (cz > 12) sz = cz + 1;
+        let sz = cz + 2;
+
+        // if (sz > zl) sz = zl;
         this.map.setView(  [lat, lon], sz);
         byid('rmp').style.display = 'block';
         qs('.instr10').style.display = 'none';
