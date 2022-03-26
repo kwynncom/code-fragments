@@ -4,7 +4,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>map test - OL</title>
+<title>map / Leaflet test</title>
 
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -14,7 +14,11 @@
 
 <script src="/opt/leaflet/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
-  
+
+   <script>
+       var KWG_MAPU;
+       </script>
+   
 <script src='map.js'></script>
 <script src='geo.js'></script>
 
@@ -69,14 +73,14 @@ html, body, #mappar {
 #rmp {
     position: absolute;
     top: 0.2em;
-    font-family: monospace;
+/*    font-family: monospace; */
     font-size: 0;
-    left: 50%;
+    /* left: 50%; */
     width: 100%;
-    transform: translate(-50%, 0);
     margin-top: 0;
     padding-top: 0;
     top: 0;
+    text-align: center;
 }
 
 #namei {
@@ -87,11 +91,9 @@ html, body, #mappar {
 
 button { 
     display: inline-block; 
+    font-size: 3vh;
 }
-
-label { font-size: 2.5vh; padding-right: 0.5ex; }
-
-.instr10 { font-size: 3vh; margin-top: 0.2ex; }
+.instr10 { font-size: 3vh; margin-top: 0.2ex; text-align: center; }
 .orGPS   { font-size: 3vh;  }
 
 body { font-family: sans-serif; }
@@ -104,11 +106,9 @@ body { font-family: sans-serif; }
         <div id='lligp'>
             <div class='instr10'>click / touch map to set point or <button class='orGPS' onclick='geoFindMe();'>GPS</button></div>
             <div id='rmp' style='display: none'>
-                <label>name</label>
-                <input type='text' size='6' maxlength='6' id='namei' />
-                <button id='saveb' disabled='disabled'>save</button>
-                <button id='rmbtn' disabled='disabled'>rm mark</button>
-                <button style='margin-left: 1ex; ' onclick='geoFindMe();'>GPS</button>
+                <button id='saveb' disabled='disabled'>save / manage</button>
+                <button id='rmbtn' disabled='disabled'>remove</button>
+                <button style='margin-left: 3ex; ' onclick='geoFindMe();'>GPS</button>
             </div>
             <div id='llipar'>
                 <span id='latlone'></span>
