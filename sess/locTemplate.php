@@ -27,18 +27,19 @@ onDOMLoad(() => {
 <body>
 <?php 
 require_once('location.php'); 
-$ljson = locSessCl::getJSON();
-if ($ljson) { ?>
+$locv = locSessCl::getVSS();
+if ($locv) { ?>
 	<p>To save a location cookie, select expiration:</p>
 	
 	<form id='theForm10'>
+	<div class='dopt'><input type='radio'  name='unit' value='now'/> <label>expire now</label></div>
 	<div class='dopt'><input type='radio'  name='unit' value='session'/> <label>expire when browser closes</label></div>
 	<div class='dopt'><input type='number' step='1' min='0' style='width: 4em; ' value='10' name='units' /></div>
+	<div class='dopt'><input type='radio'  name='unit' value='1'   /> <label>seconds</label></div>
 	<div class='dopt'><input type='radio'  name='unit' value='60' checked='checked' /> <label>minutes</label></div>
 	<div class='dopt'><input type='radio'  name='unit' value='3600'   /> <label>hours</label></div>
 	<div class='dopt'><input type='radio'  name='unit' value='86400'  /> <label>days</label></div>
-	<input type='hidden' name='cookieName' value='location' />
-	<input type='hidden' name='cookieValue' value='<?php echo($ljson); ?>' />
+	<input type='hidden' name='cookieValue' value='<?php echo($locv); ?>' />
 	<input type='submit' value='save' /> 
 	</form>
 <?php }	else { ?>
