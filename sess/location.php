@@ -4,18 +4,20 @@ require_once('/opt/kwynn/kwutils.php');
 
 class locSessCl {
 	
-	public static function getVSS() {
+	public static function getJSON() {
 		$ret = '';
 		try {
 			$o = new self();
-			$ret = $o->getSS(); } catch (Exception $ex) { }
+			$ret = $o->getJSONI(); } catch (Exception $ex) { }
 		return $ret;
 	}
 	
-	public function getSS() { 
-		$ret = kwifs($this->theva, 'ss'); 
-		kwas($ret && is_string($ret) && strlen(trim($ret)) > 2, 'invalid getSS()');
-		return $ret;
+	public function getJSONI() { 
+		$va = $this->theva;
+		kwas($va && is_array($va) && count($va) >= 2, 'bad theva loc value 0156');
+		unset($va['ss']);
+		$json = json_encode($va);
+		return $json;
 	}
 	
 	public function __construct() {
