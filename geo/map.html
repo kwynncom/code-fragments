@@ -101,9 +101,10 @@ body { font-family: sans-serif; }
 </style>
 
 <script>
-    function locSessF(lleid) {
+    function locSessF(lleid, formeid, formid) {
         const ll = byid(lleid).innerHTML;
-        kwjss.sobf('/t/22/03/sess/sesssrv.php', { 'latlonss' : ll});
+        byid(formeid).value = ll;
+        byid(formid).submit();
     }
 </script>
 
@@ -113,7 +114,10 @@ body { font-family: sans-serif; }
         <div id='lligp'>
             <div class='instr10'>click / touch map to set point or <button class='orGPS' onclick='geoFindMe();'>GPS</button></div>
             <div id='rmp' style='display: none'>
-                <button id='saveb' disabled='disabled' onclick='locSessF("latlone");'>save / manage</button>
+                <form id='locForm10' style='display: none' method='post' action='/t/22/03/sess/sesssrv.php'>
+                    <input type='hidden' name='latlonssForm' id='latlonssForm' />
+                </form>
+                <button id='saveb' disabled='disabled' onclick='locSessF("latlone", "latlonssForm", "locForm10");'>save / manage</button>
                 <button id='rmbtn' disabled='disabled'>remove</button>
                 <button style='margin-left: 3ex; ' onclick='geoFindMe();'>GPS</button>
             </div>
