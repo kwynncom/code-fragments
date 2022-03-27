@@ -105,12 +105,20 @@ body { font-family: sans-serif; }
 
 </style>
 
+<script src='getCookie.js'></script>
+
 <script>
     function locSessF(lleid, formeid, formid) {
         const ll = byid(lleid).innerHTML;
         byid(formeid).value = ll;
         byid(formid).submit();
     }
+    
+    onDOMLoad(() => {
+        const ca = getCookie('location');
+        return;
+    });
+    
 </script>
 
 </head>

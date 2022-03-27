@@ -11,20 +11,36 @@ class locSessCl {
 			$ret = $o->getVSSI(); } catch (Exception $ex) { }
 		return $ret;
 	}
+	
+	public static function getJSON($prepop = false) {
+		$ret = false;
+		try {
+			$o = new self($prepop);
+			$ret = $o->getJSONI(); } catch (Exception $ex) { }
+		return $ret;		
+	}
 
+	public function getJSONI() {
+		$ret = kwifs($this->theva, 'json'); 
+		kwas($ret && is_string($ret) && strlen(trim($ret)) > 8, 'invalid getSS()');	
+		return $ret;
+	}
+	
 	private function getVSSI() { 
 		$ret = kwifs($this->theva, 'ss'); 
 		kwas($ret && is_string($ret) && strlen(trim($ret)) > 2, 'invalid getSS()');
 		return $ret;
 	}
 	
-	public function __construct() {
+	public function __construct($prepop = false) {
 		$this->theva = false;
-		$this->do10();
+		$this->do10($prepop);
 	}
 	
-	private function do10() {
-		$this->theva = self::validLLSS(isrv('latlonssForm'));
+	private function do10($prepop) {
+		if ($prepop) $popwith = $prepop;
+		else	     $popwith = isrv('latlonssForm');
+		$this->theva = self::validLLSS($popwith);
 	}
 	
 	public static function validLLSS($sin) {
@@ -48,7 +64,12 @@ class locSessCl {
 				$va[$i] = $fl;
 			}
 
-			return ['ss' => $sin, 'lat' => $va[0], 'lon' => $va[1]];
+			$ret['ss'] = $sin;
+			$lla = ['lat' => $va[0], 'lon' => $va[1]];
+			$ret['json'] = json_encode($lla);
+			$ret = kwam($ret, $lla);
+			
+			return $ret;
 		} catch(Exception $ex) { }
 		
 		return FALSE;
