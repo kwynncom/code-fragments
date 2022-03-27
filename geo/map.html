@@ -15,9 +15,9 @@
 <script src="/opt/leaflet/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
 
-   <script>
-       var KWG_MAPU;
-       </script>
+<script>
+    var KWG_MAPU;
+</script>
    
 <script src='map.js'></script>
 <script src='geo.js'></script>
@@ -100,13 +100,20 @@ body { font-family: sans-serif; }
 
 </style>
 
+<script>
+    function locSessF(lleid) {
+        const ll = byid(lleid).innerHTML;
+        kwjss.sobf('/t/22/03/sess/sesssrv.php', { 'latlonss' : ll});
+    }
+</script>
+
 </head>
 <body>
     <div id='mappar'>
         <div id='lligp'>
             <div class='instr10'>click / touch map to set point or <button class='orGPS' onclick='geoFindMe();'>GPS</button></div>
             <div id='rmp' style='display: none'>
-                <button id='saveb' disabled='disabled'>save / manage</button>
+                <button id='saveb' disabled='disabled' onclick='locSessF("latlone");'>save / manage</button>
                 <button id='rmbtn' disabled='disabled'>remove</button>
                 <button style='margin-left: 3ex; ' onclick='geoFindMe();'>GPS</button>
             </div>
