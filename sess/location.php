@@ -3,15 +3,35 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class locSessCl {
+	
+	public static function getVSS() {
+		$ret = '';
+		try {
+			$o = new self();
+			$ret = $o->getSS(); } catch (Exception $ex) { }
+		return $ret;
+	}
+	
+	public function getSS() { 
+		$ret = kwifs($this->theva, 'ss'); 
+		kwas($ret && is_string($ret) && strlen(trim($ret)) > 2, 'invalid getSS()');
+		return $ret;
+	}
+	
 	public function __construct() {
+		$this->theva = false;
 		$this->do10();
 	}
 	
 	private function do10() {
-		$v = isrv('latlonssForm');
-		kwas($v && is_string($v), 'no valid location info 2105');
-		$l = strlen($v); kwas($l > 0 && $l < 30, 'no valid location info 3 2107'); unset($l);
-		kwas(preg_match_all('/[\d\.\-]+/', $v, $ms), 'no valid loc info 2 2106');  unset($v);
+		$this->theva = self::validLLSS(isrv('latlonssForm'));
+	}
+	
+	public static function validLLSS($sin) {
+
+		kwas($sin && is_string($sin), 'no valid location info 2105');
+		$l = strlen($sin); kwas($l > 0 && $l < 30, 'no valid location info 3 2107'); unset($l);
+		kwas(preg_match_all('/[\d\.\-]+/', $sin, $ms), 'no valid loc info 2 2106');
 		kwas(isset($ms[0][1]), 'no valid loc 4 2110');
 		
 		$sa = $ms[0]; unset($ms);
@@ -25,10 +45,8 @@ class locSessCl {
 			if ($i === 0) kwas($absfl < 90.001, 'bad loc 7 2115');
 			$va[$i] = $fl;
 		}
-		
-		
-		
-		return;
+				
+		return ['ss' => $sin, 'lat' => $va[0], 'lon' => $va[1]];
 	}
 }
 

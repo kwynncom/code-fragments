@@ -59,6 +59,7 @@ html, body, #mappar {
     padding-top: 0;
     margin-top: 0;
     display: inline-block;
+    text-align: center; 
 }
 #latlone { 
         line-height: 3.2vh;
@@ -66,7 +67,7 @@ html, body, #mappar {
         padding-top: 0.2ex;
         padding-bottom: 0.5ex;
         display: inline-block;
-        width: 25ex;
+        width: 26ex;
         text-align: center;
 }
 
@@ -93,8 +94,12 @@ button {
     display: inline-block; 
     font-size: 3vh;
 }
-.instr10 { font-size: 3vh; margin-top: 0.2ex; text-align: center; }
-.orGPS   { font-size: 3vh;  }
+
+.instrp10 { text-align: center; display: inline-block; text-align: center; }
+.instr10 { font-size: 3vh; margin-top: 0.2ex; text-align: center; display: inline-block; }
+.homep   { font-size: 10pt; display: inline-block; margin-right: 1ex; }
+
+.orGPS   { font-size: 3vh;  padding: 0; }
 
 body { font-family: sans-serif; }
 
@@ -112,11 +117,15 @@ body { font-family: sans-serif; }
 <body>
     <div id='mappar'>
         <div id='lligp'>
-            <div class='instr10'>click / touch map to set point or <button class='orGPS' onclick='geoFindMe();'>GPS</button></div>
+            <div class='instrp10'>
+                <div class='homep'><a href='/'>hm</a></div>
+                <div class='instr10'>click / touch map to set point or <button class='orGPS' onclick='geoFindMe();'>GPS</button></div>
+            </div>
             <div id='rmp' style='display: none'>
                 <form id='locForm10' style='display: none' method='post' action='/t/22/03/sess/locTemplate.php'>
                     <input type='hidden' name='latlonssForm' id='latlonssForm' />
                 </form>
+                <div class='homep'><a href='/'>hm</a></div>
                 <button id='saveb' disabled='disabled' onclick='locSessF("latlone", "latlonssForm", "locForm10");'>save / manage</button>
                 <button id='rmbtn' disabled='disabled'>remove</button>
                 <button style='margin-left: 3ex; ' onclick='geoFindMe();'>GPS</button>

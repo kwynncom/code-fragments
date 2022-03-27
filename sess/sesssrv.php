@@ -2,8 +2,6 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-header('Content-Type: text/plain');
-
-$v = isrv('latlonssForm');
+$fa = kwjssrp();
 
 exit(0);

@@ -26,7 +26,7 @@ class mapuse {
         if (this.marker) this.map.removeLayer(this.marker);
         if (ev === 'rm') {
             byid('rmp').style.display = 'none';
-            qs('.instr10').style.display = 'block';
+            qs('.instrp10').style.display = 'block';
             this.map.on('mousemove', (ev) => { 
                 this.actll(ev.latlng['lat'], ev.latlng['lng']); 
             });
@@ -38,7 +38,7 @@ class mapuse {
         this.marker = L.marker([lat, lon]).addTo(this.map);
         this.map.setView(  [lat, lon], this.map.getZoom() + 2);
         byid('rmp').style.display = 'block';
-        qs('.instr10').style.display = 'none';
+        qs('.instrp10').style.display = 'none';
         byid('saveb').disabled = byid('rmbtn').disabled = false;
        
     }
