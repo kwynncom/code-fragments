@@ -23,14 +23,11 @@ function location_cc() {
 		
 	}
 	
-	$opts['kwcex'] = $units;
-	$opts['httponly'] = false;
-	
 	kwas(is_numeric($units), 'one last check of units failed location 0240');
 	kwas(locSessCl::validLLSS($fa['cookieValue']), 'bad location value string 0224');
 	
 	$nv = locSessCl::getJSON($fa['cookieValue']);
-	if ($nv) kwscookie($cname, $nv, $opts);
+	if ($nv) kwscookie($cname, $nv, $units);
 }
 
 location_cc();

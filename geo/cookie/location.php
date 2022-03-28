@@ -3,6 +3,21 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class locSessCl {
+
+	
+	public static function getArrFromCookie() {
+		
+		static $errr = false;
+		
+		if (!isset ($_COOKIE)) return $errr ;
+		$json = kwifs($_COOKIE, 'location');
+		if (!$json) return $errr;
+		$a = json_decode($json, 1);
+		if (!isset($a['ss'])) return $errr;
+		if (!($a = self::validLLSS($a['ss']))) return $errr;
+		return $a;
+		
+	}
 	
 	public static function getVSS() {
 		$ret = '';
@@ -64,10 +79,11 @@ class locSessCl {
 				$va[$i] = $fl;
 			}
 
-			$ret['ss'] = $sin;
-			$lla = ['lat' => $va[0], 'lon' => $va[1]];
-			$ret['json'] = json_encode($lla);
-			$ret = kwam($ret, $lla);
+			$jsa['ia'] = $va;
+			$jsa['ss'] = $sin;
+			$jsa = kwam($jsa, ['lat' => $va[0], 'lon' => $va[1]]);
+			$ret['json'] = json_encode($jsa);
+			$ret = kwam($ret, $jsa);
 			
 			return $ret;
 		} catch(Exception $ex) { }
@@ -75,5 +91,3 @@ class locSessCl {
 		return FALSE;
 	}
 }
-
-// if (didAnyCallMe(__FILE__)) new locSessCl();

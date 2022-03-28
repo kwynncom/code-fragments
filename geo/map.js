@@ -1,22 +1,41 @@
-window.addEventListener('DOMContentLoaded', () => {
-    
-    const map = L.map('map').setView([33.58, -78.0], 4.5);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 19,
-    }).addTo(map);
-
-    KWG_MAPU = new mapuse(map);
-});
-
 class mapuse {
     
-    constructor(map) {
-        this.map = map;
-        this.init();
+    initMap(lla, zin) {
+        const map = L.map('map').setView(lla, zin);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 19,
+        }).addTo(map);        
+        this.map = map;        
     }
     
-    init() {
+    constructor(lla, zin, isdefault) {
+        this.initMap(lla, zin);
+        this.initControls();
+        this.initGPS();
+        if (!isdefault) this.setll('set', lla[0], lla[1]);
+    }
+    
+    initGPS() {
+        for(let i=1; i <=2; i++)
+        byid('btncltogeo' + i).onclick = () => { 
+            navigator.geolocation.getCurrentPosition((pos) => { this.GPSOK(pos);}, 
+                                                     (   ) => { this.GPSerr()  ;}, { enableHighAccuracy: true }); 
+        };
+    }
+    
+    GPSOK(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        this.setll('set', lat, lon);        
+    }
+    
+    GPSerr() {
+        inht('latlone', 'error');   
+    }
+    
+    initControls() {
         this.map.on('click', (ev) => {this.setll('set', ev.latlng['lat'], ev.latlng['lng']); });
         this.map.on('mousemove', (ev) => { this.actll(ev.latlng['lat'], ev.latlng['lng']);  });
         byid('rmbtn').onclick = () => { this.setll('rm'); }

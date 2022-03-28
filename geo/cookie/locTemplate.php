@@ -46,7 +46,7 @@ if ($locv) { ?>
 	<p>no valid location sent</p>
 <?php } ?>
 
-<p>back to <a href='/t/22/02/geo/map.html'>map</a></p>
+<p>back to <a href='/t/22/02/geo/map.php'>map</a></p>
 <p><a href='/'>home</a></p>
 </body>
 </html>

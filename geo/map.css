@@ -1,0 +1,78 @@
+input:invalid { background-color: lightSalmon; }
+    
+html, body, #mappar {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    margin-top: 0;
+    padding-top: 0;
+}
+    
+    
+#map { 
+    height: 85%;
+    width: inherit;
+    position: absolute;
+    bottom: 0.8em;
+}
+
+#llipar {
+    position: absolute;
+    bottom: 0.5em;
+    font-family: monospace;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+#lligp { 
+    position: absolute;
+    height: 14%;
+    width: 100%;
+    font-size: 0;
+    top: 0;
+    padding-top: 0;
+    margin-top: 0;
+    display: inline-block;
+    text-align: center; 
+}
+#latlone { 
+        line-height: 3.2vh;
+        font-size: 3vh; 
+        padding-top: 0.2ex;
+        padding-bottom: 0.5ex;
+        display: inline-block;
+        width: 26ex;
+        text-align: center;
+}
+
+#rmp {
+    position: absolute;
+    top: 0.2em;
+/*    font-family: monospace; */
+    font-size: 0;
+    /* left: 50%; */
+    width: 100%;
+    margin-top: 0;
+    padding-top: 0;
+    top: 0;
+    text-align: center;
+}
+
+#namei {
+    width: 6em;     
+}
+
+#rmbtn { margin-left: 2em; margin-top: 0.7em; }
+
+button { 
+    display: inline-block; 
+    font-size: 3vh;
+}
+
+.instrp10 { text-align: center; display: inline-block; text-align: center; }
+.instr10 { font-size: 3vh; margin-top: 0.2ex; text-align: center; display: inline-block; }
+.homep   { font-size: 10pt; display: inline-block; margin-right: 1ex; }
+
+.orGPS   { font-size: 3vh;  padding: 0; }
+
+body { font-family: sans-serif; }
