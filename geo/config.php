@@ -17,5 +17,4 @@ function getMapSettings() {
 	$a['isdefaultLoc'] = true;
 
 	return $a;
-	
 }

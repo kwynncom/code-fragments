@@ -13,7 +13,7 @@
 onDOMLoad(() => {
 	byid('theForm10').addEventListener( "submit", function ( event ) {
 	  event.preventDefault();
-	  kwjss.sobf('sesssrv.php', false, false, false, new FormData(byid('theForm10')));
+	  kwjss.sobf('locCookSrv.php', false, false, false, new FormData(byid('theForm10')));
 	});
 });
 
@@ -40,6 +40,7 @@ if ($locv) { ?>
 	<div class='dopt'><input type='radio'  name='unit' value='3600'   /> <label>hours</label></div>
 	<div class='dopt'><input type='radio'  name='unit' value='86400'  /> <label>days</label></div>
 	<input type='hidden' name='cookieValue' value='<?php echo($locv); ?>' />
+	<input type='hidden' name='cookieAction' value='setExpiration' />
 	<input type='submit' value='save' /> 
 	</form>
 <?php }	else { ?>
