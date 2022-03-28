@@ -19,21 +19,16 @@
 
 <script>
 
-<?php 
-
-	require_once('config.php');
-	$a = getMapSettings();
-	extract($a); unset($a);
-
-
-	
-?>
+<?php require_once('config.php');
+	  $a = getMapSettings();
+	  extract($a); unset($a);?>
+		  
 window.addEventListener('DOMContentLoaded', () => {
 
 	const lla = <?php echo('[' . $ia[0] . ',' . $ia[1] . ']'); ?>;
-	const mz  = <?php echo(4.5); ?>;
+	const mz  = <?php echo($zoom); ?>;
    
-   new mapuse(lla, mz, false);
+   new mapuse(lla, mz, <?php echo($isdefaultLoc ? 'true' : 'false'); ?>);
 });
 
 function locCookieF(lleid, formeid, formid) {
