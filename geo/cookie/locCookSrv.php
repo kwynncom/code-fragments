@@ -17,8 +17,12 @@ private static function sendExp() {
 	$a = kwifs($_COOKIE, self::cname);
 	if (!$a) kwjae(['exists' => false]); unset($a);
 	$ha = headers_list(); // indexed 0, 1, ...
-	// Set-Cookie: location
+	foreach($ha as $r) {
+		if (strpos($r, 'Set-Cookie: ' . self::cname) !== 0) continue;
+		preg_match('/expires=([^;]+)/', $r, $ms);
 	// expires=Mon, 28-Mar-2022 03:14:11 GMT; 
+		continue;
+	}
 	
 	
 	return;
