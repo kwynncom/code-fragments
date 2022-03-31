@@ -44,6 +44,7 @@ class mapuse {
     setll(ev, lat, lon) {
         if (this.marker) this.map.removeLayer(this.marker);
         if (ev === 'rm') {
+            sendExpireNow();
             byid('rmp').style.display = 'none';
             qs('.instrp10').style.display = 'block';
             this.map.on('mousemove', (ev) => { 

@@ -15,7 +15,9 @@
 <script src="/opt/leaflet/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
    
+<script src='cookie/js1.js'></script>
 <script src='map.js'></script>
+
 
 <script>
 
