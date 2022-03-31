@@ -7,17 +7,7 @@
 <title>location session management</title>
 
 <script src='/opt/kwynn/js/utils.js'></script>
-
-<script>
-
-onDOMLoad(() => {
-	byid('theForm10').addEventListener( "submit", function ( event ) {
-	  event.preventDefault();
-	  kwjss.sobf('locCookSrv.php', false, false, false, new FormData(byid('theForm10')));
-	});
-});
-
-</script>
+<script src='js1.js'></script>
 
 <style>
     body { font-family: sans-serif; }
@@ -25,14 +15,15 @@ onDOMLoad(() => {
 </style>
 </head>
 <body>
+<div id='selp'> <!-- selection parent -->
 <?php 
 require_once('location.php'); 
 $locv = locSessCl::getVSS();
 if ($locv) { ?>
-	<p>To save a location cookie, select expiration:</p>
+	<p>To save a location cookie for <?php echo($locv); ?>, select expiration:</p>
 	
 	<form id='theForm10'>
-	<div class='dopt'><input type='radio'  name='unit' value='now'/> <label>expire now</label></div>
+	<div class='dopt'><input type='radio'  name='unit' value='now'/> <label>expire now / no cookie</label></div>
 	<div class='dopt'><input type='radio'  name='unit' value='session'/> <label>expire when browser closes</label></div>
 	<div class='dopt'><input type='number' step='1' min='0' style='width: 4em; ' value='10' name='units' /></div>
 	<div class='dopt'><input type='radio'  name='unit' value='1'   /> <label>seconds</label></div>
@@ -47,6 +38,12 @@ if ($locv) { ?>
 	<p>no valid location sent</p>
 <?php } ?>
 
+</div> <!-- selection parent -->
+
+<div id='resp'> <!-- result parent -->
+	<pre id='rawrese' />
+</div> <!-- result parent -->
+	
 <p>back to <a href='/t/22/02/geo/map.php'>map</a></p>
 <p><a href='/'>home</a></p>
 </body>

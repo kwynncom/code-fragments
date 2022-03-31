@@ -8,34 +8,40 @@ class locCookieCl {
 	const cname = 'location';
 	
 	public function __construct() {
-		self::receive();
-		self::sendExp();
+		$this->receive();
+		$this->sendExp();
 	}
 
-private static function sendExp() {
-	if (!isset($_COOKIE)) return '';
-	$a = kwifs($_COOKIE, self::cname);
-	if (!$a) kwjae(['exists' => false]); unset($a);
+private function send20($exs) {
+	$ret['exists'] = true;
+	$ret['locss'] = $this->locss;
+	if (!$exs) kwjae(kwam($ret, ['exp' => false]));
+	$ret['exp'] = true;
+	$ret['raw'] = $exs;
+	$sec = $ret['tss'] = strtotime($exs);
+	$ret['tsms'] = $sec * 1000;
+	kwjae($ret);
+}
+	
+private function sendExp() {
 	$ha = headers_list(); // indexed 0, 1, ...
 	foreach($ha as $r) {
 		if (strpos($r, 'Set-Cookie: ' . self::cname) !== 0) continue;
 		preg_match('/expires=([^;]+)/', $r, $ms);
-	// expires=Mon, 28-Mar-2022 03:14:11 GMT; 
-		continue;
+		return $this->send20(kwifs($ms, 1));
 	}
 	
-	
-	return;
+	kwjae(['exists' => false]);
 }
 	
-private static function receive() {
+private function receive() {
 
 	$fa = kwjssrp();
 	
 	if (kwifs($fa, 'cookieAction') !== 'setExpiration') return;
 	
 	switch($fa['unit']) {
-		case 'now'     : $units = -100000; break;
+		case 'now'     : $units = -M_MILLION * 4; break;
 		case 'session' : $units = 0		 ; break;
 		case '1'	   :
 	    case '60'      : 
@@ -50,6 +56,8 @@ private static function receive() {
 	
 	kwas(is_numeric($units), 'one last check of units failed location 0240');
 	kwas(locSessCl::validLLSS($fa['cookieValue']), 'bad location value string 0224');
+	
+	$this->locss = $fa['cookieValue'];
 	
 	$nv = locSessCl::getJSON($fa['cookieValue']);
 	if ($nv) kwscookie(self::cname, $nv, $units);
