@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>MetaMask test</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+<script src='/opt/kwynn/js/utils.js'></script>
+<script src='/opt/js/web3/web3.min.js'></script>
+<script>
+    
+
+let accounts = [];
+    
+    onDOMLoad( () => { // 
+    
+const ethereumButton = document.querySelector('.enableEthereumButton');
+const sendEthButton = document.querySelector('.sendEthButton');
+
+
+sendEthButton.addEventListener('click', () => {
+  ethereum
+    .request({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: accounts[0],
+          to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
+          value : '0x2D79883D20000', // 0.0008
+        },
+      ],
+    })
+    .then((txHash) => console.log(txHash))
+    // .on('receipt', (receipt) => cl(receipt))
+    .catch((error) => console.error);
+});
+
+ethereumButton.addEventListener('click', () => {
+  getAccount();
+});
+    });
+
+async function getAccount() {
+  accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+}
+
+
+</script>
+
+</head>
+<body>
+    <div>
+<button class="enableEthereumButton btn">Enable Ethereum</button>
+<button class="sendEthButton btn">Send Eth</button>
+    </div>
+    
+</body>
+</html>
+
