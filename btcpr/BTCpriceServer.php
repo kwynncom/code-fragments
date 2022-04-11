@@ -21,6 +21,10 @@ class bcebo extends dao_generic_3 {
 	
 	private function out() {
 		kwas($p = kwifs($this, 'theP'), 'no valid price value');
+		$r['fl'] = $p;
+		$r['d' ] = '$' . number_format($p);
+		$r['OK'] = true;
+		kwjae($r);
 		
 	}
 	
@@ -32,6 +36,7 @@ class bcebo extends dao_generic_3 {
 			$this->creTabs('price');
 			$this->ck10();
 			$this->theget();
+			$this->out();
 
 		} catch(Exception $ex) { 
 			echo($ex->getMessage());
@@ -80,7 +85,7 @@ class bcebo extends dao_generic_3 {
 
 		}
 		
-		kwas(false, 'over quota');
+		kwas(false, '(over request quota)');
 	}
 	
 }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>BitCoin price with backoff</title>
+
+<style>
+    body { font-family: sans-serif; font-size: 150%; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+	function getbtc() {
+		kwjss.sobf('BTCpriceServer.php', {}, recvbtc, true);
+	}
+	
+	function recvbtc(r) {
+		if (!(r && r['OK']))  {
+			byid('pricee').innerHTML = r.msg;
+			byid('mybme' ).innerHTML = '';
+			return;
+		}
+		
+		byid('pricee').innerHTML = r.d;
+		
+		const bm = 44336.48;
+		const d  = r['fl'] - bm;
+		const fv = d / bm;
+		const p  = fv * 100;
+		const fix = p.toFixed(2);
+		const disp = fix + '%';
+		byid('mybme').innerHTML = disp;
+		
+	}
+	
+	getbtc();
+</script>
+
+</head>
+<body>
+<div>
+    <div>
+        <button onclick='getbtc();' style='font-size: 130%'>reload</button>
+    </div>
+    <div>
+        <p>This price of BitCoin is <span id='pricee'></span></p>
+        <p><span id='mybme'></span> relative to my personal benchmark</p>
+    </div>
+</div>
+
+<div style='margin-top: 6ex'>
+    <p>The "request quota" is imposed by me.  Coinbase likely has a quota, but I don't know what it is and don't want to thump on them and 
+        find out.
+        
+    </p>
+    <p>From the <a href='https://developers.coinbase.com/docs/wallet/guides/price-data'>Coinbase API</a>.</p>
+    <p>.  
+        
+    </p>
+</div>
+    <section>
+        <h2>source code history (at least partial</h2>
+        <ol reversed='reversed'>
+            <li>
+                
+            </li>
+            
+        <li>A specific, possibly (definitely) old version of 
+            <a href='https://github.com/kwynncom/code-fragments/tree/d58bbdfc6c4131d8b573b00a957756af363153f0/expcb'>this source code</a>.</li>
+        </ol>
+    </section>
+</body>
+</html>
+
