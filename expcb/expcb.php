@@ -14,18 +14,24 @@
 
 <script>
 	function getbtc() {
-		kwjss.sobf('expcbServer.php', {}, recvbtc);
+		kwjss.sobf('expcbServer.php', {}, recvbtc, false);
 	}
 	
-	function recvbtc() {
-		cl('hi');
+	function recvbtc(r) {
+		byid('pricee').innerHTML = r;
 	}
+	
+	getbtc();
 </script>
 
 </head>
 <body>
 	<div>
-		<button onclick='getbtc();'>reload</button>
+		<button onclick='getbtc();' style='font-size: 130%'>reload</button>
+	</div>
+	<div>
+		<p>This price of BitCoin is $<span id='pricee'></span></p>
+		<p><span id='mybme'></span> relative to my personal benchmark</p>
 	</div>
 </body>
 </html>
