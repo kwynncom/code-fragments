@@ -73,7 +73,8 @@ class bcebo extends dao_generic_3 {
 		
 	}
 
-	private function setovs(float|int $p, int $ts) {
+	private function setovs($p, int $ts) { // can't do float|int in PHP 7.x!!!
+		kwas(is_numeric($p), 'non numeric price setovs');
 		$this->theP = $p;
 		$this->theDHu = date('g:i:s A D', $ts);
 	}
