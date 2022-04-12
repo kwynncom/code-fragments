@@ -24,7 +24,7 @@
 			return;
 		}
 		
-		byid('pricee').innerHTML = r.d;
+		byid('pricee').innerHTML = r.d + ' at ' + r.dhu + ', ' + r.xms + 'ms exe time.';
 		
 		const bm = 44336.48;
 		const d  = r['fl'] - bm;
@@ -52,11 +52,18 @@
 </div>
 
 <div style='margin-top: 6ex'>
-    <p>The "request quota" is imposed by me.  Coinbase likely has a quota, but I don't know what it is and don't want to thump on them and 
-        find out.
+    <p>If the time does not refresh, that's because I imposed my own quota (that applies to me, too).  If we hit the quota, we get the latest 
+        price on hand, with the proper timestamp of that price.  Coinbase likely has a quota, but I don't know what it is and don't want to 
+        thump on them and find out.
+    </p>
+    
+    <p>The time is US Eastern Time / America/New_York / UTC -4 for most of the year on DST / Summer Time.  The execution ("exe") time is a quick 
+    crosscheck on whether Coinbase was queried.  With a Coinbase fetch, time is 250 - 400ms.  Without a fetch, it's ~3ms. </p>
+    
+    <p><a href='https://www.coinbase.com/price/bitcoin'>Live price chart</a>.  
         
     </p>
-    <p>From the <a href='https://developers.coinbase.com/docs/wallet/guides/price-data'>Coinbase API</a>.</p>
+    <p>The number I show is from the <a href='https://developers.coinbase.com/docs/wallet/guides/price-data'>Coinbase API</a>.</p>
 
 </div>
     <section>

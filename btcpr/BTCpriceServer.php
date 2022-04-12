@@ -21,22 +21,30 @@ class bcebo extends dao_generic_3 {
 	
 	private function out() {
 		kwas($p = kwifs($this, 'theP'), 'no valid price value');
+		$r['dhu'] = $this->theDHu;
 		$r['fl'] = $p;
 		$r['d' ] = '$' . number_format($p);
 		$r['OK'] = true;
+		$r['xms'] = $this->getx();
 		kwjae($r);
-		
+	}
+	
+	private function getx() {
+		$ms = (microtime(1) - $this->starte) * 1000;		
+		$d  = sprintf('%0.2f', $ms);
+		return $d;
 	}
 	
 	public function __construct() {
 		try {
+			$this->starte = microtime(1);
 			$this->config();
 			$this->init10();
 			parent::__construct(self::dbname);
 			$this->creTabs('price');
-			$this->ck10();
-			$this->theget();
+			$this->theRget();
 			$this->out();
+			
 
 		} catch(Exception $ex) { 
 			echo($ex->getMessage());
@@ -50,17 +58,29 @@ class bcebo extends dao_generic_3 {
 		}
 	}
 	
-	private function theget() {
+	private function theRget() {
+		if ($this->ck10() !== TRUE) return;
 		$r = file_get_contents('https://api.coinbase.com/v2/prices/spot?currency=USD');
 		$raw = json_decode($r, true);
 		kwas($a = kwifs($raw, 'data'), 'bad result CB lookup 1 2142');
 		kwas($a['base'] === 'BTC' && $a['currency'] === 'USD', 'bad result CB lookup 2 2143');
 		$fl = floatval($a['amount']); kwas(is_numeric($fl), 'bad res CB lkup 3 2144');
-		$this->theP = $dat['price'] = $fl;
 		$dat['at'   ] = $sfl = microtime(1);
+		$dat['price'] = $fl;
+		$this->setovs($fl, $sfl);
 		$dat['atr'  ] = date('r', $sfl);
 		$this->pcoll->insertOne($dat);
 		
+	}
+
+	private function setovs(float|int $p, int $ts) {
+		$this->theP = $p;
+		$this->theDHu = date('g:i:s A D', $ts);
+	}
+	
+	private function setEarlier() {
+		$r = $this->pcoll->findOne([], ['sort' => ['at' => -1]]);
+		$this->setovs($r['price'], $r['at']);
 	}
 	
 	private function ck10() {
@@ -68,6 +88,7 @@ class bcebo extends dao_generic_3 {
 		$sum = $this->boasum;
 		
 		$this->locko->lock();
+		
 		for($j=0; $j < 2; $j++) {
 			if ($j > 0) {
 				$sum = 0;
@@ -80,12 +101,14 @@ class bcebo extends dao_generic_3 {
 			$cnt = $this->pcoll->count($q);
 			if ($cnt === 0) {
 				if ($j === 0) $this->pcoll->drop();
-				return;
+				return TRUE;
 			}
 
 		}
 		
-		kwas(false, '(over request quota)');
+		$this->setEarlier();
+		
+		return FALSE;
 	}
 	
 }
