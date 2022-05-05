@@ -1,4 +1,14 @@
 SELECT 
+value_num, post_date, t.description, a.name, account_type, quantity_num, quantity_denom 
+FROM 
+splits s,
+transactions t,
+accounts a
+WHERE s.tx_guid = t.guid
+AND   a.guid = s.account_guid
+ORDER BY post_date DESC, tx_guid
+
+SELECT 
 value_num, post_date, t.description, a.name, account_type 
 FROM 
 splits s,
