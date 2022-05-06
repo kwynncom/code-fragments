@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>title</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script> // starting 2022/05/05
+    
+    var GKWRRES = [];
+    
+    function rns100() {
+        return parseInt(Math.ceil(Math.random() * 100));
+    }
+    
+    function placeRand() {
+        const r = rns100();
+        GKWRRES.push(r);
+        byid('res10').innerHTML = r;
+    }
+    
+</script>
+
+</head>
+<body>
+
+    <div id='res10'>
+        
+    </div>
+    <div>
+        <button onclick='placeRand();'>rand</button>
+    </div>
+    
+</body>
+</html>
