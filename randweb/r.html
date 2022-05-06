@@ -4,39 +4,111 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>title</title>
+<title>random numbers</title>
 
 <style>
-    body { font-family: sans-serif; }
+    body { font-family: monospace; font-size: 130%; }
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
-<script> // starting 2022/05/05
+<script>
     
-    var GKWRRES = [];
+    onDOMLoad(() => { new rnsweb2022(); });
     
-    function rns100() {
-        return parseInt(Math.ceil(Math.random() * 100));
-    }
-    
-    function placeRand() {
-        const r = rns100();
-        GKWRRES.push(r);
-        byid('res10').innerHTML = r;
+    class rnsweb2022 {
+        
+        constructor() {
+            this.doN = 10;
+            this.setRand();
+            this.disp();
+        }
+   
+        getr ( ) { return parseInt(Math.ceil(Math.random() * 100));  }
+        heads(n) { return n <= 50 ? true : false; }
+
+        disp() {
+             const pe = byid('resp10');
+
+            pe.innerHTML = '';
+
+            for (let i=0; i < 7; i++) {
+                const e = cree('div');
+                const r = this.ther[i];
+                e.innerHTML = this.qual10(i) + ' (' + r + ')';
+                e.style.fontWeight = this.fw(i);
+                if (i > 0 && this.theh[0]) e.style.paddingLeft = '10ex';
+                
+                
+                
+                pe.append(e);
+
+            }           
+        }
+        
+        fw(i) {
+            if (i === 0) return 'bold';
+            if (i === 4 && this.dopu()) return 'bold';
+            return 'normal';
+        }
+        
+        getrmax(mx) {
+            return parseInt(Math.ceil(Math.random() * mx));
+        }
+        
+        qual10(i) {
+            const r = this.ther[i];
+            const h = this.theh[i];
+
+           switch(i) {
+               case 0 : return h ? 'heads' : 'tails'; break;
+               case 1 : return h ? 'gpg'   : 'hill' ; break;
+               case 2 : const hr = parseInt(Math.ceil(r * 12 / 100));
+                    return hr + ' hr';
+                   break;
+               case 3 : return r + '%'; break;
+               case 4 : return this.dopu ? 'do' : 'not';
+                       
+               case 5 : return h ? 'noo' : 'tree'; break;
+               case 6 : return this.theh[5] ? this.getrmax(2000) : this.getrmax(300); break;
+            }
+            
+        }
+
+        dopu() {
+           if (this.theh[0] === false && this.theh[1] === false) return true;
+           return !this.theh[4];
+           
+        }
+
+        setRand() {
+            this.ther = [];
+            this.theh = [];
+            for (let i=0; i < this.doN; i++) {
+                const r = this.getr();
+                this.ther.push(r);
+                const h = this.heads(r);
+                this.theh.push(h);
+            }
+
+
+
+
+        }
     }
     
 </script>
 
 </head>
 <body>
-
-    <div id='res10'>
+    <div>
+        <button onclick='new rnsweb2022();'>rand</button>
+    </div>
+    <div id='resp10'>
         
     </div>
-    <div>
-        <button onclick='placeRand();'>rand</button>
-    </div>
+
+
     
 </body>
 </html>
