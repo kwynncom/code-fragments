@@ -14,18 +14,44 @@
 
 <script>
     
-    onDOMLoad(() => { new rnsweb2022(); });
+    onDOMLoad(() => { 
+        doAllRand();
+    });
     
-    class rnsweb2022 {
+    function doAllRand() {
+        new rnsweb2022Main();
+        new r20();
+    }
+    
+    class r20 {
+        constructor() {
+            this.do10();
+        }
+        
+        do10() {
+            this.ther = [];
+            for(let i=0; i < 2; i++) {
+                const r = this.ther[i] = getr();
+                inht('resp' + ((i + 2) * 10), r);
+            }
+        }
+    }
+    
+    function getr ()      { return parseInt(Math.ceil(Math.random() * 100)); }
+    function heads(n)     { return n <= 50 ? true : false; }
+    function  getrmax(mx) { return parseInt(Math.ceil(Math.random() * mx));   }
+    
+    class rnsweb2022Main {
+  
+        getr ( ) { return getr()  ; }
+        heads(n) { return heads(n); }
+        getrmax(mx) { return getrmax(mx);  }
         
         constructor() {
             this.doN = 10;
             this.setRand();
             this.disp();
         }
-   
-        getr ( ) { return parseInt(Math.ceil(Math.random() * 100));  }
-        heads(n) { return n <= 50 ? true : false; }
 
         disp() {
              const pe = byid('resp10');
@@ -35,14 +61,10 @@
             for (let i=0; i < 7; i++) {
                 const e = cree('div');
                 const r = this.ther[i];
-                e.innerHTML = this.qual10(i) + ' (' + r + ')';
+                e.innerHTML = this.qual10(i); //  + ' (' + r + ')';
                 e.style.fontWeight = this.fw(i);
-                if (i > 0 && this.theh[0]) e.style.paddingLeft = '10ex';
-                
-                
-                
+                if (i > 0 && this.theh[0]) e.style.paddingLeft = '6ex';
                 pe.append(e);
-
             }           
         }
         
@@ -52,9 +74,7 @@
             return 'normal';
         }
         
-        getrmax(mx) {
-            return parseInt(Math.ceil(Math.random() * mx));
-        }
+
         
         qual10(i) {
             const r = this.ther[i];
@@ -63,22 +83,17 @@
            switch(i) {
                case 0 : return h ? 'heads' : 'tails'; break;
                case 1 : return h ? 'gpg'   : 'hill' ; break;
-               case 2 : const hr = parseInt(Math.ceil(r * 12 / 100));
-                    return hr + ' hr';
-                   break;
+               case 2 : const hr = parseInt(Math.ceil(r * 12 / 100)); return hr + ' hr'; break;
                case 3 : return r + '%'; break;
-               case 4 : return this.dopu ? 'do' : 'not';
-                       
+               case 4 : return this.dopu() ? 'do' : 'not'; break;
                case 5 : return h ? 'noo' : 'tree'; break;
-               case 6 : return this.theh[5] ? this.getrmax(2000) : this.getrmax(300); break;
+               case 6 : return this.getpun(this.theh[5]); break;
             }
-            
         }
 
         dopu() {
-           if (this.theh[0] === false && this.theh[1] === false) return true;
+           if (this.theh[1] === false) return true;
            return !this.theh[4];
-           
         }
 
         setRand() {
@@ -90,25 +105,19 @@
                 const h = this.heads(r);
                 this.theh.push(h);
             }
-
-
-
-
         }
+        
+        getpun(h) { return h ? this.getrmax(2000) : this.getrmax(300); }
     }
-    
 </script>
 
 </head>
 <body>
-    <div>
-        <button onclick='new rnsweb2022();'>rand</button>
+    <div><button onclick='doAllRand();'>rand</button></div>
+    <div id='resp10'></div>
+    <div style='margin-top: 2ex;' >
+    <div id='resp20'></div>
+    <div id='resp30'></div>
     </div>
-    <div id='resp10'>
-        
-    </div>
-
-
-    
 </body>
 </html>
