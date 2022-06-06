@@ -5,6 +5,7 @@ require_once('/opt/kwynn/kwutils.php');
 class bcebo extends dao_generic_3 {
 	
 	const dbname = 'btcprice';
+	const url = 'https://api.coinbase.com/v2/prices/spot?currency=USD';
 	
 	private function config() {
 		$s = [1, 1, 1, 2, 3, 5, 10, 15, 20];
@@ -60,7 +61,15 @@ class bcebo extends dao_generic_3 {
 	
 	private function theRget() {
 		if ($this->ck10() !== TRUE) return;
-		$r = file_get_contents('https://api.coinbase.com/v2/prices/spot?currency=USD');
+		
+		// in PHP 8.1 results in ERROR: BTCpriceServer.php LINE: 64 - file_get_contents(): SSL operation failed with code 1. 
+		// OpenSSL Error messages: error:0A000126:SSL routines::unexpected eof while reading ... BTCpriceServer.php
+		// $r = file_get_contents('https://api.coinbase.com/v2/prices/spot?currency=USD');
+		// https://github.com/php/php-src/pull/8558
+		// appears to be in   php-8.1.7RC1, dated May 24, 2022
+		// Ubuntu 22.04 is on PHP 8.1.2 as of June 5.
+		
+		$r = $this->viaCurl();
 		$raw = json_decode($r, true);
 		kwas($a = kwifs($raw, 'data'), 'bad result CB lookup 1 2142');
 		kwas($a['base'] === 'BTC' && $a['currency'] === 'USD', 'bad result CB lookup 2 2143');
@@ -68,15 +77,23 @@ class bcebo extends dao_generic_3 {
 		$dat['at'   ] = $sfl = microtime(1);
 		$dat['price'] = $fl;
 		$this->setovs($fl, $sfl);
-		$dat['atr'  ] = date('r', $sfl);
+		$dat['atr'  ] = date('r', roint($sfl));
 		$this->pcoll->insertOne($dat);
 		
 	}
+	
+	private function viaCurl() {
+		$cr = curl_init(self::url);
+		curl_setopt($cr, CURLOPT_RETURNTRANSFER, 1); 
+		$t  = curl_exec($cr);
+		return $t;
+		
+	}
 
-	private function setovs($p, int $ts) { // can't do float|int in PHP 7.x!!!
+	private function setovs($p, $ts) { // can't do float|int in PHP 7.x!!! ; then int gives warning in PHP 8.1
 		kwas(is_numeric($p), 'non numeric price setovs');
 		$this->theP = $p;
-		$this->theDHu = date('g:i:s A D', $ts);
+		$this->theDHu = date('g:i:s A D', roint($ts));
 	}
 	
 	private function setEarlier() {
