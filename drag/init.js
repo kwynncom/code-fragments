@@ -14,6 +14,11 @@ class dragKwVisClass {
         this.doe = ove;
     }
     
+    setState(st, e) {
+      if (st === 'dropBFNet') e.style.opacity = 0.4;
+    }
+    
+    
     
 }
 
@@ -22,6 +27,7 @@ class dragKwOrdClass {
     constructor() {
         this.maxx = 0;
         this.orden = 0;
+        // cl('min = ' + Number.MIN_VALUE); // min = 5e-324
     }
     
     getn() { return this.orden; }
@@ -72,7 +78,19 @@ class dragKwOrdClass {
 
 }
 
+class dragKwNetClass {
+    send(id, ordx) {
+        kwjss.sobf('/t/22/06/drag/server.php', {'id' : id, 'ordx' : ordx, 'action' : 'setOrder'});
+    }
+}
+
 class dragKwClass {
+    
+    send(e) {
+       const newordx = this.ordo.getOrdx(e);        
+       const id = this.getID(e);
+       this.neto.send(id, newordx);
+    }
     
     constructor() {
         this.dragKwInit10();
@@ -83,6 +101,7 @@ class dragKwClass {
         this.ableEs = [];
         this.viso = new dragKwVisClass();
         this.ordo = new dragKwOrdClass();
+        this.neto = new dragKwNetClass();
     }
     
     cmp(a, b) {
@@ -166,12 +185,17 @@ class dragKwClass {
 
         document.addEventListener('dragenter', (ev) => { 
             const ovr = this.getRow(ev.target);
-            if (!ovr) return; // definitely can happen if dragged outside
+            if (!ovr) return;
             this.viso.onOver(this.draggedE, this.cmp(this.draggedE, ev.target), ovr);
             this.dorow = ovr;
            
         }); 
         document.addEventListener('drop'	 , (ev) => { 
+            
+            this.able(false);
+            
+            this.viso.setState('dropBFNet', this.thegpe);
+            
             const dir = this.cmp(this.draggedE, this.dorow);
             const edr = this.getRow(this.draggedE);
             if (dir === 'above') 
@@ -179,6 +203,8 @@ class dragKwClass {
             else this.insertAfter (this.dorow, edr);
             
             this.calcNewOrd(edr);
+
+            this.send(edr);
             
             this.viso.onOver(false, 'clear');
             
@@ -191,6 +217,13 @@ class dragKwClass {
     insertBefore(stayingEle, movingEle) { stayingEle.parentNode.insertBefore(movingEle, stayingEle); /* insertBefore is a JS function */ }
     insertAfter (stayingEle, movingEle) { var se2 = stayingEle.nextSibling; if (se2) this.insertBefore(se2, movingEle); else movingEle.parentNode.append(movingEle);}    
     
+    
+    able(isen) {
+        for (let i=0; i < this.ableEs.length; i++) {
+            this.ableEs[i].draggable = isen;
+        }
+        
+    }
     
     setEleDraggable(e) { 
         e.draggable = true; 
