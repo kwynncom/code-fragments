@@ -17,6 +17,43 @@ class dragKwVisClass {
     
 }
 
+class dragKwOrdClass {
+    
+    constructor() {
+        this.maxx = 0;
+    }
+    
+    
+    inite(e, ordx, interval) {
+        this.interval = interval;
+        ordx = parseInt(ordx);
+        kwas(ordx > 0, 'order x must be > 0');
+        e.dataset.kwOrdx = ordx;
+        if (ordx > this.maxx) this.maxx = ordx;
+    }
+    
+    set (ae, be, ce) {
+        const es = [ae, be, ce];
+        const xs = [];
+        
+        for (let i=0; i < es.length; i++) {
+            xs[i] = this.getx(es[i], i);
+        }
+        
+        const ordx = (xs[0] + xs[2]) / 2;
+        kwas(ordx > 0, 'ordx <= 0 set kwdrag');
+        be.dataset.kwOrdx = ordx;
+    }
+    
+    getx(e, i) {
+        if (!e && i === 0) return 0;
+        if (!e) return this.maxx + this.interval;
+        const ordx = parseInt(e.dataset.kwOrdx);
+        kwas(ordx > 0, 'ordx <= 0 getx ordx dragkw');
+        return ordx;
+    }
+
+}
 
 class dragKwClass {
     
@@ -28,6 +65,7 @@ class dragKwClass {
     dragKwInit10() {
         this.ableEs = [];
         this.viso = new dragKwVisClass();
+        this.ordo = new dragKwOrdClass();
     }
     
     cmp(a, b) {
@@ -35,6 +73,30 @@ class dragKwClass {
         const bi = this.getI(b);
         if (ai < bi) return 'below';
         return 'above';
+    }
+    
+    calcNewOrd(drr) {
+        const dri = this.getI(drr);
+        const prev = this.getRowByI(dri - 1);
+        const next = this.getRowByI(dri + 1);
+        this.ordo.set(prev, drr, next);
+        
+    }
+    
+    getRowByI(iin) {
+        if (iin < 0) return false;
+        const ch = this.thegpe.childNodes;
+        const chn = ch.length;        
+        if (iin >= chn) return false;
+        
+        let di = -1;
+        for (let i=0; i < chn; i++) {
+            const che = ch[i];
+            if (kwifs(che, 'dataset', 'dragKwIamP')) ++di;
+            if (di === iin) return che;
+        }
+        
+        return false;
     }
     
     getI(e) {
@@ -70,12 +132,13 @@ class dragKwClass {
            
         }); 
         document.addEventListener("drop"	 , (ev) => { 
-            // if (!this.dorow) return;
             const dir = this.cmp(this.draggedE, this.dorow);
             const edr = this.getRow(this.draggedE);
             if (dir === 'above') 
                  this.insertBefore(this.dorow, edr);
             else this.insertAfter (this.dorow, edr);
+            
+            this.calcNewOrd(edr);
             
             this.viso.onOver(false, 'clear');
             
@@ -94,9 +157,10 @@ class dragKwClass {
         this.ableEs.push(e);
     }
     
-    setDragParent(e, uq) {
+    setDragParent(e, uq, ordx) {
         e.dataset.dragKwIamP = true;
         if (uq) e.dataset.dragKwUqID = uq;
+        this.ordo.inite(e, ordx);
             
          
     }
@@ -134,7 +198,7 @@ class testDrag extends dragKwClass {
             const uqid = 'e_' + idc;
             
             const tr = cree('tr', uqid);
-            this.setDragParent(tr, uqid);
+            this.setDragParent(tr, uqid, (i + 1) * 100, 100);
             const td10 = cree('td');
             td10.innerHTML = '&varr;';
             this.setEleDraggable(td10);
