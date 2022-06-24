@@ -3,8 +3,13 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class dragDemo extends dao_generic_3 {
+	
+	const elen = 5;
+	const ordxInterval = 1000;
+	
 	public function __construct() {
 		$this->init();
+		$this->initcli();
 		$this->set();
 	}
 	
@@ -12,6 +17,37 @@ class dragDemo extends dao_generic_3 {
 		parent::__construct('dragEx');
 		$this->creTabs('order');
 		
+	}
+	
+	private function initcli() {
+		if (isrv('action') !== 'init') return;
+		$this->initDat();
+		$dat = $this->ocoll->find([], ['sort' => ['ordx' => 1]]);
+		$r['dat'] = $dat;
+		$r['interval'] = self::ordxInterval;
+		kwjae($r);
+		
+	}
+	
+	private function initDat() {
+		if ($this->ocoll->count() > 0) return;
+		
+		$dat = [];
+		
+		for ($i=0; $i < self::elen; $i++) {
+			$d = [];
+			$v = chr(ord('A') + $i);
+			$d['_id'] = 'e_' . $v;
+			$d['ordx'] = self::ordxInterval * ($i + 1);
+			$d['v'] = $v;
+			
+			$dat[] = $d;
+			continue;
+		}
+		
+		$this->ocoll->insertMany($dat);
+		
+		return;
 	}
 	
 	private function set() {

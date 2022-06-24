@@ -264,14 +264,20 @@ class testDrag extends dragKwClass {
     }
     
     init10() {
+        kwjss.sobf('/t/22/06/drag/server.php', {'action' : 'init'}, (res) => { this.init20(res); } );
+    }
+    
+    init20(ret) {
         
         for (let i = 0; i < this.rowsn; i++) {
             
-            const idc = String.fromCharCode(this.charBase + i);
+            const r = ret['dat'][i];
+            
+            const idc = r['v'];
             const uqid = 'e_' + idc;
             
-            const tr = cree('tr', uqid);
-            this.setDragParent(tr, uqid, (i + 1) * 100, 100);
+            const tr = cree('tr', r['_id']);
+            this.setDragParent(tr, uqid, r['ordx'], ret['interval']);
             const td10 = cree('td');
             td10.innerHTML = '&varr;';
             this.setEleDraggable(td10);
