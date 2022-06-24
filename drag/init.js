@@ -1,20 +1,39 @@
 onDOMLoad(() => { new testDrag(); });
 
-class kwDrag {
+class dragKwVisClass {
+    onOver(ede, dir, ove) {
+        
+        if (this.doe) this.doe.style.borderTop = this.doe.style.borderBottom = 'none';
+        
+        if (dir === 'clear') return;
+        
+        if (dir === 'above') 
+             ove.style.borderTop    = 'black dashed 4px';
+        else ove.style.borderBottom = 'black dashed 4px';
+        
+        this.doe = ove;
+    }
+    
+    
+}
+
+
+class dragKwClass {
     
     constructor() {
-        this.kwDragInit10();
+        this.dragKwInit10();
         this.setDocumentLevelDrag();
     }
     
-    kwDragInit10() {
+    dragKwInit10() {
         this.ableEs = [];
+        this.viso = new dragKwVisClass();
     }
     
     cmp(a, b) {
         const ai = this.getI(a);
         const bi = this.getI(b);
-        if (ai > bi) return 'below';
+        if (ai < bi) return 'below';
         return 'above';
     }
     
@@ -25,7 +44,7 @@ class kwDrag {
         let di = -1;
         for (let i=0; i < chn; i++) {
             const che = ch[i];
-            if (kwifs(che, 'dataset', 'kwDragIamP')) ++di;
+            if (kwifs(che, 'dataset', 'dragKwIamP')) ++di;
             if (        this.getID(che) 
                     === this.getID(row)) return di;
         }
@@ -34,7 +53,7 @@ class kwDrag {
     }
     
     getID(e) {
-        return kwifs(this.getRow(e), 'dataset', 'kwDragUqID');
+        return kwifs(this.getRow(e), 'dataset', 'dragKwUqID');
     }
     
     setDocumentLevelDrag() {
@@ -45,31 +64,29 @@ class kwDrag {
 
         document.addEventListener("dragenter", (ev) => { 
             const ovr = this.getRow(ev.target);
-            if (!ovr) return;
-            
-            const oid = this.getID(ovr);
-            const dreid = this.getID(this.draggedE);
-            
-            if (oid === dreid) return;
-            
-            if (this.cmp(this.draggedE, ev.target) === 'below') 
-                 ovr.style.borderTop    = 'black dashed 4px';
-            else ovr.style.borderBottom = 'black dashed 4px'; 
-            
-            // ovr.style.borderWidth = '4px';
-            
-            
+            if (!ovr) return; // definitely can happen if dragged outside
+            this.viso.onOver(this.draggedE, this.cmp(this.draggedE, ev.target), ovr);
+            this.dorow = ovr;
+           
         }); 
         document.addEventListener("drop"	 , (ev) => { 
-            //self.ondrop(); 
-            const droppedOnRow = this.getRow(ev.target);
-            return;
+            // if (!this.dorow) return;
+            const dir = this.cmp(this.draggedE, this.dorow);
+            const edr = this.getRow(this.draggedE);
+            if (dir === 'above') 
+                 this.insertBefore(this.dorow, edr);
+            else this.insertAfter (this.dorow, edr);
+            
+            this.viso.onOver(false, 'clear');
+            
         });
         
         document.addEventListener("dragover" , (ev) => { ev.preventDefault(); });        
     }
     
-    
+
+    insertBefore(stayingEle, movingEle) { stayingEle.parentNode.insertBefore(movingEle, stayingEle); /* insertBefore is a JS function */ }
+    insertAfter (stayingEle, movingEle) { var se2 = stayingEle.nextSibling; if (se2) this.insertBefore(se2, movingEle); else movingEle.parentNode.append(movingEle);}    
     
     
     setEleDraggable(e) { 
@@ -78,23 +95,23 @@ class kwDrag {
     }
     
     setDragParent(e, uq) {
-        e.dataset.kwDragIamP = true;
-        if (uq) e.dataset.kwDragUqID = uq;
+        e.dataset.dragKwIamP = true;
+        if (uq) e.dataset.dragKwUqID = uq;
             
          
     }
     
     getRow(e) {
-      if (kwifs(e,'dataset','kwDragIamP')) return e;
+      if (kwifs(e,'dataset','dragKwIamP')) return e;
       if (e.parentNode) return this.getRow(e.parentNode);
       return false;     
     }
     
-    kwDragSetGrandParentE(e) {  this.thegpe = e;  }
+    dragKwSetGrandParentE(e) {  this.thegpe = e;  }
     
 }
 
-class testDrag extends kwDrag {
+class testDrag extends dragKwClass {
     
     config() {
         this.charBase = 65;
@@ -105,7 +122,7 @@ class testDrag extends kwDrag {
     constructor() {
        super();
        this.config();
-       this.kwDragSetGrandParentE(this.theParentE);
+       this.dragKwSetGrandParentE(this.theParentE);
        this.init10(); 
     }
     
