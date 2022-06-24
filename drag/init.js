@@ -21,13 +21,16 @@ class dragKwOrdClass {
     
     constructor() {
         this.maxx = 0;
+        this.orden = 0;
     }
     
+    getn() { return this.orden; }
     
     inite(e, ordx, interval) {
         this.interval = interval;
-        ordx = parseInt(ordx);
+        ordx = parseFloat(ordx);
         kwas(ordx > 0, 'order x must be > 0');
+        this.orden++;
         e.dataset.kwOrdx = ordx;
         if (ordx > this.maxx) this.maxx = ordx;
     }
@@ -37,7 +40,8 @@ class dragKwOrdClass {
         const xs = [];
         
         for (let i=0; i < es.length; i++) {
-            xs[i] = this.getx(es[i], i);
+            if (i === 1) continue;
+            xs[i] = this.getxInternal(es[i], i);
         }
         
         const ordx = (xs[0] + xs[2]) / 2;
@@ -45,11 +49,24 @@ class dragKwOrdClass {
         be.dataset.kwOrdx = ordx;
     }
     
-    getx(e, i) {
+    getxInternal(e, i) {
         if (!e && i === 0) return 0;
         if (!e) return this.maxx + this.interval;
-        const ordx = parseInt(e.dataset.kwOrdx);
-        kwas(ordx > 0, 'ordx <= 0 getx ordx dragkw');
+        const ordx = this.getvox(e);
+       return ordx;
+    }
+    
+    getvox(e) {
+        const raw = e.dataset.kwOrdx;
+        const to = typeof raw;
+        kwas(raw && is_numeric(raw), 'ordx not numeric kwdrag');
+        const ordx = parseFloat(raw);       
+        kwas(ordx > 0, 'ordx <= 0 getxInternal ordx dragkw');
+        return ordx;
+    }
+    
+    getOrdx(e) {
+        const ordx = this.getvox(e);
         return ordx;
     }
 
@@ -80,6 +97,7 @@ class dragKwClass {
         const prev = this.getRowByI(dri - 1);
         const next = this.getRowByI(dri + 1);
         this.ordo.set(prev, drr, next);
+        this.reordSanityCheck();
         
     }
     
@@ -97,6 +115,28 @@ class dragKwClass {
         }
         
         return false;
+    }
+    
+    reordSanityCheck() {
+        const ch = this.thegpe.childNodes;
+        const chn = ch.length;
+        let maxx = 0;
+        let oki = 0;
+        for (let i=0; i < chn; i++) {
+            const che = ch[i];
+            if (kwifs(che, 'dataset', 'dragKwIamP')) {
+                const ordx = this.ordo.getOrdx(che);
+                kwas(ordx > maxx, 'reorder sanity check fail kwdrag');
+                oki++;
+                maxx = ordx;
+            }
+        }
+        
+        const orden = this.ordo.getn();
+        kwas(orden === oki, 'sanity check count fail kwdrag');
+        
+        return true;
+        
     }
     
     getI(e) {
@@ -120,18 +160,18 @@ class dragKwClass {
     
     setDocumentLevelDrag() {
 
-        document.addEventListener("dragstart", (ev) => { 
+        document.addEventListener('dragstart', (ev) => { 
             this.draggedE = ev.target;
         });
 
-        document.addEventListener("dragenter", (ev) => { 
+        document.addEventListener('dragenter', (ev) => { 
             const ovr = this.getRow(ev.target);
             if (!ovr) return; // definitely can happen if dragged outside
             this.viso.onOver(this.draggedE, this.cmp(this.draggedE, ev.target), ovr);
             this.dorow = ovr;
            
         }); 
-        document.addEventListener("drop"	 , (ev) => { 
+        document.addEventListener('drop'	 , (ev) => { 
             const dir = this.cmp(this.draggedE, this.dorow);
             const edr = this.getRow(this.draggedE);
             if (dir === 'above') 
@@ -144,7 +184,7 @@ class dragKwClass {
             
         });
         
-        document.addEventListener("dragover" , (ev) => { ev.preventDefault(); });        
+        document.addEventListener('dragover' , (ev) => { ev.preventDefault(); });        
     }
     
 
@@ -157,10 +197,10 @@ class dragKwClass {
         this.ableEs.push(e);
     }
     
-    setDragParent(e, uq, ordx) {
+    setDragParent(e, uq, ordx, interval) {
         e.dataset.dragKwIamP = true;
         if (uq) e.dataset.dragKwUqID = uq;
-        this.ordo.inite(e, ordx);
+        this.ordo.inite(e, ordx, interval);
             
          
     }
