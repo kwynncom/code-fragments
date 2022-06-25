@@ -52,7 +52,7 @@ class dragDemo extends dao_generic_3 {
 	
 	private function set() {
 		if (isrv('action') !== 'setOrder') return;
-		$id = isrv('id');
+		$id = isrv('_id');
 		kwas(preg_match('/^e_[A-Z]$/', $id), 'bad id');
 		$or = isrv('ordx');
 		kwas(is_numeric($or), 'bad orderx');
@@ -62,11 +62,8 @@ class dragDemo extends dao_generic_3 {
 		$dat = $q;
 		$dat['ordx'] = $ox;
 		$this->ocoll->upsert($q, $dat);
-
-		
-		
-		
-		return;
+		$dat['postOrdxSave'] = 'OK';
+		kwjae($dat);
 	}
 	
 	

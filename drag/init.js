@@ -14,9 +14,17 @@ class dragKwVisClass {
         this.doe = ove;
     }
     
-    setState(st, e) {
-      if (st === 'dropBFNet') e.style.opacity = 0.4;
+    setState(st) {
+      if (st === 'dropBFNet') this.thee.style.opacity = 0.4;
     }
+    
+    ok() {
+        this.thee.style.opacity = 1;
+    }
+    
+    setEle(e) { this.thee = e; }
+    
+    
     
     
     
@@ -75,13 +83,36 @@ class dragKwOrdClass {
         const ordx = this.getvox(e);
         return ordx;
     }
+    
+    netOKOrDie(e, rordx) {
+        kwas(dragKwOrdClass.eq(this.getOrdx(e), rordx), 'net reponse versus current element ordx match fail');
+        return true;
+    }
+    
+    static eq(a, b) { return Math.abs(a - b) < 0.00001;   }
 
 }
 
 class dragKwNetClass {
     send(id, ordx) {
-        kwjss.sobf('/t/22/06/drag/server.php', {'id' : id, 'ordx' : ordx, 'action' : 'setOrder'});
+        const ino = {'_id' : id, 'ordx' : ordx, 'action' : 'setOrder'};
+        kwjss.sobf('/t/22/06/drag/server.php', ino, (res) => { this.doResponse(res, ino); });
     }
+    
+    doResponse(r, ino) {
+        kwas(r['postOrdxSave'] === 'OK', 'save non-OK response ordx');
+        kwas(r['_id'] === ino['_id'], 'drag in and out result mismatch - id');
+        kwas(dragKwOrdClass.eq(r['ordx'], ino['ordx']), 'ordx in out mismatch');
+        const dat = {};
+        dat['response_ordx'] = r['ordx'];
+        dat['response_id'] = r['_id'];
+        dat['netStatus'] = 'OK';
+        this.cbr(dat);
+    }
+    
+    constructor(cb) { this.cbr = cb; }
+    
+
 }
 
 class dragKwClass {
@@ -101,7 +132,14 @@ class dragKwClass {
         this.ableEs = [];
         this.viso = new dragKwVisClass();
         this.ordo = new dragKwOrdClass();
-        this.neto = new dragKwNetClass();
+        this.neto = new dragKwNetClass((arg) => { this.doResponse(arg); });
+    }
+    
+    doResponse(res) {
+        const e = byid(res['response_id']);
+        this.ordo.netOKOrDie(e, res['response_ordx']);
+        this.able(true);
+        this.viso.ok();
     }
     
     cmp(a, b) {
@@ -194,7 +232,7 @@ class dragKwClass {
             
             this.able(false);
             
-            this.viso.setState('dropBFNet', this.thegpe);
+            this.viso.setState('dropBFNet');
             
             const dir = this.cmp(this.draggedE, this.dorow);
             const edr = this.getRow(this.draggedE);
@@ -220,7 +258,9 @@ class dragKwClass {
     
     able(isen) {
         for (let i=0; i < this.ableEs.length; i++) {
-            this.ableEs[i].draggable = isen;
+            const e = this.ableEs[i];
+            e.draggable = isen;
+            e.style.opacity = isen ? 1 : 0;
         }
         
     }
@@ -232,7 +272,7 @@ class dragKwClass {
     
     setDragParent(e, uq, ordx, interval) {
         e.dataset.dragKwIamP = true;
-        if (uq) e.dataset.dragKwUqID = uq;
+        if (uq) e.dataset.dragKwUqID = e.id = uq;
         this.ordo.inite(e, ordx, interval);
             
          
@@ -244,7 +284,10 @@ class dragKwClass {
       return false;     
     }
     
-    dragKwSetGrandParentE(e) {  this.thegpe = e;  }
+    dragKwSetGrandParentE(e) {  
+        this.thegpe = e;  
+        this.viso.setEle(e);
+    }
     
 }
 
