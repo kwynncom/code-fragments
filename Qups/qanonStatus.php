@@ -28,12 +28,13 @@ class Qupdates extends dao_generic_3 {
 	
 	private function rget() {
 		if (1) {
-			if (!$this->boffok()) kwas(false, 'quota fail');
-			if (file_exists(self::tmpf)) return file_get_contents(self::tmpf);
+			if (!$this->boffo->isok()) kwas(false, 'quota fail');
+			if (0 && file_exists(self::tmpf)) return file_get_contents(self::tmpf);
 		}
 		
 		$res = $this->getActual();
 		$this->boffo->putEvent();
+		return $res;
 	}
 	
 	private function initDB() {

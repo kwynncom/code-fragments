@@ -22,7 +22,7 @@ class backoff extends dao_generic_3 {
 		$this->boasum = array_sum($this->boa);
 	}
 	
-	private function isok() {
+	public function isok() {
 		$this->locko->lock();		
 		$res = $this->isok20();
 		$this->locko->unlock();
@@ -34,7 +34,7 @@ class backoff extends dao_generic_3 {
 		$dat['usbo'] = microtime(1);
 		$dat['_id']  = $this->etype . '_' . dao_generic_3::get_oids();
 		$dat['type'] = $this->etype;
-		$this->ecoll->insertOne();
+		$this->ecoll->insertOne($dat);
 	}
 	
 	private function isok20() {
