@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('backoff.php');
 
 class Qupdates extends dao_generic_3 {
 	
@@ -26,9 +27,13 @@ class Qupdates extends dao_generic_3 {
 	}
 	
 	private function rget() {
-		if (!$this->boffok()) kwas(false, 'quota fail');
-		if (file_exists(self::tmpf)) return file_get_contents(self::tmpf);
-		$this->getActual();		
+		if (1) {
+			if (!$this->boffok()) kwas(false, 'quota fail');
+			if (file_exists(self::tmpf)) return file_get_contents(self::tmpf);
+		}
+		
+		$res = $this->getActual();
+		$this->boffo->putEvent();
 	}
 	
 	private function initDB() {
@@ -37,16 +42,13 @@ class Qupdates extends dao_generic_3 {
 	}
 	
 	private function configBO() { // https://github.com/kwynncom/code-fragments/blob/262f30b067e1e88ec64489dd0e849107d6c201d4/btcpr/BTCpriceServer.php
-		$s = [1, 1, 3, 5, 10, 15, 20];
-		
-		foreach($s as $v) $m[] = $v * 60;
-		$this->boa = $m;
-		$this->boan = count($this->boa);		
+		$a = [1, 1, 3, 5, 10, 15, 20];
+		$this->boffo = new backoff('Qups', $a);
 	}
 
 	private function p30($a) {
 		
-		$a['usbo'] = microtime(1);
+		// $a['usbo'] = microtime(1);
 		$a['_id'] = dao_generic_3::get_oids();
 		$this->ucoll->insertOne($a, ['kwnoup' => true]);
 		
@@ -91,6 +93,7 @@ class Qupdates extends dao_generic_3 {
 		$res = curl_exec($ch);
 		$sz = strlen($res);
 		file_put_contents($p, $res);
+		return $res;
 	}
 
 
