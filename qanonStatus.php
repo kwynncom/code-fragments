@@ -2,22 +2,53 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-// curl -I https://qanon.pub/data/json/posts.json
+class Qupdates {
+	
+	const url = 'https://qanon.pub/data/json/posts.json';
+	const tmpf = '/tmp/qanon_pub_h.txt';
+	
+	
+	public function __construct() {
+		cliOrDie();
+		$t = $this->rget();
+		$this->p10($t);
+	}
 
-$url = 'https://qanon.pub/data/json/posts.json';
+	private function p10($t) {
+		
+		$fs = ['content-length', 'etag', 'last-modified', 'date'];
+		foreach($fs as $f) {
+			$re = '/' . $f . ': ([^\n]+)/';
+			preg_match($re, $t, $ms);
+			continue;
+		}
+		
+		return;
+	}
+	
+	private function rget() {
+		if (file_exists(self::tmpf)) return file_get_contents(self::tmpf);
+		$this->getActual();		
+	}
+	
+	private function getActual() {
+		
+		cliOrDie();
+	
+		$url = self::url;
+		$p = self::tmpf;
 
-$jsts = roint(microtime(1) * 1000);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url . '?t=' . roint(microtime(1) * 1000));
+		curl_setopt($ch, CURLOPT_NOBODY, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		$res = curl_exec($ch);
+		$sz = strlen($res);
+		file_put_contents($p, $res);
+	}
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url . '?t=' . $jsts); // *is* necessary
-curl_setopt($ch, CURLOPT_NOBODY, true); // HEAD HTTP method for minimal work on the server
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// curl_setopt($ch, CURLOPT_USERAGENT, kwua()); // works but isn't necessary
-curl_setopt($ch, CURLOPT_HEADER, true);
-$res = curl_exec($ch);
-$sz = strlen($res);
-$info = curl_getinfo($ch);
 
-file_put_contents('/tmp/q.txt', $res);
+}
 
-exit(0);
+new Qupdates();
