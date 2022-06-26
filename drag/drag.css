@@ -1,7 +1,0 @@
-tr:nth-child(2n+1) { background-color: rgb(205,205,205); }
-tr:nth-child(2n  ) { background-color: rgb(160,160,160); }
-/* tr { border: 4px black solid; } */
-table { 
-    border-collapse: collapse;
-    font-size: 300%;
-}
