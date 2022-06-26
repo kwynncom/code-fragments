@@ -2,34 +2,79 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class Qupdates {
+class Qupdates extends dao_generic_3 {
 	
 	const url = 'https://qanon.pub/data/json/posts.json';
 	const tmpf = '/tmp/qanon_pub_h.txt';
+	const dbname = 'Qups';
 	
 	
 	public function __construct() {
 		cliOrDie();
-		$t = $this->rget();
-		$this->p10($t);
+		$this->configBO();
+		$this->initDB();
+		$t   = $this->rget();
+		$a   = $this->p10($t); unset($t);
+		$a20 = $this->p20($a); unset($a);
+		$this->p30($a20);
+		
 	}
 
-	private function p10($t) {
+	private function boffok() {
 		
-		$fs = ['content-length', 'etag', 'last-modified', 'date'];
-		foreach($fs as $f) {
-			$re = '/' . $f . ': ([^\n]+)/';
-			preg_match($re, $t, $ms);
-			continue;
-		}
 		
-		return;
 	}
 	
 	private function rget() {
+		if (!$this->boffok()) kwas(false, 'quota fail');
 		if (file_exists(self::tmpf)) return file_get_contents(self::tmpf);
 		$this->getActual();		
 	}
+	
+	private function initDB() {
+		parent::__construct(self::dbname);
+		$this->creTabs('ups');
+	}
+	
+	private function configBO() { // https://github.com/kwynncom/code-fragments/blob/262f30b067e1e88ec64489dd0e849107d6c201d4/btcpr/BTCpriceServer.php
+		$s = [1, 1, 3, 5, 10, 15, 20];
+		
+		foreach($s as $v) $m[] = $v * 60;
+		$this->boa = $m;
+		$this->boan = count($this->boa);		
+	}
+
+	private function p30($a) {
+		
+		$a['usbo'] = microtime(1);
+		$a['_id'] = dao_generic_3::get_oids();
+		$this->ucoll->insertOne($a, ['kwnoup' => true]);
+		
+	}
+	
+	private function p20($a) {
+		$ret = $a;
+		$ret['etag'] = str_replace('"', '', $a['etag']);
+		$ret['len_hu'] = number_format($a['len']);
+		// $ret['lm_ts'] = strtotime();
+		return $ret;
+	}
+	
+	private function p10($t) {
+		
+		$ret = [];
+		$fs = ['len' => 'content-length', 'etag' => 'etag', 'lm_hu' => 'last-modified', 'asof_hu' => 'date'];
+		foreach($fs as $mynm => $f) {
+			$re = '/' . $f . ': ([^\n]+)/';
+			preg_match($re, $t, $ms);
+			$ret[$mynm] = $ms[1];
+			continue;
+		}
+		
+		return $ret;
+	}
+	
+
 	
 	private function getActual() {
 		
