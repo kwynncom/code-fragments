@@ -10,16 +10,33 @@ class Qupdates extends dao_generic_3 {
 	const dbname = 'Qups';
 	
 	
-	public function __construct() {
-		cliOrDie();
+	public static function get() {
+		$o = new self();
+		return $o->getI();
+		
+	}
+	
+	public function getI() { return $this->theDat;}
+	
+	private function __construct() {
+
+		$this->theDat = [];
 		$this->configBO();
 		$this->initDB();
-		$a20   = $this->rget();
-		return;
+		$this->theDat   = $this->rget();
 		
 	}
 	
 	private function rget() {
+		$a = microtime(1);
+		$res = $this->rget20();
+		$b = microtime(1);
+		$d = roint(($b - $a) * 1000);
+		$res['fetch_ms'] = $d;
+		return $res;
+	}
+	
+	private function rget20() {
 		if (0 && file_exists(self::tmpf)) return file_get_contents(self::tmpf);
 		$act = $this->checkGetAndRecord();
 		if ($act) {
@@ -108,4 +125,4 @@ class Qupdates extends dao_generic_3 {
 
 }
 
-new Qupdates();
+Qupdates::get();
