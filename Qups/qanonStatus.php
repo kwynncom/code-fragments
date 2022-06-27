@@ -94,7 +94,7 @@ class Qupdates extends dao_generic_3 {
 		foreach($fs as $mynm => $f) {
 			$re = '/' . $f . ': ([^\n]+)/';
 			preg_match($re, $t, $ms);
-			$ret[$mynm] = $ms[1];
+			$ret[$mynm] = trim($ms[1]); // trim() is for the difference between PHP 7.4 and 8.1 ; I really need to comply with my own dev rule #2
 			continue;
 		}
 		
