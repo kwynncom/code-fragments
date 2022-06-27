@@ -99,21 +99,20 @@ class Qupdates extends dao_generic_3 {
 	
 	private function checkGetAndRecord() {
 		if (!($ckr = $this->boffo->isok()))return FALSE;
-		$et = $this->getEtag();
-		$res = $this->getActual($ckr, $et);
+		$ims = $this->getIFMS();
+		$res = $this->getActual($ckr, $ims);
 		$this->boffo->putEvent();
 		return $res;		
 	}
 	
-	private function getETag() {
+	private function getIFMS() {
 		$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);		
-		$et = kwifs($res, 'etag');
-		if (!$et) return false;
-		$s = '"' . $et . '"';
-		return $s;
+		$ims = kwifs($res, 'lm_hu');
+		if (!$ims) return false;
+		return $ims;
 	}
 	
-	private function getActual($cktok, $et) {
+	private function getActual($cktok, $ims) {
 		
 		if ($cktok !== backoff::boffOKToken) return FALSE;
 		
@@ -127,8 +126,8 @@ class Qupdates extends dao_generic_3 {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		
-		if ($et) {
-			$imh = 'If-Match : ' . $et;
+		if ($ims) {
+			$imh = 'If-Modified-Since: ' . $ims;
 			curl_setopt($ch, CURLOPT_HTTPHEADER, [$imh]);	
 		}
 		
