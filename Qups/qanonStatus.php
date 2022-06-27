@@ -37,17 +37,22 @@ class Qupdates extends dao_generic_3 {
 	}
 	
 	private function rget20() {
-		if (0 && file_exists(self::tmpf)) return file_get_contents(self::tmpf);
-		$act = $this->checkGetAndRecord();
-		if ($act) {
-			$a = $this->p10($act);
-			$a20 = $this->p20($a);
-			$this->p30($a20);
-		}
+		if (0 && file_exists(self::tmpf)) $t = file_get_contents(self::tmpf);
+		else $t = $this->checkGetAndRecord();
+		
+		$a = $this->textToArr($t);
+		if ($a) $this->p30($a);
+
 		$res = $this->ucoll->find([], ['sort' => ['asof_ts' => -1], 'limit' => 3]);
 		return $res;
-
-
+	}
+	
+	private function textToArr($t) {
+		if (!$t) return false;
+		$a = $this->p10($t);
+		$a20 = $this->p20($a);		
+		return $a20;
+		
 	}
 	
 	private function initDB() {
@@ -94,12 +99,21 @@ class Qupdates extends dao_generic_3 {
 	
 	private function checkGetAndRecord() {
 		if (!($ckr = $this->boffo->isok()))return FALSE;
-		$res = $this->getActual($ckr);
+		$et = $this->getEtag();
+		$res = $this->getActual($ckr, $et);
 		$this->boffo->putEvent();
 		return $res;		
 	}
 	
-	private function getActual($cktok) {
+	private function getETag() {
+		$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);		
+		$et = kwifs($res, 'etag');
+		if (!$et) return false;
+		$s = '"' . $et . '"';
+		return $s;
+	}
+	
+	private function getActual($cktok, $et) {
 		
 		if ($cktok !== backoff::boffOKToken) return FALSE;
 		
@@ -112,6 +126,12 @@ class Qupdates extends dao_generic_3 {
 		curl_setopt($ch, CURLOPT_NOBODY, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
+		
+		if ($et) {
+			$imh = 'If-Match : ' . $et;
+			curl_setopt($ch, CURLOPT_HTTPHEADER, [$imh]);	
+		}
+		
 		$res = curl_exec($ch);
 		$sz = strlen($res);
 		file_put_contents($p, $res);
