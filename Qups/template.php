@@ -14,14 +14,18 @@
 </style>
 </head>
 <body>
-       
+	<div>
+		<div    style='display: inline-block; font-size: 150%; '><a href='https://qanon.pub/'>Q</a></div>
+		<button style='display: inline-block; margin-left: 10ex; ' onclick='history.go(0);'>reload</button>
+	
+	</div>
        <?php 
                require_once('btof.php'); 
                $GTHEO = new qanonBackToFrontClass();
        
        ?>
        
-       <p>fetch time: <?php echo($GTHEO->getFetchTime()); ?>ms</p>
+       <p><?php echo($GTHEO->getMeta()); ?></p>
        
        <table>
                <thead>

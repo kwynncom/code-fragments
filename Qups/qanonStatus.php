@@ -43,7 +43,7 @@ class Qupdates extends dao_generic_3 {
 		$a = $this->textToArr($t);
 		if ($a) $this->p30($a);
 
-		$res = $this->ucoll->find([], ['sort' => ['asof_ts' => -1], 'limit' => 3]);
+		$res = $this->ucoll->find([], ['sort' => ['asof_ts' => -1], 'limit' => 10]);
 		return $res;
 	}
 	

@@ -10,6 +10,7 @@ class qanonBackToFrontClass {
 	   public function getMeta() {
 		   $ht  = '';
 		   $ht .= 'fetch time: ' . $this->getFetchTime() . 'ms; attempt at: ' . date('r');
+		   return $ht;
 	   }
 	   
        public function getFetchTime() { return $this->fetchms; }
