@@ -37,7 +37,7 @@ class Qupdates extends dao_generic_3 {
 	}
 	
 	private function rget20() {
-		if (0 && file_exists(self::tmpf)) $t = file_get_contents(self::tmpf);
+		if (1 && file_exists(self::tmpf)) $t = file_get_contents(self::tmpf);
 		else $t = $this->checkGetAndRecord();
 		
 		$a = $this->textToArr($t);
@@ -60,7 +60,7 @@ class Qupdates extends dao_generic_3 {
 		$this->creTabs('ups');
 	}
 	
-	private function configBO() { // https://github.com/kwynncom/code-fragments/blob/262f30b067e1e88ec64489dd0e849107d6c201d4/btcpr/BTCpriceServer.php
+	private function configBO() {
 		$a = [1, 1, 3, 5, 10, 15, 20];
 		$this->boffo = new backoff('Qups', $a);
 	}
@@ -76,7 +76,6 @@ class Qupdates extends dao_generic_3 {
 		$ret['len_hu'] = number_format($a['len']);
 		$ret['len'] = intval($ret['len']);
 		$ret['asof_ts'] = strtotime($ret['asof_hu']);
-		// $ret['lm_ts'] = strtotime();
 		return $ret;
 	}
 	
@@ -115,16 +114,13 @@ class Qupdates extends dao_generic_3 {
 		$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);
 		if (!$res) return $ret;
 		$h[] = 'If-None-Match: ' . $res['etag'];
-		// $h[] = 'If-Modified-Since: '	   . $res['lm_hu'];
-		
 		return $h;
 	}
 	
 	private function getActual($cktok, $hth) {
 		
 		if ($cktok !== backoff::boffOKToken) return FALSE;
-		
-	
+
 		$url = self::url;
 		$p = self::tmpf;
 
@@ -139,8 +135,6 @@ class Qupdates extends dao_generic_3 {
 		
 		$res = curl_exec($ch);
 		$sz = strlen($res);
-		
-		// $ci = curl_getinfo($ch);
 		
 		file_put_contents($p, $res);
 		return $res;
