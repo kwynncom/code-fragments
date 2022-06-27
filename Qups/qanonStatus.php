@@ -12,7 +12,8 @@ class Qupdates extends dao_generic_3 {
 	
 	public static function get() {
 		$o = new self();
-		return $o->getI();
+		$res = $o->getI();
+		return $res;
 		
 	}
 	
@@ -29,11 +30,10 @@ class Qupdates extends dao_generic_3 {
 	
 	private function rget() {
 		$a = microtime(1);
-		$res = $this->rget20();
+		$dat = $this->rget20();
 		$b = microtime(1);
 		$d = roint(($b - $a) * 1000);
-		$res['fetch_ms'] = $d;
-		return $res;
+		return ['dat' => $dat, 'fetch_ms' => $d];
 	}
 	
 	private function rget20() {
@@ -43,14 +43,10 @@ class Qupdates extends dao_generic_3 {
 			$a = $this->p10($act);
 			$a20 = $this->p20($a);
 			$this->p30($a20);
-			$a20['source'] = 'web';
-			return $a20;
 		}
-		else { 
-			$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);
-			$res['source'] = 'db';
-			return $res;
-		}
+		$res = $this->ucoll->find([], ['sort' => ['asof_ts' => -1], 'limit' => 3]);
+		return $res;
+
 
 	}
 	
