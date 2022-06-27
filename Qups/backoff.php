@@ -5,6 +5,7 @@ require_once('/opt/kwynn/kwutils.php');
 class backoff extends dao_generic_3 {
 	
 	const dbname = 'backoff';
+	const boffOKToken = 'iAmBackOffOKToken';
 	
 
 	public function __construct(string $eventTypeID, array $backOffArrayInMinutes) {
@@ -26,7 +27,9 @@ class backoff extends dao_generic_3 {
 		$this->locko->lock();		
 		$res = $this->isok20();
 		$this->locko->unlock();
-		return $res;		
+		
+		if ($res) return self::boffOKToken;
+		return FALSE;
 	}
 	
 	public function putEvent() {
@@ -40,6 +43,7 @@ class backoff extends dao_generic_3 {
 	private function isok20() {
 		$now = time();
 		$sum = $this->boasum;
+		$tq = ['type' => $this->etype];
 	
 		for($j=0; $j < 2; $j++) {
 			if ($j > 0) {
@@ -49,12 +53,13 @@ class backoff extends dao_generic_3 {
 			
 			$d = $now - $sum;
 			$q = ['usbo' => ['$gte' => $d]];
+			$q = kwam($q, $tq);
 			
 
 			$cnt = $this->ecoll->count($q);
 
 			if ($cnt === 0) {
-				if ($j === 0) $this->ecoll->deleteMany(['type' => $this->etype]);
+				if ($j === 0) $this->ecoll->deleteMany($tq);
 				return TRUE;
 			}
 

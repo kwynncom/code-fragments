@@ -14,27 +14,27 @@ class Qupdates extends dao_generic_3 {
 		cliOrDie();
 		$this->configBO();
 		$this->initDB();
-		$t   = $this->rget();
-		$a   = $this->p10($t); unset($t);
-		$a20 = $this->p20($a); unset($a);
-		$this->p30($a20);
-		
-	}
-
-	private function boffok() {
-		
+		$a20   = $this->rget();
+		return;
 		
 	}
 	
 	private function rget() {
-		if (1) {
-			if (!$this->boffo->isok()) kwas(false, 'quota fail');
-			if (0 && file_exists(self::tmpf)) return file_get_contents(self::tmpf);
+		if (0 && file_exists(self::tmpf)) return file_get_contents(self::tmpf);
+		$act = $this->checkGetAndRecord();
+		if ($act) {
+			$a = $this->p10($act);
+			$a20 = $this->p20($a);
+			$this->p30($a20);
+			$a20['source'] = 'web';
+			return $a20;
 		}
-		
-		$res = $this->getActual();
-		$this->boffo->putEvent();
-		return $res;
+		else { 
+			$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);
+			$res['source'] = 'db';
+			return $res;
+		}
+
 	}
 	
 	private function initDB() {
@@ -59,6 +59,8 @@ class Qupdates extends dao_generic_3 {
 		$ret = $a;
 		$ret['etag'] = str_replace('"', '', $a['etag']);
 		$ret['len_hu'] = number_format($a['len']);
+		$ret['len'] = intval($ret['len']);
+		$ret['asof_ts'] = strtotime($ret['asof_hu']);
 		// $ret['lm_ts'] = strtotime();
 		return $ret;
 	}
@@ -77,11 +79,17 @@ class Qupdates extends dao_generic_3 {
 		return $ret;
 	}
 	
-
+	private function checkGetAndRecord() {
+		if (!($ckr = $this->boffo->isok()))return FALSE;
+		$res = $this->getActual($ckr);
+		$this->boffo->putEvent();
+		return $res;		
+	}
 	
-	private function getActual() {
+	private function getActual($cktok) {
 		
-		cliOrDie();
+		if ($cktok !== backoff::boffOKToken) return FALSE;
+		
 	
 		$url = self::url;
 		$p = self::tmpf;
