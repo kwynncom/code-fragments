@@ -17,7 +17,7 @@ class backoff extends dao_generic_3 {
 	}
 	
 	private function testMode() {
-		if (!ispkwd() || time() > strtotime('2022-06-26 23:59')) return;
+		if (!ispkwd() || time() > strtotime('2022-06-16 23:59')) return;
 		$this->ecoll->drop();
 		
 	}
@@ -33,13 +33,13 @@ class backoff extends dao_generic_3 {
 	public function isok() {
 		$this->locko->lock();		
 		$res = $this->isok20();
+		if ($res) $this->putEvent();
 		$this->locko->unlock();
-		
 		if ($res) return self::boffOKToken;
 		return FALSE;
 	}
 	
-	public function putEvent() {
+	private function putEvent() {
 		$dat = [];
 		$dat['usbo'] = microtime(1);
 		$dat['_id']  = $this->etype . '_' . dao_generic_3::get_oids();

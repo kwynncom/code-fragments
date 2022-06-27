@@ -7,7 +7,10 @@
 <title>Q drop update tracker</title>
 
 <style>
-    body { font-family: sans-serif; }
+    body { 
+		font-family: sans-serif; 
+		font-size: 80%; 
+	}
 </style>
 </head>
 <body>
@@ -23,10 +26,11 @@
        <table>
                <thead>
                        <tr>
-                               <!-- <th>lm</th> -->
-                               <th>asof</th>
-                               <th>len</th>
                                <th>etag</th>
+						   <th>lm</th>
+                               <th>asof</th>
+                               <!-- <th>len</th> -->
+
                        </tr>
                </thead>
                <tbody>

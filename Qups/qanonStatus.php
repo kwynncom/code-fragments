@@ -37,7 +37,7 @@ class Qupdates extends dao_generic_3 {
 	}
 	
 	private function rget20() {
-		if (1 && file_exists(self::tmpf)) $t = file_get_contents(self::tmpf);
+		if (0 && file_exists(self::tmpf)) $t = file_get_contents(self::tmpf);
 		else $t = $this->checkGetAndRecord();
 		
 		$a = $this->textToArr($t);
@@ -105,7 +105,7 @@ class Qupdates extends dao_generic_3 {
 		if (!($ckr = $this->boffo->isok()))return FALSE;
 		$hth = $this->getHTH();
 		$res = $this->getActual($ckr, $hth);
-		$this->boffo->putEvent();
+		// $this->boffo->putEvent();
 		return $res;		
 	}
 	
@@ -143,4 +143,4 @@ class Qupdates extends dao_generic_3 {
 
 }
 
-Qupdates::get();
+if (didAnyCallMe(__FILE__)) Qupdates::get();

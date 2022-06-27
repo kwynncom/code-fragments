@@ -7,6 +7,11 @@ class qanonBackToFrontClass {
                $this->do10();
        }
        
+	   public function getMeta() {
+		   $ht  = '';
+		   $ht .= 'fetch time: ' . $this->getFetchTime() . 'ms; attempt at: ' . date('r');
+	   }
+	   
        public function getFetchTime() { return $this->fetchms; }
        
        private function do10() {
@@ -24,10 +29,11 @@ class qanonBackToFrontClass {
                foreach($d as $r) {
                        $ht .= <<<HTQTR
                                        <tr>
-                                               <!-- <td>$r[lm_hu]</td> -->
+                                         <td>$r[etag]</td>           
+   <td>$r[lm_hu]</td>
                                                <td>$r[asof_hu]</td>
-                                               <td>$r[len_hu]</td>
-                                               <td>$r[etag]</td>                                                       
+                                               <!-- <td>$r[len_hu]</td> -->
+                                                           
                                        </tr>
 HTQTR;
                }
