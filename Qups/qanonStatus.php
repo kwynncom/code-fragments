@@ -66,8 +66,6 @@ class Qupdates extends dao_generic_3 {
 	}
 
 	private function p30($a) {
-		
-		// $a['usbo'] = microtime(1);
 		$a['_id'] = dao_generic_3::get_oids();
 		$this->ucoll->insertOne($a, ['kwnoup' => true]);
 		
@@ -75,7 +73,6 @@ class Qupdates extends dao_generic_3 {
 	
 	private function p20($a) {
 		$ret = $a;
-		$ret['etag'] = str_replace('"', '', $a['etag']);
 		$ret['len_hu'] = number_format($a['len']);
 		$ret['len'] = intval($ret['len']);
 		$ret['asof_ts'] = strtotime($ret['asof_hu']);
@@ -86,7 +83,15 @@ class Qupdates extends dao_generic_3 {
 	private function p10($t) {
 		
 		$ret = [];
+		
+		$htrc = intval(substr($t, 7, 3)); kwas($htrc >= 100 && $htrc <= 599, 'bad HTTP response code');
+		
 		$fs = ['len' => 'content-length', 'etag' => 'etag', 'lm_hu' => 'last-modified', 'asof_hu' => 'date'];
+
+		if ($htrc === 304) { $ret['len'] = -1; unset($fs['len']); }
+		
+		$ret['htrc'] = $htrc;
+		
 		foreach($fs as $mynm => $f) {
 			$re = '/' . $f . ': ([^\n]+)/';
 			preg_match($re, $t, $ms);
@@ -99,20 +104,23 @@ class Qupdates extends dao_generic_3 {
 	
 	private function checkGetAndRecord() {
 		if (!($ckr = $this->boffo->isok()))return FALSE;
-		$ims = $this->getIFMS();
-		$res = $this->getActual($ckr, $ims);
+		$hth = $this->getHTH();
+		$res = $this->getActual($ckr, $hth);
 		$this->boffo->putEvent();
 		return $res;		
 	}
 	
-	private function getIFMS() {
-		$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);		
-		$ims = kwifs($res, 'lm_hu');
-		if (!$ims) return false;
-		return $ims;
+	private function getHTH() {
+		$ret = [];
+		$res = $this->ucoll->findOne([], ['sort' => ['asof_ts' => -1]]);
+		if (!$res) return $ret;
+		$h[] = 'If-None-Match: ' . $res['etag'];
+		// $h[] = 'If-Modified-Since: '	   . $res['lm_hu'];
+		
+		return $h;
 	}
 	
-	private function getActual($cktok, $ims) {
+	private function getActual($cktok, $hth) {
 		
 		if ($cktok !== backoff::boffOKToken) return FALSE;
 		
@@ -126,13 +134,14 @@ class Qupdates extends dao_generic_3 {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		
-		if ($ims) {
-			$imh = 'If-Modified-Since: ' . $ims;
-			curl_setopt($ch, CURLOPT_HTTPHEADER, [$imh]);	
-		}
+		if ($hth) curl_setopt($ch, CURLOPT_HTTPHEADER, $hth);	
+		
 		
 		$res = curl_exec($ch);
 		$sz = strlen($res);
+		
+		// $ci = curl_getinfo($ch);
+		
 		file_put_contents($p, $res);
 		return $res;
 	}

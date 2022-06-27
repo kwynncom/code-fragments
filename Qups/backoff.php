@@ -11,8 +11,15 @@ class backoff extends dao_generic_3 {
 	public function __construct(string $eventTypeID, array $backOffArrayInMinutes) {
 		parent::__construct(self::dbname);
 		$this->creTabs('events');
+		$this->testMode();
 		$this->etype = $eventTypeID;
 		$this->seta($backOffArrayInMinutes);
+	}
+	
+	private function testMode() {
+		if (!ispkwd() || time() > strtotime('2022-06-26 23:59')) return;
+		$this->ecoll->drop();
+		
 	}
 	
 	private function seta($ain) {
