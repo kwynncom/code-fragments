@@ -21,21 +21,36 @@ class qanonBackToFrontClass {
                $this->thedat  = $a['dat'];
                return;
        }
+	   
+	   private function d10($rin) {
+		   $a = $rin;
+		   
+		   $a['asof_d10'] = date('m/d H:i', $a['asof_ts']);
+		   $a['lm_d10']   = date('m/d H:i', strtotime($a['lm_hu']));
+		   $e = $a['etag'];
+		   $e = str_replace('-', '', $e);
+		   $e = str_replace('"', '', $e);
+		   $a['etag_d10'] = $e;
+		   
+		   return $a;
+		   
+	   }
        
        public function getHTRows() {
                
                $d = $this->thedat;
                
                $ht = '';
-               foreach($d as $r) {
-                       $ht .= <<<HTQTR
-                                       <tr>
-                                         <td>$r[etag]</td>           
-   <td>$r[lm_hu]</td>
-                                               <td>$r[asof_hu]</td>
-                                               <!-- <td>$r[len_hu]</td> -->
-                                                           
-                                       </tr>
+               foreach($d as $rr) {
+				   $r = $this->d10($rr);
+				   
+                   $ht .= <<<HTQTR
+<tr>
+	<td>$r[len_hu]</td>
+	<td>$r[etag_d10]</td>           
+	<td>$r[lm_d10]</td>
+    <td>$r[asof_d10]</td>
+</tr>
 HTQTR;
                }
                

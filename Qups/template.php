@@ -31,10 +31,11 @@
        <table>
                <thead>
                        <tr>
-                               <th>etag</th>
+                               <th>len</th>
+						   <th>etag</th>
 						   <th>lm</th>
                                <th>asof</th>
-                               <!-- <th>len</th> -->
+
 
                        </tr>
                </thead>
