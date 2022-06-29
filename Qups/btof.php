@@ -4,8 +4,26 @@ require_once('qanonStatus.php');
 
 class qanonBackToFrontClass {
        public function __construct() {
-               $this->do10();
+           $this->do10();
+		   $this->setLastAsof();
        }
+	   
+	   public function getLastAsofMS() { return $this->lastAsofMS; }
+	   
+	   private function setLastAsof() {
+		   
+		   $this->lastAsofMS = -1;
+		   try {
+				$a = $this->thedat;
+				$raw = kwifs($a, 0, 'asof_ts'); unset($a);
+				kwas($raw && is_numeric($raw), 'bad ts 1 - 2334');
+				$rawint = intval($raw); unset($raw);
+				kwas($rawint && $rawint > 1656473717, 'bad ts 2 - 2335');
+				$ms = $rawint * 1000;
+				$this->lastAsofMS = $ms;
+				
+		   } catch (Exception $ex) { }
+	   }
        
 	   public function getMeta() {
 		   $ht  = '';

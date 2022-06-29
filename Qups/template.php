@@ -6,6 +6,16 @@
 
 <title>Q drop update tracker</title>
 
+<?php 
+		require_once('btof.php'); 
+		$GTHEO = new qanonBackToFrontClass();
+
+?>
+
+<script>
+	var KW_QUPS_ASOF_MS = <?php echo($GTHEO->getLastAsofMS()); ?>;
+</script>
+
 <style>
 body { 
 	font-family: sans-serif; 
@@ -15,9 +25,50 @@ body {
 td.tdlen1 {
 	font-size: 250%;
 	font-weight: bold;
+}
+
+#asof10 {
+	font-family: monospace;
+	font-size: 180%;
 	
 }
 </style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+	function setAsof() {
+		try { 
+			const asof = KW_QUPS_ASOF_MS;
+			if (asof <= 0) kwas(false, 'bad ts 2342');
+			const now = time();
+
+			const dr = (now - asof) / 1000;
+			let d = dr;
+			if (d < 0) d = 0.1;
+			
+			const di10 = d.toFixed(1);
+
+			byid('asof10').innerHTML = di10;
+		} catch(ex) {
+			cl('set inverval dying with ' + ex);
+			clearInterval(KW_QUPS_IV);
+		}
+		
+	}
+	
+	var KW_QUPS_IV = false; 
+	onDOMLoad(
+		() => { 
+			const f = setAsof;
+			f();
+			KW_QUPS_IV = setInterval(f, 170); 
+		}
+	);
+
+	
+</script>
+
 </head>
 <body>
 	<div>
@@ -26,14 +77,12 @@ td.tdlen1 {
 		<div    style='display: inline-block;'>more info at bottom</div>
 	
 	</div>
-       <?php 
-               require_once('btof.php'); 
-               $GTHEO = new qanonBackToFrontClass();
-       
-       ?>
        
        <p><?php echo($GTHEO->getMeta()); ?></p>
-       
+
+	   	
+	<p><span id='asof10'>---</span>s ago (source checked)</p>
+	   
        <table>
                <thead>
                        <tr>
