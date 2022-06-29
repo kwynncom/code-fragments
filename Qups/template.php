@@ -7,10 +7,16 @@
 <title>Q drop update tracker</title>
 
 <style>
-    body { 
-		font-family: sans-serif; 
-		font-size: 80%; 
-	}
+body { 
+	font-family: sans-serif; 
+	font-size: 80%;
+}
+
+td.tdlen1 {
+	font-size: 250%;
+	font-weight: bold;
+	
+}
 </style>
 </head>
 <body>
