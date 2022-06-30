@@ -17,7 +17,7 @@
     var todo;
 
     function sendit(e) {
-       todo.doNow({'v' : e.value});
+       todo.doLater({'v' : e.value});
     }
     
     function receiveit(res) {
@@ -33,6 +33,7 @@
             this.dof = dof;
             this.delayms = delayms;
             this.iargs = Array.prototype.slice.call(arguments);
+            this.rpv = delayedDo.getRV();
         }
         
         doNow() { // later will come later
@@ -42,15 +43,19 @@
             let i=0, j=0;
             let fina = [];
             do {
-                if (isset(inia[i]) && inia[i] === delayedDo.getRV()) {
+                if (isset(inia[i]) && inia[i] === this.rpv) {
                     i++;
                     if (isset(args[j])) fina.push(args[j++]);
-                    
                 }
                 else if (isset(inia[i])) fina.push(inia[i++]);
             } while(i < inia.length || j < args.length);
             
             this.dof(... fina);
+        }
+        
+        doLater(args) {
+            clearTimeout(this.stov);
+            this.stov = setTimeout(() => { this.doNow(args); }, this.delayms);
         }
     }
 
@@ -61,7 +66,7 @@
 </head>
 <body>
     <div>
-        <input type='text' style='width: 20ex' oninput='sendit(this);' />
+        <textarea rows='5' cols='50' oninput='sendit(this);'></textarea>
     </div>
     
 </body>
