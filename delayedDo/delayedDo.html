@@ -4,7 +4,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>title</title>
+<title>delayed do JavaScript class</title>
 
 <style>
     body { font-family: sans-serif; }
@@ -21,14 +21,14 @@
     }
     
     class delayedDo {
-        constructor(dof, delayms, xa) {
+        constructor(dof, delayms) {
             this.dof = dof;
             this.delayms = delayms;
-            this.xa = xa;
+            this.iargs = Array.prototype.slice.call(arguments);
         }
         
         doNow(args) { // later will come later
-            this.dof(this.xa);
+            this.dof(... this.iargs.slice(2));
         }
     }
 
