@@ -17,7 +17,7 @@
     var todo;
 
     function sendit(e) {
-       todo.doLater({'v' : e.value});
+       todo.doAtInterval({'v' : e.value});
     }
     
     function receiveit(res) {
@@ -28,12 +28,14 @@
         
         static getRV() { return 'kwDDreplaceMe'; }
         
-        constructor(dof, delayms) {
-            this.clfan = 2; // should equal named arguments above
+        constructor(dof, delayms, commitint) {
+            this.clfan = 3; // should equal named arguments above
+            this.comint = commitint;
             this.dof = dof;
             this.delayms = delayms;
             this.iargs = Array.prototype.slice.call(arguments);
             this.rpv = delayedDo.getRV();
+            this.doneAt = 0;
         }
         
         doNow() { // later will come later
@@ -51,29 +53,37 @@
             } while(i < inia.length || j < args.length);
             
             this.dof(... fina);
+            this.doneAt = time();
         }
         
         doLater(args) {
-            clearTimeout(this.stov);
-            this.stov = setTimeout(() => { this.doNow(args); }, this.delayms);
+           return setTimeout(() => { this.doNow(args); }, this.delayms);
         }
+        
+        doAtInterval(args) {
+            
+            clearTimeout(this.daistv);
+            
+            if (time() - this.doneAt >= this.comint) { 
+                this.doNow(args); 
+                return; 
+            }
+            
+            this.daistv = this.doLater(args);
+            
+            
+        }
+        
     }
 
-    todo =  new delayedDo(kwjss.sobf, 307, 'nullServer.php', delayedDo.getRV(), receiveit);
+    todo =  new delayedDo(kwjss.sobf, 307, 2000, 'nullServer.php', delayedDo.getRV(), receiveit);
 
 </script>
 
 </head>
 <body>
     <div>
-        <textarea rows='5' cols='50' oninput='sendit(this);'></textarea>
+        <textarea rows='15' cols='50' oninput='sendit(this);'></textarea>
     </div>
-    
-    <p>The JavaScript is useful, but I lost sight of what I was doing.  This is NOT the right way to keep track of text because 
-        it won't save until the end if the user keeps typing.  My web message form solves the problem properly, but it's not quite 
-        generalized.  Perhaps combining it and the relevant portions of my drag class will work.
-        
-    </p>
-    
 </body>
 </html>
