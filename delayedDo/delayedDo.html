@@ -20,19 +20,41 @@
        todo.doNow({'v' : e.value});
     }
     
+    function receiveit(res) {
+        return;
+    }
+    
     class delayedDo {
+        
+        static getRV() { return 'kwDDreplaceMe'; }
+        
         constructor(dof, delayms) {
+            this.clfan = 2; // should equal named arguments above
             this.dof = dof;
             this.delayms = delayms;
             this.iargs = Array.prototype.slice.call(arguments);
         }
         
-        doNow(args) { // later will come later
-            this.dof(... this.iargs.slice(2));
+        doNow() { // later will come later
+            const args =  Array.prototype.slice.call(arguments);
+            const inia = this.iargs.slice(this.clfan).concat(args);
+            
+            let i=0, j=0;
+            let fina = [];
+            do {
+                if (isset(inia[i]) && inia[i] === delayedDo.getRV()) {
+                    i++;
+                    if (isset(args[j])) fina.push(args[j++]);
+                    
+                }
+                else if (isset(inia[i])) fina.push(inia[i++]);
+            } while(i < inia.length || j < args.length);
+            
+            this.dof(... fina);
         }
     }
 
-    todo =  new delayedDo(kwjss.sobf, 307, 'nullServer.php');
+    todo =  new delayedDo(kwjss.sobf, 307, 'nullServer.php', delayedDo.getRV(), receiveit);
 
 </script>
 
