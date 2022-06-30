@@ -13,7 +13,7 @@
 <script src='/opt/kwynn/js/utils.js'></script>
 
 <script>
-    function delayedDo(e) {
+    function sendit(e) {
         kwjss.sobf('nullServer.php', {'v' : e.value});
     }
 
@@ -22,7 +22,7 @@
 </head>
 <body>
     <div>
-        <input type='text' style='width: 20ex' oninput='delayedDo(this);' />
+        <input type='text' style='width: 20ex' oninput='sendit(this);' />
     </div>
     
 </body>
