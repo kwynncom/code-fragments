@@ -13,9 +13,26 @@
 <script src='/opt/kwynn/js/utils.js'></script>
 
 <script>
+
+    var todo;
+
     function sendit(e) {
-        kwjss.sobf('nullServer.php', {'v' : e.value});
+       todo.doNow({'v' : e.value});
     }
+    
+    class delayedDo {
+        constructor(dof, delayms, xa) {
+            this.dof = dof;
+            this.delayms = delayms;
+            this.xa = xa;
+        }
+        
+        doNow(args) { // later will come later
+            this.dof(this.xa);
+        }
+    }
+
+    todo =  new delayedDo(kwjss.sobf, 307, 'nullServer.php');
 
 </script>
 
