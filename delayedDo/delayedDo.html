@@ -24,58 +24,6 @@
         return;
     }
     
-    class delayedDo {
-        
-        static getRV() { return 'kwDDreplaceMe'; }
-        
-        constructor(dof, delayms, commitint) {
-            this.clfan = 3; // should equal named arguments above
-            this.comint = commitint;
-            this.dof = dof;
-            this.delayms = delayms;
-            this.iargs = Array.prototype.slice.call(arguments);
-            this.rpv = delayedDo.getRV();
-            this.doneAt = 0;
-        }
-        
-        doNow() { // later will come later
-            const args =  Array.prototype.slice.call(arguments);
-            const inia = this.iargs.slice(this.clfan).concat(args);
-            
-            let i=0, j=0;
-            let fina = [];
-            do {
-                if (isset(inia[i]) && inia[i] === this.rpv) {
-                    i++;
-                    if (isset(args[j])) fina.push(args[j++]);
-                }
-                else if (isset(inia[i])) fina.push(inia[i++]);
-            } while(i < inia.length || j < args.length);
-            
-            this.dof(... fina);
-            this.doneAt = time();
-        }
-        
-        doLater(args) {
-           return setTimeout(() => { this.doNow(args); }, this.delayms);
-        }
-        
-        doAtInterval(args) {
-            
-            clearTimeout(this.daistv);
-            
-            if (time() - this.doneAt >= this.comint) { 
-                this.doNow(args); 
-                return; 
-            }
-            
-            this.daistv = this.doLater(args);
-            
-            
-        }
-        
-    }
-
     todo =  new delayedDo(kwjss.sobf, 307, 2000, 'nullServer.php', delayedDo.getRV(), receiveit);
 
 </script>

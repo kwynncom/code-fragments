@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>text IO standardization</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+class kwStandardTextIOCl {
+    static init() {
+        qsa('[data-kwstdtio="1"]').forEach((e) => {
+            new kwStandardTextIOCl(e);
+        } );
+    }
+    
+    constructor(e) {
+        this.thee = e;
+        this.init10();
+        return;
+    }
+    
+    init10() {
+        this.ddo = new delayedDo(kwjss.sobf, 307, 2000, '../../06/delayedDo/nullServer.php', delayedDo.getRV(), this.oninret);
+        this.thee.oninput = (ev) => { this.oninput(ev); };
+    }
+    
+    oninput(ev) {
+        this.ddo.doAtInterval({'v' : ev.target.value});
+    }
+    
+    oninret(res) {
+        cl(res);
+    }
+    
+}
+
+onDOMLoad(kwStandardTextIOCl.init);
+</script>
+
+
+</head>
+<body>
+    <textarea rows='10' cols='50' data-kwstdtio='1'></textarea>
+</body>
+</html>
