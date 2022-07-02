@@ -28,11 +28,13 @@ class kwStandardTextIOCl {
     
     init10() {
         this.ddo = new delayedDo(kwjss.sobf, 307, 2000, '../../06/delayedDo/nullServer.php', delayedDo.getRV(), this.oninret);
-        this.thee.oninput = (ev) => { this.oninput(ev); };
+        this.thee.oninput = () => { this.oninput(); };
     }
     
-    oninput(ev) {
-        this.ddo.doAtInterval({'v' : ev.target.value});
+    oninput() {
+        const e = this.thee;
+        e.style.backgroundColor = 'yellow';
+        this.ddo.doAtInterval({'v' : e.value});
     }
     
     oninret(res) {
