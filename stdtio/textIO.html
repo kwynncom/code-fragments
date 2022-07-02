@@ -14,41 +14,51 @@
 
 <script>
 class kwStandardTextIOCl {
-    static init() {
-        qsa('[data-kwstdtio="1"]').forEach((e) => {
-            new kwStandardTextIOCl(e);
-        } );
-    }
     
-    constructor(e) {
+    constructor(e, fin) {
         this.thee = e;
+        this.isokevf = fin;
+        this.okcolor = getOKColor();
         this.init10();
         return;
     }
     
     init10() {
-        this.ddo = new delayedDo(kwjss.sobf, 307, 2000, '../../06/delayedDo/nullServer.php', delayedDo.getRV(), this.oninret);
+        this.ddo = new delayedDo(kwjss.sobf, 307, 2000, 'server.php', delayedDo.getRV(), 
+                                    (res) => {this.oninret(res); });
         this.thee.oninput = () => { this.oninput(); };
     }
     
     oninput() {
+        clearTimeout(this.okstov);
         const e = this.thee;
         e.style.backgroundColor = 'yellow';
         this.ddo.doAtInterval({'v' : e.value});
     }
     
     oninret(res) {
-        cl(res);
+        if (this.isokevf(res)) {
+            const e = this.thee;            
+            e.style.backgroundColor = this.okcolor;
+            this.okstov = setTimeout(() => { e.style.backgroundColor = 'white'; }, 4000);
+        }
     }
     
 }
 
-onDOMLoad(kwStandardTextIOCl.init);
+onDOMLoad(() => { new kwStandardTextIOCl(byid('theta10'), isResOK); });
+
+function isResOK(res) {
+    if (res['stdtextIOTestRet'] !== 'OK') return false;
+    if (res['retv'] !== byid('theta10').value) return false;
+    return true;
+}
+
 </script>
 
 
 </head>
 <body>
-    <textarea rows='10' cols='50' data-kwstdtio='1'></textarea>
+    <textarea rows='10' cols='50' id='theta10'></textarea>
 </body>
 </html>
