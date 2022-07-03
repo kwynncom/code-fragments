@@ -14,7 +14,15 @@
 
 <script>
 
-onDOMLoad(() => { new kwStandardTextIOCl(byid('theta10'), 'server.php', isResOK); });
+class exampleIOSubclass extends kwStandardTextIOCl {
+    constructor() { super(byid('theta10'), 'server.php', isResOK);   }
+    oninput(e) {  super.oninput(e, {'v' : e.value});    }
+}
+
+onDOMLoad(() => { 
+    new exampleIOSubclass(); 
+    byid('theta10').focus();
+});
 
 function isResOK(res) {
     if (res['stdtextIOTestRet'] !== 'OK') return false;
@@ -29,8 +37,6 @@ function isResOK(res) {
 <body>
     <textarea rows='10' cols='50' id='theta10'></textarea>
     
-    <p>v1:25am
-        
-    </p>
+
 </body>
 </html>
