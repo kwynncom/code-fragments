@@ -25,13 +25,18 @@
     }
     
     todo =  new delayedDo(kwjss.sobf, 307, 2000, 'nullServer.php', delayedDo.getRV(), receiveit);
+    
+    onDOMLoad(() => { byid('ta10').focus(); });
 
 </script>
 
 </head>
 <body>
     <div>
-        <textarea rows='15' cols='50' oninput='sendit(this);'></textarea>
+        <textarea rows='15' cols='50' oninput='sendit(this);' id='ta10'></textarea>
+    </div>
+    <div>
+        <p><a href='info.html'>info</a></p>
     </div>
 </body>
 </html>
