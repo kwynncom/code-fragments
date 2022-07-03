@@ -14,12 +14,29 @@
 <p><a href='/'>home</a></p>
 <div>
     <p><a href='delayedDo.html'>delayed do</a></p>
-    <p><a href=''>a specific version of the source code</a> (probably old)</p>
+    <p><a href='https://github.com/kwynncom/code-fragments/tree/ea20bdaa74f3b7d911480f51c4049d6af2e7267a/delayedDo'>a specific version of the 
+            source code</a> (probably old)</p>
+    <p><a href='https://github.com/kwynncom/code-fragments/tree/master/delayedDo'>code that is current for now</a> but subject to deletion if 
+I "promote" the code to another repo, archive the directory, etc.        
+    </p>
 </div>
 <div>
-<p>There is nothing interesting to see without browser developer tools (control-shift-I).  
-
+<p>There is nothing interesting to see without browser developer tools (control-shift-I).  The purpose of this goes back several years to 
+    my main client's request / requirement that fields be "save on edit" rather than entering a bunch of rows and then hitting "save" for the 
+    whole page.  
 </p>
+<p>If every keystroke results in a separate network call, the situation can get out of hand.  One problem is that one keystroke can easily 
+    get ahead of another through the network.  If I'm running the PHP debugger (xdebug), as I remember, the whole system can show strain 
+    just from all the keystrokes.  Even if you timestamp the calls with ms from (client-side) JavaScript, I have seen two keystrokes get 
+    the same ms.  I just reproduced that, in fact.  I can't get event.timeStamp to give me the same ms, but I got within 2ms so far, and 
+    I otherwise see all sorts of potential problems there, including intentionally reduced precision 
+    (<a href='https://developer.mozilla.org/en-US/docs/Web/API/Event/timeStamp'>see MDN</a> on the matter).  
+</p>
+
+<p>
+    
+</p>
+
 </div>
     
 </body>
