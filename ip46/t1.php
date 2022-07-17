@@ -1,7 +1,8 @@
 <?php
 
-	$KW_G_SPATH = '/server.php';
-
+	if (0) $KW_G_SPATH = '/server.php';
+	else $KW_G_SPATH = '/t/22/07/ip46/server.php';
+	
 	require_once('/opt/kwynn/kwutils.php');
 
 	function getBoth() {
@@ -10,9 +11,10 @@
 		$p = $KW_G_SPATH;
 		
 		$a = [];
+		if (0) {
 		$a['4']['cmd'] = 'curl --connect-timeout 0.2 http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null';
 		$a['4']['re' ] = '/^((\d+){1,3}\.){3}(\d+){1,3}$/';
-		
+		}
 		if (1) {
 		$a['6']['cmd'] = 'ip -6 addr show scope global';
 		$a['6']['re' ] = '/([0-9A-Fa-f:]{39})/';
@@ -34,12 +36,16 @@
 
 			$is6 = $k == '6';
 			$ip  = '';
-			$ip .= 'http://';
+			$ip .= 'https://';
 			$ip .= $is6 ? '[' : '';
 			$ip .= $ipp;
 			$ip .= $is6 ? ']' : '';
-			$ip .= ':19999';
+			if (0) $ip .= ':19999';			
 			$ip .= $p;
+			header("Access-Control-Allow-Origin: $ip");
+			
+
+
 			$ret[$k] = $ip; 	unset($ipp, $ip);
 		} unset($a, $k, $v);
 
@@ -72,7 +78,7 @@
 	}
 
 ?>
-	const fs = ['4', '6'];
+	const fs = [/* '4' ,*/ '6'];
 	for (let i=0; i < fs.length; i++) {
 		const v   = fs[i];
 		const url = KW_G_ips[v]['srv'];
