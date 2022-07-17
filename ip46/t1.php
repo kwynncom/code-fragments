@@ -1,5 +1,7 @@
 <?php
 
+// THE SOLUTION IS A SUBDOMAIN WITH ONLY a DNS AAAA entry!!!!!
+
 	if (0) $KW_G_SPATH = '/server.php';
 	else $KW_G_SPATH = '/t/22/07/ip46/server.php';
 	
