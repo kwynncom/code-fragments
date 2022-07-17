@@ -1,6 +1,5 @@
 <?php
 
-	// $KW_G_SPATH = '/t/22/07/ip46/server.php';
 	$KW_G_SPATH = '/server.php';
 
 	require_once('/opt/kwynn/kwutils.php');
@@ -41,28 +40,13 @@
 			$ip .= $is6 ? ']' : '';
 			$ip .= ':19999';
 			$ip .= $p;
-			
-			
-			// if ($k != 6) header('Access-Control-Allow-Origin: ' . $ip); 
-
-
-			$ret[$k] = $ip;
-			
-			unset($ipp, $ip);
-			
+			$ret[$k] = $ip; 	unset($ipp, $ip);
 		} unset($a, $k, $v);
-		
-		// return get_defined_vars();
+
 		return $ret;
 	}
 	
 	$ips = getBoth();
-
-// header('Access-Control-Allow-Origin: http://127.0.0.1:19999/server.php?XDEBUG_SESSION_START=netbeans-xdebug');
-
-	
-	kwynn();
-	
 ?><!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -88,10 +72,16 @@
 	}
 
 ?>
-	const fs = ['4', '6']; // one removed for now
+	const fs = ['4', '6'];
 	for (let i=0; i < fs.length; i++) {
-		const url = KW_G_ips[fs[i]]['srv']; //  +  '/t/22/07/ip46/server.php';
-		kwjss.sobf(url);
+		const v   = fs[i];
+		const url = KW_G_ips[v]['srv'];
+		kwjss.sobf(url, {}, (res) => { onret(res, v); }, false);
+	}
+	
+	function onret(res,v) {
+		byid('eipv' + v).innerHTML = res;
+		return;
 	}
 	
 </script>
