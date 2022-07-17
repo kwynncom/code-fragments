@@ -1,6 +1,6 @@
 <?php
 
-//	$KW_G_SPATH = '/t/22/07/ip46/server.php';
+	// $KW_G_SPATH = '/t/22/07/ip46/server.php';
 	$KW_G_SPATH = '/server.php';
 
 	require_once('/opt/kwynn/kwutils.php');
@@ -14,7 +14,7 @@
 		$a['4']['cmd'] = 'curl --connect-timeout 0.2 http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null';
 		$a['4']['re' ] = '/^((\d+){1,3}\.){3}(\d+){1,3}$/';
 		
-		if (0) {
+		if (1) {
 		$a['6']['cmd'] = 'ip -6 addr show scope global';
 		$a['6']['re' ] = '/([0-9A-Fa-f:]{39})/';
 		}
@@ -88,7 +88,7 @@
 	}
 
 ?>
-	const fs = ['4']; // one removed for now
+	const fs = ['4', '6']; // one removed for now
 	for (let i=0; i < fs.length; i++) {
 		const url = KW_G_ips[fs[i]]['srv']; //  +  '/t/22/07/ip46/server.php';
 		kwjss.sobf(url);
