@@ -11,11 +11,14 @@ if ((!ispkwd()) || (time() > strtotime('2022-07-28 03:59'))) die('expired');
 class sortSiteByTime {
 
 public static function getPaths() {
-	new self();
+	$o = new self();
+	return $o->getPathsI();
 }
-	
+
+private function getPathsI() { return $this->theps; }
+
 private function __construct() {
-	
+	$this->theps = [];	
 	$this->set10();
 	$this->p20();
 	$this->doHT();
@@ -29,18 +32,7 @@ private function set10() {
 }
 
 private function doHT() {
-	$ht = '';
-	$ht .= file_get_contents(__DIR__ . '/top.html');
-	foreach($this->theps as $p) {
-		$ht .= '<tr>';
-		$ht .= '<td>';
-		$ht .= '<a href="' . $p . '">' . $p . '</a>';
-		$ht .= '</td>';
-		$ht .= '</tr>' . "\n";		
-	}
-	
-	$ht .= "</table>\n</body>\n</html>\n";
-	echo($ht);
+
 	
 }
 
@@ -76,6 +68,5 @@ private function p20() {
 } // func
 } // class
 
-sortSiteByTime::getPaths();
 
 
