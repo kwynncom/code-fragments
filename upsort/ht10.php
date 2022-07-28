@@ -1,9 +1,7 @@
 <?php
 
 function ht10($theps) {
-	$ht = '';
-	$ht .= file_get_contents(__DIR__ . '/top.html');
-	echo($ht);
+	require_once(__DIR__ . '/html/top.html');
 	require_once('frag10.php');
-	
+	require_once(__DIR__ . '/html/bottom.html');
 }
