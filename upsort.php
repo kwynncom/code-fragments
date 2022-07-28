@@ -1,14 +1,20 @@
-<?php // 2022/07/28 01:15
+<?php // 2022/07/28 01:21
 
+// About to separate this file from HTML stuff
 // Hopefully a lesson in objectification--going from a function to a class / object.
-
-if (time() > strtotime('2022-07-28 03:59')) die('expired');
 
 require_once('/opt/kwynn/kwutils.php');
 
-class siteUpdateTracker {
+if ((!ispkwd()) || (time() > strtotime('2022-07-28 03:59'))) die('expired');
 
-public function __construct() {
+
+class sortSiteByTime {
+
+public static function getPaths() {
+	new self();
+}
+	
+private function __construct() {
 	
 	$this->set10();
 	$this->p20();
@@ -70,6 +76,6 @@ private function p20() {
 } // func
 } // class
 
-new siteUpdateTracker();
+sortSiteByTime::getPaths();
 
 
