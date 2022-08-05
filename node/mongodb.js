@@ -17,15 +17,25 @@ class mongoHello {
     const self = this;
 
     MongoClient.connect(mongoConnURL, function(err, client) {
-      var db = client.db('qemail');
-      self.dbo = db;
+      var c = client.db('qemail').collection('usage');
+      self.collo = c;
 
     });  
   }
 
   async getMongoRes() {
-    const dbrr = await this.dbo.collection('usage').find().toArray();
-    return JSON.stringify(dbrr);
+
+const q = [
+          { $match : { 'timed.time' : { '$gte' : 1633065493   }, 'email' : {'$ne' : null} }}, 
+          { $group : { _id : {  'agent' : '$agent', 'ip' : '$ip', 'email' : '$email'},
+              'mints' : {'$min' : '$timed.time'},
+              'maxts' : {'$max' : '$timed.time'}
+               }}   ];
+ 
+
+
+    const dbrr = await this.collo.aggregate(q).toArray();
+    return JSON.stringify(dbrr, null, 2);
   }
 
   async doHTr(req, res) {
@@ -33,7 +43,7 @@ class mongoHello {
     res.setHeader('Content-Type', 'text/plain');
     const mr = await this.getMongoRes();
     res.end(mr);
-    // process.exit();
+    process.exit();
   }
 
   htserver() {
