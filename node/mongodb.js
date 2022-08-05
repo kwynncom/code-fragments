@@ -7,42 +7,46 @@ const port = 3000;
 
 class mongoHello {
   constructor() {
+    this.setMongoDB();
     this.htserver();
-    this.mongo10(); 
+
   }
 
-  mongo10() {
+  setMongoDB() {
+
+    const self = this;
+
     MongoClient.connect(mongoConnURL, function(err, client) {
-
       var db = client.db('qemail');
+      self.dbo = db;
 
-      db.collection('usage').find()
-      .toArray((err, results) => {
-          if(err) throw err;
-  
-          results.forEach((value)=>{
-              console.log(value);
-          });
+    });  
+  }
 
-          const ignore = 1;
-          process.exit();
-      })
+  async getMongoRes() {
+    const dbrr = await this.dbo.collection('usage').find().toArray();
+    return JSON.stringify(dbrr);
+  }
 
-      const ignore = 2;
-  });  
+  async doHTr(req, res) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    const mr = await this.getMongoRes();
+    res.end(mr);
+    // process.exit();
   }
 
   htserver() {
+    const self = this;
     const server = http.createServer((req, res) => {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'text/plain');
-      this.mongo10();
+        self.doHTr(req, res);
     });
 
     server.listen(port, hostname, () => {
       console.log(`Server running at http://${hostname}:${port}/`);
     });
-} // func
+
+  } // func
 } // class
 
 new mongoHello();
