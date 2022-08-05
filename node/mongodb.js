@@ -23,7 +23,12 @@ class mongoHello {
           results.forEach((value)=>{
               console.log(value);
           });
+
+          const ignore = 1;
+          process.exit();
       })
+
+      const ignore = 2;
   });  
   }
 
@@ -32,7 +37,6 @@ class mongoHello {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/plain');
       this.mongo10();
-      res.end('Hello World - approaching MongoDB');
     });
 
     server.listen(port, hostname, () => {
