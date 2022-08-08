@@ -19,6 +19,7 @@ class stsck {
 		$is = ['4', '6'];
 		$dp = self::domain . ' ' . self::port;
 		$rra = [];
+		$this->cmdso = [];
 		foreach($ps as $p) foreach($is as $i) {
 			$n = $p . ' -' . $i . ' ';
 			$this->sws[] = $n;
@@ -26,9 +27,12 @@ class stsck {
 			// echo($n);
 			$rra[] = $rr = shell_exec($c);
 			echo($rr);
+			$this->cmdso[] = $c;
 		} // loop
 		$this->orra = $rra;
 	} // func
+	
+	public function getCmdsS() { return implode("\n", $this->cmdso);}
 	
 	private function do20() {
 		$fra = [];
@@ -42,14 +46,7 @@ class stsck {
 		
 		for($i=0; $i < 4; $i++) echo($rs [$i] . "\n");
 		for($i=0; $i < 4; $i++) printf("%0.9f\n", $fra[$i]);
-		for($i=0; $i < 4; $i++) echo($this->sws[$i] . "\n");
-		echo(self::cmdprefix . '' . "\n");
-		echo(self::domain . "\n");
-		echo(self::port . ' port' . "\n");
 		echo(date('T P') . "\n");
 		echo(date('e') . "\n");
-		
 	} // func
 } // class
-
-new stsck();

@@ -8,24 +8,37 @@
 
 <style>
     body { font-family: sans-serif; }
-	pre { 
+	.pre10 { 
 		font-size: 4vw;
 		margin-top: 0;
 		margin-bottom: 0;
 		display: inline-block;
 		
 	}
+	
+	.pre20 { 
+		font-size: 3vw; 
+		margin-top	 : 0.4ex;
+		margin-bottom: 1ex;
+		
+		
+	}
 </style>
 </head>
 <body>
 	<div style='position: relative; '>
-	<pre><!--
-		--><?php require_once('tsck.php');	?><!--
+	<pre class='pre10'><!--
+		--><?php require_once('tsck.php');	
+				 $o = new stsck();
+			?><!--
 	--></pre>
-	<div style='display: inline-block; position: absolute; top: 1ex; '>
+	<div style='display: inline-block; position: absolute; top: 1ex; margin-left: 2ex; '>
 		<button onclick='history.go(0);'><span style='font-size: 3vw;'>&#10227;</span></button>
 	</div>
 	</div>
+	<pre class='pre20'><!--
+		--><?php echo($o->getCmdsS()); ?><!--
+	--></pre>
 	<div>
 		<p>testing <a href='https://github.com/kwynncom/simple-time-server'>
 				my simple timeserver</a></p>
@@ -35,7 +48,13 @@
 		</p>
 		<p><a href='/t/20/08/dates/'>PHP date format codes</a></p>
 		<p><a href='/'>home</a></p>
-		<p>02:25 - version stamp
+		
+		<p>Note to self: this will test that the server is working, but it does NOT test outside accessibility.  I'm almost certain I have my server 
+			wired to translate kwynn.com to the loopback (127.0.0.1).
+			
+		</p>
+		
+		<p>03:00 - version stamp
 			
 		</p>
 	</div>
