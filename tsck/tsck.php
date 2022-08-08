@@ -6,6 +6,7 @@ class stsck {
 	
 	const domain = 'kwynn.com';
 	const port   = 8123;
+	const cmdprefix = 'echo -n d | nc -W 1 ';
 	
 	
 	public function __construct() {
@@ -16,13 +17,12 @@ class stsck {
 	private function do10() {
 		$ps = ['-u', '  ' ];
 		$is = ['4', '6'];
-		$this->pre = $pre = 'echo -n d | nc -W 1 ';
-		$this->domport = $dp = self::domain . ' ' . self::port;
+		$dp = self::domain . ' ' . self::port;
 		$rra = [];
 		foreach($ps as $p) foreach($is as $i) {
 			$n = $p . ' -' . $i . ' ';
 			$this->sws[] = $n;
-			$c = $pre . $n . ' ' . $dp . ' ';
+			$c = self::cmdprefix . $n . ' ' . $dp . ' ';
 			// echo($n);
 			$rra[] = $rr = shell_exec($c);
 			echo($rr);
@@ -43,9 +43,9 @@ class stsck {
 		for($i=0; $i < 4; $i++) echo($rs [$i] . "\n");
 		for($i=0; $i < 4; $i++) printf("%0.9f\n", $fra[$i]);
 		for($i=0; $i < 4; $i++) echo($this->sws[$i] . "\n");
-		echo($this->pre . '' . "\n");
-		echo($this->domport . "\n");
-		
+		echo(self::cmdprefix . '' . "\n");
+		echo(self::domain . "\n");
+		echo(self::port . ' port' . "\n");
 		echo(date('T P') . "\n");
 		echo(date('e') . "\n");
 		
