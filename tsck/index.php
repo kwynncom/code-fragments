@@ -10,31 +10,35 @@ class stsck {
 	
 	public function __construct() {
 		$this->do10();
+		$this->do20();
 	}
 	
 	private function do10() {
-		/*  echo -n d | nc -W 1 -u -6 kwynn.com 8123
-			echo -n d | nc -W 1    -6 kwynn.com 8123
-			echo -n d | nc -W 1 -u -4 kwynn.com 8123
-			echo -n d | nc -W 1	   -4 kwynn.com 8123  *  */
-		
-		$ps = ['-u', '' ];
+		$ps = ['-u', '  ' ];
 		$is = ['4', '6'];
-		
 		$pre = 'echo -n d | nc -W 1 ';
-		
-		
+		$dp = self::domain . ' ' . self::port;
+		echo($pre . '' . $dp . "\n");
+		$rra = [];
 		foreach($ps as $p) foreach($is as $i) {
-			$cmd = $pre . $p . ' -' . $i . ' ' . self::domain . ' ' . self::port;
-			echo(shell_exec($cmd));
+			$n = $p . ' -' . $i . ' ';
+			$c = $pre . $n . ' ' . $dp . ' ';
+			echo($n);
+			$rra[] = $rr = shell_exec($c);
+			echo($rr);
+		} // loop
+		$this->orra = $rra;
+	} // func
+	
+	private function do20() {
+		$a = $this->orra;
+		foreach($a as $r) {
+			$ns = intval(trim($r));
+			$U  = roint($ns / M_BILLION);
+			echo(date('r', $U) . "\n");
 		}
-		
-		
-		
-		
-		
-		
 	}
-}
+	
+} // class
 
 new stsck();
