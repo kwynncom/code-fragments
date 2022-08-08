@@ -23,7 +23,7 @@ class stsck {
 		foreach($ps as $p) foreach($is as $i) {
 			$n = $p . ' -' . $i . ' ';
 			$this->sws[] = $n;
-			$c = self::cmdprefix . $n . ' ' . $dp . ' ';
+			$c = self::cmdprefix . $n . '' . $dp . '';
 			// echo($n);
 			$rra[] = $rr = shell_exec($c);
 			echo($rr);

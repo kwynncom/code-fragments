@@ -17,7 +17,7 @@
 	}
 	
 	.pre20 { 
-		font-size: 3vw; 
+		font-size: 2.5vw; 
 		margin-top	 : 0.4ex;
 		margin-bottom: 1ex;
 		
@@ -54,7 +54,7 @@
 			
 		</p>
 		
-		<p>03:00 - version stamp
+		<p>03:07 - version stamp
 			
 		</p>
 	</div>
