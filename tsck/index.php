@@ -18,7 +18,7 @@ class stsck {
 		$is = ['4', '6'];
 		$pre = 'echo -n d | nc -W 1 ';
 		$dp = self::domain . ' ' . self::port;
-		echo($pre . '' . $dp . "\n");
+		echo($pre . '... ' . $dp . "\n");
 		$rra = [];
 		foreach($ps as $p) foreach($is as $i) {
 			$n = $p . ' -' . $i . ' ';
@@ -31,14 +31,19 @@ class stsck {
 	} // func
 	
 	private function do20() {
-		$a = $this->orra;
-		foreach($a as $r) {
+		$fra = [];
+		$rs = [];
+		foreach($this->orra as $r) {
 			$ns = intval(trim($r));
-			$U  = roint($ns / M_BILLION);
-			echo(date('r', $U) . "\n");
-		}
-	}
-	
+			$U  = intval(floor($ns / M_BILLION));
+			$rs[] = date('r', $U);
+			$fra[] = ($ns - $U * M_BILLION) / M_BILLION;
+		} unset($a, $r, $U); // loop
+		
+		for($i=0; $i < 4; $i++) echo($rs [$i] . "\n");
+		for($i=0; $i < 4; $i++) printf("%0.9f\n", $fra[$i]);
+		
+	} // func
 } // class
 
 new stsck();
