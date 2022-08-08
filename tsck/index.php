@@ -1,49 +1,30 @@
-<?php
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-require_once('/opt/kwynn/kwutils.php');
+<title>check my timeserver</title>
 
-class stsck {
-	
-	const domain = 'kwynn.com';
-	const port   = 8123;
-	
-	
-	public function __construct() {
-		$this->do10();
-		$this->do20();
+<style>
+    body { font-family: sans-serif; }
+	pre { 
+		font-size: 3vw;
+		margin-top: 0;
+		
 	}
-	
-	private function do10() {
-		$ps = ['-u', '  ' ];
-		$is = ['4', '6'];
-		$pre = 'echo -n d | nc -W 1 ';
-		$dp = self::domain . ' ' . self::port;
-		echo($pre . '... ' . $dp . "\n");
-		$rra = [];
-		foreach($ps as $p) foreach($is as $i) {
-			$n = $p . ' -' . $i . ' ';
-			$c = $pre . $n . ' ' . $dp . ' ';
-			echo($n);
-			$rra[] = $rr = shell_exec($c);
-			echo($rr);
-		} // loop
-		$this->orra = $rra;
-	} // func
-	
-	private function do20() {
-		$fra = [];
-		$rs = [];
-		foreach($this->orra as $r) {
-			$ns = intval(trim($r));
-			$U  = intval(floor($ns / M_BILLION));
-			$rs[] = date('r', $U);
-			$fra[] = ($ns - $U * M_BILLION) / M_BILLION;
-		} unset($a, $r, $U); // loop
+</style>
+</head>
+<body>
+	<pre><!--
+		--><?php require_once('tsck.php');	?>
+	</pre>
+	<div>
+		<p>testing <a href='https://github.com/kwynncom/simple-time-server'>
+				my simple timeserver</a></p>
+		<p><a href=''>this testing app's source code</a></p>
 		
-		for($i=0; $i < 4; $i++) echo($rs [$i] . "\n");
-		for($i=0; $i < 4; $i++) printf("%0.9f\n", $fra[$i]);
-		
-	} // func
-} // class
+	</div>
+</body>
+</html>
 
-new stsck();
