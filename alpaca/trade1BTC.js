@@ -1,3 +1,5 @@
+// 01:27 - working version, if you have enough fake money in the account
+// 01:26 - both 01:15 and this do NOT work, intentionally to show the error
 // 2022/08/19 01:15 EDT / New York / Atlanta / a county north of Atlanta
 
 // https://tl1.knightsofcode.net/t/7/11/blog.html#eAlpacaHW
@@ -21,7 +23,7 @@ async function example() {
     qty: 1,
     side: "buy",
     type: "market",
-    time_in_force: "day", // "day" is INVALID FOR CRYPTO!!
+    time_in_force: "gtc", // "day" is INVALID FOR CRYPTO!!
   };
  
   const pit = alpaca.createOrder(buyParams).then((order) => {
