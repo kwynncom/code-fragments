@@ -1,8 +1,9 @@
-// 01:27 - working version, if you have enough fake money in the account
-// 01:26 - both 01:15 and this do NOT work, intentionally to show the error
-// 2022/08/19 01:15 EDT / New York / Atlanta / a county north of Atlanta
+// 2022/08/19 20:50
 
 // https://tl1.knightsofcode.net/t/7/11/blog.html#eAlpacaHW
+
+console.log(process.version);
+
 const Alpaca = require("@alpacahq/alpaca-trade-api"); // https://alpaca.markets/docs/trading/getting-started/
 const kwutils = require('/opt/kwynn/js/utils.js'); // https://github.com/kwynncom/kwynn-php-general-utils/blob/master/js/utils.js
 const kwas = kwutils.kwas;
@@ -23,13 +24,13 @@ async function example() {
     qty: 1,
     side: "buy",
     type: "market",
-    time_in_force: "gtc", // "day" is INVALID FOR CRYPTO!!
+    time_in_force: "day", // "day" is INVALID FOR CRYPTO!! ; "gtc" works
   };
  
   const pit = alpaca.createOrder(buyParams).then((order) => {
-        console.log("Order details: ", order);
+    console.log("Order OK details: ", order);
   }, (error) => {
-        const ignore1914 = 1914; // Make sure I have a line for a breakpoint
+    console.log('Order ERROR details: ', error.response.data);
   });
 } // example
 
