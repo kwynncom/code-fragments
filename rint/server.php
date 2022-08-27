@@ -25,10 +25,11 @@ function doit() {
 	} unset($ex, $i);
 
 	$min = $vs[0];
-	$max = $vs[1]; unset($vs, $t, $fs, $f);
-
-
-	$random = random_int($min, $max);
+	$max = $vs[1]; unset($t, $fs, $f);
+	$minnf = number_format($min);
+	$maxnf = number_format($max);
+	
+	$rand = random_int($min, $max);
 	$at = nanopk(NANOPK_U | NANOPK_UNSOI | NANOPK_PID);
 	
 	extract($at); unset($at);

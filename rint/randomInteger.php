@@ -10,9 +10,20 @@
 <script>
 class doit {
 	constructor() {
-		kwjss.sobf('server.php', { min : byid('minie').value, max : byid('maxie').value});
+		kwjss.sobf('server.php', { min : byid('minie').value, max : byid('maxie').value}, this.onret, false);
+	}
+	
+	onret(resraw) {
+		const o = JSON.parse(resraw);
+		inht('rawres', resraw);
+		inht('rmin'  , o.minnf);
+		inht('rmax'  , o.maxnf);
+		inht('rrand' , o.rand );
 	}
 }
+
+onDOMLoad(() => { new doit(); });
+
 </script>
 	
 
@@ -21,9 +32,25 @@ class doit {
 	label.l10	{ font-family: monospace; }
 	input.mm	{ font-family: monospace; width: 11ch; }
 	.resp10     { height: 5em; }
+	.retlab     { display: inline-block; width: 1.2in; }
+	#rmin, #rrand, #rmax { 
+		display: inline-block; 
+		width  : 1in;
+		text-align: right; 
+		/* background-color: blue;  */
+	}
+	
+	#rrand, .randlab { 
+		font-weight: bold;
+		font-size  : 130%; 
+	}
 </style>
 </head>
 <body>
+	<div>
+		<p><a href='/'>home</a></p>
+	</div>
+
     <section>
         <h1>random integer</h1>
 		
@@ -43,12 +70,17 @@ class doit {
 			<button onclick='new doit();'>doit</button>
 		</div>
 		</div> <!-- mm doit -->
-		<pre class='resp10'>
+
+		<div style='margin-top: 2ex; '>
+			<div><label class='retlab'>returned min</label> <span id='rmin' ></span></div>
+			<div><label class='retlab randlab'>random</label>		<span id='rrand'></span> </div>
+			<div><label class='retlab'>returned max</label> <span id='rmax' ></span></div>
+		</div>
+		
+		
+		<pre class='resp10' id='rawres'>
 
 		</pre>
     </section>
-	<div>
-		<p><a href='/'>home</a></p>
-	</div>
 </body>
 </html>
