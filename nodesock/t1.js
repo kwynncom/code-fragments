@@ -7,51 +7,43 @@ class sock {
     config() {
         this.ds = ['ipv4.kwynn.com', 'ipv6.kwynn.com'];
         this.port = 8123;
-        this.minns = 1662349142572807324; // before 2022/09/05 00:21 EDT / New York
-        this.stopat = 2;
+        this.minns = 1662349142572807324; // before 2022/09/05 00:21 EDT / New York - this is in the past
+        this.stopat = 4;
         this.reci = 0;
-        setTimeout(() => { process.exit(); }, this.stopat * 2 * 1000);
+        setTimeout(() => { process.exit(); }, 5000);
 
     }
 
     constructor() {
         this.config();
         this.dotcp();
-        this.doudp4();
+        this.doudp();
     }
 
-    doudp4() {
-        var server = udp.createSocket('udp4');
+    doudp() {
 
-        server.on('message',function(msg,info){
-            console.log('Data received from server : ' + msg.toString());
-            console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
-          });
+        const ds = { '4' : this.ds[0], '6' : this.ds[1]};
 
-        server.send('a', this.port, 'kwynn.com', function(error) {
-            if(error){
-              client.close();
-            }else{
-              console.log('Data sent !!!');
-            }
-          
-          });
+        for (const [ipv, dom] of Object.entries(ds)) {
+            var server = udp.createSocket('udp' + ipv);
+            server.on('message', (msg) => { this.procRes(msg);   });
+            server.send('a', this.port, dom);
+        }
     }
 
     dotcp() {
-
         const ds = this.ds
         for (let i=0; i < ds.length; i++) this.do1tcp(ds[i]);
     }
 
     do1tcp(domain) {
         const client = net.connect({port: this.port, host: domain}, () => {
-            client.on('data', (res) => { this.parseRes(res); });
+            client.on('data', (res) => { this.procRes(res); });
             client.write('a');
         });
     }
 
-    parseRes(resraw) { // the raw string takes the form '1662349142572807324     \n' - a literal \n - does not trim and such
+    procRes(resraw) { // the raw string takes the form '1662349142572807324     \n' - a literal \n - does not trim and such
 
         const re = new RegExp(/\d+/);
         const s1 = resraw.toString();
