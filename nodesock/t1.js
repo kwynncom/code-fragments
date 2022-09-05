@@ -91,10 +91,21 @@ class sock { // executed below
     }
 }
 
-const o = new sock();
+const myf = async (event) => {
 
-exports.handler = o.lam;
+    const o = new sock();
+    const dat = await o.getRes();
 
-if (!process.env.AWS_LAMBDA_FUNCTION_NAME) o.lam();
+    if (!process.env.AWS_LAMBDA_FUNCTION_NAME) console.log(dat);
 
-// GOT IT, with async! 5:30am 9/5/2022
+    const response = {
+        statusCode: 200,
+        'Content-Type': 'application/json',
+        body: dat,
+    };
+    return response;
+};
+
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) myf();
+
+exports.handler = myf;
