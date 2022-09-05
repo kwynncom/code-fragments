@@ -18,6 +18,7 @@ class check8123 { // executed below
 
     constructor() {
         this.config();
+<<<<<<< HEAD
         this.thePromises = [];
         this.prarm = [];
         this.oro = [];
@@ -26,6 +27,11 @@ class check8123 { // executed below
         this.prarm.forEach((f) => { 
             f(); 
         });
+=======
+        this.setPr();
+        this.dotcp();
+        this.doudp();
+>>>>>>> tmp
     }
 
     setUDP() {
@@ -79,6 +85,7 @@ class check8123 { // executed below
         if (theint < this.minns) return;
 
         const ro = { 'ns' : s2, 'dom' : domain, 'ty' : ptype, 'ipv' : ipv};
+<<<<<<< HEAD
         this.oro.push(ro);
         return ro;
     }
@@ -99,11 +106,58 @@ class check8123 { // executed below
         return json;
     }
 
+=======
+
+        this.theres.push(ro);
+        if (++this.reci >= this.stopat) {
+            this.theres = JSON.stringify(this.theres, null, 2);
+            this.onfin();
+            return;
+        }
+    }
+
+    getResI() { return this.theres; }
+
+    setPr() {
+        this.thepr = new Promise((resolve) => { 
+            this.onfin = resolve;
+        }).then(() => {
+                return this.theres;
+            }
+        );
+    }
+
+    async getRes() { return await this.thepr; }
+
+    async lam() {
+
+        const dat = await this.getRes();
+
+        if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+            console.log(dat);
+        }
+
+        const response = {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: dat,
+        };
+        return response;
+    }
+>>>>>>> tmp
 }
 
-// the raw string from my timeserver takes the form '1662349142572807324     \n' - a literal \n - does not trim() and such
-// https://gist.github.com/sid24rane/6e6698e93360f2694e310dd347a2e2eb // UDP
+const o = new sock();
 
+exports.handler = o.lam;
+
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) o.lam();
+
+// GOT IT, with async! 5:30am 9/5/2022
+
+<<<<<<< HEAD
 const o = new check8123();
 
 const finaljs = o.getResI().then((x) => {
@@ -122,3 +176,5 @@ exports.handler = async (event) => { // AWS Lambda return
 };
 
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) console.log(finaljs);
+=======
+>>>>>>> tmp
