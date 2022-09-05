@@ -2,18 +2,25 @@ var net = require('net');
 
 class sock {
     constructor() {
-        this.client = net.connect({port: 8123, host: 'kwynn.com'}, () => {
-            this.client.on('data', (dat) => { console.log(dat); });
-            this.client.write('a', () => { this.onret(); });
-        
-        });
+        this.do10();
     }
 
-    onret() {
-        const r = this.client.read();
-        return;
-    }
+    do10() {
 
+        const ds = ['ipv4.kwynn.com', 'ipv6.kwynn.com'];
+
+        setTimeout(() => { process.exit(); }, 1000);
+
+        for (let i=0; i < ds.length; i++) {
+            const client = net.connect({port: 8123, host: ds[i]}, () => {
+                client.on('data', (dat) => { 
+                    console.log(dat.toString().trim());
+                });
+                client.write('a');
+            });
+        }
+
+    }
 }
 
 new sock();
