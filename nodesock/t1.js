@@ -1,13 +1,22 @@
 var net = require('net'); // TCP
-var udp = require('dgram');
+// var udp = require('dgram');
+/* 2022/09/05 06:06
+
+I am getting some results on Lambda.  
+
+Lambda doesn't seem to have UDP, or something is different.  It is also having trouble with ipv6.  About half my queries 
+fail, too.  It's a start.
+
+*/
 
 class sock { // executed below
 
     config() {
         this.ds = {'4' : 'ipv4.kwynn.com', '6' : 'ipv6.kwynn.com'};
+        this.ds = {'4' : 'ipv4.kwynn.com'}; // , '6' : 'ipv6.kwynn.com'};
         this.port = 8123;
         this.minns = 1662349142572807324; // before 2022/09/05 00:21 EDT / New York - this is in the past
-        this.stopat = 4;
+        this.stopat = 1;
         this.reci = 0;
         this.theres = [];
         setTimeout(() => { process.exit(); }, 5000);
@@ -22,6 +31,8 @@ class sock { // executed below
     }
 
     doudp() {
+
+        if (typeof udp === 'undefined') return;
 
         for (const [ipv, dom] of Object.entries(this.ds)) {
             var server = udp.createSocket('udp' + ipv);
@@ -53,7 +64,6 @@ class sock { // executed below
 
         this.theres.push(ro);
         if (++this.reci >= this.stopat) {
-            this.theres = JSON.stringify(this.theres, null, 2);
             this.onfin();
             return;
         }
@@ -96,7 +106,9 @@ const myf = async (event) => {
     const o = new sock();
     const dat = await o.getRes();
 
-    if (!process.env.AWS_LAMBDA_FUNCTION_NAME) console.log(dat);
+    if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+        console.log(JSON.stringify(dat, null, 2));
+    }
 
     const response = {
         statusCode: 200,
