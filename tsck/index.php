@@ -54,9 +54,12 @@
 			
 		</p>
 		
-		<p>03:07 - version stamp
+		<p>Note 2: /etc/hosts modified:</p> 
+		<p>::1 ip6-localhost ip6-loopback kwynn.com</p>
+		<p>To make sure IPv6 works.</p>
 			
-		</p>
+		
+		
 	</div>
 </body>
 </html>
