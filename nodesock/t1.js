@@ -1,10 +1,12 @@
 var net = require('net'); // TCP
 var udp = require('dgram');
+const { toUSVString } = require('util');
 
 class check8123 { // executed below
 
     config() {
         this.ds = {'4' : 'ipv4.kwynn.com', '6' : 'ipv6.kwynn.com'};
+        this.ds = {  '6' : 'ipv6.kwynn.com'};
         this.port = 8123;
         this.minns = 1662349142572807324; // before 2022/09/05 00:21 EDT / New York - this is in the past
         this.stopat = 4;
@@ -16,34 +18,55 @@ class check8123 { // executed below
 
     constructor() {
         this.config();
-        this.thePs = [];
-        this.dotcp();
-        this.doudp();
+        this.thePromises = [];
+        this.prarm = [];
+        this.oro = [];
+        // this.setUDP();
+        this.setTCP();
+        this.prarm.forEach((f) => { 
+            f(); 
+        });
     }
 
-    doudp() {
+    setUDP() {
 
         for (const [ipv, dom] of Object.entries(this.ds)) {
             var server = udp.createSocket('udp' + ipv);
-            server.on('message', (msg) => { this.procRes(msg, dom, 'udp', ipv);   });
-            server.send('a', this.port, dom);
+            const f  = (msg) => { return this.procRes(msg, dom, 'udp', ipv);   };
+            let prr;
+            const pr = new Promise((resolve) => { prr = resolve }).then((pr) => { 
+                pr = f(pr); 
+                return pr;
+            });
+            this.thePromises.push(pr);
+
+            this.prarm.push(() => {
+                    server.on('message', prr);
+                    server.send('a', this.port, dom);
+                }
+            );
         }
     }
 
-    dotcp() {
-        for (const [ipv, dom] of Object.entries(this.ds)) this.do1tcp(dom, ipv);
+    setTCP() {
+        for (const [ipv, dom] of Object.entries(this.ds)) this.set1tcp(dom, ipv);
     }
 
-    do1tcp(domain, ipv) {
-
-        const ps = [];
+    set1tcp(domain, ipv) {
         
         const client = net.connect({port: this.port, host: domain}, () => {
-            const f =  (res) => { this.procRes(res, domain, 'tcp', ipv); };
+            const f =  (netr) => { return this.procRes(res, domain, 'tcp', ipv); };
             let prr;
-            const pr = new Promise((resolve) => { prr = resolve }).then((res) => { f(res); });
-            client.on('data', prr);
-            client.write('a');
+            const pr = new Promise((resolve) => { prr = resolve }).then((res) => { 
+                res = f(res); 
+                return res;
+            });
+            this.thePromises.push(pr);
+            this.prarm.push(() => {
+                    client.on('data', prr);
+                    client.write('a');
+                }
+            );
         });
     }
 
@@ -56,20 +79,26 @@ class check8123 { // executed below
         if (theint < this.minns) return;
 
         const ro = { 'ns' : s2, 'dom' : domain, 'ty' : ptype, 'ipv' : ipv};
-
-        this.theres.push(ro);
-        if (++this.reci >= this.stopat) {
-            const js = JSON.stringify(this.theres, null, 2);
-            if (1 && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-                console.log(js);
-                process.exit();
-            }
-            else {
-                this.setres(js);
-            }
-
-        }
+        this.oro.push(ro);
+        return ro;
     }
+
+    getResI() {
+        let dat = Promise.all(this.thePromises).then((good) => 
+        {
+            const good1 = 1;
+        }, (bad) => {
+            const bad1 = 1;
+        });
+        return dat;
+    }
+
+    getRes() {
+        const o = this.getResI();
+        const json = JSON.stringify(this.oro);
+        return json;
+    }
+
 }
 
 // the raw string from my timeserver takes the form '1662349142572807324     \n' - a literal \n - does not trim() and such
@@ -77,8 +106,9 @@ class check8123 { // executed below
 
 const o = new check8123();
 
-const finaljs = '{}';
-
+const finaljs = o.getResI().then((x) => {
+    const good503 = 1;
+});
 
 exports.handler = async (event) => { // AWS Lambda return
     const response = {
