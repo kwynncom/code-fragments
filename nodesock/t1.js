@@ -1,4 +1,6 @@
-var net = require('net');
+var net = require('net'); // TCP
+// https://gist.github.com/sid24rane/6e6698e93360f2694e310dd347a2e2eb // UDP
+var udp = require('dgram');
 
 class sock {
 
@@ -15,6 +17,25 @@ class sock {
     constructor() {
         this.config();
         this.dotcp();
+        this.doudp4();
+    }
+
+    doudp4() {
+        var server = udp.createSocket('udp4');
+
+        server.on('message',function(msg,info){
+            console.log('Data received from server : ' + msg.toString());
+            console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
+          });
+
+        server.send('a', this.port, 'kwynn.com', function(error) {
+            if(error){
+              client.close();
+            }else{
+              console.log('Data sent !!!');
+            }
+          
+          });
     }
 
     dotcp() {
