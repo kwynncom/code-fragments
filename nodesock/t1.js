@@ -19,7 +19,8 @@ class sock { // executed below
         this.stopat = 1;
         this.reci = 0;
         this.theres = [];
-        setTimeout(() => { process.exit(); }, 5000);
+        // setTimeout(() => { process.exit(); }, 5000); // This messes up Lambda; This REALLY messes up Lambda.  
+        // It causes execution to be many times slower
 
     }
 
@@ -121,3 +122,4 @@ const myf = async (event) => {
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) myf();
 
 exports.handler = myf;
+// 2022/09/05 06:29 - new Lambda attempt
