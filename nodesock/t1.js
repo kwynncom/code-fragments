@@ -16,6 +16,7 @@ class sock { // executed below
 
     constructor() {
         this.config();
+        this.setPr();
         this.dotcp();
         this.doudp();
     }
@@ -52,13 +53,48 @@ class sock { // executed below
 
         this.theres.push(ro);
         if (++this.reci >= this.stopat) {
-            console.log(JSON.stringify(this.theres, null, 2));
-            process.exit();
+            this.theres = JSON.stringify(this.theres, null, 2);
+            this.onfin();
+            return;
         }
+    }
+
+    getResI() { return this.theres; }
+
+    setPr() {
+        this.thepr = new Promise((resolve) => { 
+            this.onfin = resolve;
+        }).then(() => {
+                return this.theres;
+            }
+        );
+    }
+
+    async getRes() { return await this.thepr; }
+
+    async lam() {
+
+        const dat = await this.getRes();
+
+        if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+            console.log(dat);
+        }
+
+        const response = {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: dat,
+        };
+        return response;
     }
 }
 
-// the raw string from my timeserver takes the form '1662349142572807324     \n' - a literal \n - does not trim() and such
-// https://gist.github.com/sid24rane/6e6698e93360f2694e310dd347a2e2eb // UDP
+const o = new sock();
 
-new sock();
+exports.handler = o.lam;
+
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) o.lam();
+
+// GOT IT, with async!
