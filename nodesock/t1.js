@@ -1,7 +1,7 @@
 var net = require('net'); // TCP
 var udp = require('dgram');
 
-class sock { // executed below
+class check8123 { // executed below
 
     config() {
         this.ds = {'4' : 'ipv4.kwynn.com', '6' : 'ipv6.kwynn.com'};
@@ -16,6 +16,7 @@ class sock { // executed below
 
     constructor() {
         this.config();
+        this.thePs = [];
         this.dotcp();
         this.doudp();
     }
@@ -34,8 +35,14 @@ class sock { // executed below
     }
 
     do1tcp(domain, ipv) {
+
+        const ps = [];
+        
         const client = net.connect({port: this.port, host: domain}, () => {
-            client.on('data', (res) => { this.procRes(res, domain, 'tcp', ipv); });
+            const f =  (res) => { this.procRes(res, domain, 'tcp', ipv); };
+            let prr;
+            const pr = new Promise((resolve) => { prr = resolve }).then((res) => { f(res); });
+            client.on('data', prr);
             client.write('a');
         });
     }
@@ -52,8 +59,15 @@ class sock { // executed below
 
         this.theres.push(ro);
         if (++this.reci >= this.stopat) {
-            console.log(JSON.stringify(this.theres, null, 2));
-            process.exit();
+            const js = JSON.stringify(this.theres, null, 2);
+            if (1 && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+                console.log(js);
+                process.exit();
+            }
+            else {
+                this.setres(js);
+            }
+
         }
     }
 }
@@ -61,4 +75,20 @@ class sock { // executed below
 // the raw string from my timeserver takes the form '1662349142572807324     \n' - a literal \n - does not trim() and such
 // https://gist.github.com/sid24rane/6e6698e93360f2694e310dd347a2e2eb // UDP
 
-new sock();
+const o = new check8123();
+
+const finaljs = '{}';
+
+
+exports.handler = async (event) => { // AWS Lambda return
+    const response = {
+        statusCode: 200,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: finaljs,
+    };
+    return response;
+};
+
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) console.log(finaljs);
