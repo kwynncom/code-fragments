@@ -1,0 +1,25 @@
+const dns = require('node:dns');
+
+const myf = async (event) => {
+
+    let onfin;
+    const thepr = new Promise((resolve) => { onfin = resolve; });
+        
+    let theres;
+
+    const options = {
+    family: 6,
+    hints: dns.ADDRCONFIG | dns.V4MAPPED,
+    };
+    dns.lookup('ipv6.kwynn.com', options, (err, address, family) =>  {
+       theres = address;
+    });
+
+    if () {
+
+        
+    }
+
+}
+
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) myf();

@@ -12,11 +12,11 @@ fail, too.  It's a start.
 class sock { // executed below
 
     config() {
-        this.ds = {'4' : 'ipv4.kwynn.com', '6' : 'ipv6.kwynn.com'};
+        // this.ds = {'4' : 'ipv4.kwynn.com', '6' : 'ipv6.kwynn.com'}; // IPv6 still has trouble
         this.ds = {'4' : 'ipv4.kwynn.com'}; // , '6' : 'ipv6.kwynn.com'};
         this.port = 8123;
         this.minns = 1662349142572807324; // before 2022/09/05 00:21 EDT / New York - this is in the past
-        this.stopat = 1;
+        this.stopat = 2;
         this.reci = 0;
         this.theres = [];
         // setTimeout(() => { process.exit(); }, 5000); // This messes up Lambda; This REALLY messes up Lambda.  
@@ -122,4 +122,3 @@ const myf = async (event) => {
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) myf();
 
 exports.handler = myf;
-// 2022/09/05 06:29 - new Lambda attempt
