@@ -13,13 +13,24 @@ const myf = async (event) => {
     };
     dns.lookup('ipv6.kwynn.com', options, (err, address, family) =>  {
        theres = address;
+       if (!theres) theres = 'returned but nothing';
+       if (err) theres = err;
+       onfin(theres);
     });
 
-    if () {
+    await thepr;
 
-        
-    }
+    if (!process.env.AWS_LAMBDA_FUNCTION_NAME) console.log(theres);
 
+    const response = {
+        statusCode: 200,
+        'Content-Type': 'text/plain',
+        body: theres,
+    };
+
+    return response;
 }
+
+exports.handler = myf;
 
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) myf();
