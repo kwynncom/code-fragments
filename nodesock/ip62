@@ -7,11 +7,7 @@ const myf = async (event) => {
         
     let theres;
 
-    const options = {
-    family: 6,
-    hints: dns.ADDRCONFIG | dns.V4MAPPED,
-    };
-    dns.lookup('ipv6.kwynn.com', options, (err, address, family) =>  {
+    dns.lookup('ipv6.kwynn.com', null, (err, address, family) =>  {
        theres = address;
        if (!theres) theres = 'returned but nothing';
        if (err) theres = err;
