@@ -14,7 +14,7 @@ class ck8123Base {
         this.stopat = 0;
         this.reci = 0;
         this.theres = [];
-        if (!islam()) setTimeout(() => { process.exit()}, 3000 );
+        if (!islam()) setTimeout(() => { process.exit()}, 10000 );
     }    
 
     procRes(resraw, domain, ptype, ipv) { // see note at bottom about this processing

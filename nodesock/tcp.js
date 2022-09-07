@@ -1,4 +1,6 @@
 const net  = require('net');
+const lookupclf = require('./lookup.js');
+const lookup = lookupclf.lookup;
 
 class ck8123TCP {
 
@@ -6,8 +8,11 @@ class ck8123TCP {
         this.do1tcp(domain, port, ipv, cb);
     }
 
-    do1tcp(domain, port, ipv, cb) {
-        const client = net.connect({port: port, host: domain}, () => {
+    async do1tcp(domain, port, ipv, cb) {
+
+        const ip = await lookup(domain);
+
+        const client = net.connect({port: port, host: ip}, () => {
             client.on('data', cb);
             client.write('a');
         });
