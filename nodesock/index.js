@@ -1,11 +1,13 @@
-const net  = require('net');
 const kwuf = require('./utils.js');
 const baseclf = require('./base.js');
+const tcpclf  = require('./tcp.js');
 const kwas = kwuf.kwas;
 const time = kwuf.time;
 const cl   = kwuf.cl;
 const islam = kwuf.islam;
 const ck8123Base = baseclf.ck8123Base;
+const ck8123TCP  = tcpclf.ck8123TCP;
+const ignore = 1;
 
 class sock extends ck8123Base {
 
@@ -19,16 +21,9 @@ class sock extends ck8123Base {
     dotcp() { 
         for (const [ipv, dom] of Object.entries(this.ds)) {
             const cb = (res) => { this.procRes(res, dom, 'tcp', ipv); };
-            this.do1tcp(dom, this.port, ipv, cb);  
+            new ck8123TCP(dom, this.port, ipv, cb);  
             this.stopat++;
         }
-    }
-
-    do1tcp(domain, port, ipv, cb) {
-        const client = net.connect({port: port, host: domain}, () => {
-            client.on('data', cb);
-            client.write('a');
-        });
     }
 }
 
