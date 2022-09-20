@@ -13,18 +13,10 @@
         background-color: white;
         color: black;
         opacity: 1;
-        border: 1.5px solid transparent;
+                    border: 1.5px solid transparent;
     }
-    
-    td.date { width: 21vw; }
-    td.time { width: 21vw; }
-    
-    input[type=date] { min-width:  18ch; }
-    input[type=time] { min-width:  10ch;  }
-    
-    input:enabled { 
-       border: 1.5px solid #cccccc; 
-    }
+   
+    input:enabled { border: 1.5px solid #cccccc;     }
 
     
 </style>
@@ -65,15 +57,23 @@ function setRDAttrs(e) {
 }
 
 class trackTime {
-    constructor(e) {
+    constructor(ed, et, eu) {
         this.we  = byid('wallClock');
         this.setAttr(this.we);        
         this.de = byid('wallDate');
         this.setAttr(this.de);
-        if (e) this.e  = e;
-        else   this.e  = this.we;
-        this.setAttr(this.e);
+        if (et) this.et  = et;
+        else    this.et  = this.we;
+        
+        if (ed) this.ed = ed;
+        if (eu) this.eu = eu;
+        
+        this.setAttr(this.et);
         this.dowe = byid('dowNow');
+        
+        this.dr  = qs('[data-tcursor="asto"][data-type="elap"]');
+        this.bee = qs('[data-tcursor="asta"][data-type="Ums" ]');
+        this.ene = qs('[data-tcursor="asto"][data-type="Ums" ]');
 
         this.tick();
         setInterval(() => { this.tick(); }, 1000);
@@ -84,9 +84,16 @@ class trackTime {
     tick() {
 
         const r = getHu();
-        this.we.value = this.e.value = r['time'];
+        this.we.value = this.et.value = r['time'];
+        if (this.ed) this.ed.value = r['date'];
         this.de.value = r['date'];
         this.dowe.innerHTML = r['dow'];
+        if (this.eu) this.eu.value = r['Ums'];
+        const be = this.bee.value;
+        const en = this.ene.value;
+        
+        this.dr.innerHTML = en - be;
+        
     }
 }
 
@@ -122,11 +129,14 @@ class timecardCl {
             const astod = qs('[data-tcursor="asto"][data-type="date" ]');
             const astat = qs('[data-tcursor="asta"][data-type="time" ]');
             const astot = qs('[data-tcursor="asto"][data-type="time" ]');
+            const astau = qs('[data-tcursor="asta"][data-type="Ums"  ]');
+            const astou = qs('[data-tcursor="asto"][data-type="Ums"  ]');
             
-            astad.value = astod.value = hu['date'];
-            astat.value = astot.value = hu['time'];
+                astau.value = hu['Ums' ];
+            astad.value = hu['date'];
+            astat.value = hu['time'];
             astot.style.backgroundColor = tickColor();
-            new trackTime(astot);
+            new trackTime(astod, astot, astou);
             this.tick.set(true);
 
         }
@@ -176,6 +186,8 @@ onDOMLoad(() => { new trackTime(); });
                 <input type='date'   data-tcursor='asto' data-type='date' />
                 <input type='time'   data-tcursor='asto' data-type='time' />                
                 <input type='hidden' data-tcursor='asto' data-type='Ums' />  
+            </td>
+            <td data-tcursor='asto' data-type='elap'>
             </td>
         </tr>
         </tbody>
