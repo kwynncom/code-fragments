@@ -4,8 +4,10 @@ function getHu() {
     const lob = new Date(uto.getTime() - lof);
     const los = lob.toISOString();
     const nowDate = los.substring(0, 10);
-    const nowTime = los.substring(11,16);
-    const nowDow  = uto.toLocaleDateString([], {weekday : 'short'});    
+    const nowTime = los.substring(11,19);
+    const nowDow  = uto.toLocaleDateString([], {weekday : 'short'});
+    const Ums = uto.getTime();
+    const U   = parseInt(Math.round(Ums / 1000));
     
-    return {'date' : nowDate, 'time' : nowTime, 'dow' : nowDow, 'Ums' : uto.getTime()};
+    return {'date' : nowDate, 'time' : nowTime, 'dow' : nowDow, 'Ums' : Ums, 'U' : U };
 }

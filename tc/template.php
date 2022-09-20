@@ -5,14 +5,13 @@
     require_once('./utils.php'); 
     echoAllJSCSS();
 ?>
-
-
 </head>
 <body>
     <div>
         <?php require_once('./wall/wall.php'); ?>
         <div    class='ibccl' id='indicatore' style='color: red;'>&#11044;</div>
-        <button class='ibccl' onclick='' id='startBtn'>start</button>
+        <button class='ibccl' id='startBtn'>start</button>
     </div>
+    <div class='bbord' style='margin-top: 1ex; '>&nbsp;</div>
 </body>
 </html>
