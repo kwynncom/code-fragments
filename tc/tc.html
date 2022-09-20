@@ -8,18 +8,20 @@
 
 <style>
     body { font-family: monospace; }
-    .dowNow { width: 4ex; font-size: 110%; }
+    .dowNow { width: 1.1vw; font-size: 110%; }
     input:disabled, input:read-only {
         background-color: white;
         color: black;
         opacity: 1;
         border: none;
-        font-size: 1vw;
     }
     
-    input[type=date] { width:  9vw; max-width: 9vw; min-width: 8vw; font-size: 1vw; }
-    input[type=time] { width:  8vw; max-width: 8vw; min-width: 8vw; font-size: 1vw; }
-
+    td.date { width: 21vw; }
+    td.time { width: 21vw; }
+    
+    input[type=date] { width:  10vw; max-width: 10vw; min-width: 10vw; }
+    input[type=time] { width:   9vw; max-width:  9vw; min-width:  9vw; font-size: 1vw; }
+    
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -147,8 +149,8 @@ onDOMLoad(() => { new trackTime(); });
         <tbody>
             <tr>
                 <td id='dowNow' class='dowNow'></td> 
-                <td><input type='date'  id='wallDate' /></td>
-                <td style='text-align: right; ' ><input type='time' id='wallClock' /></td>
+                <td class='date'><input type='date'  id='wallDate' /></td>
+                <td class='time' style='text-align: right; ' ><input type='time' id='wallClock' /></td>
             </tr>
             <tr>
                 <th></th><th>start</th><th>stop</th>
