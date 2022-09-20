@@ -7,14 +7,15 @@
 <title>timecard</title>
 
 <style>
-    body { font-family: sans-serif; }
-    [data-type="dow"] { font-family: monospace; width: 4ex; font-size: 110%; }
+    body { font-family: monospace; }
+    .dowNow { width: 4ex; font-size: 110%; }
     input:disabled, input:read-only {
         background-color: white;
         color: black;
         opacity: 1;
         border: none;
     }
+    .fdw { width: 20em; }
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -48,9 +49,23 @@ class tickIndicator {
 
 class trackTime {
     constructor(e) {
-        this.e  = e;
+        this.we  = byid('wallClock');
+        this.setAttr(this.we);        
+        this.de = byid('wallDate');
+        this.setAttr(this.de);
+        if (e) this.e  = e;
+        else   this.e  = this.we;
+        this.setAttr(this.e);
+        this.dowe = byid('dowNow');
+
         this.tick();
         setInterval(() => { this.tick(); }, 1000);
+    }
+    
+    setAttr(e) {
+        e.readOnly = true;
+        e.disabled = true;
+        e.required = true;
     }
     
     tick() {
@@ -60,7 +75,9 @@ class trackTime {
         const los = lob.toISOString();
         const nowDate = los.substring(0, 10);
         const nowTime = los.substring(11,16);
-        this.e.value = nowTime;       
+        this.we.value = this.e.value = nowTime;
+        this.de.value = nowDate;
+        this.dowe.innerHTML = uto.toLocaleDateString([], {weekday : 'short'});
     }
 }
 
@@ -76,13 +93,13 @@ class timecardCl {
         const isst = din['action'] === 'start';
         
         if (isst) { 
+            byid('startBtn').style.visibility = 'hidden';
             qs('[data-tcursor="1"][data-type="db" ]').value = din.db;
             qs('[data-tcursor="2"][data-type="db" ]').value = din.db;
             qs('[data-tcursor="1"][data-type="hr" ]').value = din.hr;
             qs('[data-tcursor="2"][data-type="hr" ]').value = din.hr;
             qs('[data-tcursor="2"][data-type="hr" ]').style.backgroundColor = tickColor();
             new trackTime(qs('[data-tcursor="2"][data-type="hr" ]'));
-            qs('[data-tcursor="1"][data-type="dow"]').innerHTML = din.dow;
             this.tick.set(true);
         }
     }
@@ -90,9 +107,7 @@ class timecardCl {
 
 var tco = new timecardCl();
 
-onDOMLoad(() => {
-    new trackTime(byid('wallClock'));
-});
+onDOMLoad(() => { new trackTime(); });
 
 </script>
 
@@ -100,27 +115,40 @@ onDOMLoad(() => {
 </head>
 <body>
     
-    <div><input type='time' id='wallClock' readonly='readonly' disabled='disabled' required='required' /></div>
+    <div></div>
     
     <div>
-        <button onclick='tco.onStartBtn();'>start</button>
-        <div id='indicatore' style='color: red;'>&#11044;</div>
+        
+
 
     </div>
     <table>
-        <thead>
-            <tr><th></th><th>start</th><th>stop</th></tr>
-        </thead>
         <tbody>
-        <tr>    
-            <td                    data-tcursor='1' data-type='dow' ></td>
+            <tr>
+                <td class='dowNow'></td>
+                <td style='text-align: center; ' class='fdw'><button onclick='tco.onStartBtn();' id='startBtn'>start</button></td>
+            </tr>
+            <tr>
+                <td id='dowNow' class='dowNow'></td> 
+                <td><input type='date'  id='wallDate' /></td>
+                <td style='text-align: right; ' class='fdw' ><input type='time' id='wallClock' /></td>
+            </tr>
+            <tr>
+                <th></th><th>start</th><th>stop</th>
+            </tr>
+
+            <tr>    
+            <td></td>
             <td>
                 <input type='date' data-tcursor='1' data-type='db' />
                 <input type='time' data-tcursor='1' data-type='hr' />
             </td>
-            <td>
+            <td  style='text-align: right;' class='fdw'>
                 <input type='date' data-tcursor='2' data-type='db' />
                 <input type='time' data-tcursor='2' data-type='hr' />                
+            </td>
+            <td>
+         <span id='indicatore' style='color: red;'>&#11044;</span>               
             </td>
         </tr>
         </tbody>
