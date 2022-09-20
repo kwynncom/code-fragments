@@ -9,6 +9,12 @@
 <style>
     body { font-family: sans-serif; }
     [data-type="dow"] { font-family: monospace; width: 4ex; font-size: 110%; }
+    input:disabled, input:read-only {
+        background-color: white;
+        color: black;
+        opacity: 1;
+        border: none;
+    }
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -42,13 +48,19 @@ class tickIndicator {
 
 class trackTime {
     constructor(e) {
-        const now   = time();
-        const nxtms = (now + 60000) % 60000;
-        cl(nxtms);
-        setTimeout(() => { 
-            const now2 = new Date();
-            e.value = now2.toISOString().substring(11,16);
-        } , nxtms);
+        this.e  = e;
+        this.tick();
+        setInterval(() => { this.tick(); }, 1000);
+    }
+    
+    tick() {
+        const uto = new Date();
+        const lof = uto.getTimezoneOffset() * 60 * 1000;
+        const lob = new Date(time() - lof);
+        const los = lob.toISOString();
+        const nowDate = los.substring(0, 10);
+        const nowTime = los.substring(11,16);
+        this.e.value = nowTime;       
     }
 }
 
@@ -78,15 +90,22 @@ class timecardCl {
 
 var tco = new timecardCl();
 
+onDOMLoad(() => {
+    new trackTime(byid('wallClock'));
+});
 
 </script>
 
 
 </head>
 <body>
+    
+    <div><input type='time' id='wallClock' readonly='readonly' disabled='disabled' required='required' /></div>
+    
     <div>
         <button onclick='tco.onStartBtn();'>start</button>
         <div id='indicatore' style='color: red;'>&#11044;</div>
+
     </div>
     <table>
         <thead>
