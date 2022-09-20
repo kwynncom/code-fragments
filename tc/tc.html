@@ -13,14 +13,19 @@
         background-color: white;
         color: black;
         opacity: 1;
-        border: none;
+        border: 1.5px solid transparent;
     }
     
     td.date { width: 21vw; }
     td.time { width: 21vw; }
     
-    input[type=date] { width:  10vw; max-width: 10vw; min-width: 10vw; }
-    input[type=time] { width:   9vw; max-width:  9vw; min-width:  9vw; font-size: 1vw; }
+    input[type=date] { min-width:  18ch; }
+    input[type=time] { min-width:  10ch;  }
+    
+    input:enabled { 
+       border: 1.5px solid #cccccc; 
+    }
+
     
 </style>
 
@@ -109,7 +114,7 @@ class timecardCl {
         const isst = act === 'start';
         
         if (isst) { 
-            byid('startBtn').style.display = 'none';
+            byid('startBtn').style.visibility = 'hidden';
             this.setRowAttr();
             
             const hu = getHu();
@@ -151,6 +156,10 @@ onDOMLoad(() => { new trackTime(); });
                 <td id='dowNow' class='dowNow'></td> 
                 <td class='date'><input type='date'  id='wallDate' /></td>
                 <td class='time' style='text-align: right; ' ><input type='time' id='wallClock' /></td>
+            <td>
+                <span id='indicatore' style='color: red;'>&#11044;</span>               
+            </td>
+            <td style='text-align: center; '><button onclick='tco.onStartBtn();' id='startBtn'>start</button></td>
             </tr>
             <tr>
                 <th></th><th>start</th><th>stop</th>
@@ -168,10 +177,6 @@ onDOMLoad(() => { new trackTime(); });
                 <input type='time'   data-tcursor='asto' data-type='time' />                
                 <input type='hidden' data-tcursor='asto' data-type='Ums' />  
             </td>
-            <td>
-                <span id='indicatore' style='color: red;'>&#11044;</span>               
-            </td>
-            <td style='text-align: center; '><button onclick='tco.onStartBtn();' id='startBtn'>start</button></td>
         </tr>
         </tbody>
     </table>
