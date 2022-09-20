@@ -13,6 +13,8 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 <script>
+    
+function tickColor() { return '#66FF00'; }
 
 class tickIndicator {
     constructor() {
@@ -23,15 +25,31 @@ class tickIndicator {
     }
     
     set(is) {
+        this.tick();
         this.sih = setInterval(() => this.tick(), 200);
     }
     
     tick() {
-        if (this.i++ % 4 <= 2) this.e.style.color = '#66FF00';
-        else  this.e.style.color = 'black';
+        if (this.i++ % 4 <= 1) {
+            this.e.style.color = tickColor();
+            this.e.style.opacity = 1;
+        }
+        else {
+            this.e.style.opacity = 0;
+        }
     }
-    
-    
+}
+
+class trackTime {
+    constructor(e) {
+        const now   = time();
+        const nxtms = (now + 60000) % 60000;
+        cl(nxtms);
+        setTimeout(() => { 
+            const now2 = new Date();
+            e.value = now2.toISOString().substring(11,16);
+        } , nxtms);
+    }
 }
 
 class timecardCl {
@@ -42,11 +60,19 @@ class timecardCl {
 
     onStartBtn() { kwjss.sobf('server.php', { action: 'start', from : 'button'}, (res) => { this.pop10(res); }); }
     pop10(din) {
-        qs('[data-tcursor="1"][data-type="db" ]').value = din.db;
-        qs('[data-tcursor="2"][data-type="db" ]').value = din.db;
-        qs('[data-tcursor="1"][data-type="hr" ]').value = din.hr;
-        qs('[data-tcursor="1"][data-type="dow"]').innerHTML = din.dow;
-        this.tick.set(true);
+        
+        const isst = din['action'] === 'start';
+        
+        if (isst) { 
+            qs('[data-tcursor="1"][data-type="db" ]').value = din.db;
+            qs('[data-tcursor="2"][data-type="db" ]').value = din.db;
+            qs('[data-tcursor="1"][data-type="hr" ]').value = din.hr;
+            qs('[data-tcursor="2"][data-type="hr" ]').value = din.hr;
+            qs('[data-tcursor="2"][data-type="hr" ]').style.backgroundColor = tickColor();
+            new trackTime(qs('[data-tcursor="2"][data-type="hr" ]'));
+            qs('[data-tcursor="1"][data-type="dow"]').innerHTML = din.dow;
+            this.tick.set(true);
+        }
     }
 }
 
@@ -75,7 +101,7 @@ var tco = new timecardCl();
             </td>
             <td>
                 <input type='date' data-tcursor='2' data-type='db' />
-                <input type='time' data-tcursor='0' data-type='hr' />                
+                <input type='time' data-tcursor='2' data-type='hr' />                
             </td>
         </tr>
         </tbody>
