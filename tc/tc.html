@@ -13,29 +13,71 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 <script>
-    function onStartBtn() { kwjss.sobf('server.php?start=1', {}, pop10); }
-    function pop10(din) {
-        qs('[data-current="1"][data-type="db" ]').value = din.db;
-        qs('[data-current="1"][data-type="hr" ]').value = din.hr;
-        qs('[data-current="1"][data-type="dow"]').innerHTML = din.dow;
+
+class tickIndicator {
+    constructor() {
+        onDOMLoad(() => {
+            this.e = byid('indicatore');
+            this.i = 0;
+        });
     }
+    
+    set(is) {
+        this.sih = setInterval(() => this.tick(), 200);
+    }
+    
+    tick() {
+        if (this.i++ % 4 <= 2) this.e.style.color = '#66FF00';
+        else  this.e.style.color = 'black';
+    }
+    
+    
+}
+
+class timecardCl {
+
+    constructor() { 
+        this.tick = new tickIndicator();
+    }
+
+    onStartBtn() { kwjss.sobf('server.php', { action: 'start', from : 'button'}, (res) => { this.pop10(res); }); }
+    pop10(din) {
+        qs('[data-tcursor="1"][data-type="db" ]').value = din.db;
+        qs('[data-tcursor="2"][data-type="db" ]').value = din.db;
+        qs('[data-tcursor="1"][data-type="hr" ]').value = din.hr;
+        qs('[data-tcursor="1"][data-type="dow"]').innerHTML = din.dow;
+        this.tick.set(true);
+    }
+}
+
+var tco = new timecardCl();
+
+
 </script>
 
 
 </head>
 <body>
     <div>
-        <button onclick='onStartBtn();'>start</button>
+        <button onclick='tco.onStartBtn();'>start</button>
+        <div id='indicatore' style='color: red;'>&#11044;</div>
     </div>
     <table>
         <thead>
-            <tr><th colspan='3'>start</th></tr>
+            <tr><th></th><th>start</th><th>stop</th></tr>
         </thead>
         <tbody>
-        <tr>    <td                data-current='1' data-type='dow' ></td>
+        <tr>    
+            <td                    data-tcursor='1' data-type='dow' ></td>
             <td>
-                <input type='date' data-current='1' data-type='db' />
-                <input type='time' data-current='1' data-type='hr'  /></td></tr>
+                <input type='date' data-tcursor='1' data-type='db' />
+                <input type='time' data-tcursor='1' data-type='hr' />
+            </td>
+            <td>
+                <input type='date' data-tcursor='2' data-type='db' />
+                <input type='time' data-tcursor='0' data-type='hr' />                
+            </td>
+        </tr>
         </tbody>
     </table>
        

@@ -11,14 +11,17 @@ const myf = async (event) => {
     
     let cs = 'nothing';
     
-    const client = net.connect({port: 8123, host: dom}, () => {
+    const client = net.connect({port: 8123, host: dom, family: 4}, () => {
         cs = 'connected';
         onfin(cs);
     });
     
     await thepr;
     
-    if (!process.env.AWS_LAMBDA_FUNCTION) console.log(cs);
+    if (!process.env.AWS_LAMBDA_FUNCTION) {
+        console.log(cs);
+        if (!process.env.AWS_LAMBDA_FUNCTION_NAME)             process.exit();
+    }
 
     // TODO implement
     const response = {
@@ -30,6 +33,7 @@ const myf = async (event) => {
 
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
     myf();
+
 }
 
 exports.handler = myf;

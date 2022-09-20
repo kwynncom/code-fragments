@@ -15,7 +15,14 @@
 <script>
 
 class exampleIOSubclass extends kwStdWebIOCl {
+
+    
+    static stdInit() {
+        super.stdInit(exampleIOSubclass);
+    }
+    
     constructor(e) { super(e, 'server.php', (res) => { return this.isResOK(res, e);   }); }
+    
     oninput(e) {  
         
         const miscd = {'version' : '8/20 22:17'};
@@ -30,12 +37,9 @@ class exampleIOSubclass extends kwStdWebIOCl {
 }
 
 onDOMLoad(() => { 
-    const e = byid('theta10');
-    new exampleIOSubclass(e); 
+    exampleIOSubclass.stdInit();
+    const e = byid('theit10');
     e.focus();
-    
-    new exampleIOSubclass(byid('sel10'));
-    new exampleIOSubclass(byid('ck10'));
 });
 
 
@@ -46,6 +50,8 @@ onDOMLoad(() => {
 </head>
 <body>
     <div>
+        <div><input type='text' id='theit10' /></div>
+        
         <div>
     <textarea rows='10' cols='50' id='theta10'></textarea>
         </div>

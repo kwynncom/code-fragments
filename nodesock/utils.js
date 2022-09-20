@@ -71,7 +71,11 @@ class kwjss {
     static sendEle(url, ein, cb, pageid, exob) {
         let sob = {};
         if (typeof exob === 'object') sob = exob;
-        sob.eid		= ein.id;
+        
+        if  (!ein.id && ein.name)
+             sob.eid =  ein.name;
+        else sob.eid =  ein.id;
+        
         if (Object.keys(ein.dataset).length) 
         sob.dataset = ein.dataset;
         sob.v       = ein.value;
@@ -251,6 +255,17 @@ class delayedDo {
 // ***************************
 
 class kwStdWebIOCl {
+    
+    static stdInit(clnm, url, endh) {
+        const tys = ['input', 'select', 'textarea'];
+        
+        tys.forEach((ty) => {
+           qsa(ty).forEach((e) => {
+               new clnm(e, url, endh);
+           });
+       });
+
+    }    
     
     constructor(e, url, fin) {
         this.thee = e;
