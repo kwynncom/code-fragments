@@ -71,16 +71,24 @@ class trackTime {
     setAttr(e) { setRDAttrs(e);  }
     
     tick() {
-        const uto = new Date();
-        const lof = uto.getTimezoneOffset() * 60 * 1000;
-        const lob = new Date(time() - lof);
-        const los = lob.toISOString();
-        const nowDate = los.substring(0, 10);
-        const nowTime = los.substring(11,16);
-        this.we.value = this.e.value = nowTime;
-        this.de.value = nowDate;
-        this.dowe.innerHTML = uto.toLocaleDateString([], {weekday : 'short'});
+
+        const r = getHu();
+        this.we.value = this.e.value = r['time'];
+        this.de.value = r['date'];
+        this.dowe.innerHTML = r['dow'];
     }
+}
+
+function getHu() {
+    const uto = new Date();
+    const lof = uto.getTimezoneOffset() * 60 * 1000;
+    const lob = new Date(time() - lof);
+    const los = lob.toISOString();
+    const nowDate = los.substring(0, 10);
+    const nowTime = los.substring(11,16);
+    const nowDow  = uto.toLocaleDateString([], {weekday : 'short'});    
+    
+    return {'date' : nowDate, 'time' : nowTime, 'dow' : nowDow};
 }
 
 class timecardCl {
@@ -89,18 +97,21 @@ class timecardCl {
         this.tick = new tickIndicator();
     }
 
-    onStartBtn() { kwjss.sobf('server.php', { action: 'start', from : 'button'}, (res) => { this.pop10(res); }); }
-    pop10(din) {
+    onStartBtn() { kwjss.sobf('server.php', { action: 'start', from : 'button'}, (res) => { this.pop10('start', res); }); }
+    pop10(act, din) {
         
-        const isst = din['action'] === 'start';
+        const isst = act === 'start';
         
         if (isst) { 
             byid('startBtn').style.visibility = 'hidden';
             this.setRowAttr();
-            qs('[data-tcursor="asta"][data-type="db" ]').value = din.db;
-            qs('[data-tcursor="asto"][data-type="db" ]').value = din.db;
-            qs('[data-tcursor="asta"][data-type="hr" ]').value = din.hr;
-            qs('[data-tcursor="asto"][data-type="hr" ]').value = din.hr;
+            
+            const hu = getHu();
+            
+            qs('[data-tcursor="asta"][data-type="db" ]').value = 
+            qs('[data-tcursor="asto"][data-type="db" ]').value = hu['date'];
+            qs('[data-tcursor="asta"][data-type="hr" ]').value = 
+            qs('[data-tcursor="asto"][data-type="hr" ]').value = hu['time'];
             qs('[data-tcursor="asto"][data-type="hr" ]').style.backgroundColor = tickColor();
             new trackTime(qs('[data-tcursor="asto"][data-type="hr" ]'));
             this.tick.set(true);
