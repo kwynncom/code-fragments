@@ -14,8 +14,12 @@
         color: black;
         opacity: 1;
         border: none;
+        font-size: 1vw;
     }
-    .fdw { width: 20em; }
+    
+    input[type=date] { width:  9vw; max-width: 9vw; min-width: 8vw; font-size: 1vw; }
+    input[type=time] { width:  8vw; max-width: 8vw; min-width: 8vw; font-size: 1vw; }
+
 </style>
 
 <script src='/opt/kwynn/js/utils.js'></script>
@@ -82,13 +86,13 @@ class trackTime {
 function getHu() {
     const uto = new Date();
     const lof = uto.getTimezoneOffset() * 60 * 1000;
-    const lob = new Date(time() - lof);
+    const lob = new Date(uto.getTime() - lof);
     const los = lob.toISOString();
     const nowDate = los.substring(0, 10);
     const nowTime = los.substring(11,16);
     const nowDow  = uto.toLocaleDateString([], {weekday : 'short'});    
     
-    return {'date' : nowDate, 'time' : nowTime, 'dow' : nowDow};
+    return {'date' : nowDate, 'time' : nowTime, 'dow' : nowDow, 'Ums' : uto.getTime()};
 }
 
 class timecardCl {
@@ -103,17 +107,19 @@ class timecardCl {
         const isst = act === 'start';
         
         if (isst) { 
-            byid('startBtn').style.visibility = 'hidden';
+            byid('startBtn').style.display = 'none';
             this.setRowAttr();
             
             const hu = getHu();
+            const astad = qs('[data-tcursor="asta"][data-type="date" ]');
+            const astod = qs('[data-tcursor="asto"][data-type="date" ]');
+            const astat = qs('[data-tcursor="asta"][data-type="time" ]');
+            const astot = qs('[data-tcursor="asto"][data-type="time" ]');
             
-            qs('[data-tcursor="asta"][data-type="db" ]').value = 
-            qs('[data-tcursor="asto"][data-type="db" ]').value = hu['date'];
-            qs('[data-tcursor="asta"][data-type="hr" ]').value = 
-            qs('[data-tcursor="asto"][data-type="hr" ]').value = hu['time'];
-            qs('[data-tcursor="asto"][data-type="hr" ]').style.backgroundColor = tickColor();
-            new trackTime(qs('[data-tcursor="asto"][data-type="hr" ]'));
+            astad.value = astod.value = hu['date'];
+            astat.value = astot.value = hu['time'];
+            astot.style.backgroundColor = tickColor();
+            new trackTime(astot);
             this.tick.set(true);
 
         }
@@ -145,18 +151,20 @@ onDOMLoad(() => { new trackTime(); });
                 <td style='text-align: right; ' ><input type='time' id='wallClock' /></td>
             </tr>
             <tr>
-                <th></th><th  class='fdw'>start</th><th  class='fdw'>stop</th>
+                <th></th><th>start</th><th>stop</th>
             </tr>
 
             <tr>    
             <td></td>
             <td>
-                <input type='date' data-tcursor='asta' data-type='db' />
-                <input type='time' data-tcursor='asta' data-type='hr' />
+                <input type='date'   data-tcursor='asta' data-type='date' />
+                <input type='time'   data-tcursor='asta' data-type='time' />
+                <input type='hidden' data-tcursor='asta' data-type='Ums'  />
             </td>
             <td  style='text-align: right;'>
-                <input type='date' data-tcursor='asto' data-type='db' />
-                <input type='time' data-tcursor='asto' data-type='hr' />                
+                <input type='date'   data-tcursor='asto' data-type='date' />
+                <input type='time'   data-tcursor='asto' data-type='time' />                
+                <input type='hidden' data-tcursor='asto' data-type='Ums' />  
             </td>
             <td>
                 <span id='indicatore' style='color: red;'>&#11044;</span>               
