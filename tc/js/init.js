@@ -1,0 +1,1 @@
+onDOMLoad(() => { new wallClock(); });
