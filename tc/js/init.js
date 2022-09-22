@@ -1,1 +1,1 @@
-onDOMLoad(() => { new wallClock(); });
+onDOMLoad(() => { GLWC.q(); });

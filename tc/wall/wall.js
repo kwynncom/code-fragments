@@ -1,36 +1,56 @@
+var GLWC = false;
 class wallClock {
-    constructor(de, te, we) { 
-        if (!de) {
-            this.fs = ['dow', 'date', 'time'];
-            this.wallProper();
-        } else {
-            this['date'] = de;
-            this['time'] = te;
-        }
-        
+    
+    constructor() {
+        this.cs = [];
         this.myset();
+    }
+    
+    q(de, te, we) { 
+       
+        if (!de) this.wallProper();
+        else    this.setExtra(de, te, we);
+
         
     } 
     
+    setExtra(de, te, we) {
+        const t = {};
+        t['date'] = de;
+        t['time'] = te;
+        t['dow' ] = we;
+        this.addTickEs(t);
+    }
+    
+    addTickEs(ain) {
+        this.cs.push(ain);
+    }
+    
     wallProper() { 
-        const fs = this.fs;
-        fs.forEach((f) => { this[f] = byid('wall' + f); });
+        const fs = ['dow', 'date', 'time'];
+        const t = [];
+        fs.forEach((f) => { t[f] = byid('wall' + f); });
+        this.addTickEs(t);
     }
     
     myset() {
         this.tick();
-        setInterval(() => { this.tick(); }, 1000);        
+        if (this.siv) return;
+        this.siv = setInterval(() => { this.tick(); }, 1000);      
     }
     
 
     tick() {
         const h = getHu();
         const fs = ['dow', 'date', 'time'];
-        fs.forEach((f) => {
-            if (this[f]) 
-                this[f].value = h[f];
+        this.cs.forEach((cl) => {
+            fs.forEach((f) => {
+                if (cl[f]) 
+                    cl[f].value = h[f];
+            });
         });
-        
     }
      
 }
+
+onDOMLoad(() => { GLWC = new wallClock(); });

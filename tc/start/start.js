@@ -24,7 +24,7 @@ class start {
             if (i === 1) stes[j] = e10;
         }
     
-        new wallClock(stes[0], stes[1]);
+        GLWC.q(stes[0], stes[1]);
         
         
     }
