@@ -6,21 +6,21 @@ class wallClock {
         this.myset();
     }
     
-    q(de, te, we) { 
+    q(de, te, we, cb) { 
        
         if (!de) this.wallProper();
-        else    this.setExtra(de, te, we);
+        else    this.setExtra(de, te, we, cb);
         this.tick();
-
-        
+   
     } 
     
-    setExtra(de, te, we) {
+    setExtra(de, te, we, cb) {
         const t = {};
         t['date'] = de;
         t['time'] = te;
         t['dow' ] = we;
-        this.addTickEs(t);
+        t['cb'  ] = cb;
+         this.addTickEs(t);
     }
     
     addTickEs(ain) {
@@ -43,11 +43,11 @@ class wallClock {
 
     tick() {
         const h = getHu();
-        const fs = ['dow', 'date', 'time'];
+        const fs = ['dow', 'date', 'time', 'cb'];
         this.cs.forEach((cl) => {
             fs.forEach((f) => {
-                if (cl[f]) 
-                    cl[f].value = h[f];
+                if (cl[f]) if (f === 'cb') cl[f]();
+                           else cl[f].value = h[f];
             });
         });
     }

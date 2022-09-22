@@ -2,6 +2,7 @@ class start {
     
     constructor() { 
         this.btne = byid('startBtn');
+        this.es = {};
         this.onclick(); 
     }
     
@@ -34,10 +35,24 @@ class start {
             e10.value = t[fs20[j]];
             setRDAttrs(e10);
             if (i === 1) stes[j] = e10;
+            if (!this.es[fs10[i]])    this.es[fs10[i]]       = {};
+            if (!this.es[fs10[i]][fs20[j]]) this.es[fs10[i]][fs20[j]] = {};
+            this.es[fs10[i]][fs20[j]] = e10;
         }
     
-        GLWC.q(stes[0], stes[1]);
+        this.elape = this.p.querySelector('[data-elap="1"]');
+    
+        GLWC.q(stes[0], stes[1], null, () => { this.ontick(); });
         
+        
+    }
+    
+    ontick() { 
+        let d;
+        // if (!(d = kwifs(this, 'es', 'start', 'date', 'value'))) return;
+        
+        const ums = Date.parse(this.es.start.date.value);
+        return;
         
     }
 }

@@ -7,6 +7,9 @@
         <input type='date' data-stasto='stop' />
         <input type='time' data-stasto='stop' />
     </div>
+    <div style='display:inline-block;' data-elap='1'>
+        
+    </div>
 </div>
 <div id='timep'>
     

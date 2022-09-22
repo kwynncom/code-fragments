@@ -13,6 +13,6 @@
         <?php require_once('./start/start.php');     ?>
     </div>
     <div class='bbord' style='margin-top: 1ex; margin-bottom: 0.5ex;'>&nbsp;</div>
-    <?php require_once('startStop.php'); ?>
+    <?php require_once('./start/startStop.php'); ?>
 </body>
 </html>
