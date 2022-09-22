@@ -1,13 +1,18 @@
+var GLST;
+
 class start {
     
     constructor() { 
         this.btne = byid('startBtn');
         this.es = {};
-        this.onclick(); 
     }
     
     onclick() {
-        if (this.btne.innerHTML !== 'start') return; 
+        if (this.btne.innerHTML !== 'start') {
+            GLWC.deq(this.qn);
+            GLOI.unset(); 
+            return; 
+        }
         this.start();
     }
     
@@ -42,17 +47,22 @@ class start {
     
         this.elape = this.p.querySelector('[data-elap="1"]');
     
-        GLWC.q(stes[0], stes[1], null, () => { this.ontick(); });
+        this.qn = GLWC.q(stes[0], stes[1], null, () => { this.ontick(); });
         
         
     }
     
     ontick() { 
-        let d;
-        // if (!(d = kwifs(this, 'es', 'start', 'date', 'value'))) return;
+        const sta = Date.parse( this.es.start.date.value  + ' ' +
+                                this.es.start.time.value);
+        const sto =  Date.parse(this.es.stop. date.value + ' ' +
+                                this.es.stop. time.value);
         
-        const ums = Date.parse(this.es.start.date.value);
+        const d10 = sto - sta;
+        const d20 = d10 / 60000;
+        this.elape.innerHTML = d20.toFixed(2);
         return;
-        
     }
 }
+
+onDOMLoad(() => {GLST = new start(); });

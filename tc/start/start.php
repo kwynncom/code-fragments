@@ -1,1 +1,1 @@
-<button class='ibccl' id='startBtn' onclick='new start();'>start</button>
+<button class='ibccl' id='startBtn' onclick='GLST.onclick();'>start</button>

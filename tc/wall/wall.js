@@ -3,14 +3,18 @@ class wallClock {
     
     constructor() {
         this.cs = [];
+        this.oi = 0;
         this.myset();
     }
     
     q(de, te, we, cb) { 
        
+       let qn;
+       
         if (!de) this.wallProper();
-        else    this.setExtra(de, te, we, cb);
+        else     qn = this.setExtra(de, te, we, cb);
         this.tick();
+        return qn;
    
     } 
     
@@ -20,11 +24,12 @@ class wallClock {
         t['time'] = te;
         t['dow' ] = we;
         t['cb'  ] = cb;
-         this.addTickEs(t);
+        return this.addTickEs(t);
     }
     
     addTickEs(ain) {
         this.cs.push(ain);
+        return this.oi++;
     }
     
     wallProper() { 
@@ -50,6 +55,10 @@ class wallClock {
                            else cl[f].value = h[f];
             });
         });
+    }
+    
+    deq(i) {
+        this.cs.splice(i, 1);
     }
      
 }

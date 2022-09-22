@@ -12,6 +12,11 @@ class onIndicator {
         this.sih = setInterval(() => this.tick(), 200);
     }
     
+    unset() { 
+        clearInterval(this.sih); 
+        this.e.style.color = 'red';
+    }
+    
     tick() {
         if (this.i++ % 4 <= 1) {
             this.e.style.color = tickColor();
