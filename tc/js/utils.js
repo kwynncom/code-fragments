@@ -11,3 +11,9 @@ function getHu() {
     
     return {'date' : nowDate, 'time' : nowTime, 'dow' : nowDow, 'Ums' : Ums, 'U' : U };
 }
+
+function setRDAttrs(e) {
+    e.readOnly = true;
+    e.disabled = true;
+    e.required = true;    
+}
