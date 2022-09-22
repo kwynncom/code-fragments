@@ -10,8 +10,9 @@
     <div>
         <?php require_once('./wall/wall.php'); ?>
         <div    class='ibccl' id='indicatore' style='color: red;'>&#11044;</div>
-        <button class='ibccl' id='startBtn'>start</button>
+        <?php require_once('./start/start.php'); ?>
     </div>
-    <div class='bbord' style='margin-top: 1ex; '>&nbsp;</div>
+    <div class='bbord' style='margin-top: 1ex; margin-bottom: 0.5ex;'>&nbsp;</div>
+    <?php require_once('startStop.php'); ?>
 </body>
 </html>
