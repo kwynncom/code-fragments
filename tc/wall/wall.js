@@ -3,6 +3,9 @@ class wallClock {
         if (!de) {
             this.fs = ['dow', 'date', 'time'];
             this.wallProper();
+        } else {
+            this['date'] = de;
+            this['time'] = te;
         }
         
         this.myset();
@@ -24,7 +27,8 @@ class wallClock {
         const h = getHu();
         const fs = ['dow', 'date', 'time'];
         fs.forEach((f) => {
-            this[f].value = h[f];
+            if (this[f]) 
+                this[f].value = h[f];
         });
         
     }
