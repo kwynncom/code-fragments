@@ -8,9 +8,9 @@
 </head>
 <body>
     <div>
-        <?php require_once('./wall/wall.php'); ?>
-        <div    class='ibccl' id='indicatore' style='color: red;'>&#11044;</div>
-        <?php require_once('./start/start.php'); ?>
+        <?php require_once('./wall/wall.php');       ?>
+        <?php require_once('onindicator/onind.php'); ?>
+        <?php require_once('./start/start.php');     ?>
     </div>
     <div class='bbord' style='margin-top: 1ex; margin-bottom: 0.5ex;'>&nbsp;</div>
     <?php require_once('startStop.php'); ?>

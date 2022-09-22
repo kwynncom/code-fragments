@@ -1,13 +1,25 @@
 class start {
     
-    constructor() { this.onclick(); }
+    constructor() { 
+        this.btne = byid('startBtn');
+        this.onclick(); 
+    }
     
     onclick() {
+        if (this.btne.innerHTML !== 'start') return; 
+        this.start();
+    }
+    
+    start() {
+
+        this.btne.innerHTML = 'stop';
         const p = this.p = byid('ssbase').cloneNode(true);
+        this.curr = p;
         p.id = 'ssp_' + time();
         p.style.display = 'block';
         this.pop();
         byid('timep').append(p);
+        GLOI.set();        
     }
     
     pop() {

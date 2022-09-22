@@ -10,6 +10,7 @@ class wallClock {
        
         if (!de) this.wallProper();
         else    this.setExtra(de, te, we);
+        this.tick();
 
         
     } 
