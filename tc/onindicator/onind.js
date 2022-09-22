@@ -15,6 +15,7 @@ class onIndicator {
     unset() { 
         clearInterval(this.sih); 
         this.e.style.color = 'red';
+        this.e.style.opacity = 1;
     }
     
     tick() {

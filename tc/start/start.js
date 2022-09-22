@@ -8,9 +8,13 @@ class start {
     }
     
     onclick() {
-        if (this.btne.innerHTML !== 'start') {
+        const b = this.btne;
+        if (b.innerHTML !== 'start') {
+            b.style.visibility = 'hidden';
+            this.btne.innerHTML = 'start';
             GLWC.deq(this.qn);
             GLOI.unset(); 
+            b.style.visibility = 'visible';
             return; 
         }
         this.start();
@@ -24,7 +28,7 @@ class start {
         p.id = 'ssp_' + time();
         p.style.display = 'block';
         this.pop();
-        byid('timep').append(p);
+        byid('timep').prepend(p);
         GLOI.set();        
     }
     
