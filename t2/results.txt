@@ -1,0 +1,8 @@
+optimized -O3
+1000 runs so 2000 lines out output
+42us per run first time
+37us per run 2nd time
+echo(number_format($a[1999] - $a[0])); // === 36,961,416 === 36.9... ms
+printf("%d" or ul / lu equivalent)
+*************
+the binary version is only slightly faster at 35,475,411
