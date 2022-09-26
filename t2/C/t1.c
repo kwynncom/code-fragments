@@ -27,9 +27,10 @@ void main(void) {
 		setOBPack(pack); // does need to be reset everytime, otherwise bad read: Resource temporarily unavailable
 		if (write(sock, pack, SNPL) != SNPL) perror("bad write");
 		if (read (sock, pack, SNPL) != SNPL) perror("bad read" );
-		if (1) { // results 1
+		if (0) { // results 1
 			decodeSNTPP(pack, &sr, &ss);
-			printf("%lu\n%lu\n", sr, ss);
+			if (0) printf("%lu\n%lu\n", sr, ss);
+			else   printf("%lu\n", ss);
 		}
 		else fwrite(pack, SNPL, 1, stdout);
 	}

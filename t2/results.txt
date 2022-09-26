@@ -11,3 +11,19 @@ the binary version is only slightly faster at 35,475,411
 printf() version is no different
 *********
 100,000 no difference, roughly 32 - 34 versus 31 - 34
+******
+1M - binary - 29.7, 29.2
+	turned off NetBeans and about everything else - 28.6, 29.7
+1M - printf - some typing, GEdit up - 30.3, 31.7, 30.8
+1M - binary again, apples to apples with GEdit running - 28.8, 	28.7
+So binary seems to make some difference
+*************
+tested 1M binary version of my simple time service - first result with NetBeans running, running in NetBeans, in fact, is 21.7
+With just GEdit running, 21.2
+That's with only 1 time, though, as opposed to 48 byte pack
+Then again, that's the only thing that's fair to compare.  
+************
+As a different, question, what is the average difference between server receive and server send?  
+Around 11 - 15us
+
+

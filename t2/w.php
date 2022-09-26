@@ -3,14 +3,24 @@
 define('M_BILLION', 1000000000);
 $n = 100000;
 
-$t = shell_exec('./C/t1');
-if (1) {  // results 1
+if (1) $t = shell_exec(__DIR__ . '/C/t1');
+else   $t = shell_exec(__DIR__ . '/../../sts/client.bin');
+if (0) {  // results 1
 	$a = explode("\n", $t); unset($t);
-	echo(number_format(($a[$n * 2 - 1] - $a[0]) / $n));
+	if (0) echo(number_format(($a[$n * 2 - 1] - $a[0]) / $n));
+	else   echo(number_format(($a[$n - 1] - $a[0]) / $n));
 }
-else { 
+else if (0) { 
 	$l = strlen($t);
 	echo(number_format((decodeSNTPP($t, $n * 48 - 8, 'N2') - decodeSNTPP($t, 32, 'N2')) / $n));
+} else if (0) {
+	echo(number_format((decodeSNTPP($t, $n * 8 - 8, 'Q') - decodeSNTPP($t, 0, 'Q')) / $n));	
+} else {
+	$tot = 0;
+	for ($i=0; $i < $n; $i++) {
+		$tot += decodeSNTPP($t, $i * 48 - 8, 'N2') - decodeSNTPP($t, $i * 48 - 16, 'N2');
+	}
+	echo(number_format($tot / $n));
 }
 
 exit(0);
