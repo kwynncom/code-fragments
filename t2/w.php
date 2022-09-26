@@ -1,15 +1,17 @@
 <?php
 				//   123456789
 define('M_BILLION', 1000000000);
+$n = 100000;
 
 $t = shell_exec('./C/t1');
-if (0) {  // results 1
+if (1) {  // results 1
 	$a = explode("\n", $t); unset($t);
-	echo(number_format($a[1999] - $a[0]));
+	echo(number_format(($a[$n * 2 - 1] - $a[0]) / $n));
 }
-$l = strlen($t);
-
-echo(number_format(decodeSNTPP($t, 47992, 'N2') - decodeSNTPP($t, 32, 'N2')));
+else { 
+	$l = strlen($t);
+	echo(number_format((decodeSNTPP($t, $n * 48 - 8, 'N2') - decodeSNTPP($t, 32, 'N2')) / $n));
+}
 
 exit(0);
 

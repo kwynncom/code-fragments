@@ -6,3 +6,8 @@ echo(number_format($a[1999] - $a[0])); // === 36,961,416 === 36.9... ms
 printf("%d" or ul / lu equivalent)
 *************
 the binary version is only slightly faster at 35,475,411
+*****
+10,000 binary 36us, then 34.5
+printf() version is no different
+*********
+100,000 no difference, roughly 32 - 34 versus 31 - 34
