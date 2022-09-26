@@ -23,13 +23,13 @@ void main(void) {
 	unsigned long sr, ss;
 
 	int i;
-	for (i=0; i < 100000; i++) {
+	for (i=0; i < 1000; i++) {
 		setOBPack(pack); // does need to be reset everytime, otherwise bad read: Resource temporarily unavailable
 		if (write(sock, pack, SNPL) != SNPL) perror("bad write");
 		if (read (sock, pack, SNPL) != SNPL) perror("bad read" );
-		if (0) { // results 1
+		if (1) { // results 1
 			decodeSNTPP(pack, &sr, &ss);
-			if (0) printf("%lu\n%lu\n", sr, ss);
+			if (1) printf("%lu\n%lu\n", sr, ss);
 			else   printf("%lu\n", ss);
 		}
 		else fwrite(pack, SNPL, 1, stdout);

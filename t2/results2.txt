@@ -1,0 +1,1 @@
+I think I can safely say that the daemon SNTP cient concept is working.  The daemon version is much more stable.

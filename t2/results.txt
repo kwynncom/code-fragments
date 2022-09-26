@@ -27,5 +27,32 @@ Then again, that's the only thing that's fair to compare.
 ************
 As a different, question, what is the average difference between server receive and server send?  
 Around 11 - 15us
+**
+Returning to that question, the traces are very interesting when iterated.  I always get something like this:
 
+101,528
+76,131
+74,897
+60,016
+66,467
+72,289
+80,707
+25,688
+15,776
+15,608
+15,709
+15,410
+15,373
+15,183
+14,204
+12,378
+12,403
+12,438
+12,401
+12,454
+12,381
+12,333
+12,012
+11,877
+12,290
 
