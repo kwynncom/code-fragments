@@ -22,6 +22,8 @@ tested 1M binary version of my simple time service - first result with NetBeans 
 With just GEdit running, 21.2
 That's with only 1 time, though, as opposed to 48 byte pack
 Then again, that's the only thing that's fair to compare.  
+100K string version of my STS 25.2, 24.8
+1M string 23.5 with NetBeans doing the running; 22.7 with nothing large running, and GEdit not running
 ************
 As a different, question, what is the average difference between server receive and server send?  
 Around 11 - 15us

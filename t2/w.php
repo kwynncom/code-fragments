@@ -1,9 +1,10 @@
 <?php
-				//   123456789
-define('M_BILLION', 1000000000);
-$n = 100000;
 
-if (1) $t = shell_exec(__DIR__ . '/C/t1');
+require_once('/opt/kwynn/kwutils.php');
+
+$n = M_MILLION;
+
+if (0) $t = shell_exec(__DIR__ . '/C/t1');
 else   $t = shell_exec(__DIR__ . '/../../sts/client.bin');
 if (0) {  // results 1
 	$a = explode("\n", $t); unset($t);
@@ -15,12 +16,16 @@ else if (0) {
 	echo(number_format((decodeSNTPP($t, $n * 48 - 8, 'N2') - decodeSNTPP($t, 32, 'N2')) / $n));
 } else if (0) {
 	echo(number_format((decodeSNTPP($t, $n * 8 - 8, 'Q') - decodeSNTPP($t, 0, 'Q')) / $n));	
-} else {
+} else if (0) {
 	$tot = 0;
 	for ($i=0; $i < $n; $i++) {
 		$tot += decodeSNTPP($t, $i * 48 - 8, 'N2') - decodeSNTPP($t, $i * 48 - 16, 'N2');
 	}
 	echo(number_format($tot / $n));
+} else {
+	$a = explode("\n", $t); unset($t);	
+	kwas(count($a) - 1 === $n, 'bad time server array count');
+	echo(number_format(($a[$n - 1] - $a[0]) / $n));
 }
 
 exit(0);
