@@ -4,11 +4,12 @@ require_once('/opt/kwynn/kwutils.php');
 
 class ntp_server_search {
 	
-	// const pools = ['amazon', 'us', 'ubuntu'];
-	const pools = ['amazon'];
-	const maxpooln = 0;
+	const pools = ['amazon', 'us', 'ubuntu'];
+	// const pools = ['amazon'];
+	const maxpooln = 3;
 	const keya  = 'Address: ';
-	const threshold = 1.4 * M_MILLION;
+	const thresholdrt  = 1.4 * M_MILLION;
+	const thresholdoff = 1   * M_MILLION;
 
 	public function __construct() {
 		$this->oi = 0;
@@ -35,7 +36,7 @@ class ntp_server_search {
 		foreach($fs as $i) $a20[$i] = intval(trim($a[$i]));
 		$d = $a20[3] - $a20[0]; 
 		echo("round trip = " . number_format($d) . ' (' . sprintf('%d', $d / M_MILLION) . 'ms)'. "\n");
-		if ($d < self::threshold) {
+		if ($d < self::thresholdrt && self::d($a) < self::thresholdoff) {
 			echo("WE HAVE A WINNER!\n");
 			exit(0);
 		}
@@ -69,6 +70,12 @@ class ntp_server_search {
 				$this->do20($r);
 			}
 	}
+	
+	public static function d($T) { 
+		$t = ((($T[1] - $T[0]) + ($T[2] - $T[3]))) >> 1;
+		return $t;
+	}
+	
 	
 }
 
