@@ -5,24 +5,12 @@ require_once('/opt/kwynn/kwutils.php');
 class jscssht {
 	
 	const jsDefault = '/opt/kwynn/js/utils.js';
-	
-	private static function setDirs(&$dr, &$url, &$base) {
-		$dr   = $_SERVER['DOCUMENT_ROOT'];	
-		
-		if ($rl = readlink($dr)) $dr = $rl;
-		
-		$url =  dirname($_SERVER['REQUEST_URI']);
-		if (!$base) $base = $url;
-		
-		if ($rl20 = readlink($dr . $url)) $base = $rl20;
-	}
-	
+
 
 	public static function echoAll(string $base = '') {
 
-
-		self::setDirs($dr, $url, $base);
-		
+		$url =  dirname($_SERVER['REQUEST_URI']);
+		if (!$base) $base = $_SERVER['DOCUMENT_ROOT'] . $url;
 
 		$tys = ['css' => '/^.*\.css$/', 'js' => '/^.*\.js$/'];
 
@@ -35,7 +23,7 @@ class jscssht {
 			$fs = kwam($fs, self::recursiveSearch($base, $re ));
 
 			foreach($fs as $f) {
-				$d = str_replace($dr, '', $f);
+				$d = str_replace($base, $url, $f);
 				if      ($ext === 'css') $t = "<link rel='stylesheet' href='$d' />\n";
 				else if ($ext === 'js' ) $t = "<script src='$d'></script>\n";   
 				echo($t);
