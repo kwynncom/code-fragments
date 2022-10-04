@@ -2,7 +2,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 <title>timecard</title>
 <?php 
-    require_once('./utils.php'); 
+    require_once('/opt/kwynn/kwutils.php'); 
     echo(jscssht::getAll(__DIR__));
 ?>
 </head>
