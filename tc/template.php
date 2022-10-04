@@ -3,7 +3,7 @@
 <title>timecard</title>
 <?php 
     require_once('./utils.php'); 
-    echoAllJSCSS();
+    jscssht::echoAll(__DIR__);
 ?>
 </head>
 <body>

@@ -2,43 +2,58 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-function echoAllJSCSS() {
+class jscssht {
+	
+	const jsDefault = '/opt/kwynn/js/utils.js';
+	
+	private static function setDirs(&$dr, &$url, &$base) {
+		$dr   = $_SERVER['DOCUMENT_ROOT'];	
+		
+		if ($rl = readlink($dr)) $dr = $rl;
+		
+		$url =  dirname($_SERVER['REQUEST_URI']);
+		if (!$base) $base = $url;
+		
+		if ($rl20 = readlink($dr . $url)) $base = $rl20;
+	}
+	
 
-    $r = $_SERVER['DOCUMENT_ROOT'];
-    $s =  dirname($_SERVER['REQUEST_URI']);
-    $dbase = $r . '' . $s;
-    
-    $tys = ['css' => '/^.*\.css$/', 'js' => '/^.*\.js$/'];
-    
-    $kok = '/opt/kwynn/js/utils.js';
-    
-    foreach($tys as $ext => $re) 
-    {
-        $fs = [];
-        
-        if ($ext === 'js' && is_readable($kok)) $fs[] = $kok;
-        
-        $fs = kwam($fs, rsearch($dbase, $re ));
-   
-        foreach($fs as $f) {
-            $d = str_replace($r, '', $f);
-            if      ($ext === 'css') $t = "<link rel='stylesheet' href='$d' />\n";
-            else if ($ext === 'js' ) $t = "<script src='$d'></script>\n";   
-            echo($t);
-        }
+	public static function echoAll(string $base = '') {
 
-    }
-}
 
-function rsearch($dir, $re) {
-    $return = [];
-    $iti = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
-    while($iti->valid()){
-        $p = $iti->key();
-        if (preg_match($re, $p, $ms)) {
-            $return[] = $ms[0];
-        }
-        $iti->next();
-    }
-    return $return;
+		self::setDirs($dr, $url, $base);
+		
+
+		$tys = ['css' => '/^.*\.css$/', 'js' => '/^.*\.js$/'];
+
+		foreach($tys as $ext => $re) 
+		{
+			$fs = [];
+
+			if ($ext === 'js' && is_readable(self::jsDefault)) $fs[] = self::jsDefault;
+
+			$fs = kwam($fs, self::recursiveSearch($base, $re ));
+
+			foreach($fs as $f) {
+				$d = str_replace($dr, '', $f);
+				if      ($ext === 'css') $t = "<link rel='stylesheet' href='$d' />\n";
+				else if ($ext === 'js' ) $t = "<script src='$d'></script>\n";   
+				echo($t);
+			}
+
+		}
+	}
+
+	public static function recursiveSearch($dir, $re) {
+		$return = [];
+		$iti = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+		while($iti->valid()){
+			$p = $iti->key();
+			if (preg_match($re, $p, $ms)) {
+				$return[] = $ms[0];
+			}
+			$iti->next();
+		}
+		return $return;
+	}
 }
