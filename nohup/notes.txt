@@ -1,1 +1,4 @@
 21:25 - works
+	- does NOT work from NetBeans
+pstree -s [pid] === systemd---systemd---gnome-shell---bash---java---php---sh---pstree
+java is NetBeans
