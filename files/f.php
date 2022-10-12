@@ -14,25 +14,16 @@ class filePtrTracker extends dao_generic_3 {
 	
 	const defaultNLines = 40;
 	
-	private function __construct(string $name, string $op, int $n = null) {
+	private function __construct(string $name) {
 		$this->name = $name;
 		$this->dbmg();
 		$this->ohan = fopen($this->name, 'r');
-				
-		if ($op === 'tail') {
-			$this->tailI($n);
-			$this->register();
-			return;
-		} 
-		
-		if ($op === 'getEnd') {
-			$this->getEndI();
-			return;
-		}
+	
+		$this->getEndI();
+		$this->register();
+
 	}
-	
-	
-	
+
 	private function dbmg() {
 		parent::__construct(self::dbname);
 		$this->creTabs('files');
