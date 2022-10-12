@@ -18,10 +18,7 @@ class filePtrTracker extends dao_generic_3 {
 		$this->name = $name;
 		$this->dbmg();
 		$this->ohan = fopen($this->name, 'r');
-	
 		$this->getEndI();
-		$this->register();
-
 	}
 
 	private function dbmg() {
@@ -34,6 +31,7 @@ class filePtrTracker extends dao_generic_3 {
 		$res = $this->fcoll->findOne($this->oq);
 		if (!$res) $this->tailI(self::defaultNLines);
 		else $this->end = $res['end'];
+		$this->register();
 	}
 	
 	private function register() {
@@ -45,7 +43,7 @@ class filePtrTracker extends dao_generic_3 {
 		$this->fcoll->upsert($q, ['end' => $this->end]);
 	}
 	
-	public static function getEnd(string $name) {
+	public static function getEnd($name) {
 		$o = new self($name, 'getEnd');
 		if (isset($o->retString)) {
 			fclose($o->ohan);
@@ -54,11 +52,11 @@ class filePtrTracker extends dao_generic_3 {
 		else return $o->ohan;
 	}
 	
-	private function tailI(int $tn) {
+	private function tailI() {
 		$h = $this->ohan;
 		fseek($h, 0, SEEK_END);
 		$this->end = $end = ftell($h);
-		fseek($h, -1 * $tn * self::maxLnn, SEEK_END);
+		fseek($h, -1 * self::defaultNLines * self::maxLnn, SEEK_END);
 		$fn = ftell($h);
 		if ($fn < 0) fseek($h, 0);
 		kwas(fgets($h), 'throwaway line nonexistent'); // throw away because we may be in middle
@@ -71,5 +69,15 @@ class filePtrTracker extends dao_generic_3 {
 	}
 }
 
-$test = filePtrTracker::getEnd('/var/log/chrony/measurements.log', 40);
+function testFPT() {
+	$test = filePtrTracker::getEnd('/var/log/chrony/measurements.log');	
+	echo('IsString? ' . (is_string($test) ? 'Y' : 'N') . "\n");
+	if (is_string($test)) echo("StrLen = " . strlen($test) . "\n");
+}
+
+testFPT();
+
+
+
+
 exit(0);
