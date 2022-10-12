@@ -11,6 +11,7 @@ class filePtrTracker extends dao_generic_3 {
 	public readonly mixed $ohan;
 	public readonly int $end;
 	public readonly array $oq;
+	
 	const defaultNLines = 40;
 	
 	private function __construct(string $name, string $op, int $n = null) {
@@ -40,7 +41,7 @@ class filePtrTracker extends dao_generic_3 {
 	
 	private function getEndI() {
 		$res = $this->fcoll->findOne($this->oq);
-		if (!$res) $this->tailI(self::defaultNLines, false);
+		if (!$res) $this->tailI(self::defaultNLines);
 		else $this->end = $res['end'];
 	}
 	
@@ -53,38 +54,31 @@ class filePtrTracker extends dao_generic_3 {
 		$this->fcoll->upsert($q, ['end' => $this->end]);
 	}
 	
-	public function getEnd(string $name) {
+	public static function getEnd(string $name) {
 		$o = new self($name, 'getEnd');
+		if (isset($o->retString)) {
+			fclose($o->ohan);
+			return $o->retString;
+		}
+		else return $o->ohan;
 	}
 	
-	private function tailI(int $tn, bool $trueEnd = true) {
+	private function tailI(int $tn) {
 		$h = $this->ohan;
 		fseek($h, 0, SEEK_END);
-		$end = ftell($h);
-		if ($trueEnd) $this->end = $end;
+		$this->end = $end = ftell($h);
 		fseek($h, -1 * $tn * self::maxLnn, SEEK_END);
 		$fn = ftell($h);
 		if ($fn < 0) fseek($h, 0);
 		kwas(fgets($h), 'throwaway line nonexistent'); // throw away because we may be in middle
 		
 		$start = ftell($h); kwas($start < $end, 'no valid starting point file pointer util');
-		if (!$trueEnd) $this->end = $start;
 		$len = $end - $start;
-		if ($trueEnd) {
-			$res = fread($h, $len); kwas($res[$len - 1] === "\n", 'last char should be newline');
-		}
-		fclose($h);
-		
+		$res = fread($h, $len); kwas($res[$len - 1] === "\n", 'last char should be newline');
 		$this->retString = $res;
 		
 	}
-	
-	
-	public static function tail(string $name, int $n) {
-		$o = new self($name, 'tail', $n);
-		return $o->retString;
-	}
 }
 
-$test = filePtrTracker::tail('/var/log/chrony/measurements.log', 40);
+$test = filePtrTracker::getEnd('/var/log/chrony/measurements.log', 40);
 exit(0);
