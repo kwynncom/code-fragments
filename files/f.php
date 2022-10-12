@@ -75,7 +75,7 @@ function testFPT() {
 	if (is_string($test)) echo("StrLen = " . strlen($test) . "\n");
 }
 
-testFPT();
+if (didCLICallMe(__FILE__)) testFPT();
 
 
 
