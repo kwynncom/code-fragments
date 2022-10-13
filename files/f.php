@@ -3,13 +3,14 @@
 require_once('/opt/kwynn/kwutils.php');
 
 class filePtrTracker extends dao_generic_3 {
-	const dbname = 'files';
-	const maxLnn = 200;
-	const defaultNLines = 40;
-	public readonly string $name;
-	private readonly mixed $ohan;
-	private readonly bool $collExists;
-	private readonly array $oq;
+	
+	const dbname	= 'files';
+	const initChars =    8192;
+	
+	public  readonly string $name;
+	private readonly mixed	$ohan;
+	private readonly bool	$collExists;
+	private readonly array	$oq;
 
 	public function __construct(string $name) {
 		$this->name = $name;
@@ -24,20 +25,20 @@ class filePtrTracker extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs('files');
 		$this->oq = ['_id' => $this->name];
+		// if (time() < strtotime('2022-10-12 22:40')) $this->fcoll->drop();
 	}
 	
 	private function getEndInit() {
 		$res = $this->fcoll->findOne($this->oq);
-		if (!$res) $this->setInitViaTail(self::defaultNLines);
+		if (!$res) $this->setInitViaTail();
 		else fseek($this->ohan, $res['end']);
 	}
 	
 	private function setInitViaTail() {
-		$h = $this->ohan;
-		fseek($h, -1 * self::defaultNLines * self::maxLnn, SEEK_END);
-		$fn = ftell($h);
-		if ($fn < 0) { fseek($h, 0, SEEK_SET); return 0; }
-		kwas(fgets($h), 'throwaway line nonexistent'); // throw away because we may be in middle
+		$st = fstat($this->ohan);
+		if ($st['size']  <= self::initChars) return 0;
+		fseek($this->ohan, -self::initChars, SEEK_END);
+		kwas(fgets($this->ohan), 'throwaway line nonexistent'); // throw away because we may be in middle
 	}
 	
 	private function setEndF() {
@@ -64,4 +65,3 @@ function testFPT() {
 
 if (didCLICallMe(__FILE__)) testFPT();
 
-exit(0);
