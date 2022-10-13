@@ -7,18 +7,21 @@ class filePtrTracker extends dao_generic_3 {
 	const maxLnn = 200;
 	const dbname = 'files';
 	public readonly string $name;
-	public readonly string $retString;
-	public readonly mixed $ohan;
-	public readonly int $end;
-	public readonly array $oq;
+	private readonly mixed $ohan;
+	private readonly int $endInit;
+	private readonly bool $collExists;
 	
 	const defaultNLines = 40;
 	
-	private function __construct(string $name) {
+	public function __destruct() {
+		fclose($this->ohan);
+	}
+	
+	public function __construct(string $name) {
 		$this->name = $name;
 		$this->dbmg();
 		$this->ohan = fopen($this->name, 'r');
-		$this->getEndI();
+		$this->getEndInit();
 	}
 
 	private function dbmg() {
@@ -27,52 +30,59 @@ class filePtrTracker extends dao_generic_3 {
 		$this->oq = ['_id' => $this->name];
 	}
 	
-	private function getEndI() {
+	private function getEndInit() {
 		$res = $this->fcoll->findOne($this->oq);
 		if (!$res) $this->tailI(self::defaultNLines);
-		else $this->end = $res['end'];
-		$this->register();
+		else $this->initEnd = $res['end'];
+		fseek($this->ohan, $this->initEnd);
+		
 	}
 	
-	private function register() {
+	private function setEndF(int $endin = null) {
+		
 		$q = $this->oq;
-		if ($this->fcoll->count($q) === 0) {
+
+		$ce = isset($this->collExists);
+		if (!$ce && $this->fcoll->count($q) === 0) {
 			$dat['_id'] = $this->name;
 			$this->fcoll->insertOne($dat);
+			$end = $this->initEnd;
+		}  
+		
+		if ($endin) { 
+			$end = $endin;
+			if (!$ce) $this->initEnd = $end;
 		}
-		$this->fcoll->upsert($q, ['end' => $this->end]);
+		if (!$ce) $this->collExists = true;
+		
+		kwas(isset($end), 'setEndF end should be defined here');
+		$this->fcoll->upsert($q, ['end' => $end]);
+		if (!isset($this->ofptr)) $this->ofptr = $end;
 	}
 	
-	public static function getEnd($name) {
-		$o = new self($name, 'getEnd');
-		if (isset($o->retString)) {
-			fclose($o->ohan);
-			return $o->retString;
-		}
-		else return $o->ohan;
+	public function fgets() {
+		$l = fgets($this->ohan);
+		$this->setEndF(ftell($this->ohan));
+		return $l;
 	}
 	
 	private function tailI() {
 		$h = $this->ohan;
 		fseek($h, 0, SEEK_END);
-		$this->end = $end = ftell($h);
+		$end = ftell($h);
+		if ($end === 0) { $this->initEnd = 0; return; }
+		
 		fseek($h, -1 * self::defaultNLines * self::maxLnn, SEEK_END);
 		$fn = ftell($h);
-		if ($fn < 0) fseek($h, 0);
+		if ($fn < 0) { fseek($h, 0, SEEK_SET); $this->initEnd = 0; return; }
 		kwas(fgets($h), 'throwaway line nonexistent'); // throw away because we may be in middle
-		
-		$start = ftell($h); kwas($start < $end, 'no valid starting point file pointer util');
-		$len = $end - $start;
-		$res = fread($h, $len); kwas($res[$len - 1] === "\n", 'last char should be newline');
-		$this->retString = $res;
-		
+		$this->initEnd = ftell($h);
 	}
 }
 
 function testFPT() {
-	$test = filePtrTracker::getEnd('/var/log/chrony/measurements.log');	
-	echo('IsString? ' . (is_string($test) ? 'Y' : 'N') . "\n");
-	if (is_string($test)) echo("StrLen = " . strlen($test) . "\n");
+	$o = new filePtrTracker('/var/log/chrony/measurements.log');
+	echo($o->fgets());
 }
 
 if (didCLICallMe(__FILE__)) testFPT();
