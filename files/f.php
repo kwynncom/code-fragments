@@ -25,7 +25,7 @@ class filePtrTracker extends dao_generic_3 {
 		parent::__construct(self::dbname);
 		$this->creTabs('files');
 		$this->oq = ['_id' => $this->name];
-		// if (time() < strtotime('2022-10-12 22:40')) $this->fcoll->drop();
+		if (0) $this->fcoll->drop();
 	}
 	
 	private function getEndInit() {
@@ -36,13 +36,12 @@ class filePtrTracker extends dao_generic_3 {
 	
 	private function setInitViaTail() {
 		$st = fstat($this->ohan);
-		if ($st['size']  <= self::initChars) return 0;
+		if ($st['size']  <= self::initChars) return;
 		fseek($this->ohan, -self::initChars, SEEK_END);
 		kwas(fgets($this->ohan), 'throwaway line nonexistent'); // throw away because we may be in middle
 	}
 	
 	private function setEndF() {
-	
 		if (!isset($this->collExists) && $this->fcoll->count($this->oq) === 0) {
 			$dat['_id'] = $this->name;
 			$this->fcoll->insertOne($dat);
