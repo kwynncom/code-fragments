@@ -14,9 +14,25 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
-<script src='Wordle_2309.js'></script>
+<script src='./Wordle_2309.js'></script>
 
 <script>
+	
+	// class 
+	
+	function ws(a, b) {
+		let s = [];
+		for (    let i=0; i < 5; i++) 
+			for (let j=i; j < 5; j++) {
+				const as = a.substring(i, 1);
+				const bs = b.substring(j, 1);
+				if (as !== bs) { s[i] = ' '; continue; }
+				if (i === j) s[i] = 'r';
+				else		 s[i] = 'o';
+			}
+		
+	}
+	
 	onDOMLoad(() => { byid('ein00').focus(); });
 	function oninf(e) { 
 		const re = new RegExp(/^[A-Za-z]$/);
