@@ -18,26 +18,51 @@
 
 <script>
 	
-	// class 
-	
-	function ws(a, b) {
-		let s = [];
-		for (    let i=0; i < 5; i++) 
-			for (let j=i; j < 5; j++) {
-				const as = a.substring(i, 1);
-				const bs = b.substring(j, 1);
-				if (as !== bs) { s[i] = ' '; continue; }
-				if (i === j) s[i] = 'r';
-				else		 s[i] = 'o';
-			}
+	class Wordle {
+		constructor() { 
+			this.w = Wordle_2309;
+		}
 		
+		put(a) {
+			for (const p in this.w) this.score(a, p);
+		}
+		
+		
+		score(a, b) { // a is the guess
+			let s = '';
+			for (    let i=0; i < 5; i++) 
+				for (let j=0; j < 5; j++) {
+					const as = a.substring(i, i + 1);
+					const bs = b.substring(j, j + 1);
+					if (as === bs) {
+						if (i === j) s += 'r';
+						else		 s += 'o';
+						j = 4; // done analyzing
+					} else if (j === 4) s += ' ';
+					
+
+				}
+			
+			return
+		}
 	}
 	
+	function rowToS(r) {
+		let s = '';
+		for (let i=0; i < 5; i++) s += byid('ein' + r + '' + i).value;
+		s = s.toLowerCase();
+		return s;
+	}
+	
+	var wo = new Wordle();
+
 	onDOMLoad(() => { byid('ein00').focus(); });
 	function oninf(e) { 
 		const re = new RegExp(/^[A-Za-z]$/);
 		if (re.test(e.value)) {
-			const id = 'ein' + e.dataset.r + (parseInt(e.dataset.c) + 1);
+			let c = parseInt(e.dataset.c);
+			if (c === 4) return wo.put(rowToS(e.dataset.r));
+			const id = 'ein' + e.dataset.r + (c + 1);
 			byid(id).focus();
 		}
 	}
