@@ -2,7 +2,7 @@
 
 function e($s) { echo($s); }
 
-for($i=0; $i < 6; $i++) {
+for($i=0; $i < 1; $i++) {
 	e('<tr>');	
 	for($j=0; $j < 5; $j++) {
 		e('<td>');			
@@ -10,8 +10,9 @@ for($i=0; $i < 6; $i++) {
 		$s .= '<input type="text" size="1" maxlength="1" '; 
 		$id = 'ein' . $i . $j;
 		$s .= "id='$id' ";
-		$s .= " data-row='$i' data-col='$j' ";
+		$s .= " data-r='$i' data-c='$j' ";
 		$s .= " pattern='^[A-Za-z]$' ";
+		$s .= ' oninput="oninf(this);" ';
 		$s .= ' >';
 		echo($s);
 		e('</td>');

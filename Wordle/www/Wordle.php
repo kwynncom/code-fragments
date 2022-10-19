@@ -12,8 +12,19 @@
 	:invalid { background-color: lightSalmon; }
 </style>
 
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script src='Wordle_2309.js'></script>
+
 <script>
-	
+	onDOMLoad(() => { byid('ein00').focus(); });
+	function oninf(e) { 
+		const re = new RegExp(/^[A-Za-z]$/);
+		if (re.test(e.value)) {
+			const id = 'ein' + e.dataset.r + (parseInt(e.dataset.c) + 1);
+			byid(id).focus();
+		}
+	}
 </script>
 
 </head>

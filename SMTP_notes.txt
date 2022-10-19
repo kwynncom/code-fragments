@@ -1,0 +1,10 @@
+all_recipients
+smtp->error - make sure all "", 4 of them
+Subject 200 char
+Body 200 char
+Username
+smtp->last_smtp_transaction_id - just confirm it's a lot of chars - hex, or non-whitespace
+smtp->error
+	4 all blank strings
+smtp->last_reply
+lastMessageID
