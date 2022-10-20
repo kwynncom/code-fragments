@@ -1,34 +1,41 @@
 const http = require('http');
 const url = require('url');
-
-var MongoClient = require('mongodb').MongoClient;
-var mongoConnURL = 'mongodb://localhost/';
-
+const MongoClient = require('mongodb').MongoClient;
+const mongoConnURL = 'mongodb://localhost/';
 const hostname = '127.0.0.1';
 const port = 3000;
 
-class mongoHello {
+const sntpWorst = require('./myqueries/sntp_worst.js');
+
+class myMongoDBServer {
   constructor() {
-    this.setMongoDB();
+    this.setMongoDBBase();
     this.htserver();
 
   }
 
-  setMongoDB() {
 
+
+  setMongoDBQs() {
+    this.sntpWoO = new sntpWorst(this.client);
+
+}   
+
+  setMongoDBBase() {
     const self = this;
-
-    MongoClient.connect(mongoConnURL, function(err, client) {
-      // var c = client.db('qemail').collection('usage');
+    MongoClient.connect(mongoConnURL, function(err, client) { 
       self.client = client;
-    });  
+      self.setMongoDBQs();    
+    }); 
+    
+    return;
   }
 
   async doq(req) {
 
-    const o = url.parse(req.url, true).query;
-    const coll = this.client.db(o.db).collection(o.coll);
-    const  res = JSON.stringify(await coll.find().limit(5).toArray());
+    const a = await this.sntpWoO.get();
+
+    const  res = JSON.stringify(a);
     return res;
   }
 
@@ -55,4 +62,5 @@ class mongoHello {
   } // func
 } // class
 
-new mongoHello();
+new myMongoDBServer();
+
