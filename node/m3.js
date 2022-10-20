@@ -39,20 +39,19 @@ class myMongoDBServer {
     return res;
   }
 
-  async doHTr(req, res) {
+ async doHTr(req, res) {
 
     const json = await this.doq(req);
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.end(json);
-    // process.exit();
   }
 
-  htserver() {
+  async htserver() {
     const self = this;
     const server = http.createServer((req, res) => {
-        self.doHTr(req, res);
+        return self.doHTr(req, res);
     });
 
     server.listen(port, hostname, () => {

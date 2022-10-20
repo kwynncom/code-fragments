@@ -13,13 +13,13 @@ module.exports = class sntp_worst {
             ]
         );  
         
-            const a = [];
+        const a = [];
 
         for await (const doc of cur) {
             a.push(doc);
         }
 
-        return a;
+       return a;
     }
 
 
