@@ -5,7 +5,7 @@ const mongoConnURL = 'mongodb://localhost/';
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const sntpWorst = require('./myqueries/sntp_worst.js');
+const sntpWorst = require('./sntpWorst.js');
 
 class myMongoDBServer {
   constructor() {
