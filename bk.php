@@ -5,11 +5,19 @@ require_once('/opt/kwynn/kwutils.php');
 class kwBackupSome {
 	
 	const cbasecmd =  'find ~ -maxdepth 1';
+	// const cbasecmd =  'find ~/tech/frag_backup';
 	
 	public function __construct() {
+		$this->osz = 0;
 		$this->base10();
 		$this->init10();
 		$this->do10();
+		$this->sum10();
+	}
+	
+	
+	private function sum10() {
+		echo(number_format($this->osz));
 	}
 	
 	private function base10() {
@@ -67,19 +75,44 @@ class kwBackupSome {
 			if (!trim($s)) continue;
 			if (!$this->testBranch($s)) continue;
 			$this->doBranch($s);
-			break; // TEST *******
 		}
 
 	}
 	
+	private function skipDir($p) {
+		static $ss = ["(/\.git)", "(/node_modules)", "(/AWS/logs)"];
+		foreach($ss as $t) if (preg_match($t, $p)) return true;
+		return false;
+		
+	}
+	
 	private function doBranch(string $br) {
-		$h = popen("find $br -type f ", 'r');
-		while($s = fgets($h)) {
-			if (preg_match('/\/\.git\//', $s)) continue;
-			echo($s);
+		$h = popen("find \"$br\" -type d ", 'r');
+		while($s = trim(fgets($h))) {
+			if ($this->skipDir($s)) { 
+				continue;
+				
+			}
+			$this->dop10($s);
+		}
+		pclose($h);
+	}
+	
+	private function dop10($pin) {
+		$cmd = "find \"$pin\" -type f -printf '%s %p" . '\n' . "'";
+		echo($cmd . "\n");
+		$h = popen($cmd, 'r');		
+		while ($s = trim(fgets($h))) {
+			if ($this->skipDir($s)) continue;
+			echo($s . "\n");
+			if (1) { preg_match('/^(\d+)/', $s, $ms);
+				$this->osz += intval($ms[1]);
+			}
 		}
 		
+		pclose($h);
 		
+
 	}
 
 }
