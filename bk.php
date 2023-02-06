@@ -4,11 +4,57 @@ require_once('/opt/kwynn/kwutils.php');
 
 class kwBackupSome {
 	
+	// Using the update option (-u) with cp should do it for you. cp if later
+	// -a archive - preserve all
+	
 	const cbasecmd =  'find ~ -maxdepth 1';
 	// const cbasecmd =  'find ~/tech/frag_backup';
+	const stopat = 100000;
+	
+
+	private function doCopy(string $p) {		
+		static $bsz = false;
+		static $i = 0;
+		
+		if (!$bsz) $bsz = strlen($this->obasep);
+		$tp = $this->owrd . '' . substr($p, $bsz);
+		$c  = 'rsync -aL4zvv --mkpath ';
+		$c .= ' "' . $p . '" ';
+		$c .= ' ';
+		$c .= ' "' . $tp . '" ';
+		echo($c . "\n");
+
+		if (1) {
+			shell_exec($c);
+			kwas(file_exists($tp), 'copy failed 00:21 kwbk');
+		}
+		if (++$i > self::stopat) { echo('file limit reached - perhaps testing?  00:12'); $this->gracefulExit();  }
+		
+
+		
+		
+		
+	}
+	
+	private function gracefulExit() {
+		if (!($h = kwifs($this, 'oh'))) return;
+		pclose($h);
+		exit(0);
+	}
+	
+	private function init05() {
+		global $argc;
+		global $argv;
+		
+		if ($argc < 2) return;
+		$p = $argv[1];
+		kwas(is_writable($p), "$p not writeable");
+		$this->owrd = $p;
+	}
 	
 	public function __construct() {
 		$this->osz = 0;
+		$this->init05();
 		$this->base10();
 		$this->init10();
 		$this->do10();
@@ -17,7 +63,7 @@ class kwBackupSome {
 	
 	
 	private function sum10() {
-		echo(number_format($this->osz));
+		echo(number_format($this->osz) . "\n");
 	}
 	
 	private function base10() {
@@ -87,18 +133,19 @@ class kwBackupSome {
 	}
 	
 	private function doBranch($pin) {
-		$cmd = "find \"$pin\" -type f -printf '%s %p" . '\n' . "'";
-		echo($cmd . "\n");
-		$h = popen($cmd, 'r');		
+		$cmd  = "find \"$pin\" -type f -printf '%s %p" . '\n' . "' 2> /dev/null";
+		// echo($cmd . "\n");
+		$this->oh = $h = popen($cmd, 'r');		
 		while ($s = trim(fgets($h))) {
 			if ($this->skipDir($s)) continue;
 			echo($s . "\n");
-			if (1) { preg_match('/^(\d+)/', $s, $ms);
-				$this->osz += intval($ms[1]);
-			}
+			preg_match('/^(\d+)\s+(.*)/', $s, $ms);
+			$this->osz += intval($ms[1]);
+			$this->doCopy($ms[2]);
 		}
 		
 		pclose($h);
+		$this->oh = false;
 		
 
 	}
