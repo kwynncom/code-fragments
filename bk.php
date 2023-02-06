@@ -4,6 +4,7 @@ require_once('/opt/kwynn/kwutils.php');
 
 class kwBackupSome {
 	
+	// need to track stderr, I think
 	// Using the update option (-u) with cp should do it for you. cp if later
 	// -a archive - preserve all
 	
@@ -15,8 +16,10 @@ class kwBackupSome {
 	private function doCopy(string $p) {		
 		static $bsz = false;
 		static $i = 0;
-		
 		if (!$bsz) $bsz = strlen($this->obasep);
+		
+		// $p = str_replace('$', '\$', $p); // this is for rsync / the shell, not PHP
+		
 		$tp = $this->owrd . '' . substr($p, $bsz);
 		$c  = 'rsync -aL4zvv --mkpath ';
 		$c .= ' "' . $p . '" ';
@@ -25,6 +28,7 @@ class kwBackupSome {
 		echo($c . "\n");
 
 		if (1) {
+			// shell_exec(escapeshellcmd($c));
 			shell_exec($c);
 			kwas(file_exists($tp), 'copy failed 00:21 kwbk');
 		}
