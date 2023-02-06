@@ -86,19 +86,7 @@ class kwBackupSome {
 		
 	}
 	
-	private function doBranch(string $br) {
-		$h = popen("find \"$br\" -type d ", 'r');
-		while($s = trim(fgets($h))) {
-			if ($this->skipDir($s)) { 
-				continue;
-				
-			}
-			$this->dop10($s);
-		}
-		pclose($h);
-	}
-	
-	private function dop10($pin) {
+	private function doBranch($pin) {
 		$cmd = "find \"$pin\" -type f -printf '%s %p" . '\n' . "'";
 		echo($cmd . "\n");
 		$h = popen($cmd, 'r');		
