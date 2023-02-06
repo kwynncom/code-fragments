@@ -2,7 +2,7 @@
 
 $prf = 'PRIVATE.txt';
 $puf = 'pub.pem';
-$bits = 2048;
+$bits = 4096;
 
 if (1) {
 	$private = openssl_pkey_new(['private_key_bits' => $bits]); unset($bits);
@@ -14,7 +14,7 @@ if (1) {
 $pro = openssl_pkey_get_private(file_get_contents($prf));  unset($prf);
 $puo = openssl_pkey_get_public (file_get_contents($puf)); unset($puf);
 
-$secret = 'I am the secret 4.';
+$secret = 'I am the secret 5.';
 openssl_public_encrypt ($secret, $cipherText, $puo); unset($secret, $puo);
 openssl_private_decrypt($cipherText, $plainText, $pro); unset($pro, $ciperText);
 echo($plainText);
