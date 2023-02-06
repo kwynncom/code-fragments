@@ -4,32 +4,28 @@ require_once('/opt/kwynn/kwutils.php');
 
 class kwBackupSome {
 	
+	const cbasecmd =  'find ~ -maxdepth 1';
+	
 	public function __construct() {
 		$this->base10();
 		$this->init10();
 		$this->do10();
-		pclose($this->oh);
 	}
 	
 	private function base10() {
-		$this->obase = trim(shell_exec('echo ~')) . '/';
-		$this->oh = popen('find ~ -maxdepth 1 ', 'r');
+		$this->obasep = trim(shell_exec('echo ~'));
 	}
 
-	private function dobranch($pin) {
-		static $ps = [];
-		static $ls = [];
-		static $b  = ['.bash_history', '.aws', '.ssh', '.bashrc' ];
+	private function testBranch($pin) : bool {
 		
-		if (!$ps) $this->popPaths($b, $ps, $ls);
-		
-		foreach($ps as $i => $p) {
-			$t10 = substr($pin, 0, $ls[$i]);
-			if ($t10 === $ps[$i]) return true;
+		foreach($this->ops as $act => $a) {
+			foreach($a['ps'] as $i => $ignoreV) {
+				$t10 = substr($pin, 0, $a['ls'][$i]);
+				if ($t10 === $a['ps'][$i]) return $act ? true : false;
+			}
 		}
-		return false;
 		
-		
+		return true;
 	}
 	
 	private function init10() {
@@ -42,45 +38,50 @@ class kwBackupSome {
 		$ps[true] = ['.bash_history', '.aws', '.ssh', '.bashrc' ];
 		$ps[false] = ['.', 'snap', 'arch'];
 		$doo = [];
+		
+		$this->ops = [];
 				
 		foreach([true, false] as $act) {
-		
 			$doo[$act]['ps'] = [];
 			$doo[$act]['ls'] = [];
 			$this->popPaths($ps[$act], $doo[$act]['ps'], $doo[$act]['ls']);
+			$this->ops[$act] = $doo[$act];
 		}
-		
-		return;
-		
 	}
 	
 	private function popPaths(array $b, array &$ps, array &$ls) {
 		if (!$ps) foreach($b as $p) {
-			$s = $this->obase . $p . '';
+			$s = $this->obasep . '/' . $p . '';
 			$ps[] = $s;
 			$ls[] = strlen($s);
 		}		
 		
 	}
 	
-	private function nobranch() {
-		static $ps = [];
-		static $ls = [];
-		static $p  = ['.', 'snap', 'arch'];
+	private function do10() {
 		
+		$ab = explode("\n", shell_exec(self::cbasecmd));
+
+		foreach($ab as $s) {
+			if ($s === $this->obasep) continue;
+			if (!trim($s)) continue;
+			if (!$this->testBranch($s)) continue;
+			$this->doBranch($s);
+			break; // TEST *******
+		}
 
 	}
 	
-	private function do10() {
-
-		while($s = fgets($this->oh)) {
-			if ($this->dobranch($s)) { echo($s); continue; }
-			
-			// echo($s);
+	private function doBranch(string $br) {
+		$h = popen("find $br -type f ", 'r');
+		while($s = fgets($h)) {
+			if (preg_match('/\/\.git\//', $s)) continue;
+			echo($s);
 		}
-
+		
+		
 	}
 
 }
 
-new kwBackupSome(); // .bash_history is special
+new kwBackupSome(); // .bash_history is special ; assumes no files as direct children of ~
