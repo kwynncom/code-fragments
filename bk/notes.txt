@@ -1,0 +1,6 @@
+The bk.php I saved in this repo's / around 18 hours ago did the job, but it was comically slow.  In an instance of RTFM, I seem to be getting 
+everything I want with rsync.  I used rsync on the time, but I hadn't looked up these details.
+
+18 hours ago was 2023/02/06 roughly 03:00 EST / America/New_York (Atlanta) / UTC -5
+"Now" is Feb 6 21:56
+

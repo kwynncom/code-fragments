@@ -145,7 +145,7 @@ class kwBackupSome {
 			echo($s . "\n");
 			preg_match('/^(\d+)\s+(.*)/', $s, $ms);
 			$this->osz += intval($ms[1]);
-			$this->doCopy($ms[2]);
+			// $this->doCopy($ms[2]); // *************
 		}
 		
 		pclose($h);
