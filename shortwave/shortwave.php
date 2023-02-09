@@ -6,11 +6,11 @@ class WWVB23 {
 	
 	const recordStderrMsg1 = "Recording WAVE 'stdin'";
 	
-	const bitsPerSampChan = 32; // note that a float 64 exists, but I don't have acccess
+	const bitsPerSampPerChan = 32; // note that a float 64 exists, but I don't have acccess
 	const bitsPerByte = 8;
 	const chan	   = 2;
 	const sampr    = 8000;
-	const bitspersamptot   = self::bitsPerSampChan * self::chan;
+	const bitspersamptot   = self::bitsPerSampPerChan * self::chan;
 	const bitsperS = self::bitspersamptot * self::sampr;
 	const byperS = self::bitsperS * self::bitsPerByte;
 	const totBits = self::bitsperS * self::duration;
@@ -20,75 +20,96 @@ class WWVB23 {
 	const unpackf = 'l'; // should be ok for x86
 	
 	const analIntervalS = 0.1;
-	const logvdb = 1.26;
+	// const logvdb = 1.26; // decibel
+	const logvdb = 1.023;
 	
-	const duration = 20;
+	const solds = 0.006629032; // speed of light delay in S
+	
+	const duration = 10;
 
 	
 	public function __construct() {
-		$this->bypsa = roint(self::bitsPerSampChan / self::bitsPerByte);
+		$this->bypsapch = roint(self::bitsPerSampPerChan / self::bitsPerByte);
 		$this->do10();
 		$this->do20();
 		$this->do30();
 		$this->do40();
 	}
 	
-	private function do40() {
-		$a = $this->i2ct;
-		$fa = [];
+	private function do1s($a) {
 		
 		$spb = roint(self::sampr * self::analIntervalS);
 		
 		$bi = 0;
 		$i = 0;
 		$tot = 0.0;
-		$di = 0;
+
 		$end = count($a);
-		$ob = $this->obase;
+		$min = PHP_INT_MAX;
+		
+		$tas = [];
+		
+		$ii = 0;
+		static $ii0 = 0;
+
 		
 		for($i=0; $i < $end; $i += 2) {
-			$tot += log(floatval($a[$i] + $ob) + floatval($a[$i+1] + $ob), self::logvdb); 
+			$ii++;
+			$tot += floatval($a[$i] + $a[$i+1]);
+			for ($j = 0; $j < 2; $j++) if ($a[$i + $j] < $min) $min = $a[$i + $j];
 			if (++$bi === $spb) {
-				// if ($tot < 0) echo('negative');
-				echo(sprintf('%0.1f', (log($tot, self::logvdb))) . "\n"); $di++;
+				$tas[] = $tot;
 				$tot = 0.0;
 				$bi = 0;
+				if ($ii0 === 0) $ii0 = $ii;
+				$ii = 0;
 
 			}
+			
+
+		}
+
+		$di = 0;
+		$base = floatval(abs($min)) * floatval(2) * floatval($ii0);
+		foreach($tas as $str) {
+			$str += $base; // subtotraw
+			echo(sprintf('%0.1f', (log($str, self::logvdb))) . "\n"); $di++;
 		}
 		
-		echo('bucket n: ' . $di . "\n");
+		// echo('buckets displayed: ' . $di . "\n");
+			
 		
 	}
 	
-	private function do30() {
-		$a = unpack(self::unpackf, $this->obuf);
-		$end = $this->obsz >> 1; // halve it
-		$inc = $this->bypsa * self::chan;
-		
+	private function do40() {
+		$a = $this->ora;
 		$di = 0;
-		$i2ct = [];
-		$min = PHP_INT_MAX;
-		for ($i=0; $i < $this->obsz; $i += $inc) {
-			$ua = [];
-			for ($j=0; $j < self::chan; $j++) {
-				$s = substr($this->obuf, $i + ($j * $this->bypsa), $this->bypsa);
-				$ua[$j] = unpack(self::unpackf, $s);
-			}
-			
-			$int0 = $ua[0][1];
-			$int1 = $ua[1][1];
-			foreach([$int0, $int1] as $n) {
-				if ($n < $min) $min = $n;
-				$i2ct[$di++] = $n;
-				echo(number_format($n) . "\n");
-			}
-	
+		$interval = self::sampr * self::chan;
+
+		for ($i=0; isset($a[$i]); $i += $interval) {
+			$sl = array_slice($a, $i, $interval);
+			$this->do1s($sl); 
+			echo("1s ***\n");
+			$di++;
 		}
 		
-		$this->obase = abs($min);
-		$this->i2ct = $i2ct;
-		echo('integers calced: ' . $di . "\n");
+		echo('sec n: ' . $di . "\n");	
+	}
+	
+	private function do30() {
+		
+		$a = [];
+		
+		for ($i=0; $i < $this->obsz; $i += $this->bypsapch) {
+			
+			$s = substr($this->obuf, $i, $this->bypsapch);
+			$ua = unpack(self::unpackf, $s);
+			$n = $a[] = $ua[1];
+				// echo(number_format($n) . "\n");
+		}
+		
+		$this->ora = $a;
+		echo('integers captured: ' . count($a) . "\n");
 		
 	}
 	
@@ -107,7 +128,7 @@ class WWVB23 {
 		$s = microtime();
 		$a = explode(' ', $s);
 		$f = floatval($a[0]); 
-		$sl = roint((1 - $f) * M_MILLION);
+		$sl = roint((1 - $f + self::solds) * M_MILLION);
 		usleep($sl);
 		
 		echo($s . "\n");
@@ -148,7 +169,7 @@ class WWVB23 {
 	}
 	
 	private function do10() {
-		$cmd  = 'arecord -f S' . self::bitsPerSampChan . '_LE -c ' . self::chan . ' -r ' . self::sampr . ' --device="hw:0,0" ';
+		$cmd  = 'arecord -f S' . self::bitsPerSampPerChan . '_LE -c ' . self::chan . ' -r ' . self::sampr . ' --device="hw:0,0" ';
 		$cmd .= ' -d ' . self::duration;
 
 		echo($cmd . "\n");

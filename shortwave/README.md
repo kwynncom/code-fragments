@@ -7,6 +7,11 @@ https://stackoverflow.com/questions/60525245/what-is-bits-per-sample-structure-o
 
 Plan of attack:
 
+This may be hopeless without filtering for the carrier.
+
+I think my calculations are correct.
+
+
 The absolute value of the numbers gets smaller as time passes.  
 Given that I only care about 1 second intervals, take the minimum value within that second and then 
 calculate around that.
