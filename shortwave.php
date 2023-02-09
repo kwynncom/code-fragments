@@ -7,6 +7,7 @@ class WWVB23 {
 	const recordStderrMsg1 = "Recording WAVE 'stdin'";
 	
 	const bitsPerSampChan = 32; // note that a float 64 exists, but I don't have acccess
+	const bitsPerByte = 8;
 	const chan	   = 2;
 	const sampr    = 8000;
 	const bitspersamptot   = self::bitsPerSampChan * self::chan;
@@ -16,17 +17,21 @@ class WWVB23 {
 				// 123456789
 	const maxBuf = 10000000;
 	const headerLen = 44;
+	const unpackf = 'l'; // should be ok for x86
 
 	
 	public function __construct() {
+		$this->bypsa = roint(self::bitsPerSampChan / self::bitsPerByte);
 		$this->do10();
 		$this->do20();
 		$this->do30();
 	}
 	
 	private function do30() {
-		for ($i=0; $i < $this->obsz; $i++) {
-			
+		for ($i=0; $i < $this->obsz; $i += $this->bypsa) {
+			$s = substr($this->obuf, $i, $this->bypsa);
+			$int = unpack(self::unpackf, $s);
+			echo($int . "\n");
 		}
 	}
 	
@@ -37,7 +42,7 @@ class WWVB23 {
 		
 		while($t = fread($this->inh, self::maxBuf)) $buf .= $t;
 		
-		$exp = roint(self::totBits / 8);
+		$exp = roint(self::totBits / self::bitsPerByte);
 		$rcv = strlen($buf);
 		echo('Expected: ' . $exp .  "\n");
 		echo('Received: ' . $rcv . "\n");
