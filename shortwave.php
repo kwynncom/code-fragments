@@ -12,27 +12,68 @@ class WWVB23 {
 	const sampr    = 8000;
 	const bitspersamptot   = self::bitsPerSampChan * self::chan;
 	const bitsperS = self::bitspersamptot * self::sampr;
-	const duration = 5;
 	const totBits = self::bitsperS * self::duration;
 				// 123456789
 	const maxBuf = 10000000;
 	const headerLen = 44;
 	const unpackf = 'l'; // should be ok for x86
 
+	const duration = 1;
+	const analIntervalS = 0.1;
 	
 	public function __construct() {
 		$this->bypsa = roint(self::bitsPerSampChan / self::bitsPerByte);
 		$this->do10();
 		$this->do20();
 		$this->do30();
+		$this->do40();
+	}
+	
+	private function do40() {
+		$a = $this->i2ct;
+		$fa = [];
+		
+		$spb = roint(self::sampr * self::analIntervalS);
+		
+		$bi = 0;
+		$i = 0;
+		$f = 0.0;
+		$di = 0;
+		foreach($a as $r) {
+			$f += $r;
+			if (++$bi === $spb) {
+				echo(number_format($f) . "\n"); $di++;
+				$f = 0.0;
+				$bi = 0;
+
+			}
+		}
+		
+		echo('bucket n: ' . $di . "\n");
+		
 	}
 	
 	private function do30() {
-		for ($i=0; $i < $this->obsz; $i += $this->bypsa) {
-			$s = substr($this->obuf, $i, $this->bypsa);
-			$int = unpack(self::unpackf, $s);
-			echo($int . "\n");
+		$a = unpack(self::unpackf, $this->obuf);
+		$end = $this->obsz >> 1; // halve it
+		$inc = $this->bypsa * self::chan;
+		
+		$di = 0;
+		$i2ct = [];
+		for ($i=0; $i < $this->obsz; $i += $inc) {
+			$ua = [];
+			for ($j=0; $j < self::chan; $j++) {
+				$s = substr($this->obuf, $i + ($j * $this->bypsa), $this->bypsa);
+				$ua[$j] = unpack(self::unpackf, $s);
+			}
+			
+			$int = abs($ua[0][1]) + abs($ua[1][1]);
+			$i2ct[$di++] = floatval($int);
 		}
+		
+		$this->i2ct = $i2ct;
+		echo('integers calced: ' . $di . "\n");
+		
 	}
 	
 	private function do20() {
