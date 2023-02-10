@@ -5,7 +5,19 @@ https://www.nist.gov/pml/time-and-frequency-division/radio-stations/wwvb/wwvb-ti
 
 https://stackoverflow.com/questions/60525245/what-is-bits-per-sample-structure-of-wav-audio-files
 
-Plan of attack:
+******
+2023/02/09 PM
+
+The longer the duration, the absolute value of the raw sample numbers keeps getting lower.  This is likely the sampler base resetting itself.
+
+The numbers going through my 1s and 0.1s filters uniformly get bigger, which is what I'm looking for.  
+Assuming my calculations are correct, maybe this means I am "seeing" WWVB, but the sample base resetting keeps me from clearly seeing the 
+pulses.
+
+I'm going to try again to shelve this until I have the equipment to do it right.
+
+*********
+Plan of attack: (2023/02/09 AM)
 
 This may be hopeless without filtering for the carrier.
 

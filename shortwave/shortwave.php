@@ -9,7 +9,7 @@ class WWVB23 {
 	const bitsPerSampPerChan = 32; // note that a float 64 exists, but I don't have acccess
 	const bitsPerByte = 8;
 	const chan	   = 2;
-	const sampr    = 8000;
+	const sampr    = 16000; // watch multiples!!!
 	const bitspersamptot   = self::bitsPerSampPerChan * self::chan;
 	const bitsperS = self::bitspersamptot * self::sampr;
 	const byperS = self::bitsperS * self::bitsPerByte;
@@ -20,12 +20,12 @@ class WWVB23 {
 	const unpackf = 'l'; // should be ok for x86
 	
 	const analIntervalS = 0.1;
-	// const logvdb = 1.26; // decibel
-	const logvdb = 1.023;
+	const logvdb = 1.26; // decibel
+	// const logvdb = 1.023;
 	
 	const solds = 0.006629032; // speed of light delay in S
 	
-	const duration = 10;
+	const duration = 20;
 
 	
 	public function __construct() {
@@ -49,20 +49,18 @@ class WWVB23 {
 		
 		$tas = [];
 		
-		$ii = 0;
-		static $ii0 = 0;
-
+		$tasn = [];
 		
 		for($i=0; $i < $end; $i += 2) {
-			$ii++;
+
 			$tot += floatval($a[$i] + $a[$i+1]);
 			for ($j = 0; $j < 2; $j++) if ($a[$i + $j] < $min) $min = $a[$i + $j];
 			if (++$bi === $spb) {
-				$tas[] = $tot;
+				$tas [] = $tot;
+				$tasn[] = $i * 2;
 				$tot = 0.0;
 				$bi = 0;
-				if ($ii0 === 0) $ii0 = $ii;
-				$ii = 0;
+
 
 			}
 			
@@ -70,10 +68,15 @@ class WWVB23 {
 		}
 
 		$di = 0;
-		$base = floatval(abs($min)) * floatval(2) * floatval($ii0);
-		foreach($tas as $str) {
+		foreach($tas as $i => $str) {
+			
+			$base = floatval(abs($min)) * floatval($tasn[$i]);
+			
 			$str += $base; // subtotraw
-			echo(sprintf('%0.1f', (log($str, self::logvdb))) . "\n"); $di++;
+			// echo(sprintf('%e', (log($str, self::logvdb))) . "\n"); 
+			// echo(number_format($str) . "\n"); 
+			echo(sprintf('%e', $str) . "\n"); 
+			$di++;
 		}
 		
 		// echo('buckets displayed: ' . $di . "\n");
@@ -105,7 +108,7 @@ class WWVB23 {
 			$s = substr($this->obuf, $i, $this->bypsapch);
 			$ua = unpack(self::unpackf, $s);
 			$n = $a[] = $ua[1];
-				// echo(number_format($n) . "\n");
+			if ($i % 200 === 0) echo(number_format($n) . "\n"); // raw number
 		}
 		
 		$this->ora = $a;
