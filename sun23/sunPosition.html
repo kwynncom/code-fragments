@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>title</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='solar.js'></script>
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+
+function hafe(lat, decl, elev)
+{
+	const t2 = Math.sin(RAD(lat))*Math.sin(decl);
+	const t1 = Math.cos(Math.abs(elev));
+	const den = Math.cos(RAD(lat))*Math.cos(decl);
+	const num = t1 - t2;
+	const in10 = num / den;
+	const o20 = Math.acos(in10);
+
+	const omega = Math.acos((Math.cos(Math.abs(elev)) - Math.sin(RAD(lat))*Math.sin(decl))/
+			    (Math.cos(RAD(lat))*Math.cos(decl)));
+	return copysign(omega, -elev);
+}
+
+// 	const degPerRad =  57.295779513;
+
+	const ttime = Date.parse('19 Mar 2023 20:00:00 GMT');
+
+	const st = solar_table(new Date(ttime), 34, -84);
+	const jd = jd_from_epoch(ttime);
+	const jc = jcent_from_jd(jd);
+	const elevr = solar_elevation_from_time(jc, 34, -84);
+//	const elevd = elevr * degPerRad;
+	const elevd = DEG(elevr);
+	const decl = solar_declination(jc);
+	const ha = DEG(hour_angle_from_elevation(34, decl, elevr));
+	const ha20 = DEG(hafe(34, decl, elevr));
+	const ignore = true;
+</script>
+
+</head>
+<body>
+</body>
+</html>
+
