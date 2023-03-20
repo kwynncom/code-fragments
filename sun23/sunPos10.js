@@ -28,8 +28,9 @@ class validLatLon {
 			this.validOrEx(lat, lon);
 
 			this.lat = lat;
-			this.lat = lon;
+			this.lon = lon;
 			this.valid = true;
+			return;
 		} catch(ex) { }
 		
 		this.setDefault();

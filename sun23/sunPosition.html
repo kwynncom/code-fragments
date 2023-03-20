@@ -22,9 +22,15 @@
 
 <script>
 
+	var SII = 0;
+	var SIV;
+
 	onDOMLoad(() => { 
 		draw();
-		setInterval(() => { draw(); }, 600);
+		SIV = setInterval(() => { 
+			draw(); 
+			if (SII++ > 50) clearInterval(SIV);
+		}, 600);
 	});
 
 	function draw() {
@@ -50,7 +56,8 @@
 			byid('tab10').append(tr);
 		}
 		
-		inht('des', o.des);
+		if (DES)   inht('des', DES);
+		else       inht('des', o.des);
 
 	}
 </script>

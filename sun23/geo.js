@@ -1,5 +1,6 @@
 var LAT;
 var LON;
+var DES = '';
 
 class kwGPS {
 	constructor() {
@@ -12,8 +13,12 @@ class kwGPS {
 			(p) => { 
 				LAT = p.coords.latitude;
 				LON = p.coords.longitude;
+				DES = 'GPS';
 			},
-			() => { /* err */}, 
+			() => { 
+				/* err */
+				const ignore = true;
+			}, 
 			{ enableHighAccuracy: true }
 		); 
 		
