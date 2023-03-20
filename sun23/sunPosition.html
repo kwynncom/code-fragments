@@ -17,14 +17,14 @@
 
 <script>
 	
-	function getDSTOffset() {
+	function getCurrentDSTOffset() {
 		const jan = new Date(new Date().getFullYear(), 0, 1);
 		return ((new Date().getTimezoneOffset()) - jan.getTimezoneOffset()) * 60 * 1000;
 	}
 	
 	function getStdTimeDateO() {
 		
-		const o = getDSTOffset();
+		const o = getCurrentDSTOffset();
 		const Ums = time() + o;
 		return new Date(Ums);
 	}
@@ -34,8 +34,9 @@
 
 	const mdo = getStdTimeDateO();
 
-	const ttime = Date.parse('19 Mar 2023 22:51:25 GMT');
-	const tDate = new Date(ttime);
+	// const ttime = Date.parse('19 Mar 2023 22:51:25 GMT');
+	const tDate = mdo;
+	const ttime = tDate.getTime();
 
 	const st = solar_table(new Date(ttime), 34, -84);
 	const jd = jd_from_epoch(ttime);
