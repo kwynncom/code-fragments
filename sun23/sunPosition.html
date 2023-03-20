@@ -4,7 +4,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>title</title>
+<title>sun position</title>
 
 <style>
     body { font-family: sans-serif; }
@@ -14,48 +14,10 @@
 <script src='sidereal.js'></script>
 <script src='RaDecToAltAz.js'></script>
 <script src='/opt/kwynn/js/utils.js'></script>
+<script src='sunPos10.js'></script>
 
-<script>
-	
-	function getCurrentDSTOffset() {
-		const jan = new Date(new Date().getFullYear(), 0, 1);
-		return ((new Date().getTimezoneOffset()) - jan.getTimezoneOffset()) * 60 * 1000;
-	}
-	
-	function getStdTimeDateO() {
-		
-		const o = getCurrentDSTOffset();
-		const Ums = time() + o;
-		return new Date(Ums);
-	}
-</script>
-
-<script>
-
-	const mdo = getStdTimeDateO();
-
-	// const ttime = Date.parse('19 Mar 2023 22:51:25 GMT');
-	const tDate = mdo;
-	const ttime = tDate.getTime();
-
-	const st = solar_table(new Date(ttime), 34, -84);
-	const jd = jd_from_epoch(ttime);
-	const jc = jcent_from_jd(jd);
-	const elevr = solar_elevation_from_time(jc, 34, -84);
-	const elevd = DEG(elevr);
-	const decl = solar_declination(jc);
-	const ra   = sun_apparent_lon(jc);
-// const radectoaltaz = require('radectoaltaz');
-const coordinates = new RaDecToAltAz(DEG(ra),DEG(decl),34,-84, tDate);
-const alt = coordinates.getAlt();
-const az = coordinates.getAz();
-
-
-	const ignore = true;
-</script>
 
 </head>
 <body>
 </body>
 </html>
-
