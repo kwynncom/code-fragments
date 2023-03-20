@@ -15,12 +15,13 @@
 var getGMST = function(dateIn) {
 	
 	const Ums = dateIn.getTime();
-    const msday = 86400000.0;
+    // const msday = 86400000.0;
     const jcent = 36525.0;
 
-    var du  = (jd_from_epoch(Ums) - 2451545.0) / msday; // J2000 rather than 1,000s of years ago ; Kwynn 2023/03/20 03:13 - put back division
-    var df = du - Math.floor(du);
-    var th = 0.7790572732640 + 0.00273781191135448*du + df;
+	const jd = jd_from_epoch(Ums); 
+    const du  = jd - 2451545.0;
+    const df = du - Math.floor(du);
+    let th = 0.7790572732640 + 0.00273781191135448*du + df;
 
     th -= Math.floor(th);
     var tc = du/jcent;
@@ -45,7 +46,8 @@ var getGMST = function(dateIn) {
 var getLST = function(date, lon) {
     var gmst = getGMST(date);
     var lst = gmst + lon/15.0 + 240.0;
-    return lst - Math.floor(lst/24.0)*24.0;
+    const ret = lst - Math.floor(lst/24.0)*24.0;
+	return ret;
 }
 
 var toString = function(lst) {

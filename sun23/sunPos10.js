@@ -65,7 +65,10 @@ function getSunPos() {
 	const lon = llo.lon;
 	
 	
-	const mdo = solarTZAdj.getDateO();
+			// const mdo = solarTZAdj.getDateO();
+
+	const mdo = new Date();
+
 
 	const tDate = mdo;
 	const ttime = tDate.getTime();
