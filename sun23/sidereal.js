@@ -18,7 +18,7 @@ var getGMST = function(dateIn) {
     const msday = 86400000.0;
     const jcent = 36525.0;
 
-    var du  = jd_from_epoch(Ums) - 2451545.0; // J2000 rather than 1,000s of years ago
+    var du  = (jd_from_epoch(Ums) - 2451545.0) / msday; // J2000 rather than 1,000s of years ago ; Kwynn 2023/03/20 03:13 - put back division
     var df = du - Math.floor(du);
     var th = 0.7790572732640 + 0.00273781191135448*du + df;
 

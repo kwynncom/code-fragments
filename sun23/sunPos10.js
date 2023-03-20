@@ -78,8 +78,9 @@ function getSunPos() {
 	const elevd = DEG(elevr);
 	const decl = solar_declination(jc);
 	const ra   = sun_apparent_lon(jc);
+	const rad = DEG(ra);
 
-	const coordinates = new RaDecToAltAz(DEG(ra),DEG(decl), lat, lon, tDate);
+	const coordinates = new RaDecToAltAz(rad,DEG(decl), lat, lon, tDate);
 	const alt = coordinates.getAlt();
 	const az = coordinates.getAz();
 	const ignore = true;
