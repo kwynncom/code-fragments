@@ -11,37 +11,45 @@
 </style>
 
 <script src='solar.js'></script>
+<script src='sidereal.js'></script>
+<script src='RaDecToAltAz.js'></script>
 <script src='/opt/kwynn/js/utils.js'></script>
 
 <script>
+	
+	function getDSTOffset() {
+		const jan = new Date(new Date().getFullYear(), 0, 1);
+		return ((new Date().getTimezoneOffset()) - jan.getTimezoneOffset()) * 60 * 1000;
+	}
+	
+	function getStdTimeDateO() {
+		
+		const o = getDSTOffset();
+		const Ums = time() + o;
+		return new Date(Ums);
+	}
+</script>
 
-function hafe(lat, decl, elev)
-{
-	const t2 = Math.sin(RAD(lat))*Math.sin(decl);
-	const t1 = Math.cos(Math.abs(elev));
-	const den = Math.cos(RAD(lat))*Math.cos(decl);
-	const num = t1 - t2;
-	const in10 = num / den;
-	const o20 = Math.acos(in10);
+<script>
 
-	const omega = Math.acos((Math.cos(Math.abs(elev)) - Math.sin(RAD(lat))*Math.sin(decl))/
-			    (Math.cos(RAD(lat))*Math.cos(decl)));
-	return copysign(omega, -elev);
-}
+	const mdo = getStdTimeDateO();
 
-// 	const degPerRad =  57.295779513;
-
-	const ttime = Date.parse('19 Mar 2023 20:00:00 GMT');
+	const ttime = Date.parse('19 Mar 2023 22:51:25 GMT');
+	const tDate = new Date(ttime);
 
 	const st = solar_table(new Date(ttime), 34, -84);
 	const jd = jd_from_epoch(ttime);
 	const jc = jcent_from_jd(jd);
 	const elevr = solar_elevation_from_time(jc, 34, -84);
-//	const elevd = elevr * degPerRad;
 	const elevd = DEG(elevr);
 	const decl = solar_declination(jc);
-	const ha = DEG(hour_angle_from_elevation(34, decl, elevr));
-	const ha20 = DEG(hafe(34, decl, elevr));
+	const ra   = sun_apparent_lon(jc);
+// const radectoaltaz = require('radectoaltaz');
+const coordinates = new RaDecToAltAz(DEG(ra),DEG(decl),34,-84, tDate);
+const alt = coordinates.getAlt();
+const az = coordinates.getAz();
+
+
 	const ignore = true;
 </script>
 
