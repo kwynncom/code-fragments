@@ -50,7 +50,7 @@
 			dat.className = 'tddat';
 			
 			let v = o[f];
-			if (is_numeric(o[f])) v = o[f].toFixed(3);
+			if (is_numeric(o[f])) v = o[f].toFixed(4);
 			dat.innerHTML = v;
 			tr.append(dat);
 			byid('tab10').append(tr);
