@@ -6,18 +6,68 @@
 
 <title>sun position</title>
 
-<style>
-    body { font-family: sans-serif; }
-</style>
+
 
 <script src='solar.js'></script>
 <script src='sidereal.js'></script>
 <script src='RaDecToAltAz.js'></script>
 <script src='/opt/kwynn/js/utils.js'></script>
+<script src='geo.js'></script>
 <script src='sunPos10.js'></script>
 
+<style>
+    body { font-family: sans-serif; }
+	td.tddat  { text-align: right; width: 6.2em; }
+</style>
+
+<script>
+
+	onDOMLoad(() => { 
+		draw();
+		setInterval(() => { draw(); }, 600);
+	});
+
+	function draw() {
+		const o = getSunPos();
+		const fs = ['alt', 'azu', 'lat', 'lon'];
+		byid('tab10').innerHTML = '';
+		for (let i=0; i < fs.length; i++) {
+			const tr = cree('tr');
+			const f = fs[i];
+			
+
+			const lab = cree('td');
+			lab.innerHTML = f;
+			tr.append(lab);
+			const dat = cree('td');
+			
+			dat.className = 'tddat';
+			
+			let v = o[f];
+			if (is_numeric(o[f])) v = o[f].toFixed(3);
+			dat.innerHTML = v;
+			tr.append(dat);
+			byid('tab10').append(tr);
+		}
+		
+		inht('des', o.des);
+
+	}
+</script>
 
 </head>
 <body>
+<div>
+	<table style='font-family: monospace; ' id='tab10'>
+
+	</table>
+	<div id='des'>
+		
+	</div>
+	<div>
+		<button onclick='new kwGPS();'>GPS</button>
+	</div>
+
+</div>
 </body>
 </html>
