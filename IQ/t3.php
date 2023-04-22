@@ -41,7 +41,7 @@ class IQTask3 {
 			
 	}
 	
-	public static function retAndElim(array &$a) : int {
+	public static function retAndElim(array &$a) : int | string {
 		$si = random_int(0, count($a) - 1);
 		$sel = $a[$si];
 		unset($a[$si]);
@@ -51,4 +51,4 @@ class IQTask3 {
 	
 }
 
-new IQTask3();
+if (didCLICallMe(__FILE__)) new IQTask3();
