@@ -2,7 +2,7 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class IQTask1 {
+class IQTask1Back {
 	
 	const names  = [
 			['Rachel', 'Wendy'],
