@@ -1,6 +1,7 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('utils.php');
 
 class IQTask3 {
 	
@@ -42,11 +43,7 @@ class IQTask3 {
 	}
 	
 	public static function retAndElim(array &$a) : int | string {
-		$si = random_int(0, count($a) - 1);
-		$sel = $a[$si];
-		unset($a[$si]);
-		$a = array_values($a);
-		return $sel;
+		return retAndElim($a);
 	}
 	
 }

@@ -9,12 +9,15 @@
 <style>
     body { font-family: Arial; }
 	.t110 { 
+		/* top right bottom left */
 		margin: 5em auto 0 auto; 
 		position: relative; 
-		top: 5em; 
-		width: 30em; 
+		top: 2em; 
+		width: 20em; 
+
 		background-color: white; 
 		padding: 2em 0 2em 0; 
+		font-size: 150%;
 	}
 	
 </style>
@@ -23,7 +26,7 @@
 	
 <div style='text-align: center; '>
 						<!-- top right bottom left -->
-	<div     style='margin: 5em auto 0 auto; width: 50em; height: 20em; background-color: aqua'>
+	<div     style='margin: 5em auto 0 auto; width: 40em; height: 25em; background-color: aqua'>
 		<div class='t110' style=''>
 			<?php echo($this->obo->ostatement); ?>
 		</div>

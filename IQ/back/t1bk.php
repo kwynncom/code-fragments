@@ -1,10 +1,13 @@
 <?php 
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('utils.php');
 
 class IQTask1Back {
 	
 	public readonly string $ostatement;
+	public readonly array  $oqnames;
+	public readonly string $oquestion;
 	
 	const names  = [
 			['Rachel', 'Wendy'],
@@ -36,7 +39,17 @@ class IQTask1Back {
 		$this->do10();
 		$this->do20();
 		$this->do30();
+		$this->do25();
 		$this->do40();
+	
+	}
+	
+	private function do25() {
+		$a = $this->oname;
+		$ra = [];
+		$ra[] = retAndElim($a);
+		$ra[] = retAndElim($a);
+		$this->oqnames = $ra;
 	}
 	
 	private function do40() {
@@ -85,9 +98,10 @@ class IQTask1Back {
 		$ta = array_values($ta);
 		$p1a = $this->pickLevs($ta);
 		$p1nm = $ta[$p1a[0]];
-		$this->oname = [];
-		$this->oname[0] = $p0nm;
-		$this->oname[1] = $p1nm;
+		$na = [];
+		$na[0] = $p0nm;
+		$na[1] = $p1nm;
+		$this->oname = $na;
 		return;
 
 	}
