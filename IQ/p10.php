@@ -14,22 +14,37 @@ class iq1 {
 					[['sadder', 'happy'   ], ['happier' , 'sad']]
 		];
 	
+	/* private function pickAdj() {
+		$li = 0;
+		$la = self::trs;
+		$t = '';
+		$ca = [];
+		
+		for($i=0; $i < count($la); $i++) {
+			$ti = random_int(0, count($la) - 1);
+			$ia[] = $ti;
+			$la = $la[$ti];
+		}
+		
+		return;
+	} */
+	
 	public function __construct() {
 		$this->do10();
 	}
 	
 	private function do10() {
-		$ac = self::nms;
-		$a1 = $this->pick1($ac);
-		$a2 = $this->pick1($ac, $a1['sexi'], $a1['pi']);
 		
-		$p1 = $a1['name'];
-		$p2 = $a2['name'];
-		 
-		 return;
+		$ap[] = $p1a = $this->pickPer(self::nms);
+		$ap[] =		   $this->pickPer(self::nms, $p1a['sexi'], $p1a['pi']); unset($p1a);
+		
+		$aa[] = $a1a = $this->pickPer(self::trs);
+		$aa[] =		   $this->pickPer(self::trs, $a1a['sexi'], $a1a['pi']);
+				
+		return;
 	}
 	
-	private function pick1(array $a, int $sexi = null, int $pi = null) {
+	private function pickPer(array $a, int $sexi = null, int $pi = null) {
 		if (isset($sexi)) {
 			unset($a[$sexi][$pi]);
 			$sexa = array_values($a[$sexi]);
