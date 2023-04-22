@@ -32,11 +32,20 @@ class iq1 {
 	
 	public function __construct() {
 		$this->do10();
-	//	$this->do20();
+		$this->do20();
 	}
 	
 	private function do20() {
-		$aa0 = $this->pickLevs(self::traits);
+		$aa  = $this->pickLevs(self::traits);
+		$adj = self::traits[$aa[0]][$aa[1]][$aa[2]];
+		$t   = '';
+		$t  .= $this->on0;
+		$t  .= ' is ';
+		$t  .= $aa[2] === 0 ? $adj . ' than ' : 'not as ' . $adj . ' as ';
+		$t  .= $this->on1;
+		$t  .= '.';
+		echo($t);
+		return;
 	}
 	
 	private function do10() {
@@ -48,7 +57,9 @@ class iq1 {
 		$ta = array_values($ta);
 		$p1a = $this->pickLevs($ta);
 		$p1nm = $ta[$p1a[0]];
-		echo($p0nm . ' ' . $p1nm);
+		// echo($p0nm . ' ' . $p1nm);
+		$this->on0 = $p0nm;
+		$this->on1 = $p1nm;
 		return;
 
 	}
