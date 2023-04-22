@@ -1,8 +1,8 @@
-<?php // https://www.thomas.co/sites/default/files/thomas-files/2022-09/Aptitude%20Example%20Booklet_2021%20V1.pdf
+<?php 
 
 require_once('/opt/kwynn/kwutils.php');
 
-class iq1 {
+class IQTask1 {
 	
 	const names  = [
 			['Rachel', 'Wendy'],
@@ -95,4 +95,4 @@ class iq1 {
 	}
 }
 
-new iq1();
+if (didCLICallMe(__FILE__)) new IQTask1();
