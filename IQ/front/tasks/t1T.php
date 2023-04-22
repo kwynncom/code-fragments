@@ -22,16 +22,27 @@
 	
 	.tqspec {
 		background-color: blue;
-		width : 10em;
+		width : 12em;
 		height:  5em;
 		margin-right: 2em; 
 		display: inline-block;
 	}
 	
 	.tqpar { 
-		padding-top: 2em; 
+		padding-top: 4em; 
 		margin-top: 2em; 
 		
+	}
+	
+	.clicki10 { 
+		position: absolute;
+		bottom: 1em;
+		width: fit-content;
+		margin-left: auto;
+		margin-right: auto; 
+		left: 0;
+		right: 0;
+	
 	}
 	
 </style>
@@ -40,13 +51,15 @@
 	
 <div style='text-align: center; '>
 						<!-- top right bottom left -->
-	<div     style='margin: 5em auto 0 auto; width: 40em; height: 25em; background-color: aqua'>
+	<div     style='margin: 5em auto 0 auto; width: 40em; height: 25em; background-color: aqua; position: relative; '>
 		<div class='t110' style=''>	<?php echo($this->obo->ostatement); ?></div>
 		
 		<div class='tqpar'>
 			<div class='tqspec'></div>
 			<div class='tqspec'></div>
 		</div>
+		
+		<div class='clicki10'>Click the screen when you are ready to continue.</div>
 	</div>
 </div>
 	
