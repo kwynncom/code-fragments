@@ -1,15 +1,17 @@
-<?php
+<?php // https://www.thomas.co/sites/default/files/thomas-files/2022-09/Aptitude%20Example%20Booklet_2021%20V1.pdf
 
 class iq1 {
 	
-	const fnms = ['Rachel', 'Wendy' ];
-	const mnsm = ['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul'];
-	const phs  = [	[['lighter', 'not as heavy'], ['heavier', 'not as light']],
-					[['duller', 'not as bright'] ,['brighter', 'not as dull']],
-					['sadder' , 'happier'], 
-					[['weaker', 'not as strong'], ['stronger', 'not as weak']],
-					[['sadder', 'not as happy' ], ['happier', 'not as sad']]
-					
+	const nms  = [
+			['F'] => ['Rachel', 'Wendy'],
+			['M'] => ['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul']
+		];
+	                          /* not as */
+	const phs  = [	[['lighter','heavy'   ], ['heavier' , 'light']],
+					[['duller', 'bright'  ], ['brighter', 'dull']],
+					[['sadder', 'happy'   ], ['happier' , 'sad']], 
+					[['weaker', 'strong'  ], ['stronger', 'weak']],
+					[['sadder', 'happy'   ], ['happier' , 'sad']]
 		];
 	
 	
