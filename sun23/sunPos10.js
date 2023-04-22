@@ -1,18 +1,3 @@
-class solarTZAdj {
-
-	static getCurrentDSTOffset() {
-		const jan = new Date(new Date().getFullYear(), 0, 1);
-		return ((new Date().getTimezoneOffset()) - jan.getTimezoneOffset()) * 60 * 1000;
-	}
-
-	static getDateO() {
-
-		const o = solarTZAdj.getCurrentDSTOffset();
-		const Ums = time() + o;
-		return new Date(Ums);
-	} // https://stackoverflow.com/questions/11887934/how-to-check-if-dst-daylight-saving-time-is-in-effect-and-if-so-the-offset/11888430#11888430 
-}	  // edited Mar 12, 2018 at 3:54, Sheldon Griffin
-
 class validLatLon {
 	
 	static get(lat, lon) {
@@ -81,6 +66,7 @@ function getSunPos() {
 	const elevd = DEG(elevr);
 	const decl = solar_declination(jc);
 	const ra   = sun_apparent_lon(jc);
+	const stl  = sun_true_lon(jc); // just curious
 	const rad = DEG(ra);
 
 	const coordinates = new RaDecToAltAz(rad,DEG(decl), lat, lon, tDate);
