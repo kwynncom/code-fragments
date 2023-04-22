@@ -3,11 +3,11 @@
 class iq1 {
 	
 	const nms  = [
-			['F'] => ['Rachel', 'Wendy'],
-			['M'] => ['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul']
+			['Rachel', 'Wendy'],
+			['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul']
 		];
 	                          /* not as */
-	const phs  = [	[['lighter','heavy'   ], ['heavier' , 'light']],
+	const trs  = [	[['lighter','heavy'   ], ['heavier' , 'light']],
 					[['duller', 'bright'  ], ['brighter', 'dull']],
 					[['sadder', 'happy'   ], ['happier' , 'sad']], 
 					[['weaker', 'strong'  ], ['stronger', 'weak']],
@@ -20,8 +20,14 @@ class iq1 {
 	}
 	
 	private function do10() {
-		
-		
-		
+		 $sexi = random_int(0, count(self::nms) - 1);
+		 $sexa = self::nms[$sexi];
+		 $p1i   = random_int(0, count($sexa) - 1);
+		 $p1n   = self::nms[$sexi][$p1i];
+		 
+		 return;
 	}
+	
 }
+
+new iq1();
