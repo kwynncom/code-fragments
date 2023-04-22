@@ -8,8 +8,8 @@ class iq1 {
 			['Rachel', 'Wendy'],
 			['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul']
 		];
-	                          /* not as */
-	const traits = [
+	                          
+	const traits = [		  /* not as */
 					[['lighter','heavy'   ], ['heavier' , 'light']],
 					[['duller', 'bright'  ], ['brighter', 'dull']],
 					[['sadder', 'happy'   ], ['happier' , 'sad']], 
@@ -33,6 +33,16 @@ class iq1 {
 	public function __construct() {
 		$this->do10();
 		$this->do20();
+		$this->do30();
+	}
+	
+	private function do30() {
+		$ri = random_int(0, count(self::traits[$this->oaa[0]]) - 1);
+		$qadj = self::traits[$this->oaa[0]][$ri][0];
+		$t  = '';
+		$t .= 'Who is ' . $qadj . '?';
+		return;
+		
 	}
 	
 	private function do20() {
@@ -44,7 +54,10 @@ class iq1 {
 		$t  .= $aa[2] === 0 ? $adj . ' than ' : 'not as ' . $adj . ' as ';
 		$t  .= $this->on1;
 		$t  .= '.';
-		echo($t);
+		
+		$this->ostatement = $t;
+		$this->oaa = $aa;
+		
 		return;
 	}
 	
