@@ -35,31 +35,37 @@ class iq1 {
 	
 	private function do10() {
 		
-		$ap[] = $p1a = $this->pickPer(self::nms);
-		$ap[] =		   $this->pickPer(self::nms, $p1a['sexi'], $p1a['pi']); unset($p1a);
+		$ap[] = $p1a = $this->pickLevs(self::nms);
+		$ap[] =		   $this->pickLevs(self::nms, $p1a); unset($p1a);
 		
-		$aa[] = $a1a = $this->pickPer(self::trs);
-		$aa[] =		   $this->pickPer(self::trs, $a1a['sexi'], $a1a['pi']);
-				
-		return;
+		$aa[] = $a1a = $this->pickLevs(self::trs);
+		$aa[] =		   $this->pickLevs(self::trs, $a1a); unset($a1a);
+		
+		$p1 = self::nms[$ap[0][0]][$ap[0][1]];
+		$p2 = self::nms[$ap[1][0]][$ap[1][1]];
+		
+		echo($p1 . ' ' . $p2);
 	}
 	
-	private function pickPer(array $a, int $sexi = null, int $pi = null) {
-		if (isset($sexi)) {
-			unset($a[$sexi][$pi]);
-			$sexa = array_values($a[$sexi]);
-
-	
-		} else {
-			$sexi = random_int(0, count($a) - 1);
-			$sexa = $a[$sexi]; 
-		}
+	private function pickLevs(array $a, array|null $la = []) {
 		
-
+		$pa = [];
+		
+		if (isset(   $la[0])) {
+			$a0 = $a[$la[0]];
+			for($i = 0; $i < count($a0); $i++) $pa[$i] = $i;
+			unset($pa[$la[1]]);
+			$pa = array_values($pa);
+			$la[1] = $pa[random_int(0, count($pa) - 1)];
+			return $la;
 				
-		 $pi   = random_int(0, count($sexa) - 1);
-		 $pnm   =		  $sexa[$pi];
-		 return ['name' => $pnm, 'sexi' => $sexi, 'pi' => $pi];
+		} else {
+			$la[0] = random_int(0, count($a) - 1);
+			$la[1] = random_int(0, count($a[$la[0]]) - 1);
+
+		}
+		 
+		return $la;
 	}
 	
 }
