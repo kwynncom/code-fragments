@@ -34,13 +34,29 @@ class iq1 {
 		$this->do10();
 		$this->do20();
 		$this->do30();
+		$this->do40();
+	}
+	
+	private function do40() {
+		$rel = $this->oaa[1];
+		$ai = $rel === $this->oqi ? 0 : 1;
+		$as = [];
+		$as[] = $this->ostatement;
+		$as[] = $this->oquestion;
+		$as[] = $this->oname[$ai];
+		foreach($as as $s) {
+			echo($s . "\n");
+		}
+		
 	}
 	
 	private function do30() {
 		$ri = random_int(0, count(self::traits[$this->oaa[0]]) - 1);
+		$this->oqi = $ri;
 		$qadj = self::traits[$this->oaa[0]][$ri][0];
 		$t  = '';
 		$t .= 'Who is ' . $qadj . '?';
+		$this->oquestion = $t;
 		return;
 		
 	}
@@ -49,10 +65,10 @@ class iq1 {
 		$aa  = $this->pickLevs(self::traits);
 		$adj = self::traits[$aa[0]][$aa[1]][$aa[2]];
 		$t   = '';
-		$t  .= $this->on0;
+		$t  .= $this->oname[0];
 		$t  .= ' is ';
 		$t  .= $aa[2] === 0 ? $adj . ' than ' : 'not as ' . $adj . ' as ';
-		$t  .= $this->on1;
+		$t  .= $this->oname[1];
 		$t  .= '.';
 		
 		$this->ostatement = $t;
@@ -71,8 +87,9 @@ class iq1 {
 		$p1a = $this->pickLevs($ta);
 		$p1nm = $ta[$p1a[0]];
 		// echo($p0nm . ' ' . $p1nm);
-		$this->on0 = $p0nm;
-		$this->on1 = $p1nm;
+		$this->oname = [];
+		$this->oname[0] = $p0nm;
+		$this->oname[1] = $p1nm;
 		return;
 
 	}
