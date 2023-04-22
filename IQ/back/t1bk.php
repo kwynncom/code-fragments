@@ -4,6 +4,8 @@ require_once('/opt/kwynn/kwutils.php');
 
 class IQTask1Back {
 	
+	public readonly string $ostatement;
+	
 	const names  = [
 			['Rachel', 'Wendy'],
 			['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul']
@@ -44,10 +46,7 @@ class IQTask1Back {
 		$as[] = $this->ostatement;
 		$as[] = $this->oquestion;
 		$as[] = $this->oname[$ai];
-		foreach($as as $s) {
-			echo($s . "\n");
-		}
-		
+		if (iscli()) foreach($as as $s) echo($s . "\n");
 	}
 	
 	private function do30() {
@@ -86,7 +85,6 @@ class IQTask1Back {
 		$ta = array_values($ta);
 		$p1a = $this->pickLevs($ta);
 		$p1nm = $ta[$p1a[0]];
-		// echo($p0nm . ' ' . $p1nm);
 		$this->oname = [];
 		$this->oname[0] = $p0nm;
 		$this->oname[1] = $p1nm;
