@@ -7,8 +7,29 @@ class IQTask2 {
 	const cln = 4;
 	
 	public function __construct() {
-		$this->oma = 0;
+		$this->omacnt = 0;
 		$this->do10();
+		$this->do20();
+	}
+	
+	private function do20() {
+		
+		static $la = [];
+		if (!$la) $la = [65, 97];
+		$a = $this->othea;
+		$uls = random_int(0,1);
+		
+		for ($j=0; $j < 2; $j++) {
+		for ($i=0; $i < count($a); $i++) {
+				echo(chr($a[$i][$j] + $la[($j +  $uls) % 2]));
+				echo(' ');
+			}
+			
+			echo("\n");
+		}
+		
+		echo("\n\n\n" . $this->omacnt);
+		
 	}
 	
 	private function do10() {
@@ -29,7 +50,7 @@ class IQTask2 {
 			}
 			
 			if ($ism)  { 
-				$this->oma++;
+				$this->omacnt++;
 				$ra[$i][1] = $ra[$i][0]; 
 				break; 
 			}
@@ -39,10 +60,8 @@ class IQTask2 {
 			continue;
 		}
 		
-		print_r($ra);
-		echo($this->oma);
+		$this->othea = $ra;
 
-		
 	}
 }
 
