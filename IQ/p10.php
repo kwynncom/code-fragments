@@ -14,7 +14,6 @@ class iq1 {
 					[['sadder', 'happy'   ], ['happier' , 'sad']]
 		];
 	
-	
 	public function __construct() {
 		$this->do10();
 	}
@@ -23,6 +22,9 @@ class iq1 {
 		$ac = self::nms;
 		$a1 = $this->pick1($ac);
 		$a2 = $this->pick1($ac, $a1['sexi'], $a1['pi']);
+		
+		$p1 = $a1['name'];
+		$p2 = $a2['name'];
 		 
 		 return;
 	}
@@ -30,14 +32,18 @@ class iq1 {
 	private function pick1(array $a, int $sexi = null, int $pi = null) {
 		if (isset($sexi)) {
 			unset($a[$sexi][$pi]);
-			$a = array_values($a);
-	} else { 
-		$sexi = random_int(0, count($a) - 1);
-	}
-		 
-		 $sexa = $a[$sexi];
-		 if (!$sexi) $pi   = random_int(0, count($sexa) - 1);
-		 $pnm   =		  $a[$sexi][$pi];
+			$sexa = array_values($a[$sexi]);
+
+	
+		} else {
+			$sexi = random_int(0, count($a) - 1);
+			$sexa = $a[$sexi]; 
+		}
+		
+
+				
+		 $pi   = random_int(0, count($sexa) - 1);
+		 $pnm   =		  $sexa[$pi];
 		 return ['name' => $pnm, 'sexi' => $sexi, 'pi' => $pi];
 	}
 	
