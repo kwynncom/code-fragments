@@ -20,12 +20,25 @@ class iq1 {
 	}
 	
 	private function do10() {
-		 $sexi = random_int(0, count(self::nms) - 1);
-		 $sexa = self::nms[$sexi];
-		 $p1i   = random_int(0, count($sexa) - 1);
-		 $p1n   = self::nms[$sexi][$p1i];
+		$ac = self::nms;
+		$a1 = $this->pick1($ac);
+		$a2 = $this->pick1($ac, $a1['sexi'], $a1['pi']);
 		 
 		 return;
+	}
+	
+	private function pick1(array $a, int $sexi = null, int $pi = null) {
+		if (isset($sexi)) {
+			unset($a[$sexi][$pi]);
+			$a = array_values($a);
+	} else { 
+		$sexi = random_int(0, count($a) - 1);
+	}
+		 
+		 $sexa = $a[$sexi];
+		 if (!$sexi) $pi   = random_int(0, count($sexa) - 1);
+		 $pnm   =		  $a[$sexi][$pi];
+		 return ['name' => $pnm, 'sexi' => $sexi, 'pi' => $pi];
 	}
 	
 }
