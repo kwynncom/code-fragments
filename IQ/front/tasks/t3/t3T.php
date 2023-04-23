@@ -7,9 +7,13 @@
 <title>IQ Task 3</title>
 
 <script src='/opt/kwynn/js/utils.js'></script>
-<!-- <script src='tasks/t3/t3.js'></script> -->
+<script src='tasks/t3/t3.js'></script>
 
 <link rel='stylesheet' href='common.css'>
+
+<script>
+	var KWIQT3A = '<?php echo($this->obo->oanswer . ''); ?>';
+</script>
 
 <style>
 	
@@ -52,7 +56,7 @@
 		
 	}
 
-	
+	body { width: 90vw; height: 97vw; }
 
 </style>
 </head>
@@ -62,10 +66,11 @@
 	<div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 10em; position: relative; '>
 		<div class='parent' >
 			<?php for ($i=0; $i < count($this->obo->olist); $i++) { 
+				$num = $this->obo->olist[$i];
 				$t = '';
-				$t .= '<div class="eans">';
-				$t .= '<div class="eansI20">';
-				$t .= $this->obo->olist[$i];
+				$t .= '<div class="eans" onclick="t3inter.onclick(this);" data-iamn="' . $num . '" >';
+				$t .= '<div class="eansI20" >';
+				$t .= $num;
 				$t .= '</div>';
 				$t .= '</div>';				
 				echo($t);
