@@ -16,17 +16,41 @@
 </script>
 
 <style>
+	
+	.et5p05 {
+		margin: 1em auto 0 2em;
+	}
+	
+	.et5p20 { font-family: Arial; 
+		height: 1em;
+		width : 1em;
+		text-align: center;
+		margin: 0 auto 0 auto; 
+		font-size: 400%;
+		color:  #0059b3;
+		font-weight: bold;
+	}
+	
+	.et5p20:nth-child(even) { 	}
+	.et5p20:nth-child(odd)  {  	}
+	
 	.et5p10 {
+		
+		/* top right bottom left */
 		display: inline-block;
 		background-color: white;
-		width: 5em;
-		height: 10em;
+		width:  6em;
+		height: 9em;
+		margin: 1em 1em 2em 1em;
+		padding-top: 1em; 
 	}
 </style>
 </head>
 <body class='e34'>
 	
 <div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 20em; height: 20em; position: relative; '>
+	
+	<div class='et5p05'>
 	<?php 
 	
 		$t = '';
@@ -34,6 +58,25 @@
 			$t .= '<div class="et5p10">';
 			for ($j=0; $j < self::othen; $j++) {
 				
+				if ($this->obo->oia[$i][$j]['i']) $sc = -1; 
+				$sc = 1;
+				
+				$tr  = '';
+				$tr .= "transform: scaleX($sc) ";
+	
+				
+				// transform: rotate(90deg);
+				
+				$rot = $this->obo->oia[$i][$j]['o'];
+				$tr .= " rotate({$rot}deg); ";
+				
+				
+				$s = " style='$tr' ";
+				
+				$t .= '<div class="et5p20" ' . $s;
+				$t .= '>';
+				$t .= 'R';
+				$t .= '</div>';
 			}
 			$t .= '</div>';
 		}
@@ -41,6 +84,7 @@
 		
 		
 	?>
+	</div>
 
 </div>
 
