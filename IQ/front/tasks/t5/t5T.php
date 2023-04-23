@@ -46,13 +46,27 @@
 	
 	.e100 {
 		display: inline-block;
-		margin: 2em auto 0 auto;
-		bottom: 2em;
+		margin: 0em auto 2em auto;
 
-		width: 12em;
-		height: 1.5em; 
-		background-color: green;
+		/*
+		width: 16em;
+		height: 6em; 
+*/
 	
+	}
+	
+	.e150 {
+		display: inline-block; 
+		height: 2em;
+		width:  2em;
+		margin: 0em 0.2em 0em 0.2em;
+		background-color: #3366ff;
+		font-weight: bold;
+		font-size: 250%;
+		color: white;
+		font-family: Helvetica;
+		
+		
 	}
 	
 	.ep05 {
@@ -60,6 +74,8 @@
 		text-align: center; 
 		
 	}
+	
+
 </style>
 </head>
 <body class='e34'>
@@ -68,7 +84,18 @@
 	
 	<div class='et5p05'><?php require_once('t5T10.php');?></div>
 	<div class='e100'>
+		<?php
+		$t = '';
+		for($i=self::clamin; $i <= self::clamax; $i++) {
+			$t .=  '<div class="e150" onclick="t5inter.onclick(this, ' . $i . ');">';
+			$t .= $i;
+			$t .= '</div>';
+			
+		} 
 		
+		echo($t);
+		
+		?>
 	</div>
 
 </div>
