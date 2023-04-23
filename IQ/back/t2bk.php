@@ -2,12 +2,14 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class IQTask2 {
+class IQTask2Back {
 	
 	const cln = 4;
 	
+	public readonly int $ocorn;
+	public readonly array $othea;
+	
 	public function __construct() {
-		$this->omacnt = 0;
 		$this->do10();
 		$this->do20();
 	}
@@ -16,19 +18,29 @@ class IQTask2 {
 		
 		static $la = [];
 		if (!$la) $la = [65, 97];
-		$a = $this->othea;
+		$a = $this->otmp;
 		$uls = random_int(0,1);
+		
+		$t = '';
+		$cs = [];
+		$ra = [];
 		
 		for ($j=0; $j < 2; $j++) {
 		for ($i=0; $i < count($a); $i++) {
-				echo(chr($a[$i][$j] + $la[($j +  $uls) % 2]));
-				echo(' ');
+				$ch = $cs[$j][] = chr($a[$i][$j] + $la[($j +  $uls) % 2]);
+				$ra[$i][$j] = $ch;
+				$t .= $ch;
+				$t .= ' ';
 			}
 			
-			echo("\n");
+			$t .= "\n";
 		}
 		
-		echo("\n\n\n" . $this->omacnt);
+		$this->othea = $ra;
+		
+		$t .= "\n" . $this->ocorn;
+		
+		if (iscli()) echo($t);
 		
 	}
 	
@@ -36,6 +48,7 @@ class IQTask2 {
 	
 		for ($i=0; $i < 26; $i++) $aa[$i] = $i;
 
+		$corn = 0;
 		$ra = [];
 		for ($i=0; $i < self::cln; $i++) 
 		for ($j=0; $j < 2        ; $j++)
@@ -50,7 +63,7 @@ class IQTask2 {
 			}
 			
 			if ($ism)  { 
-				$this->omacnt++;
+				$corn++;
 				$ra[$i][1] = $ra[$i][0]; 
 				break; 
 			}
@@ -60,9 +73,10 @@ class IQTask2 {
 			continue;
 		}
 		
-		$this->othea = $ra;
+		$this->ocorn = $corn;
+		$this->otmp = $ra;
 
 	}
 }
 
-new IQTask2();
+if (didCLICallMe(__FILE__)) new IQTask2Back();

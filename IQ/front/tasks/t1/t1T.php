@@ -4,13 +4,15 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>IQ Tasks</title>
+<title>IQ Task 1</title>
 
 <script src='/opt/kwynn/js/utils.js'></script>
-<script src='tasks/t1.js'></script>
+<script src='tasks/t1/t1.js'></script>
+
+<link rel='stylesheet' href='common.css'>
 
 <style>
-    body { font-family: Arial; }
+
 	.t110 { 
 		/* top right bottom left */
 		margin: 5em auto 0 auto; 
@@ -72,7 +74,7 @@
 	</div>
 	
 						<!-- top right bottom left -->
-	<div     style='top: 0; margin: -6em auto 0 auto; width: 40em; height: 24em; background-color: aqua; position: relative; '>
+	<div class='thomasColor' style='top: 0; margin: -6em auto 0 auto; width: 40em; height: 24em; position: relative; '>
 		<div class='t110'>
 			<div id='estatement'					   ><?php echo($this->obo->ostatement); ?></div>
 			<div id='equestion'  style='display: none'><?php echo($this->obo->oquestion);  ?></div>
@@ -97,7 +99,10 @@
 		<div class='clicki10' id='eclsc'>Click the screen when you are ready to continue.</div>
 	</div>
 	<div style='visibility: hidden; margin-top: 2em;' id='ebagain'>
-		<button onclick='location.reload();' style='font-size: 130%; '>again</button>
+		<button onclick='location.reload();' style='font-size: 160%; '>again</button>
+		<a href='template.php' style='color: black; text-decoration: none;'>
+			<button style='font-size: 110%; margin-left: 5em; '>menu</button>
+		</a>
 	</div>
 </div>
 	
