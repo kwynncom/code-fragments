@@ -61,6 +61,9 @@ class IQTask2Back {
 				$si = random_int(0, count($aa) - 1);
 				$ra[$i][$j] = $aa[$si];			
 			}
+	
+			unset(        $aa[$si]);
+			$aa = array_values($aa);
 			
 			if ($ism)  { 
 				$corn++;
@@ -68,8 +71,7 @@ class IQTask2Back {
 				break; 
 			}
 			
-			unset(        $aa[$si]);
-			$aa = array_values($aa);
+
 			continue;
 		}
 		

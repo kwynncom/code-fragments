@@ -7,7 +7,7 @@
 <title>IQ Task 2</title>
 
 <script src='/opt/kwynn/js/utils.js'></script>
-<!-- <script src='tasks/t1/t1.js'></script> -->
+<script src='tasks/t2/t2.js'></script>
 
 <link rel='stylesheet' href='common.css'>
 
@@ -37,7 +37,7 @@
 		width: 1em;
 		padding: 0.3em;
 		margin: 0 0.15em 0 0.15em;
-		background-color: blue;
+		background-color:   #3366ff;
 		color: white;
 	}
 	
@@ -51,7 +51,7 @@
 </head>
 <body>
 <div style=''>
-<div class='thomasColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 24em; position: static; '>
+<div class='thomasColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 26em; position: static; '>
 	<table class='t110'>
 
 		<?php 		
@@ -83,7 +83,11 @@
 		
 		$t = '';
 		for ($i = 0; $i < self::clcols + 1; $i++) {
-			$t .= '<div class="eans">';
+			
+			$c  = '';
+			$c .= ' onclick=\'t2inter.onclick(this, ' . ($i === $this->obo->ocorn ? 'true' : 'false') . ');\' ';
+			
+			$t .= "<div class='eans' $c>";
 			$t .= $i;
 			$t .= '</div>';
 		}
