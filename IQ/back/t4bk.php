@@ -17,21 +17,25 @@ class IQTask4Back {
 		$t = trim(file_get_contents(self::qfile));
 		$qs = explode("\n", $t);
 		$qa = [];
-		foreach($qs as $q) 	{
-			$ia = preg_split('/\s+/', $q); kwas(count($ia) === self::wordn, 'should be 3 words - 0229');
-			$answer = $ia[self::answern];
-			$tq = ['answer' => $answer];
-			if (!isset($this->oanswer)) $this->oanswer = $answer;
-				
-			$oa = [];
-			foreach($ia as $w) $oa[] = retAndElim($ia);
-			$tq['display'] = implode(' ', $oa);
-			$qa[] = $tq;
-			if (iscli()) print_r($tq);
-			
-		}
+
+		$q = $qs[random_int(0, count($qs) - 1)];
+		
+		$ia = preg_split('/\s+/', $q); kwas(count($ia) === self::wordn, 'should be n words - 0229');
+		$refa = $ia;
+		
+		$answer = $ia[self::answern];
+		$tq = ['answer' => $answer];
+
+		$oa = [];
+		foreach($ia as $w) $oa[] = retAndElim($ia);
+		$tq['display'] = implode(' ', $oa);
+		$qa[] = $tq;
+		if (iscli()) print_r($tq);
+
+
 		
 		$this->oqa = $oa;
+		$this->oanswer = $refa[2];
 		
 	}
 }
