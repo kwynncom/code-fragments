@@ -66,8 +66,13 @@
 <body>
 	
 <div style='text-align: center; '>
+	
+	<div style='visibility: hidden; font-size: 150%; margin-top: 3em; ' id='esrepeat'><?php echo($this->obo->ostatement); ?>
+		
+	</div>
+	
 						<!-- top right bottom left -->
-	<div     style='margin: 5em auto 0 auto; width: 40em; height: 24em; background-color: aqua; position: relative; '>
+	<div     style='top: 0; margin: -6em auto 0 auto; width: 40em; height: 24em; background-color: aqua; position: relative; '>
 		<div class='t110'>
 			<div id='estatement'					   ><?php echo($this->obo->ostatement); ?></div>
 			<div id='equestion'  style='display: none'><?php echo($this->obo->oquestion);  ?></div>
@@ -89,7 +94,10 @@
 			<?php }	?>
 		</div>
 		
-		<div class='clicki10'>Click the screen when you are ready to continue.</div>
+		<div class='clicki10' id='eclsc'>Click the screen when you are ready to continue.</div>
+	</div>
+	<div style='visibility: hidden; margin-top: 2em;' id='ebagain'>
+		<button onclick='location.reload();' style='font-size: 130%; '>again</button>
 	</div>
 </div>
 	

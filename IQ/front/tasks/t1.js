@@ -19,15 +19,18 @@ class t1inter {
 			e.addEventListener('click', t1inter.aclick);
 		});
 		
-		
+		byid('eclsc').style.visibility = 'hidden';
 	}
 	
 	static aclick() {
 		const e = this;
 
-		byid('estatement').style.display = 'block';
+		// byid('estatement').style.display = 'block';
+		byid('esrepeat').style.visibility = 'visible';
 		let color = 'red';
 		if (e.dataset.iscor === '1') color = 'green';
 		e.style.backgroundColor = color;
+		
+		byid('ebagain').style.visibility = 'visible';
 	}
 }
