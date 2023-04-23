@@ -2,9 +2,7 @@
 
 require_once(__DIR__ . '/../common.php');
 
-class IQTask3Front extends IQTaskFront {
-	
-	const clcols = 3;
+class IQTask4Front extends IQTaskFront {
 	
 	public function __construct() {
 		$this->loadBack();
@@ -12,9 +10,8 @@ class IQTask3Front extends IQTaskFront {
 	}
 	
 	private function do20() {
-		require_once('t3T.php');
+		require_once('t4T.php');
 	}
 }
 
-new IQTask3Front();
-
+new IQTask4Front();

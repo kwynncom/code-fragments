@@ -1,6 +1,5 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
 require_once('utils.php');
 
 class IQTask3Back {

@@ -1,12 +1,13 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
-require_once('t3.php');
+require_once('utils.php');
 
-class IQTask4 {
-	const qfile = __DIR__ . '/t4Qs.txt';
+class IQTask4Back {
+	const qfile = __DIR__ . '/../t4Qs.txt';
 	const wordn = 3;
 	const answern = self::wordn - 1;
+	public readonly array $oqa;
+	public readonly string $oanswer;
 	
 	public function __construct() {
 		$this->do10();
@@ -18,17 +19,21 @@ class IQTask4 {
 		$qa = [];
 		foreach($qs as $q) 	{
 			$ia = preg_split('/\s+/', $q); kwas(count($ia) === self::wordn, 'should be 3 words - 0229');
-			$tq = ['answer' => $ia[self::answern]];
+			$answer = $ia[self::answern];
+			$tq = ['answer' => $answer];
+			if (!isset($this->oanswer)) $this->oanswer = $answer;
+				
 			$oa = [];
-			foreach($ia as $w) $oa[] = IQTask3::retAndElim($ia);
+			foreach($ia as $w) $oa[] = retAndElim($ia);
 			$tq['display'] = implode(' ', $oa);
 			$qa[] = $tq;
-			print_r($tq);
+			if (iscli()) print_r($tq);
 			
 		}
-		$this->oqa = $qa;		
+		
+		$this->oqa = $oa;
 		
 	}
 }
 
-new IQTask4();
+if (didCLICallMe(__FILE__)) new IQTask4Back();
