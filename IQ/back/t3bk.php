@@ -9,16 +9,21 @@ class IQTask3Back {
 	const clmin =  1;
 	const clcnt =  3;
 	
+	public readonly array $olist;
+	public readonly int   $oanswer;
+	
 	public function __construct() {
 		$this->do05();
 	}
 	
 	private function do05() {
-		$i = 0;
-		do {
-			$ret = false;
-			try { $ret = $this->do10(); } catch(Exception $ex) { }
-		} while(!$ret && $i++ < 500);
+		
+		for ($i=0; $i < 500; $i++) { // The upper limit (500 or whatever) is just a sanity check; it's astronomically unlikely to get that far.
+			try { 
+				$this->do10(); 
+				break;
+			} catch(Exception $ex) { }
+		} 
 	}
 	
 	private function do10() {
@@ -32,12 +37,11 @@ class IQTask3Back {
 		$d1 = $a[1] - $a[0];
 		$d2 = $a[2] - $a[1]; kwas($d1 !== $d2, 'difference should not be equal');
 		
-		$answer = $d1 > $d2 ? $a[0] : $a[2];
+		$this->olist = $a;
+		
+		$answer = $this->oanswer = $d1 > $d2 ? $a[0] : $a[2];
 		if (iscli()) echo($answer);
 
-		
-		return;
-			
 	}
 	
 	public static function retAndElim(array &$a) : int | string {
