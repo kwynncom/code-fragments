@@ -44,46 +44,25 @@
 		margin: 1em 1em 2em 1em;
 		padding-top: 1em; 
 	}
+	
+	.e100 {
+		display: inline-block;
+		position: relative;
+		bottom: 0;
+		width: 12em;
+		height: 1.5em; 
+		background-color: green;
+	
+	}
 </style>
 </head>
 <body class='e34'>
 	
 <div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 20em; height: 20em; position: relative; '>
 	
-	<div class='et5p05'>
-	<?php 
-	
-		$t = '';
-		for ($i=0; $i < self::othen; $i++) {
-			$t .= '<div class="et5p10">';
-			for ($j=0; $j < self::othen; $j++) {
-				
-				if ($this->obo->oia[$i][$j]['i']) $sc = -1; 
-				$sc = 1;
-				
-				$tr  = '';
-				$tr .= "transform: scaleX($sc) ";
-	
-				
-				// transform: rotate(90deg);
-				
-				$rot = $this->obo->oia[$i][$j]['o'];
-				$tr .= " rotate({$rot}deg); ";
-				
-				
-				$s = " style='$tr' ";
-				
-				$t .= '<div class="et5p20" ' . $s;
-				$t .= '>';
-				$t .= 'R';
-				$t .= '</div>';
-			}
-			$t .= '</div>';
-		}
-		echo($t);
+	<div class='et5p05'><?php require_once('t5T10.php');?></div>
+	<div class='e100'>
 		
-		
-	?>
 	</div>
 
 </div>

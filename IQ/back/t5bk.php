@@ -24,19 +24,25 @@ class IQTask5Back {
 	private function do05() {
 		
 		$ra = [];
+		$da = [];
 		for ($i=0; $i < self::osetn; $i++) $ra[] = $this->do10();
 		$this->omatches = $this->omt;
 		$this->oia = $ra;
+		
+		if (iscli()) {
+			echo('m = ' . $this->omatches . "\n");
+			print_r($ra);
+		}
 		return;
 	}
 	
 	private function do10() {
 		$ra = [];
 		
+		$pa = self::orient;
 		for($i=0; $i < self::ocarn; $i++) {
 			$ra[$i]['i'] = random_int(0, self::omirn);
-			$pa = self::orient;
-			for ($j=0; $j < self::ocarn; $j++) $ra[$i]['o'] = retAndElim($pa);
+			$ra[$i]['o'] = retAndElim($pa);
 		}
 
 		if ($ra[0]['i'] === $ra[1]['i']) $this->omt++;
