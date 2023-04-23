@@ -17,7 +17,7 @@
 		
 		<ul>
 			<li><a href='./front/template.php'>my version of the test</a></li>
-			<li><a href='./front/worksCited.html'>works cited</a></li>
+			<li><a href='./extra/worksCited.html'>works cited</a></li>
 		</ul>
 	</section>
 </body>

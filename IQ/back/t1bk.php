@@ -8,6 +8,7 @@ class IQTask1Back {
 	public readonly string $ostatement;
 	public readonly array  $oqnames;
 	public readonly string $oquestion;
+	public readonly string $corName;
 	
 	const names  = [
 			['Rachel', 'Wendy'],
@@ -55,10 +56,11 @@ class IQTask1Back {
 	private function do40() {
 		$rel = $this->oaa[1];
 		$ai = $rel === $this->oqi ? 0 : 1;
+		$this->corName = $cornm = $this->oname[$ai];
 		$as = [];
 		$as[] = $this->ostatement;
 		$as[] = $this->oquestion;
-		$as[] = $this->oname[$ai];
+		$as[] = $cornm;
 		if (iscli()) foreach($as as $s) echo($s . "\n");
 	}
 	

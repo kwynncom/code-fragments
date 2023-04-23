@@ -3,7 +3,9 @@
 require_once(__DIR__ . '/../../config.php');
 
 class IQTask1Front {
+	
 	const cliamn = 1;
+	const ann = 2;
 	
 	public function __construct() {
 		$this->do10();

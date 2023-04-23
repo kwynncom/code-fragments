@@ -63,19 +63,30 @@
 	
 </style>
 </head>
-<body onclick='t1inter.bodyClick();'>
+<body>
 	
 <div style='text-align: center; '>
 						<!-- top right bottom left -->
 	<div     style='margin: 5em auto 0 auto; width: 40em; height: 24em; background-color: aqua; position: relative; '>
 		<div class='t110'>
-			<span id='estatement'					   ><?php echo($this->obo->ostatement); ?></span>
-			<span id='equestion'  style='display: none'><?php echo($this->obo->oquestion);  ?></span>
+			<div id='estatement'					   ><?php echo($this->obo->ostatement); ?></div>
+			<div id='equestion'  style='display: none'><?php echo($this->obo->oquestion);  ?></div>
 		</div>
 		
 		<div class='tqpar'>
-			<div class='tqspecp10'><div class='tqspec20' data-qname='1'><?php echo($this->obo->oqnames[0]);?></div></div>
-			<div class='tqspecp10'><div class='tqspec20' data-qname='1'><?php echo($this->obo->oqnames[1]);?></div></div>
+			
+			<?php for($i=0; $i < IQTask1Front::ann; $i++) { 
+				$name = $this->obo->oqnames[$i];
+				$ict  = ' data-iscor="';
+				$ict .= $this->obo->corName === $name ? 1 : 0;
+				$ict .= '" '
+	
+				?>
+			<div class='tqspecp10' <?php echo($ict); ?> data-isqp='1'>
+				<div class='tqspec20' data-isqname='1'  ><?php echo($name);?>
+			</div>
+			</div>
+			<?php }	?>
 		</div>
 		
 		<div class='clicki10'>Click the screen when you are ready to continue.</div>
