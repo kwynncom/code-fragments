@@ -33,11 +33,12 @@ class IQTask3Back {
 		$a[] = self::retAndElim($pa);
 		$a[] = self::retAndElim($pa);
 		$a[] = self::retAndElim($pa);
+		$uns = $a;
 		sort($a);
 		$d1 = $a[1] - $a[0];
 		$d2 = $a[2] - $a[1]; kwas($d1 !== $d2, 'difference should not be equal');
 		
-		$this->olist = $a;
+		$this->olist = $uns;
 		
 		$answer = $this->oanswer = $d1 > $d2 ? $a[0] : $a[2];
 		if (iscli()) echo($answer);

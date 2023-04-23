@@ -74,7 +74,7 @@
 	</div>
 	
 						<!-- top right bottom left -->
-	<div class='thomasColor' style='top: 0; margin: -6em auto 0 auto; width: 40em; height: 24em; position: relative; '>
+	<div class='thomasOuterColor' style='top: 0; margin: -6em auto 0 auto; width: 40em; height: 24em; position: relative; '>
 		<div class='t110'>
 			<div id='estatement'					   ><?php echo($this->obo->ostatement); ?></div>
 			<div id='equestion'  style='display: none'><?php echo($this->obo->oquestion);  ?></div>

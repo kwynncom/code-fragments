@@ -4,7 +4,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
 <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-<title>IQ Task 2</title>
+<title>IQ Task 3</title>
 
 <script src='/opt/kwynn/js/utils.js'></script>
 <!-- <script src='tasks/t3/t3.js'></script> -->
@@ -12,12 +12,66 @@
 <link rel='stylesheet' href='common.css'>
 
 <style>
+	
+	.parent {
+		text-align: center; 
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-family: Helvetica ;
+		width: 40vw;
+	}
+	
+	.eans {
+			/* top right bottom left */
+		
+		display: inline-block; 
+		width:  4.7em;
+		height: 2.5em; 
+
+		margin: auto 0.3em auto 0.3em;
+		background-color:   #3366ff;
+		color: white;
+		font-size: 175%;
+		font-weight: bold;
+		
+		vertical-align: middle; 
+		position: relative;
+
+		
+	}
+	
+	.eansI20 {
+		display: inline-block;
+		top: 50%;
+		left: 50%;
+
+		transform: translate(-50%, -50%);
+		position: absolute;
+		
+	}
+
+	
+
 </style>
 </head>
 <body>
 	
 <div>
-	<div class='thomasColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 10em; position: static; '>
+	<div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 10em; position: relative; '>
+		<div class='parent' >
+			<?php for ($i=0; $i < count($this->obo->olist); $i++) { 
+				$t = '';
+				$t .= '<div class="eans">';
+				$t .= '<div class="eansI20">';
+				$t .= $this->obo->olist[$i];
+				$t .= '</div>';
+				$t .= '</div>';				
+				echo($t);
+			} ?>
+			
+		</div>
 	</div>
 </div>
 </body>

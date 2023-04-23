@@ -51,7 +51,7 @@
 </head>
 <body>
 <div>
-<div class='thomasColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 26em; position: static; '>
+<div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 26em; position: static; '>
 	<table class='t110'>
 
 		<?php 		
