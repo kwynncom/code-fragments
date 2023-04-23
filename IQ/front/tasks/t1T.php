@@ -20,12 +20,16 @@
 		font-size: 150%;
 	}
 	
-	.tqspec {
+	.tqspecp10 {
 		background-color: blue;
 		width : 12em;
 		height:  5em;
-		margin-right: 2em; 
+		margin: auto;
 		display: inline-block;
+		color: white;
+		vertical-align: middle; 
+		position: relative;
+		
 	}
 	
 	.tqpar { 
@@ -42,7 +46,14 @@
 		margin-right: auto; 
 		left: 0;
 		right: 0;
+	}
 	
+	.tqspec20 { 
+		margin: 0;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 	
 </style>
@@ -51,12 +62,12 @@
 	
 <div style='text-align: center; '>
 						<!-- top right bottom left -->
-	<div     style='margin: 5em auto 0 auto; width: 40em; height: 25em; background-color: aqua; position: relative; '>
+	<div     style='margin: 5em auto 0 auto; width: 40em; height: 24em; background-color: aqua; position: relative; '>
 		<div class='t110' style=''>	<?php echo($this->obo->ostatement); ?></div>
 		
 		<div class='tqpar'>
-			<div class='tqspec'></div>
-			<div class='tqspec'></div>
+			<div class='tqspecp10'><div class='tqspec20'><?php echo($this->obo->oqnames[0]);?></div></div>
+			<div class='tqspecp10'><div><?php echo($this->obo->oqnames[1]);?></div></div>
 		</div>
 		
 		<div class='clicki10'>Click the screen when you are ready to continue.</div>
@@ -65,7 +76,3 @@
 	
 </body>
 </html>
-
-
-
-
