@@ -18,14 +18,13 @@
 <style>
 	
 	.et5p05 {
-		margin: 1em auto 0 2em;
+		margin: 1em auto 0 auto;
 	}
 	
 	.et5p20 { font-family: Arial; 
 		height: 1em;
 		width : 1em;
-		text-align: center;
-		margin: 0 auto 0 auto; 
+		margin: 0 auto 0 auto;
 		font-size: 400%;
 		color:  #0059b3;
 		font-weight: bold;
@@ -47,18 +46,25 @@
 	
 	.e100 {
 		display: inline-block;
-		position: relative;
-		bottom: 0;
+		margin: 2em auto 0 auto;
+		bottom: 2em;
+
 		width: 12em;
 		height: 1.5em; 
 		background-color: green;
 	
 	}
+	
+	.ep05 {
+		top: 0; margin: 2em auto 0 auto; width: 20em; height: 20em; 
+		text-align: center; 
+		
+	}
 </style>
 </head>
 <body class='e34'>
 	
-<div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 20em; height: 20em; position: relative; '>
+<div class='thomasOuterColor ep05' >
 	
 	<div class='et5p05'><?php require_once('t5T10.php');?></div>
 	<div class='e100'>
