@@ -34,7 +34,7 @@
 			<?php for ($i=0; $i < count($this->obo->oqa); $i++) { 
 				$num = $this->obo->oqa[$i];
 				$t = '';
-				$t .= '<div class="e34p20 e4p20" onclick="t3inter.onclick(this);" data-iamn="' . $num . '" >';
+				$t .= '<div class="e34p20 e4p20" onclick="t4inter.onclick(this);" data-iamn="' . $num . '" >';
 				$t .= '<div class="e34p30" >';
 				$t .= $num;
 				$t .= '</div>';

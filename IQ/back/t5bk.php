@@ -27,7 +27,7 @@ class IQTask5Back {
 		for ($i=0; $i < self::osetn; $i++) $ra[] = $this->do10();
 		$this->omatches = $this->omt;
 		$this->oia = $ra;
-		
+		return;
 	}
 	
 	private function do10() {
