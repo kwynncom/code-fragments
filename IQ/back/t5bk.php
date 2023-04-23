@@ -5,7 +5,7 @@ require_once('utils.php');
 class IQTask5Back {
 	
 	public readonly array $oia;
-	public readonly array $omatches;
+	public readonly int   $omatches;
 	
 	const ocarn  = 2;
 	const osetn  = 2;
@@ -34,12 +34,12 @@ class IQTask5Back {
 		$ra = [];
 		
 		for($i=0; $i < self::ocarn; $i++) {
-			$ra['i'] = random_int(0, self::omirn);
+			$ra[$i]['i'] = random_int(0, self::omirn);
 			$pa = self::orient;
-			for ($i=0; $i < self::ocarn; $i++) $ra['o'][$i] = retAndElim($pa);
+			for ($j=0; $j < self::ocarn; $j++) $ra[$i]['o'] = retAndElim($pa);
 		}
 
-		if ($ra['i'][0] === $ra['i'][1]) $this->omt++;
+		if ($ra[0]['i'] === $ra[1]['i']) $this->omt++;
 		return $ra;
 
 	}
