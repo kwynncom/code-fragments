@@ -24,12 +24,13 @@
 	
 	td.qall {
 		text-align: center;
-		padding-right: 1em; 
-		padding-left : 1em;
+		padding-right: 0.5em; 
+		padding-left : 0.5em;
 	}
 	
 	td.q2 { 
-		padding-top: 0.7em; 
+		padding-top: 0.0em; 
+		height: 1em; 
 	}
 	
 	.eans {
@@ -42,7 +43,7 @@
 	}
 	
 	.eansp { 
-		font-size: 350%; 
+		font-size: 250%; 
 		margin: 0.5em auto 0 auto;
 		text-align: center;
 	}

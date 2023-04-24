@@ -18,9 +18,9 @@
 <style>
 	.e4p10 { width: 40vw;	 }
 	.e4p20 { 
-		width:  4.7em;
+		width:  11vw;
 		height: 2.5em; 
-		font-size: 175%;
+		font-size: 100%;
 	}
 
 	

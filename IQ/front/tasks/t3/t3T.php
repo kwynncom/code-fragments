@@ -20,7 +20,7 @@
 
 	.e3p10 { width: 40vw;	 }
 	.e3p20 { 
-		width:  4.7em;
+		width:  3.7em;
 		height: 2.5em; 
 		font-size: 175%;
 	}

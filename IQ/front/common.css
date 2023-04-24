@@ -1,8 +1,13 @@
 .thomasOuterColor { background-color:  #ccccff; }
 
-body { font-family: Arial; }
+body { font-family: Arial; 
+	   width: 90vw; height: 90vh;
+	   position: absolute;
+	   top: 0;
+	   left: 0;
+}
 
-body.e34 { width: 90vw; height: 90vh; }
+body.e34 {  }
 
 
 .e34p10 {

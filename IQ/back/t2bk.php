@@ -17,7 +17,7 @@ class IQTask2Back {
 	private function do20() {
 		
 		static $la = [];
-		if (!$la) $la = [65, 97];
+		if (!$la) $la = [64, 96];
 		$a = $this->otmp;
 		$uls = random_int(0,1);
 		
@@ -44,9 +44,19 @@ class IQTask2Back {
 		
 	}
 	
+	private function pop() {
+		$aa = [];
+		for ($i=1; $i <= 26; $i++) {
+			if ($i === 9 || $i === 12) continue; // get rid of I and L and thus i and l; per letter of alphabet
+			$aa[] = $i;
+		}
+		
+		return $aa;
+	}
+	
 	private function do10() {
 	
-		for ($i=0; $i < 26; $i++) $aa[$i] = $i;
+		$aa = $this->pop();
 
 		$corn = 0;
 		$ra = [];
