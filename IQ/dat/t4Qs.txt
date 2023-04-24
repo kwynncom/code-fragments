@@ -6,7 +6,7 @@ sheep pig rock hot cold halt stop
 mountain river zebra hot cat
 hot cold moon rock pig
 apple pear stone
-run walk beef
-right left run
+run walk beef cow rock stone up
+right left run stone rock beef cow
 stone rock zebra right stop halt
 

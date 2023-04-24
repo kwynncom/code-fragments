@@ -51,29 +51,33 @@
 	}
 	
 </style>
+
+<?php $this->dbidjs(); ?>
+
 </head>
 <body>
 	
 <div style='text-align: center; '>
 	
-	<div style='visibility: hidden; font-size: 150%; margin-top: 0.5em; ' id='esrepeat'><?php echo($this->obo->ostatement); ?>
+	<div style='visibility: hidden; font-size: 150%; margin-top: 0.5em; ' id='esrepeat'><?php echo($this->quaps->q0); ?>
 		
 	</div>
 	
 						<!-- top right bottom left -->
 	<div class='thomasOuterColor' style='top: 0; margin: -6em auto 0 auto; width: 40em; height: 24em; position: relative; '>
 		<div class='t110'>
-			<div id='estatement'					   ><?php echo($this->obo->ostatement); ?></div>
-			<div id='equestion'  style='display: none'><?php echo($this->obo->oquestion);  ?></div>
+			<div id='estatement'					   ><?php echo($this->quaps->q0); ?></div>
+			<div id='equestion'  style='display: none'><?php echo($this->quaps->q);  ?></div>
 		</div>
 		
 		<div class='tqpar'>
 			
 			<?php for($i=0; $i < IQTask1Front::ann; $i++) { 
-				$name = $this->obo->oqnames[$i];
+				$name = $this->quaps->opts[$i];
 				$ict  = ' data-iscor="';
-				$ict .= $this->obo->corName === $name ? 1 : 0;
-				$ict .= '" '
+				$ict .= $this->quaps->correct === $name ? 1 : 0;
+				$ict .= '" ';
+				$ict .= " data-a='$name' ";
 	
 				?>
 			<div class='tqspecp10' <?php echo($ict); ?> data-isqp='1'>

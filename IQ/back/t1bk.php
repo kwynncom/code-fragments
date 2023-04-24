@@ -6,17 +6,25 @@ require_once(__DIR__ . '/../dat/t1Q.php');
 
 class IQTask1Back extends IQTask1Questions {
 	
-	public readonly string $ostatement;
-	public readonly array  $oqnames;
-	public readonly string $oquestion;
-	public readonly string $corName;
+	public readonly object $quaps;
 	
+	private readonly string $ostatement;
+	private readonly array  $oqnames;
+	private readonly string $oquestion;
+	private readonly string $corName;
 	private readonly array $t20;
-	
 	const clgn = 2;
-	
 	const clqf = __DIR__ . '/../dat/t1Q.txt';
 
+	private function org10() {
+		$a['q0'] = $this->ostatement;
+		$a['q'] = $this->oquestion;
+		$a['opts'] = $this->oqnames;
+		$a['correct'] = $this->corName;
+		$a['_id'] = dao_generic_3::get_oids();
+		$this->quaps = $o = (object) $a;
+		putQ($o);
+	}
 	
 	private function pickLevs(array $ain) {
 		$ra = [];
@@ -38,6 +46,7 @@ class IQTask1Back extends IQTask1Questions {
 		$this->do30();
 		$this->do25();
 		$this->do40();
+		$this->org10();
 	
 	}
 	

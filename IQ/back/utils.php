@@ -9,3 +9,10 @@ function retAndElim(array &$a) : int | string {
 	$a = array_values($a);
 	return $sel;
 }
+
+function putQ(object $a) {
+	$o = new dao_generic_3('IQ');
+	$o->creTabs('q');
+	$o->qcoll->insertOne((array)$a);
+	
+}

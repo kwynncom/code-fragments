@@ -29,8 +29,14 @@ class t1inter {
 		byid('eclsc').style.visibility = 'hidden';
 	}
 	
-	aclick() {
+	async aclick() {
+		
 		const e = this;
+		
+		await feedback(e.dataset.a, e.dataset.iscor === '1');
+		
+		if (FMODE === 'imm') setTimeout(() => {		document.body.addEventListener('click', GVO.bc20);	}, 10);
+		else { GVO.bc20(); return; }
 
 		// byid('estatement').style.display = 'block';
 		byid('esrepeat').style.visibility = 'visible';
@@ -40,6 +46,6 @@ class t1inter {
 		
 		byid('ebagain').style.visibility = 'visible';
 		
-		setTimeout(() => {		document.body.addEventListener('click', GVO.bc20);	}, 10);
+
 	}
 }
