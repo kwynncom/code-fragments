@@ -10,6 +10,12 @@ class IQTask1Back extends IQTask1Questions {
 	public readonly array  $oqnames;
 	public readonly string $oquestion;
 	public readonly string $corName;
+	
+	private readonly array $t20;
+	
+	const clgn = 2;
+	
+	const clqf = __DIR__ . '/../dat/t1Q.txt';
 
 	
 	private function pickLevs(array $ain) {
@@ -27,11 +33,36 @@ class IQTask1Back extends IQTask1Questions {
 	
 	public function __construct() {
 		$this->do10();
+		$this->do15();
 		$this->do20();
 		$this->do30();
 		$this->do25();
 		$this->do40();
 	
+	}
+	
+	private function do15() {
+		$t = file_get_contents(self::clqf);
+		$a10 = explode("\n", $t);
+		$i10 = 0;
+		
+		$ra10 = [];
+		foreach($a10 as $t20) {
+			$t = trim($t20); unset($t20);
+			if (!$t) continue;
+			if (preg_match('/[;\/]/', $t)) continue; 
+			$a20 = preg_split('/\s+/', $t); unset($t); kwas(count($a20) === 4, 'bad trait count - task 1 - 2106');
+			$ra10[$i10][0][0] = $a20[0];
+			$ra10[$i10][0][1] = $a20[1];
+			$ra10[$i10][1][0] = $a20[2];
+			$ra10[$i10][1][1] = $a20[3];
+			$i10++;
+			continue;
+		}
+
+		$this->t20 = $ra10;
+		
+		return;
 	}
 	
 	private function do25() {
@@ -54,9 +85,9 @@ class IQTask1Back extends IQTask1Questions {
 	}
 	
 	private function do30() {
-		$ri = random_int(0, count(self::traits[$this->oaa[0]]) - 1);
+		$ri = random_int(0, count($this->t20[$this->oaa[0]]) - 1);
 		$this->oqi = $ri;
-		$qadj = self::traits[$this->oaa[0]][$ri][0];
+		$qadj = $this->t20[$this->oaa[0]][$ri][0];
 		$t  = '';
 		$t .= 'Who is ' . $qadj . '?';
 		$this->oquestion = $t;
@@ -65,8 +96,8 @@ class IQTask1Back extends IQTask1Questions {
 	}
 	
 	private function do20() {
-		$aa  = $this->pickLevs(self::traits);
-		$adj = self::traits[$aa[0]][$aa[1]][$aa[2]];
+		$aa  = $this->pickLevs($this->t20);
+		$adj = $this->t20[$aa[0]][$aa[1]][$aa[2]];
 		$t   = '';
 		$t  .= $this->oname[0];
 		$t  .= ' is ';
@@ -98,4 +129,4 @@ class IQTask1Back extends IQTask1Questions {
 	}
 }
 
-if (didCLICallMe(__FILE__)) new IQTask1();
+if (didCLICallMe(__FILE__)) new IQTask1Back();
