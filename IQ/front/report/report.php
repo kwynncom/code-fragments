@@ -1,15 +1,12 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
+require_once(__DIR__ . '/../db.php');
 
-class report extends dao_generic_3 {
-	
-	const dbname = 'IQ';
-	const coname = 'q';
-	
+class report extends IQDB {
+
 	public function __construct() {
-		parent::__construct(self::dbname);
-		$this->creTabs('q');
+		parent::__construct();
+		$this->creTabs(self::qcnm);
 		$this->do10();
 	}
 	

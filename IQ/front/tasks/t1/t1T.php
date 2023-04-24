@@ -57,7 +57,7 @@
 </head>
 <body>
 	
-<div style='text-align: center; '>
+<div style='text-align: center; ' id='answerMain'>
 	
 	<div style='visibility: hidden; font-size: 150%; margin-top: 0.5em; ' id='esrepeat'><?php echo($this->quaps->q0); ?>
 		

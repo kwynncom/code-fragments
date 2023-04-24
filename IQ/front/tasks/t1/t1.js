@@ -1,18 +1,25 @@
 var GVO;
 
 onDOMLoad(() => {
-	GVO = new t1inter();
-	document.body.addEventListener('click', GVO.bc10);
+	new t1inter();
+
 
 });
 
 class t1inter {
 	
+	constructor() {
+		GVO = this;
+		this.tce = getAnswerClickE();
+		this.tce.addEventListener('click', GVO.bc10);
+		
+	}
+	
 	bc20() { location.reload(); }
 	
-	bc10() {
+	bc10(evin) {
 		
-		document.body.removeEventListener('click', GVO.bodyClick);
+		GVO.tce.removeEventListener('click', GVO.bc10);
 		
 		byid('estatement').style.display = 'none';
 		byid('equestion' ).style.display = 'block';
@@ -35,7 +42,7 @@ class t1inter {
 		
 		await feedback(e.dataset.a, e.dataset.iscor === '1');
 		
-		if (FMODE === 'imm') setTimeout(() => {		document.body.addEventListener('click', GVO.bc20);	}, 10);
+		if (FMODE === 'imm') setTimeout(() => {		GVO.tce.addEventListener('click', GVO.bc20);	}, 10);
 		else { GVO.bc20(); return; }
 
 		// byid('estatement').style.display = 'block';
