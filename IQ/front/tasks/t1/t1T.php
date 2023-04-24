@@ -97,5 +97,7 @@
 	</div>
 </div>
 	
+	<?php menuSide(); ?>
+	
 </body>
 </html>

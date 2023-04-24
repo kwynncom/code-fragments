@@ -1,10 +1,34 @@
 .thomasOuterColor { background-color:  #ccccff; }
 
+
+.rightMenu, .rightMenuP10 {
+	
+	position:absolute; right: 0; top:0; width: 8em; height: 100vh; 
+	
+}
+
+/* .rightMenu:not(:hover) { visibility: hidden; } */
+
+.rightMenu {
+	background-color: green; 
+	visibility: hidden;
+	
+}
+
+.rightMenu:hover  { visibility: visible; }
+
+.rightMenuP10:hover .rightMenu {
+	visibility: visible;
+	
+}
+
 body { font-family: Arial; 
-	   width: 90vw; height: 90vh;
+	   width: 100vw; height: 100vh;
 	   position: absolute;
 	   top: 0;
 	   left: 0;
+	   margin: 0;
+	   padding: 0;
 }
 
 body.e34 {  }

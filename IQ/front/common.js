@@ -1,8 +1,8 @@
 const FMODE = 'none';
+var START;
+onDOMLoad(() => { START = time(); });
 
-async function feedback(a, isc) {
-	const pr = kwjss.sobf('./../back/wserver.php', { _id : DBID, a: a, isc : isc});
-	await pr;
-	return pr;
-	
+function feedback(a, isc) { 
+	const t = time() - START;
+	return kwjss.sobf('./../back/wserver.php', { _id : DBID, a: a, isc : isc, ms : t}); 
 }

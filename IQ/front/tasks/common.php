@@ -27,3 +27,7 @@ JSDBID;
 		echo($s);
 	}
 }
+
+function menuSide() {
+	require_once(__DIR__ . '/../menuSide.php');
+}
