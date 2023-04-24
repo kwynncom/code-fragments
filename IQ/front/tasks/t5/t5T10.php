@@ -5,7 +5,7 @@ for ($i=0; $i < self::othen; $i++) {
 	$t .= '<div class="et5p10">' . "\n";
 	for ($j=0; $j < self::othen; $j++) {
 
-		$dom = $this->obo->oia[$i][$j]['i'];
+		$dom = $this->quaps->q[$i][$j]['i'];
 
 		if ($dom) $sc = '-1'; 
 		else	  $sc = '1';
@@ -16,7 +16,7 @@ for ($i=0; $i < self::othen; $i++) {
 
 		// transform: rotate(90deg);
 
-		$rot = $this->obo->oia[$i][$j]['o'];
+		$rot = $this->quaps->q[$i][$j]['o'];
 		$tr .= " rotate({$rot}deg); ";
 
 

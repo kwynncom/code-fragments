@@ -3,14 +3,21 @@
 require_once('utils.php');
 
 class IQTask4Back {
+	
+	public readonly object $quaps;
+	
 	const qfile = __DIR__ . '/../dat/t4Qs.txt';
-	public readonly array $oqa;
-	public readonly string $oanswer;
+	private readonly array $oqa;
+	private readonly string $oanswer;
 	const clminw = 3;
 	const answern = self::clminw - 1;
 	
 	public function __construct() {
 		$this->do10();
+		$o = new stdClass();
+		$o->q = $this->oqa;
+		$o->correctAnswer = $this->oanswer;
+		$this->quaps = $o;
 	}
 	
 	private function do10() {

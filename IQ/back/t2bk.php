@@ -6,8 +6,8 @@ class IQTask2Back {
 	
 	const cln = 4;
 	
-	public readonly int $ocorn;
-	public readonly array $othea;
+	public readonly object $quaps;
+	private readonly int $ocorn;
 	
 	public function __construct() {
 		$this->do10();
@@ -36,7 +36,10 @@ class IQTask2Back {
 			$t .= "\n";
 		}
 		
-		$this->othea = $ra;
+		$o = new stdClass();
+		$o->q = $ra;
+		$o->correctAnswer = $this->ocorn;
+		$this->quaps = $o;
 		
 		$t .= "\n" . $this->ocorn;
 		

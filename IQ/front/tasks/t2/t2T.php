@@ -44,7 +44,7 @@
 
 		<?php 		
 			$t = '';
-			$a = $this->obo->othea;
+			$a = (array) $this->quaps->q;
 			
 			for ($j=0; $j < self::clrows; $j++) {
 				$t .= '<tr>';
@@ -73,7 +73,7 @@
 		for ($i = 0; $i < self::clcols + 1; $i++) {
 			
 			$c  = '';
-			$c .= ' onclick=\'t2inter.onclick(this, ' . ($i === $this->obo->ocorn ? 'true' : 'false') . ');\' ';
+			$c .= ' onclick=\'t2inter.onclick(this, ' . ($i === $this->quaps->correctAnswer ? 'true' : 'false') . ');\' ';
 			
 			$t .= "<div class='eans' $c>";
 			$t .= $i;
@@ -87,5 +87,8 @@
 	
 </div>
 </div>
+	
+	<?php menuSide(); ?>
+	
 </body>
 </html>

@@ -8,11 +8,16 @@ class IQTask3Back {
 	const clmin =  1;
 	const clcnt =  3;
 	
-	public readonly array $olist;
-	public readonly int   $oanswer;
+	private readonly array $olist;
+	private readonly int   $oanswer;
+	public readonly object $quaps;
 	
 	public function __construct() {
 		$this->do05();
+		$o = new stdClass();
+		$o->q = $this->olist;
+		$o->correctAnswer = $this->oanswer;
+		$this->quaps = $o;
 	}
 	
 	private function do05() {

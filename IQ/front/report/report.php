@@ -14,12 +14,12 @@ class report extends dao_generic_3 {
 	}
 	
 	public function do10() {
-		$a = $this->qcoll->find(['isc' => ['$exists' => true]], ['up_ts' => -1]);
+		$a = $this->qcoll->find(['gotCorrect' => ['$exists' => true]], ['up_ts' => -1]);
 		$tot = count($a);
 		$cor = 0;
 		$ms = 0;
 		foreach($a as $r) {
-			if ($r['isc']) $cor++;
+			if ($r['gotCorrect']) $cor++;
 			$ms += $r['ms'];
 		} unset($r);
 		

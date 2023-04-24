@@ -4,8 +4,12 @@ require_once('utils.php');
 
 class IQTask5Back {
 	
-	public readonly array $oia;
-	public readonly int   $omatches;
+	public readonly object $quaps;
+	
+	
+	private readonly array $oia;
+	private readonly int   $omatches;
+	
 	
 	const ocarn  = 2;
 	const osetn  = 2;
@@ -19,6 +23,11 @@ class IQTask5Back {
 		
 		$this->do05();
 		$this->do10();
+		
+		$o = new stdClass();
+		$o->q = $this->oia;
+		$o->correctAnswer = $this->omatches;
+		$this->quaps = $o;
 	}
 	
 	private function do05() {

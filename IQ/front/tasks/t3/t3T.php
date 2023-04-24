@@ -1,5 +1,5 @@
 <script>
-	var KWIQT3A = '<?php echo($this->obo->oanswer . ''); ?>';
+	var KWIQT3A = '<?php echo($this->quaps->correctAnswer . ''); ?>';
 </script>
 
 <style>
@@ -21,8 +21,8 @@
 <div>
 	<div class='thomasOuterColor' style='top: 0; margin: 2em auto 0 auto; width: 40vw; height: 10em; position: relative; '>
 		<div class='e34p10 e3p10' >
-			<?php for ($i=0; $i < count($this->obo->olist); $i++) { 
-				$num = $this->obo->olist[$i];
+			<?php for ($i=0; $i < count($this->quaps->q); $i++) { 
+				$num = $this->quaps->q[$i];
 				$t = '';
 				$t .= '<div class="e34p20 e3p20" onclick="t3inter.onclick(this);" data-iamn="' . $num . '" >';
 				$t .= '<div class="e34p30" >';
@@ -35,5 +35,7 @@
 		</div>
 	</div>
 </div>
+	
+	<?php menuSide(); ?>
 </body>
 </html>

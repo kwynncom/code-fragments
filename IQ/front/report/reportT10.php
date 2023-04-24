@@ -23,8 +23,8 @@
 		$t .= kwifs($r, 'q0', ['kwiff' => '']);
 		if ($t) $t .= ' ';
 		$t .= $r['q'] . ' ';
-		$t .= $r['correctAnswer'] . ' ';
-		$t .= $r['isc'] ? 'correct' : 'wrong';
+		$t .= $r['correctAnswer'] . '. result: ';
+		$t .= $r['gotCorrect'] ? 'correct' : 'wrong';
 		
 		
 		?>
