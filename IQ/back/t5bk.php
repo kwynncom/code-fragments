@@ -27,6 +27,7 @@ class IQTask5Back {
 		$o = new stdClass();
 		$o->q = $this->oia;
 		$o->correctAnswer = $this->omatches;
+		putQ($o);
 		$this->quaps = $o;
 	}
 	

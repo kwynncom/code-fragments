@@ -2,6 +2,8 @@
 	var KWIQT5A = <?php echo($this->quaps->correctAnswer); ?>;
 </script>
 
+<?php $this->dbidjs(); ?>
+
 <style>
 	
 	.et5p05 {

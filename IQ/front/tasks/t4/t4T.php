@@ -1,6 +1,7 @@
 <script>
 	var KWIQT4A = '<?php echo($this->quaps->correctAnswer . ''); ?>';
 </script>
+<?php $this->dbidjs(); ?>
 
 <style>
 	.e4p10 { width: 40vw;	 }

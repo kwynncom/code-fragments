@@ -1,7 +1,11 @@
 class t4inter {
 	static onclick(e) {
 		let color = 'red';
-		if (e.dataset.iamn === KWIQT4A) color = 'green';
+		let isc = false;
+		const ans = e.dataset.iamn;
+		
+		if (ans === KWIQT4A) { color = 'green'; isc = true; }
+		feedback(ans, isc);
 		e.style.backgroundColor = color;
 		setTimeout(() => { document.body.addEventListener('click', () => { location.reload(); }); }, 10);
 	}
