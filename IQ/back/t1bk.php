@@ -20,7 +20,7 @@ class IQTask1Back extends IQTask1Questions {
 		$a['q0'] = $this->ostatement;
 		$a['q'] = $this->oquestion;
 		$a['opts'] = $this->oqnames;
-		$a['correct'] = $this->corName;
+		$a['correctAnswer'] = $this->corName;
 		$a['_id'] = dao_generic_3::get_oids();
 		$this->quaps = $o = (object) $a;
 		putQ($o);

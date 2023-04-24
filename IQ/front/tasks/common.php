@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/../commonFront.php');
 
 abstract class IQTaskFront {
 	protected function loadBack() {
@@ -26,8 +26,4 @@ const DBID = '$id';
 JSDBID;
 		echo($s);
 	}
-}
-
-function menuSide() {
-	require_once(__DIR__ . '/../menuSide.php');
 }

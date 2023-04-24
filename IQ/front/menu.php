@@ -11,24 +11,14 @@
 	li   { margin-bottom: 1em; }
 
 </style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+<script>
+	onDOMLoad(() => { byid('rightMenu').style.visibility = 'visible';});
+</script>
+
 </head>
 <body>
-	<p><a href='../'>my IQ home</a></p>
-	<section>
-		<h2>Tasks</h2>
-		
-		<ol>
-			<?php	require_once(__DIR__ . '/../config.php');
-					$t = '';
-					for($i=1; $i <= IQTestIntf::tasksn; $i++) {
-						$t .= "<li><a href='./loadTask.php?n=$i'>Task " . $i . '</a></li>' . "\n";
-					}
-					
-					echo($t);
-					
-				?>
-			
-		</ol>
-	</section>
+	<?php require_once(__DIR__ . '/commonFront.php'); menuSide(); ?>
 </body>
 </html>

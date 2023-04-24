@@ -75,7 +75,7 @@
 			<?php for($i=0; $i < IQTask1Front::ann; $i++) { 
 				$name = $this->quaps->opts[$i];
 				$ict  = ' data-iscor="';
-				$ict .= $this->quaps->correct === $name ? 1 : 0;
+				$ict .= $this->quaps->correctAnswer === $name ? 1 : 0;
 				$ict .= '" ';
 				$ict .= " data-a='$name' ";
 	
