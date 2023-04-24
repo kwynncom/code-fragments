@@ -36,6 +36,9 @@
 	}
 	
 </style>
+
+<?php $this->dbidjs(); ?>
+
 </head>
 <body>
 <div>
@@ -73,7 +76,7 @@
 		for ($i = 0; $i < self::clcols + 1; $i++) {
 			
 			$c  = '';
-			$c .= ' onclick=\'t2inter.onclick(this, ' . ($i === $this->quaps->correctAnswer ? 'true' : 'false') . ');\' ';
+			$c .= ' onclick=\'t2inter.onclick(this,' . "$i, " . ($i === $this->quaps->correctAnswer ? 'true' : 'false') . ');\' ';
 			
 			$t .= "<div class='eans' $c>";
 			$t .= $i;

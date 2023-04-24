@@ -1,5 +1,7 @@
 class t2inter {
-	static onclick(e, isc) {
+	static onclick(e, ans, isc) {
+		
+		feedback(ans, isc);
 		let color = 'red';
 		if (isc) color = 'green';
 		e.style.backgroundColor = color;

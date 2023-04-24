@@ -10,9 +10,11 @@ function retAndElim(array &$a) : int | string {
 	return $sel;
 }
 
-function putQ(object $a) {
+function putQ(object|array &$din) {
+	$din = (array)$din;
 	$o = new dao_generic_3('IQ');
 	$o->creTabs('q');
-	$o->qcoll->insertOne((array)$a);
-	
+	$din['_id'] = dao_generic_3::get_oids();
+	$o->qcoll->insertOne((array)$din);
+	$din = (object)$din;
 }

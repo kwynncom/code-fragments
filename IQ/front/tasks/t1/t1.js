@@ -45,7 +45,6 @@ class t1inter {
 		if (FMODE === 'feedImm') setTimeout(() => {		GVO.tce.addEventListener('click', GVO.bc20);	}, 10);
 		else { GVO.bc20(); return; }
 
-		// byid('estatement').style.display = 'block';
 		byid('esrepeat').style.visibility = 'visible';
 		let color = 'red';
 		if (e.dataset.iscor === '1') color = 'green';

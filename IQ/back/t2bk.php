@@ -1,6 +1,6 @@
 <?php
 
-require_once('/opt/kwynn/kwutils.php');
+require_once('utils.php');
 
 class IQTask2Back {
 	
@@ -39,6 +39,8 @@ class IQTask2Back {
 		$o = new stdClass();
 		$o->q = $ra;
 		$o->correctAnswer = $this->ocorn;
+		
+		putQ($o);
 		$this->quaps = $o;
 		
 		$t .= "\n" . $this->ocorn;

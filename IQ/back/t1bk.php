@@ -1,6 +1,5 @@
 <?php 
 
-require_once('/opt/kwynn/kwutils.php');
 require_once('utils.php');
 require_once(__DIR__ . '/../dat/t1Q.php');
 
@@ -21,9 +20,8 @@ class IQTask1Back extends IQTask1Questions {
 		$a['q'] = $this->oquestion;
 		$a['opts'] = $this->oqnames;
 		$a['correctAnswer'] = $this->corName;
-		$a['_id'] = dao_generic_3::get_oids();
-		$this->quaps = $o = (object) $a;
-		putQ($o);
+		putQ($a);
+		$this->quaps = (object) $a;
 	}
 	
 	private function pickLevs(array $ain) {
