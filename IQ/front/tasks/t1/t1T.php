@@ -69,7 +69,7 @@
 	
 <div style='text-align: center; '>
 	
-	<div style='visibility: hidden; font-size: 150%; margin-top: 3em; ' id='esrepeat'><?php echo($this->obo->ostatement); ?>
+	<div style='visibility: hidden; font-size: 150%; margin-top: 0.5em; ' id='esrepeat'><?php echo($this->obo->ostatement); ?>
 		
 	</div>
 	
@@ -98,7 +98,7 @@
 		
 		<div class='clicki10' id='eclsc'>Click the screen when you are ready to continue.</div>
 	</div>
-	<div style='visibility: hidden; margin-top: 2em;' id='ebagain'>
+	<div style='display: none; visibility: hidden; margin-top: 2em;' id='ebagain'>
 		<button onclick='location.reload();' style='font-size: 160%; '>again</button>
 		<a href='template.php' style='color: black; text-decoration: none;'>
 			<button style='font-size: 110%; margin-left: 5em; '>menu</button>

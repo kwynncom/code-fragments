@@ -12,7 +12,7 @@
 <link rel='stylesheet' href='common.css'>
 
 <script>
-	var KWIQT5A = '<?php echo($this->obo->omatches . ''); ?>';
+	var KWIQT5A = <?php echo($this->obo->omatches); ?>;
 </script>
 
 <style>

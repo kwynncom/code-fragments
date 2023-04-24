@@ -2,26 +2,15 @@
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('utils.php');
+require_once(__DIR__ . '/../dat/t1Q.php');
 
-class IQTask1Back {
+class IQTask1Back extends IQTask1Questions {
 	
 	public readonly string $ostatement;
 	public readonly array  $oqnames;
 	public readonly string $oquestion;
 	public readonly string $corName;
-	
-	const names  = [
-			['Rachel', 'Wendy'],
-			['Fred', 'John', 'Pete', 'Tom', 'Bob', 'Paul']
-		];
-	                          
-	const traits = [		  /* not as */
-					[['lighter','heavy'   ], ['heavier' , 'light']],
-					[['duller', 'bright'  ], ['brighter', 'dull']],
-					[['sadder', 'happy'   ], ['happier' , 'sad']], 
-					[['weaker', 'strong'  ], ['stronger', 'weak']],
-					[['sadder', 'happy'   ], ['happier' , 'sad']]
-		];
+
 	
 	private function pickLevs(array $ain) {
 		$ra = [];

@@ -1,11 +1,18 @@
+var GVO;
+
 onDOMLoad(() => {
-	document.body.addEventListener('click', t1inter.bodyClick);
+	GVO = new t1inter();
+	document.body.addEventListener('click', GVO.bc10);
+
 });
 
 class t1inter {
-	static bodyClick() {
+	
+	bc20() { location.reload(); }
+	
+	bc10() {
 		
-		document.body.removeEventListener('click', t1inter.bodyClick);
+		document.body.removeEventListener('click', GVO.bodyClick);
 		
 		byid('estatement').style.display = 'none';
 		byid('equestion' ).style.display = 'block';
@@ -16,13 +23,13 @@ class t1inter {
 		
 		qsa("[data-isqp='1'").forEach((e) => {
 			e.style.visibility = 'visible';
-			e.addEventListener('click', t1inter.aclick);
+			e.addEventListener('click', GVO.aclick);
 		});
 		
 		byid('eclsc').style.visibility = 'hidden';
 	}
 	
-	static aclick() {
+	aclick() {
 		const e = this;
 
 		// byid('estatement').style.display = 'block';
@@ -32,5 +39,7 @@ class t1inter {
 		e.style.backgroundColor = color;
 		
 		byid('ebagain').style.visibility = 'visible';
+		
+		setTimeout(() => {		document.body.addEventListener('click', GVO.bc20);	}, 10);
 	}
 }
