@@ -2,6 +2,8 @@
 	var KWIQT3A = '<?php echo($this->quaps->correctAnswer . ''); ?>';
 </script>
 
+<?php $this->dbidjs(); ?>
+
 <style>
 	
 
@@ -15,6 +17,7 @@
 	
 
 </style>
+
 </head>
 <body class='e34'>
 	
