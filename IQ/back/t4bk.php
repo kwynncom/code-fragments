@@ -3,11 +3,11 @@
 require_once('utils.php');
 
 class IQTask4Back {
-	const qfile = __DIR__ . '/../t4Qs.txt';
-	const wordn = 3;
-	const answern = self::wordn - 1;
+	const qfile = __DIR__ . '/../dat/t4Qs.txt';
 	public readonly array $oqa;
 	public readonly string $oanswer;
+	const clminw = 3;
+	const answern = self::clminw - 1;
 	
 	public function __construct() {
 		$this->do10();
@@ -20,7 +20,13 @@ class IQTask4Back {
 
 		$q = $qs[random_int(0, count($qs) - 1)];
 		
-		$ia = preg_split('/\s+/', $q); kwas(count($ia) === self::wordn, 'should be n words - 0229');
+		$ia20 = preg_split('/[^a-z]+/', $q); kwas(count($ia20) >= self::clminw, 'not enough words - 2211');
+		$ia30[0] = $ia20[0];
+		$ia30[1] = $ia20[1];
+		$ia30[2] = $ia20[random_int(self::clminw - 1, count($ia20) - 1)];
+		
+		
+		$ia = $ia30;
 		$refa = $ia;
 		
 		$answer = $ia[self::answern];
