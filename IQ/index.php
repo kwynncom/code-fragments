@@ -16,7 +16,7 @@
 		<h1>IQ test</h1>
 		
 		<ul>
-			<li><a href='./front/template.php'>my version of the test</a></li>
+			<li><a href='./front/menu.php'>my version of the test</a></li>
 			<li><a href='./extra/worksCited.html'>works cited</a></li>
 		</ul>
 	</section>

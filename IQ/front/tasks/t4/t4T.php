@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
-<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-
-<title>IQ Task 4</title>
-
-<script src='/opt/kwynn/js/utils.js'></script>
-<script src='tasks/t4/t4.js'></script>
-
-<link rel='stylesheet' href='common.css'>
-
 <script>
 	var KWIQT4A = '<?php echo($this->obo->oanswer . ''); ?>';
 </script>

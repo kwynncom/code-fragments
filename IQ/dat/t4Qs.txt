@@ -7,7 +7,6 @@ mountain river zebra hot cat
 hot cold moon rock pig
 apple pear stone
 run walk beef
-time clock 
 right left run
 stone rock zebra right stop halt
 
