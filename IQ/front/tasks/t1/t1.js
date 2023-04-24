@@ -42,7 +42,7 @@ class t1inter {
 		
 		await feedback(e.dataset.a, e.dataset.iscor === '1');
 		
-		if (FMODE === 'imm') setTimeout(() => {		GVO.tce.addEventListener('click', GVO.bc20);	}, 10);
+		if (FMODE === 'feedImm') setTimeout(() => {		GVO.tce.addEventListener('click', GVO.bc20);	}, 10);
 		else { GVO.bc20(); return; }
 
 		// byid('estatement').style.display = 'block';

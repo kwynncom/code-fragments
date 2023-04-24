@@ -1,9 +1,5 @@
-var FMODE;
 var START;
-onDOMLoad(() => { 
-	START = time(); 
-	
-});
+onDOMLoad(() => { START = time(); });
 
 function feedback(a, isc) { 
 	const t = time() - START;
@@ -14,10 +10,4 @@ function getAnswerClickE() {
 		let e = kwifs(byid('answerMain'));
 		if (!e) e = document.body;
 		return e;
-}
-
-class feedMode {
-	contructor() {
-		sobf('/t/23/4/IQ/front/menuSide/feedServ.php');
-	}
 }

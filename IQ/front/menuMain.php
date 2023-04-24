@@ -12,13 +12,16 @@
 
 </style>
 
-<script src='/opt/kwynn/js/utils.js'></script>
+<?php require_once('frontIncludes.php'); ?>
+
 <script>
 	onDOMLoad(() => { byid('rightMenu').style.visibility = 'visible';});
 </script>
 
 </head>
 <body>
+	<div style='width: 10em; position: relative; '>
 	<?php require_once(__DIR__ . '/commonFront.php'); menuSide(); ?>
+	</div>
 </body>
 </html>
