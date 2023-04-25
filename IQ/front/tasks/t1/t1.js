@@ -1,10 +1,6 @@
 var GVO;
 
-onDOMLoad(() => {
-	new t1inter();
-
-
-});
+onDOMLoad(() => { 	new t1inter(); });
 
 class t1inter {
 	

@@ -1,11 +1,13 @@
 class t2inter {
-	static onclick(e, ans, isc) {
+	static async onclick(e, ans, isc) {
 		
-		feedback(ans, isc);
+		await feedback(ans, isc);
 		let color = 'red';
 		if (isc) color = 'green';
-		e.style.backgroundColor = color;
-		setTimeout(() => { document.body.addEventListener('click', () => { location.reload(); }); }, 10);
+		if (FMODE === 'imm') {
+			e.style.backgroundColor = color;
+			setTimeout(() => { document.body.addEventListener('click', () => { location.reload(); }); }, 10);
+		} else location.reload();
 	}
 	
 	

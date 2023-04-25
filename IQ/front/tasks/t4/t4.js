@@ -1,11 +1,11 @@
 class t4inter {
-	static onclick(e) {
+	static async onclick(e) {
 		let color = 'red';
 		let isc = false;
 		const ans = e.dataset.iamn;
 		
 		if (ans === KWIQT4A) { color = 'green'; isc = true; }
-		feedback(ans, isc);
+		await feedback(ans, isc);
 		e.style.backgroundColor = color;
 		setTimeout(() => { document.body.addEventListener('click', () => { location.reload(); }); }, 10);
 	}

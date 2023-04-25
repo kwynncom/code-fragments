@@ -34,7 +34,7 @@
 		}
 		
 		
-		$t .= 'cor: ' . $r['correctAnswer'] . '';
+		$t .= ' cor: ' . $r['correctAnswer'] . '';
 		$t .= ' you: ' . $r['userAnswer']    . '';		
 
 		$t .= '</div>' . "\n";
