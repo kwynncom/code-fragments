@@ -20,19 +20,20 @@
 		<?php foreach($a as $r) { 
 		$t  = '';
 		$t .= '<div>';
-		$t .= '<div class="check">' . $r['gotCorrect'] ? '&check;' : 'X' . '</div>';
+		$t .= '<div class="check">' . ($r['gotCorrect'] ? '&check;' : 'X') . '</div>';
 		$t .= kwifs($r, 'q0', ['kwiff' => '']);
 		if ($t) $t .= ' ';
 		
 		switch ($r['taskn']) {
 			case 1 : $t .= $r['q'] . ' '; break;
-			// case 2 : $t .= $this->
+			case 2 : require_once('task2QFmt.php'); $t .= gett2QFmt($r['q']); break;
 			default: kwas(false, 'report head bad task n - 2004');
 		}
 		
 		
-		
-		$t .= $r['correctAnswer'] . '.';
+		$t .= ' ' . $r['correctAnswer'] . '';
+		$t .= ' '  . $r['userAnswer']    . '';		
+
 		$t .= '</div>' . "\n";
 
 		
