@@ -20,7 +20,7 @@ class report extends IQDB {
 			$ms += $r['ms'];
 		} unset($r);
 		
-		require_once('reportT10.php');
+		require_once('reportTBase.php');
 		
 	}
 	

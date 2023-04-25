@@ -9,4 +9,7 @@ dao_generic_3::oidsvd($a['_id']);
 $j = json_encode($a);
 $l = strlen($j);
 kwas($l < 1000, 'invalid task IQ input 0019');
-$o->qcoll->upsert(['_id' => $a['_id']], $a);
+
+$q = ['_id' => $a['_id']];
+if (!$o->qcoll->count($q)) exit(0); // if client and server get out of sync during testing, don't write an answer to a non-existent question 
+$o->qcoll->upsert($q, $a);

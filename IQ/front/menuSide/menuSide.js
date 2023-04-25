@@ -3,6 +3,7 @@ var FMODE = 'none';
 class feedMode {
 	constructor(vin) {
 		kwjss.sobf('/t/23/04/IQ/front/menuSide/feedServ.php', { setTo : vin }, this.onret);
+		if (vin) FMODE = vin;
 	}
 	
 	onret(ret) {

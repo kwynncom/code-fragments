@@ -7,28 +7,38 @@
 <title>IQ report</title>
 
 <link rel='stylesheet' href='./../common.css'>
+<link rel='stylesheet' href='report.css'>
 
-<style>
-    body { font-family: sans-serif; }
-</style>
 </head>
 <body>
 	<div style='margin-left: 1em; '>
-	<div><p>Qs: <?php echo($tot); ?></p>
-		<p>Cor: <?php echo($cor); ?></p>
-	</div>
+		
+		<?php require_once('reportT10Head.php'); ?>
+
 	
-	<div><?php foreach($a as $r) { 
+	<div style='margin-top: 0.5em; '>
+		<?php foreach($a as $r) { 
 		$t  = '';
+		$t .= '<div>';
+		$t .= '<div class="check">' . $r['gotCorrect'] ? '&check;' : 'X' . '</div>';
 		$t .= kwifs($r, 'q0', ['kwiff' => '']);
 		if ($t) $t .= ' ';
-		$t .= $r['q'] . ' ';
-		$t .= $r['correctAnswer'] . '. result: ';
-		$t .= $r['gotCorrect'] ? 'correct' : 'wrong';
+		
+		switch ($r['taskn']) {
+			case 1 : $t .= $r['q'] . ' '; break;
+			// case 2 : $t .= $this->
+			default: kwas(false, 'report head bad task n - 2004');
+		}
+		
+		
+		
+		$t .= $r['correctAnswer'] . '.';
+		$t .= '</div>' . "\n";
+
 		
 		
 		?>
-		<pre><?php echo($t); ?></pre>
+		<?php echo($t); ?>
 	<?php } ?>
 		
 	</div>
@@ -39,4 +49,3 @@
 	</div>
 </body>
 </html>
-
