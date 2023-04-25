@@ -2,9 +2,11 @@
 
 li.menu { margin-bottom: 1em; }
 
-.rightMenu, .rightMenuP10 { position:absolute; right: 0; top:0; width: 8em; height: 100vh; }
-.rightMenu { visibility: hidden; }
-.rightMenuP10:hover .rightMenu {	visibility: visible; }
+.rightMenuP10 { position: fixed; }
+.rightMenu, .rightMenuP10 { right: 0; top:0; width: 8em; height: 100vh; }
+.rightMenu { visibility: hidden;  }
+
+.rightMenuP10:hover .rightMenu {	visibility: visible;  }
 
 body { font-family: Arial; 
 	   width: 100vw; height: 100vh;

@@ -9,9 +9,13 @@
 <link rel='stylesheet' href='./../common.css'>
 <link rel='stylesheet' href='report.css'>
 
+<script src='/opt/kwynn/js/utils.js'></script>
+<script src='./../menuSide/menuSide.js'></script>
+
+
 </head>
 <body>
-	<div style='margin-left: 1em; '>
+	<div style='margin-left: 1em;  '>
 		
 		<?php require_once('reportT10Head.php'); ?>
 
