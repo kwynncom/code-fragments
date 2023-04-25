@@ -25,14 +25,17 @@
 		if ($t) $t .= ' ';
 		
 		switch ($r['taskn']) {
-			case 1 : $t .= $r['q'] . ' '; break;
+			case 1 :  $t .= $r['q'] . ' '; break;
 			case 2 : require_once('task2QFmt.php'); $t .= gett2QFmt($r['q']); break;
+			case 3 : case 4: $t .= implode(' ', $r['q']); break;
+			case 5 : require_once(__DIR__ . '/../tasks/t5/t5getQHT.php');
+					$t .= getTask5QHT($r['q'], 't5p05','t510', 't520'); break;
 			default: kwas(false, 'report head bad task n - 2004');
 		}
 		
 		
-		$t .= ' ' . $r['correctAnswer'] . '';
-		$t .= ' '  . $r['userAnswer']    . '';		
+		$t .= 'cor: ' . $r['correctAnswer'] . '';
+		$t .= ' you: ' . $r['userAnswer']    . '';		
 
 		$t .= '</div>' . "\n";
 

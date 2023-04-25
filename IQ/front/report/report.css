@@ -8,3 +8,35 @@ p { margin: 0; }
 	font-family: monospace; 
 	display: inline-block; 
 }
+
+.t5p05 {
+	position: static;
+	display: inline-block;
+	margin: 0;
+	width: 9em; 
+	height: 1.2em; 
+	text-align: center; 
+}
+
+.t510 {
+		
+	/* top right bottom left */
+	display: inline-block;
+	background-color: white;
+	width:  3em;
+	height: 1.5em;
+	margin: 0 1em 0 0 ;
+	padding-top: 0em;
+}
+
+.t520 {
+		display: inline-block;
+		font-family: Arial; 
+		height: 1em;
+		width : 1em;
+		margin: 0 auto 0 auto;
+		font-size: 100%;
+		color:  #0059b3;
+		font-weight: bold;
+	
+}

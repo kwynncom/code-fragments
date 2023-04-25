@@ -10,7 +10,8 @@
 		margin: 1em auto 0 auto;
 	}
 	
-	.et5p20 { font-family: Arial; 
+	.et5p20 { 
+		font-family: Arial; 
 		height: 1em;
 		width : 1em;
 		margin: 0 auto 0 auto;
@@ -71,7 +72,8 @@
 	
 <div class='thomasOuterColor ep05' >
 	
-	<div class='et5p05'><?php require_once('t5T10.php');?></div>
+	<?php require_once('t5getQHT.php'); echo(getTask5QHT($this->quaps->q, 'et5p05', 'et5p10', 'et5p20')); ?>
+	
 	<div class='e100'>
 		<?php
 		$t = '';
