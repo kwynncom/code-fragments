@@ -21,8 +21,9 @@
 		$t  = '';
 		$t .= '<div>';
 		$t .= '<div class="check">' . ($r['gotCorrect'] ? '&check;' : 'X') . '</div>';
+		$t .= '<span class="tasknind">' . $r['taskn'] . '</span>';
 		$t .= kwifs($r, 'q0', ['kwiff' => '']);
-		if ($t) $t .= ' ';
+		$t .= ' ';
 		
 		switch ($r['taskn']) {
 			case 1 :  $t .= $r['q'] . ' '; break;

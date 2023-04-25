@@ -11,7 +11,7 @@ class report extends IQDB {
 	}
 	
 	public function do10() {
-		$a = $this->qcoll->find(['gotCorrect' => ['$exists' => true]], ['up_ts' => -1]);
+		$a = $this->qcoll->find(['gotCorrect' => ['$exists' => true]], ['sort' => ['up_ts' => -1]]);
 		$tot = count($a);
 		$cor = 0;
 		$ms = 0;
