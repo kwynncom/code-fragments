@@ -5,7 +5,7 @@ class t3inter {
 		const ans = e.dataset.iamn;
 		if (ans === KWIQT3A) { color = 'green'; isc = true; }
 		await feedback(ans, isc);
-		if (FMODE === 'imm') {
+		if (FMODE === 'feedImm') {
 			e.style.backgroundColor = color;
 			setTimeout(() => { document.body.addEventListener('click', () => { location.reload(); }); }, 10);
 		} else location.reload();

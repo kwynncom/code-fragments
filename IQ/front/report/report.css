@@ -1,4 +1,7 @@
 body { font-family: sans-serif; }
+
+.ro10:nth-child(even) { background-color: #e5e5e5; }
+
 p { margin: 0; }
 .check { 
 	font-size: 120%;

@@ -6,11 +6,11 @@
 
 <title>IQ report</title>
 
-<link rel='stylesheet' href='./../common.css'>
-<link rel='stylesheet' href='report.css'>
+<link rel='stylesheet' href='/t/23/04/IQ/front/common.css'>
+<link rel='stylesheet' href='/t/23/04/IQ/front/report/report.css'>
 
 <script src='/opt/kwynn/js/utils.js'></script>
-<script src='./../menuSide/menuSide.js'></script>
+<script src='/t/23/04/IQ/front/menuSide/menuSide.js'></script>
 
 
 </head>
@@ -23,7 +23,7 @@
 	<div style='margin-top: 0.5em; '>
 		<?php foreach($a as $r) { 
 		$t  = '';
-		$t .= '<div>';
+		$t .= '<div class="ro10">';
 		$t .= '<div class="check">' . ($r['gotCorrect'] ? '&check;' : 'X') . '</div>';
 		$t .= '<span class="tasknind">' . $r['taskn'] . '</span>';
 		$t .= kwifs($r, 'q0', ['kwiff' => '']);

@@ -4,7 +4,7 @@ class t2inter {
 		await feedback(ans, isc);
 		let color = 'red';
 		if (isc) color = 'green';
-		if (FMODE === 'imm') {
+		if (FMODE === 'feedImm') {
 			e.style.backgroundColor = color;
 			setTimeout(() => { document.body.addEventListener('click', () => { location.reload(); }); }, 10);
 		} else location.reload();
