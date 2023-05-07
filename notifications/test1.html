@@ -13,9 +13,14 @@
 <script src='/opt/kwynn/js/utils.js'></script>
 
 <script>
+	
 class kwNotifyTest {
 	
-	constructor(doRequest) { if (doRequest) this.requestPermission();	}
+	constructor(doRequest) { 
+		if (doRequest) this.requestPermission();	
+		this.doWorkerStuff();
+		this.doNotify();
+	}
 	
 	requestPermission() {
 		Notification.requestPermission().then((result) => {
@@ -25,7 +30,36 @@ class kwNotifyTest {
 	}
 
 	doNotify() {
-		if (Notification.permission === "granted") 	new Notification("test 3");
+		if (Notification.permission !== "granted") return;
+		// this.worker.showNotification('test 5', { body : 'tb5'});
+		ServiceWorkerRegistration.showNotification('t6');
+	}
+	
+	doWorkerStuff() {
+		if ("serviceWorker" in navigator) {
+		  navigator.serviceWorker
+			.register("worker.js")
+			.then((registration) => {
+			  registration.addEventListener("updatefound", () => {
+				// If updatefound is fired, it means that there's
+				// a new service worker being installed.
+				const installingWorker = registration.installing;
+				console.log(
+				  "A new service worker is being installed:",
+				  installingWorker
+				);
+
+				// You can listen for changes to the installing service worker's
+				// state via installingWorker.onstatechange
+			  });
+			})
+			.catch((error) => {
+			  console.error(`Service worker registration failed: ${error}`);
+			});
+		} else {
+		  console.error("Service workers are not supported.");
+		}
+
 	}
 }
 
@@ -39,6 +73,9 @@ onDOMLoad(() => {
 <body>
 	<div>
 		<button onclick='new kwNotifyTest(true);'>grant notification permission</button>
+	</div>
+	<div>v5
+		
 	</div>
 </body>
 </html>
