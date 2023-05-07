@@ -32,11 +32,11 @@ class kwNotifyTest {
 		if (!this.worker) await this.wpr;
 		if (this.ppr) await this.ppr;
 		this.permStuff();
-		this.worker.showNotification('t15');
+		// this.worker.showNotification('t15');
 	}
 	
 	doWorkerStuff() { 
-		if (this.wpr) return;
+		if (this.wpr && 0) return;
 		this.wpr =   navigator.serviceWorker.register('worker.js').then((w) => { this.configWorker(w); }); 
 	}
 	
@@ -54,7 +54,15 @@ class kwNotifyTest {
 	
 	configWorker(w) {
 		this.worker = w;
-		w.pushManager.subscribe().then((s) => {cl(s.toJSON()); });
+		
+		// w.showNotification('pre-1');
+		// w.addEventListener('push', function(event) { 			 w.showNotification('t16-0309'); 		});
+		
+		if (1)
+			w.pushManager.subscribe({ userVisibleOnly : true }).then((s) => {
+			kwjss.sobf('server.php', s);
+			cl(s.toJSON()); 
+		});
 	}
 }
 
