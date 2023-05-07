@@ -37,7 +37,7 @@ class kwNotifyTest {
 	
 	doWorkerStuff() { 
 		if (this.wpr) return;
-		this.wpr =   navigator.serviceWorker.register('worker.js').then((w) => { this.worker = w; }); 
+		this.wpr =   navigator.serviceWorker.register('worker.js').then((w) => { this.configWorker(w); }); 
 	}
 	
 	permStuff() {
@@ -50,6 +50,11 @@ class kwNotifyTest {
 			e.style.display = 'none';
 			b.style.display = 'block';
 		}
+	}
+	
+	configWorker(w) {
+		this.worker = w;
+		w.pushManager.subscribe().then((s) => {cl(s.toJSON()); });
 	}
 }
 
