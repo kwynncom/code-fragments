@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+<title>web notifications test</title>
+
+<style>
+    body { font-family: sans-serif; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+
+<script>
+class kwNotifyTest {
+	
+	constructor(doRequest) { if (doRequest) this.requestPermission();	}
+	
+	requestPermission() {
+		Notification.requestPermission().then((result) => {
+		  // console.log(result);
+		  this.doNotify();
+		});		
+	}
+
+	doNotify() {
+		if (Notification.permission === "granted") 	new Notification("test 3");
+	}
+}
+
+onDOMLoad(() => { 
+	const o = new kwNotifyTest(true);
+	o.doNotify(); 
+});
+</script>
+
+</head>
+<body>
+	<div>
+		<button onclick='new kwNotifyTest(true);'>grant notification permission</button>
+	</div>
+</body>
+</html>
