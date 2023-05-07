@@ -18,47 +18,31 @@ class kwNotifyTest {
 	
 	constructor(doRequest) { 
 		if (doRequest) this.requestPermission();	
-		this.doWorkerStuff();
 		this.doNotify();
 	}
 	
 	requestPermission() {
+		this.doWorkerStuff();
 		Notification.requestPermission().then((result) => {
 		  // console.log(result);
 		  this.doNotify();
 		});		
 	}
 
-	doNotify() {
-		if (Notification.permission !== "granted") return;
+	async doNotify() {
+		if (Notification.permission !== 'granted') return;
 		// this.worker.showNotification('test 5', { body : 'tb5'});
-		ServiceWorkerRegistration.showNotification('t6');
+		if (!this.worker) {
+			await this.wpr;
+			this.worker.showNotification('t6');
+		}
 	}
 	
 	doWorkerStuff() {
-		if ("serviceWorker" in navigator) {
-		  navigator.serviceWorker
-			.register("worker.js")
-			.then((registration) => {
-			  registration.addEventListener("updatefound", () => {
-				// If updatefound is fired, it means that there's
-				// a new service worker being installed.
-				const installingWorker = registration.installing;
-				console.log(
-				  "A new service worker is being installed:",
-				  installingWorker
-				);
-
-				// You can listen for changes to the installing service worker's
-				// state via installingWorker.onstatechange
-			  });
-			})
-			.catch((error) => {
-			  console.error(`Service worker registration failed: ${error}`);
-			});
-		} else {
-		  console.error("Service workers are not supported.");
-		}
+		
+		this.wpr =   navigator.serviceWorker.register('worker.js').then((w) => { this.worker = w; });
+			
+		
 
 	}
 }
@@ -74,7 +58,7 @@ onDOMLoad(() => {
 	<div>
 		<button onclick='new kwNotifyTest(true);'>grant notification permission</button>
 	</div>
-	<div>v5
+	<div>v6
 		
 	</div>
 </body>
