@@ -13,53 +13,58 @@
 <script src='/opt/kwynn/js/utils.js'></script>
 
 <script>
-	
+
+var GKWNOTI;
+
 class kwNotifyTest {
 	
-	constructor(doRequest) { 
-		if (doRequest) this.requestPermission();	
+	constructor() { 
 		this.doNotify();
 	}
 	
 	requestPermission() {
-		this.doWorkerStuff();
-		Notification.requestPermission().then((result) => {
-		  // console.log(result);
-		  this.doNotify();
-		});		
+		if (Notification.permission !== 'granted') this.ppr = Notification.requestPermission().then((result) => {});	
+		this.doNotify();
 	}
 
 	async doNotify() {
-		if (Notification.permission !== 'granted') return;
-		// this.worker.showNotification('test 5', { body : 'tb5'});
-		if (!this.worker) {
-			await this.wpr;
-			this.worker.showNotification('t6');
-		}
+		this.doWorkerStuff();
+		if (!this.worker) await this.wpr;
+		if (this.ppr) await this.ppr;
+		this.permStuff();
+		this.worker.showNotification('t15');
 	}
 	
-	doWorkerStuff() {
-		
-		this.wpr =   navigator.serviceWorker.register('worker.js').then((w) => { this.worker = w; });
-			
-		
-
+	doWorkerStuff() { 
+		if (this.wpr) return;
+		this.wpr =   navigator.serviceWorker.register('worker.js').then((w) => { this.worker = w; }); 
+	}
+	
+	permStuff() {
+		const b = byid('grantBtn');
+		const e = byid('grantedE');
+		if (Notification.permission === 'granted') {
+			b.style.display = 'none';
+			e.style.display = 'block';
+		} else {
+			e.style.display = 'none';
+			b.style.display = 'block';
+		}
 	}
 }
 
+
 onDOMLoad(() => { 
-	const o = new kwNotifyTest(true);
-	o.doNotify(); 
+	GKWNOTI = new kwNotifyTest();
 });
 </script>
 
 </head>
 <body>
 	<div>
-		<button onclick='new kwNotifyTest(true);'>grant notification permission</button>
+		<button style='display: block;' id='grantBtn' onclick='GKWNOTI.requestPermission();'>grant notification permission</button>
+		<div    style='display: none ;' id='grantedE'>notification permission granted</div>
 	</div>
-	<div>v6
-		
-	</div>
+
 </body>
 </html>
