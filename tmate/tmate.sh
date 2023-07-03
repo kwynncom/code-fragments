@@ -1,7 +1,14 @@
 #! /bin/bash
 
-SLEEPN=5
+SLEEPN=3
+
+CONF=./PRIVATE_config.sh
 TESTLOG=/tmp/sl
+
+source $CONF
+echo $URL
+
+# exit
 
 # minimum session info strlen
 MINSISL=400
@@ -40,4 +47,6 @@ fi
 if (( $ALLCH > $MINSISL)); then
 	echo all chars pass >> $TESTLOG
 fi
+
+echo $SINFO | curl -X POST -d "$(</dev/stdin)" $URL
 
