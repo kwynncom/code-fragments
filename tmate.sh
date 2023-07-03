@@ -1,5 +1,14 @@
 #! /bin/bash
 
+SLEEPN=5
+TESTLOG=/tmp/sl
+
+# minimum session info strlen
+MINSISL=400
+
+touch $TESTLOG
+chmod 600 $TESTLOG
+
 if [ "$1" != "-send" ]
 	then
 		SPRELOC='/tmp/'
@@ -12,8 +21,23 @@ if [ "$1" != "-send" ]
 fi
 
 SOCK=$2
-echo $SOCK
 
-sleep 5
-tmate -S $SOCK show-messages > /tmp/st1
+# cat st1 | grep -P "ssh session\: .+\b"
+# 6 lines
+
+sleep $SLEEPN
+SINFO=`tmate -S $SOCK show-messages`
+RET10=`echo $SINFO |  grep -P "ssh session\: .+\b"`
+SESCH=`echo $RET10 | wc | awk '{print $3}'`
+ALLCH=`echo $SINFO | wc | awk '{print $3}'`
+echo sess chars $SESCH >> $TESTLOG
+echo info chars $ALLCH >> $TESTLOG
+
+if (( $SESCH > $MINSISL)); then
+	echo sess chars pass >> $TESTLOG
+fi
+
+if (( $ALLCH > $MINSISL)); then
+	echo all chars pass >> $TESTLOG
+fi
 
