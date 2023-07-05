@@ -1,0 +1,25 @@
+https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-apache-on-ubuntu-14-04
+
+<Directory /topsecret>
+  SSLRequireSSL
+</Directory>
+
+   <Directory "/var/www/html">
+        AuthType Basic
+        AuthName "Restricted Content"
+        AuthUserFile /etc/apache2/.htpasswd
+        Require valid-user
+    </Directory>
+
+-B is blowfish.  The default is (or was) md5, which is bad
+-C cost - higher is more secure but slower, default: 5, valid: 4 to 17
+-c will truncate ; so I assume 
+
+sudo htpasswd -B -c -C 10 /etc/apache2/.htpasswd sammy
+
+sudo apt-get install apache2 apache2-utils
+
+
+"Therefore, using basic auth and encrypting the whole connection using mod_ssl is a much better alternative."
+https://httpd.apache.org/docs/2.4/mod/mod_auth_digest.html
+
