@@ -1,0 +1,9 @@
+echo d | curl -X POST -d "$(</dev/stdin)" https://example.com/t/23/07/tmate/s.php
+
+
+date '+%s'
+1688345624
+
+echo `date '+%s'`
+1688345671
+
