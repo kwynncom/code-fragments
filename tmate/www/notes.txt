@@ -24,8 +24,11 @@ https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authenti
 
 17 took a very long time
 12 was ok
-13 ok
+13 ok; upon further thought too long
 14 a bit long
+
+# change password
+sudo htpasswd -B -C 12 /var/kwynn/tmate/webpasswords blah
 
 sudo htpasswd -B -c -C 17 ./webpasswords blah
 

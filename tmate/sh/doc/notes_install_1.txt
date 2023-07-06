@@ -1,0 +1,6 @@
+install tmate
+(don't forget sudo apt update)
+download script from git or otherwise
+change URL var in script
+run script
+(assumes remote web server is set up)
