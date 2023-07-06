@@ -12,7 +12,7 @@
 </head>
 <body>
 	<p>
-		<a href='./PRIVATE/test.php'>test</a>
+		<a href='./PRIVATE/'>show private data</a> (login required)
 	</p>
 </body>
 </html>

@@ -1,12 +1,17 @@
 #! /bin/bash
 
-SLEEPN=3
+SLEEPN=7
 
-CONF=./PRIVATE_config.sh
-TESTLOG=/tmp/sl
+# URLRDTMATE=https://example.com/server.php
+# conf blah or define URLRDTMATE
+CONFFILE=/var/kwynn/tmate/PRIVATE_config.sh
+TESTLOG=/tmp/tmrdtest
 
-source $CONF
-echo $URL
+if [ -f "$CONFFILE" ]; then
+	source $CONFFILE
+fi
+
+echo $URLRDTMATE
 
 # exit
 
@@ -48,4 +53,4 @@ if (( $ALLCH > $MINSISL)); then
 	echo all chars pass >> $TESTLOG
 fi
 
-echo $SINFO | curl -X POST -d "$(</dev/stdin)" $URL
+echo $SINFO | curl -X POST -d "$(</dev/stdin)" $URLRDTMATE
