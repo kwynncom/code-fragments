@@ -36,7 +36,8 @@ class tmate_logs_show implements tmate_config {
 		$p = self::sessdir . $f;
 		kwas(is_readable($p), 'bad p format - 2230-2');
 		$t = file_get_contents($p);
-		$this->do25($t);
+		$safet = htmlspecialchars($t); unset($t);
+		$this->do25($safet);
 	}
 	
 	private function do25(string $t) {

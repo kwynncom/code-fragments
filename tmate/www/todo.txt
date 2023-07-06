@@ -1,0 +1,7 @@
+filename escape
+	I did that before I wrote this.
+html entity escape
+size limits
+	total disk
+	relevant directories
+secret to send data?
