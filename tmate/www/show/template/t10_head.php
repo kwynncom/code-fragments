@@ -16,5 +16,4 @@
 	<section>
 		<h1>tmate metadata</h1>
 
-		<table>
 			

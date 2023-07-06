@@ -55,13 +55,15 @@ class tmate_logs_show implements tmate_config {
 	
 	
 	private function do50($a) {
+		
+		echo('<table>' . "\n");
 		foreach($a as $f) {
 			$ts = filemtime(self::sessdir . $f);
 			$hu = date('Y-m-d h:i', $ts);
 			$url = '?f=' . $f;
 			require(self::tpfx . 't30.php');
-		
 		}
+		echo('</table>' . "\n");
 		
 
 	}
