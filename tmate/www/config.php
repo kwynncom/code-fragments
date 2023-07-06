@@ -9,6 +9,7 @@ interface tmate_config {
 	const re10 = '/ssh session: ssh \S{15,80}\b/'; // use printf rather than echo to test \n
 	const sfxn = 5;
 	const sfx  = '.txt';
+	const maxfnstrlen = 60;
 	
 	// This is the limit for the initial ssh session info - what comes after n seconds
 	const maxstrlen  = 10 * 1000; // This should be a safe number, and there should be some limit.

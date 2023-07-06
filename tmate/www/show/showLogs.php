@@ -8,6 +8,7 @@ class tmate_logs_show implements tmate_config {
 	
 	const tpfx = __DIR__ . '/template/';
 	
+	
 	public function __construct() {
 		$this->do10();
 	}
@@ -17,34 +18,49 @@ class tmate_logs_show implements tmate_config {
 		else $user = 'cli';
 		
 		$this->user = $user;
-		$this->do15();
+		
+		require_once(self::tpfx . 't10_head.php');
+		
+		$f = isrv('f');
+		if (!$f) $this->do40();
+		else     $this->do20($f);
+		
+		require(self::tpfx . 't90_footer.php');
 
 	}
 	
-	private function do15() {
+	private function do20(string $f) {
+		kwas(preg_match('/^[A-Za-z0-9_\-\.]+$/', $f), 'bad param format - 2226');
+		kwas(strlen($f) <= self::maxfnstrlen, 'bad param format - 2228');
+		kwas(strpos($f, '..') === false, 'bad param format - 2230');
+		$p = self::sessdir . $f;
+		kwas(is_readable($p), 'bad p format - 2230-2');
+		$t = file_get_contents($p);
+		$this->do25($t);
+	}
+	
+	private function do25(string $t) {
+		require_once(self::tpfx . 't50.php');
+	}
+	
+	
+	private function do40() {
 		$fs = shell_exec('ls -t ' . tmate_config::sessdir);
 		if (!$fs || !is_string($fs)) kwas(false, 'could not read tmate log dir');
 		$a  = preg_split('/\s+/', $fs);
-		$this->do20($a);
+		$this->do50($a);
 		return;		
 	}
 	
 	
-	private function do20(array $a) {
-		
-		require_once(self::tpfx . 't10_head.php');
-		
-		$this->do30($a);
-		
-		require_once(self::tpfx . 't90_footer.php');
-	}
 	
-	private function do30($a) {
+	private function do50($a) {
 		foreach($a as $f) {
 			$ts = filemtime(self::sessdir . $f);
 			$hu = date('Y-m-d h:i', $ts);
 			$url = '?f=' . $f;
-			require(self::tpfx . 't30.php');		
+			require(self::tpfx . 't30.php');
+		
 		}
 		
 
