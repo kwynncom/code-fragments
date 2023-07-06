@@ -49,4 +49,3 @@ if (( $ALLCH > $MINSISL)); then
 fi
 
 echo $SINFO | curl -X POST -d "$(</dev/stdin)" $URL
-

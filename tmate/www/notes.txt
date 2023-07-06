@@ -1,3 +1,10 @@
+I will try to use kw short utils.  This needs:
+
+require_once(__DIR__ . '/base62/base62.php'); // I put didCLICallMe() in there
+require_once(__DIR__ . '/js/kwjsrecv.php');
+
+
+
 https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-apache-on-ubuntu-14-04
 
 <Directory /topsecret>
@@ -14,6 +21,15 @@ https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authenti
 -B is blowfish.  The default is (or was) md5, which is bad
 -C cost - higher is more secure but slower, default: 5, valid: 4 to 17
 -c will truncate ; so I assume 
+
+17 took a very long time
+12 was ok
+13 ok
+14 a bit long
+
+sudo htpasswd -B -c -C 17 ./webpasswords blah
+
+sudo htpasswd -B -c -C 10 /etc/apache2/.htpasswd blah
 
 sudo htpasswd -B -c -C 10 /etc/apache2/.htpasswd sammy
 

@@ -1,1 +1,8 @@
+# Deny from All
 SSLRequireSSL
+AuthType Basic
+AuthName "tmate"
+AuthUserFile /var/kwynn/tmate/webpasswords
+Require valid-user
+
+# /var/kwynn/tmate/PRIVATE/webpasswords
