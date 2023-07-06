@@ -13,7 +13,8 @@ $t = str_replace('[tmate]', "\n[tmate]", $t);
 $t .= "\n";
 $t .= $_SERVER['REMOTE_ADDR'] . '' . "\n";
 
-$f = tmate_config::fpfx . date('Y-m-d_H_i_s') . '_' . base62(5);
+// note that I am making assumptions about this format on the display / show side
+$f = tmate_config::fpfx . tmate_config::metafn .  date('Y-m-d_Hi_s') . '_' . base62(tmate_config::sfxn) . tmate_config::sfx;
 
 file_put_contents($f, '', FILE_APPEND); // my equivalent of "touch" without worrying about dates
 chmod($f,0660);

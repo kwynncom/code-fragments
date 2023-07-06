@@ -13,7 +13,13 @@ class tmate_logs_show {
 		if (PHP_SAPI !== 'cli') $user = getHTLIUserOrDie();
 		else $user = 'cli';
 		$fs = shell_exec('ls -tr ' . tmate_config::sessdir);
-		$a  = explode(' ', $fs);
+		if (!$fs || !is_string($fs)) kwas(false, 'could not read tmate log dir');
+		$a  = preg_split('/\s+/', $fs);
+		$this->do20($a);
+		return;
+	}
+	
+	private function do20(array $a) {
 		return;
 	}
 }

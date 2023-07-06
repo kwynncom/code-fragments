@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# 2023/07/05 21:25
+
 SLEEPN=7
 
 # URLRDTMATE=https://example.com/server.php
