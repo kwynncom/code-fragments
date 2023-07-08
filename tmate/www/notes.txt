@@ -30,6 +30,10 @@ https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authenti
 # change password
 sudo htpasswd -B -C 12 /var/kwynn/tmate/webpasswords blah
 
+# init password
+sudo htpasswd -B -c -C 12 /var/kwynn/tmate/webpasswords blah
+
+
 sudo htpasswd -B -c -C 17 ./webpasswords blah
 
 sudo htpasswd -B -c -C 10 /etc/apache2/.htpasswd blah

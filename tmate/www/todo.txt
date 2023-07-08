@@ -5,3 +5,7 @@ size limits
 	total disk
 	relevant directories
 secret to send data?
+
+If private data is inaccessible, I get a 500 error, which is a start, but perhaps make it a more meaningful message
+
+make sure sessions dir exists

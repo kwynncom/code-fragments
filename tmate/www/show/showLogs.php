@@ -8,6 +8,8 @@ class tmate_logs_show implements tmate_config {
 	
 	const tpfx = __DIR__ . '/template/';
 	
+	private string $user;
+	
 	
 	public function __construct() {
 		$this->do10();

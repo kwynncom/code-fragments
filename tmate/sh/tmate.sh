@@ -1,18 +1,24 @@
 #! /bin/bash
 
-# 2023/07/05 21:25
+# Either populate the domain just below or export the var from the config file just below that
+# the CONFFILE will override the definition just below due to order of execution
+# DOMAINRDTMATE=example.com
+CONFFILE=/var/kwynn/tmate/PRIVATE_config.sh
+
+# 2023/07/07 23:04
 
 SLEEPN=7
 
-# URLRDTMATE=https://example.com/server.php
+
 # conf blah or define URLRDTMATE
-CONFFILE=/var/kwynn/tmate/PRIVATE_config.sh
 TESTLOG=/tmp/tmrdtest
 
 if [ -f "$CONFFILE" ]; then
 	source $CONFFILE
 fi
 
+
+URLRDTMATE=https://$DOMAINRDTMATE/receiveLogs.php
 echo $URLRDTMATE
 
 # exit
@@ -29,7 +35,7 @@ if [ "$1" != "-send" ]
 		SPRENAME='tmate-KMB-Test-'
 		EPOCH=`date '+%s'`
 		SOCK=$SPRELOC$PRE$EPOCH
-		bash ./$0 -send $SOCK &
+		bash $0 -send $SOCK &
 		tmate -S $SOCK
 		exit
 fi
