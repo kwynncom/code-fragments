@@ -106,12 +106,14 @@ class tmate_logs_show implements tmate_config {
 		$path = tmate_config::alldbyof . $fin;
 		$tm = file_get_contents(self::sessdir . $fin);
 		$ta = $tm . $j;
-		kwtouch($path, $ta, 0660);
+		mkdir_safe(tmate_config::alldbyof);
+		kwtouch   ($path, $ta, self::permf);
 		$a = tmate_get_fn('', $U, $geo, $fin, true);
 		$j = json_encode($a, JSON_PRETTY_PRINT);
-		kwtouch(self::metap . $fin, $j . "\n", 0660);
-				
-		
+		$mf = self::metap . $fin;
+		mkdir_safe(self::metap);
+		kwtouch   ($mf, $j . "\n", self::permf);
+			
 	}
 	
 	private function getGeoNmByHash(string $pre, string $f) : string {

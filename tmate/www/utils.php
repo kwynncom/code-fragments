@@ -1,5 +1,11 @@
 <?php
 
+function mkdir_safe(string $dir, int $perm = 0770) {
+	if (file_exists($dir)) return;
+	// echo($dir . "attempt \n");
+	kwas(mkdir($dir, $perm, true), "$dir create failed - mkdir_safe - 1917");
+}
+
 function tmate_get_fn(string $pre = '', int $U = 0, array $geo = [], $asa = false) : string | array {
 	
 	if ($U === 0) $U = time();

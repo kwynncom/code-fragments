@@ -5,7 +5,7 @@ require_once(__DIR__ . '/config.php');
 class ipinfoioCl implements tmate_config {
 	
 	const tfile = '/tmp/g';
-	const defperm = 0660;
+
 	
 	public readonly array  $geoa;
 	public readonly string $geoj;
@@ -32,8 +32,10 @@ class ipinfoioCl implements tmate_config {
 		$f = tmate_get_fn(self::ipaddir, 0, $a);
 		
 		$j = $this->geoj;
-		kwtouch($f, $j, self::defperm);
-		kwtouch(self::hashdir . $this->ohash, $j, self::defperm);
+		mkdir_safe(self::ipaddir);
+		kwtouch   ($f, $j, self::permf);
+		mkdir_safe(self::hashdir);
+		kwtouch   (self::hashdir . $this->ohash, $j, self::permf);
 	}
 	
 	private function setHash($tin) {
@@ -65,7 +67,7 @@ class ipinfoioCl implements tmate_config {
 		if (false && is_readable(self::tfile)) // ***KDKJ!*!&*!*!!*
 			return tmate_get_vinord(file_get_contents(self::tfile));
 		file_put_contents(self::tfile, '');
-		kwas(chmod(self::tfile, 0660), 'tmate geo chmod 1251 fail');
+		kwas(chmod(self::tfile, self::permf), 'tmate geo chmod 1251 fail');
 		$t = tmate_get_vinord();
 		file_put_contents(self::tfile, $t);
 		return $t;

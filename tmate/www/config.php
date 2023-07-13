@@ -21,6 +21,8 @@ interface tmate_config {
 	const sfxn = 5;
 	const sfx  = '.txt';
 	const maxfnstrlen = 60;
+	const permf = 0660;
+	const permd = 0770;
 	
 	// This is the limit for the initial ssh session info - what comes after n seconds
 	const maxstrlen  = 10 * 1000; // This should be a safe number, and there should be some limit.
