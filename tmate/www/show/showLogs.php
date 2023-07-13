@@ -12,6 +12,7 @@ class tmate_logs_show implements tmate_config {
 	
 	
 	public function __construct() {
+		$this->fga = [];
 		$this->setDir();
 		$this->do10();
 	}
@@ -41,10 +42,15 @@ class tmate_logs_show implements tmate_config {
 		kwas(strlen($f) <= self::maxfnstrlen, 'bad param format - 2228');
 		kwas(strpos($f, '..') === false, 'bad param format - 2230');
 		
-		$p = $this->odir . $f;
-		kwas(is_readable($p), 'bad p format - 2230-2');
-		$t = file_get_contents($p);
-		$safet = htmlspecialchars($t); unset($t);
+		$b = $this->odir;
+		
+		foreach([self::alldbyof, self::sessdir] as $dir) {
+			$p =  $dir . $f;
+			if (!is_readable($p)) continue;
+			$t = file_get_contents($p);
+			$safet = htmlspecialchars($t); unset($t);
+			break;
+		}
 		$this->do25($safet);
 	}
 	
@@ -72,18 +78,40 @@ class tmate_logs_show implements tmate_config {
 	}
 	
 	
-	private function getGeo(string $pre, string $f) : array {
-		$p = self::byodir . $f;
+	private function getGeoPath(string $pre, string $f, int $U) : array {
+		
+		$mp = self::metap . $f;
+		if (is_readable($mp)) return json_decode(trim(file_get_contents($mp)), true); unset($mp);
+						
+		$defr = ['hu' => tmate_get_fn('', $U)];
+		
+		$p = self::hashdir . $f;
 		if (!is_readable($p)) {
 			$p = $this->getGeoNmByHash($pre, $f);
-			if (!is_readable($p)) return [];
-		}
+			if (!is_readable($p)) return $defr;
+		} 
 		
 		$j = trim(file_get_contents($p));
 		$l = strlen($j);
 		$a = json_decode($j, true);
-		if (!$a) return [];
-		return $a;
+		if (!$a) return $defr;
+		
+		$this->saveGeoByOF($U, $a, $f);
+	
+		return tmate_get_fn('', $U, $a, true);
+	}
+	
+	private function saveGeoByOF(int $U, array $geo, string $fin) {
+		$j = json_encode($geo, JSON_PRETTY_PRINT);
+		$path = tmate_config::alldbyof . $fin;
+		$tm = file_get_contents(self::sessdir . $fin);
+		$ta = $tm . $j;
+		kwtouch($path, $ta, 0660);
+		$a = tmate_get_fn('', $U, $geo, $fin, true);
+		$j = json_encode($a, JSON_PRETTY_PRINT);
+		kwtouch(self::metap . $fin, $j . "\n", 0660);
+				
+		
 	}
 	
 	private function getGeoNmByHash(string $pre, string $f) : string {
@@ -100,9 +128,10 @@ class tmate_logs_show implements tmate_config {
 		foreach($a as $f) {
 			$fo = $this->odir . $f;
 			$ts  = filemtime($fo);
-			$geo = $this->getGeo($this->odir, $f);
-			$hu = tmate_get_fn('', $ts, $geo);
+			$pa = $this->getGeoPath($this->odir, $f, $ts);
+			$hu = $pa['hu'];
 			$url = '?f=' . $f;
+
 			require(self::tpfx . 't30.php');
 		}
 		echo('</table>' . "\n");

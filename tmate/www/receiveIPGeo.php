@@ -62,7 +62,7 @@ class ipinfoioCl implements tmate_config {
 	}
 	
 	private function get() {
-		if (0 && is_readable(self::tfile)) // ***KDKJ!*!&*!*!!*
+		if (false && is_readable(self::tfile)) // ***KDKJ!*!&*!*!!*
 			return tmate_get_vinord(file_get_contents(self::tfile));
 		file_put_contents(self::tfile, '');
 		kwas(chmod(self::tfile, 0660), 'tmate geo chmod 1251 fail');

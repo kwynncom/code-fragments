@@ -8,7 +8,8 @@ interface tmate_config {
 	const sessdir = self::basedir . 'raw/';
 	const ipaddir   = self::basedir . 'ipdate/';
 	const hashdir   = self::basedir . 'iptmhash/';
-	const byodir    = self::basedir . 'byrawgeo/';
+	const alldbyof    = self::basedir . 'tmip/';
+	const metap      = self::basedir . 'meta/';
 	const hu        = 'Y-m-d-H:i';
 	const filepfx = 'tmate_ssh_';
 	const metafn = 'meta_';

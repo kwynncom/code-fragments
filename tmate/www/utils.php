@@ -1,10 +1,11 @@
 <?php
 
-function tmate_get_fn(string $pre = '', int $U = 0, array $geo = []) : string {
+function tmate_get_fn(string $pre = '', int $U = 0, array $geo = [], $asa = false) : string | array {
 	
 	if ($U === 0) $U = time();
 	
-	$f = $pre . date(tmate_config::hu, $U);
+	$hu  = date(tmate_config::hu, $U);
+	$f = '';
 	$i = 0;
 	foreach(['city', 'region', 'country'] as $k) {
 		$t = kwifs($geo, $k, ['kwiff' => '']);
@@ -13,7 +14,13 @@ function tmate_get_fn(string $pre = '', int $U = 0, array $geo = []) : string {
 		$f .= '-' . $t;
 	}	
 	
-	return $f;
+	$f = $hu . $f;
+	$path = $pre . $f;
+	
+	if ($asa) return ['path' => $path, 'hu' => $f];
+	return $path;
+	
+	
 }
 
 function tmate_get_vinord(string $tin = '') : string {
