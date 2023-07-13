@@ -4,12 +4,14 @@ require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/utils.php');
 
 interface tmate_config {
-	const sessdir = '/var/kwynn/tmate/sessions/';
+	const sessdir = '/var/kwynn/tmate/sessions/raw/';
 	const filepfx = 'tmate_ssh_';
 	const metafn = 'meta_';
 	const fpfx = self::sessdir . self::filepfx;
 	const minstrlen = 16; // low number for testing
-	const resrw = '/ssh session: ssh (\S{15,80})\b/'; // use printf rather than echo to test \n
+	const minsshklen = 15;
+	const resrw = '/ssh session: ssh (\S{' . self::minsshklen . ',80})\b/'; // use printf rather than echo to test \n
+	const shksare = '/^\S{' . self::minsshklen . ',80}/';
 	const sfxn = 5;
 	const sfx  = '.txt';
 	const maxfnstrlen = 60;
