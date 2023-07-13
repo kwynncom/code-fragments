@@ -49,7 +49,8 @@ class tmate_logs_show implements tmate_config {
 	
 	private function do40() {
 		$fs = shell_exec('ls -t ' . tmate_config::sessdir);
-		if (!$fs || !is_string($fs)) kwas(false, 'could not read tmate log dir');
+		if (!$fs || !is_string($fs)) return;
+		$fs = trim($fs);
 		$a  = preg_split('/\s+/', $fs);
 		$this->do50($a);
 		return;		
