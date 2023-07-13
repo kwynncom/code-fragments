@@ -4,7 +4,12 @@ require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/utils.php');
 
 interface tmate_config {
-	const sessdir = '/var/kwynn/tmate/sessions/raw/';
+	const basedir = '/var/kwynn/tmate/sessions/';
+	const sessdir = self::basedir . 'raw/';
+	const ipaddir   = self::basedir . 'ipdate/';
+	const hashdir   = self::basedir . 'iptmhash/';
+	const byodir    = self::basedir . 'byrawgeo/';
+	const hu        = 'Y-m-d-H:i';
 	const filepfx = 'tmate_ssh_';
 	const metafn = 'meta_';
 	const fpfx = self::sessdir . self::filepfx;

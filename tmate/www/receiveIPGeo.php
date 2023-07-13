@@ -7,6 +7,7 @@ class ipinfoioCl implements tmate_config {
 	const tfile = '/tmp/g';
 	public readonly array  $geoa;
 	public readonly string $geoj;
+	public readonly string $ohash;
 	
 	public function __construct() {
 		$this->do10();
@@ -16,15 +17,30 @@ class ipinfoioCl implements tmate_config {
 		$t = $this->get();
 		$l = strlen($t);
 		$this->do20($t);
-		// $this->do30();
+		$this->do30();
 		return;
 		
 	}
 	
+	private function do30() {
+		$a = $this->geoa;
+		$this->valGA($a);
+		$ip = $a['ip'];
+		
+		$f = tmate_get_fn(self::ipaddir, 0, $a);
+		
+		$j = $this->geoj;
+		kwtouch($f, $j, 0640);
+		kwtouch(self::hashdir . $this->ohash, $j, 0640);
+	}
+	
 	private function setHash($tin) {
-		preg_match(tmate_config::resrw, $tin, $m);	kwas($m[1], 'no ssh session for hash - 1326');
-		
-		
+		$this->ohash = tmate_get_hash($tin);
+	}
+	
+	private function valGA(array $a) {
+		kwas($a['ip'], 'ip does not exist - tmate geo 1419');
+		kwas(getValidIPOrFalsey($a['ip']), 'bad IP tmate geo 1420');
 	}
 	
 	private function do20(string $tin) {
@@ -36,6 +52,7 @@ class ipinfoioCl implements tmate_config {
 		$l = strlen($t);
 		$j = trim($t);
 		$a = json_decode($j, true); kwas($a, 'GEO IP json did not parse - 1316');
+		$this->valGA($a);
 		$this->geoj = $j;
 		$this->geoa = $a;
 		

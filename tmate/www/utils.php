@@ -1,5 +1,21 @@
 <?php
 
+function tmate_get_fn(string $pre = '', int $U = 0, array $geo = []) : string {
+	
+	if ($U === 0) $U = time();
+	
+	$f = $pre . date(tmate_config::hu, $U);
+	$i = 0;
+	foreach(['city', 'region', 'country'] as $k) {
+		$t = kwifs($geo, $k, ['kwiff' => '']);
+		if (!$t) continue;
+		if ($i++ === 0) $f .= '-';		
+		$f .= '-' . $t;
+	}	
+	
+	return $f;
+}
+
 function tmate_get_vinord(string $tin = '') : string {
 	if ($tin) $t = $tin; 
 	else      $t = file_get_contents('php://input'); unset($tin);
