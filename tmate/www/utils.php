@@ -3,6 +3,7 @@
 function mkdir_safe(string $dir, int $perm = 0770) {
 	if (file_exists($dir)) return;
 	// echo($dir . "attempt \n");
+	umask(0);
 	kwas(mkdir($dir, $perm, true), "$dir create failed - mkdir_safe - 1917");
 }
 
