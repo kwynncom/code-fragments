@@ -1,10 +1,16 @@
-<?php
+<?php // 2023-07-14 16:29 - clean string version
 
 function mkdir_safe(string $dir, int $perm = 0770) {
 	if (file_exists($dir)) return;
 	// echo($dir . "attempt \n");
 	umask(0);
 	kwas(mkdir($dir, $perm, true), "$dir create failed - mkdir_safe - 1917");
+}
+
+function tmate_clean_geo_s(string $s) : string {
+	$s = substr($s, 0, 30);
+	$s = preg_replace('/[^A-Za-z0-9]+/', '-', $s);
+	return $s;
 }
 
 function tmate_get_fn(string $pre = '', int $U = 0, array $geo = [], $asa = false) : string | array {
@@ -16,9 +22,9 @@ function tmate_get_fn(string $pre = '', int $U = 0, array $geo = [], $asa = fals
 	$i = 0;
 	foreach(['city', 'region', 'country'] as $k) {
 		$t = kwifs($geo, $k, ['kwiff' => '']);
-		if (!$t) continue;
-		if ($i++ === 0) $f .= '-';		
-		$f .= '-' . $t;
+		if (!$t || !is_string($t) || !trim($t)) continue;
+		if ($i++ === 0) $f .= '-';	
+		$f .= '-' . tmate_clean_geo_s($t);
 	}	
 	
 	$f = $hu . $f;
