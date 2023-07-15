@@ -7,6 +7,8 @@ require_once(__DIR__ . '/../' . 'config.php');
 class tmate_logs_show implements tmate_config {
 	
 	const tpfx = __DIR__ . '/template/';
+	const nll = 32; // to fix newline issue - strlen of "Sat Jul 15 01:30:16 2023 [tmate]"
+	const tml =  7; // stelen of "[tmate]"
 	
 	private string $user;
 	
@@ -55,9 +57,31 @@ class tmate_logs_show implements tmate_config {
 	}
 	
 	private function do25(string $t) {
+		$t = $this->fixNewline($t);
 		require_once(self::tpfx . 't50.php');
 	}
 	
+	private function fixNewline(string $tin) : string {
+		$w = self::nll;
+		$tw = self::tml;
+		$tout = '';
+		$pp = 0;
+		$i  = 0;
+		while (($pos = strpos($tin, '[tmate]', $pp)) !== FALSE) {
+			$p10 = $pos - ($w - $tw);
+			$s10 = substr($tin, $pp, $pos - $p10);
+			$l10 = strlen($s10);
+			$tout .= $s10;
+			if ($pp !== 0) $tout .= "\n";
+			$tout .= substr($tin, $p10, $pos + $tw);			
+			$pp   = $pos + $tw;
+			if ($i++ > 3) break;
+		}		
+		
+		// $tout .= substr($tin, $pp);
+		
+		return $tout;
+	}
 	
 	private function do40() {
 		$fs = shell_exec('ls -t ' . $this->odir);
