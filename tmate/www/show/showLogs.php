@@ -74,7 +74,7 @@ class tmate_logs_show implements tmate_config {
 			$pos = strpos($t, self::needle, $pos);
 			if ($pos === false) break;
 			if ($i > 1) $t = substr_replace($t, "\n", $pos - self::tosub, 0); // 0 is "magic" as defined in the PHP function
-			$pos += self::tml + 1; // + 1 for the newline added; I don't think it matters, but I'm leaving it.
+			$pos += self::tml;
 		}
 		
 		return $t;
