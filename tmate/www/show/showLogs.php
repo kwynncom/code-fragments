@@ -10,6 +10,8 @@ class tmate_logs_show implements tmate_config {
 	const nll = 32; // to fix newline issue - strlen of "Sat Jul 15 01:30:16 2023 [tmate]"
 	const needle = '[tmate]';
 	const tml =  7; // stelen of "[tmate]"
+	const tosub = self::nll - self::tml;
+	const maxtmate = 20;
 	
 	private string $user;
 	
@@ -63,24 +65,19 @@ class tmate_logs_show implements tmate_config {
 	}
 	
 	private function fixNewline(string $tin) : string {
-		$w = self::nll;
-		$tw = self::tml;
-		$pos = 0;
-		$i = 0;
-		
-		$tin = trim($tin);
 
-		while ($i++ < 10) {
-			$pos = strpos($tin, self::needle, $pos);
+		$t = trim($tin); unset($tin);
+
+		$i = $pos = 0;
+
+		while ($i++ < self::maxtmate) { // sanity check; prevent infinite loop
+			$pos = strpos($t, self::needle, $pos);
 			if ($pos === false) break;
-			if ($i > 1) $tin = substr_replace($tin, "\n", $pos - $w + $tw, 0);
-			$pos += $tw + 1;
-			continue;
+			if ($i > 1) $t = substr_replace($t, "\n", $pos - self::tosub, 0); // 0 is "magic" as defined in the PHP function
+			$pos += self::tml + 1; // + 1 for the newline added; I don't think it matters, but I'm leaving it.
 		}
 		
-		// $tout .= substr($tin, $pp);
-		
-		return $tin;
+		return $t;
 	}
 	
 	private function do40() {
