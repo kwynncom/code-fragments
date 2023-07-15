@@ -8,6 +8,7 @@ class tmate_logs_show implements tmate_config {
 	
 	const tpfx = __DIR__ . '/template/';
 	const nll = 32; // to fix newline issue - strlen of "Sat Jul 15 01:30:16 2023 [tmate]"
+	const needle = '[tmate]';
 	const tml =  7; // stelen of "[tmate]"
 	
 	private string $user;
@@ -64,23 +65,22 @@ class tmate_logs_show implements tmate_config {
 	private function fixNewline(string $tin) : string {
 		$w = self::nll;
 		$tw = self::tml;
-		$tout = '';
-		$pp = 0;
-		$i  = 0;
-		while (($pos = strpos($tin, '[tmate]', $pp)) !== FALSE) {
-			$p10 = $pos - ($w - $tw);
-			$s10 = substr($tin, $pp, $pos - $p10);
-			$l10 = strlen($s10);
-			$tout .= $s10;
-			if ($pp !== 0) $tout .= "\n";
-			$tout .= substr($tin, $p10, $pos + $tw);			
-			$pp   = $pos + $tw;
-			if ($i++ > 3) break;
-		}		
+		$pos = 0;
+		$i = 0;
+		
+		$tin = trim($tin);
+
+		while ($i++ < 10) {
+			$pos = strpos($tin, self::needle, $pos);
+			if ($pos === false) break;
+			if ($i > 1) $tin = substr_replace($tin, "\n", $pos - $w + $tw, 0);
+			$pos += $tw + 1;
+			continue;
+		}
 		
 		// $tout .= substr($tin, $pp);
 		
-		return $tout;
+		return $tin;
 	}
 	
 	private function do40() {

@@ -5,7 +5,6 @@ header('Content-Type: text/plain');
 require_once(__DIR__ . '/config.php');
 
 $t = tmate_get_vinord();
-$t .= "\n";
 $t .= $_SERVER['REMOTE_ADDR'] . '' . "\n";
 
 // note that I am making assumptions about this format on the display / show side
