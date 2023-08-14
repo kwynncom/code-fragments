@@ -21,4 +21,4 @@ echo date >> $KWBK23LOG
 echo END  >> $KWBK23LOG
 
 cat $KWBK23LOG | grep ++
-cat $KWBK23LOG | grep -P "\.\." 
+cat $KWBK23LOG | grep -P "\>f." | grep -P "\.\."
