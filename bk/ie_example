@@ -1,0 +1,12 @@
+# I removed ie from git for privacy / security reasons, so here is a sample
++ .bash_history
++ .aws
++ .ssh
++ .bashrc
+# The above have to be before the following or else the - takes precedence
+- /.*
+- */.git/*
+- */node_modules/*
+- /snap/*
+- */webserver/logs/*
+- /Desktop/symlink
