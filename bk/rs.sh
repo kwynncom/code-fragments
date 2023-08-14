@@ -1,10 +1,31 @@
 #! /bin/bash
 
-RTO=$1
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 
-rsync -aLvv --itemize-changes --exclude-from=./ie --mkpath $HOME/ $RTO/
+bash ./20_mount.sh
+
+source public_paths.sh
+source PRIVATE_paths.sh
+
+echo TO DIR below
+echo $KWBK23DATTOF 
+
+if [ -f "$KWBK23DATTOF" ]; then
+	echo no to dir
+	exit
+fi
+
+echo BEGIN > $KWBK23LOG
+echo date  >> $KWBK23LOG
+rsync -aLvv --itemize-changes --exclude-from=./ie --mkpath $HOME/ $KWBK23DATTOF/ >> $KWBK23LOG
+echo date >> $KWBK23LOG
+echo END  >> $KWBK23LOG
+
+LOG=$KWBK23LOG
+cat $LOG | grep ++
+cat $LOG | grep -P "\.\." 
+
 
 # -L copy sym links to referent
 # --archive, -a            archive mode is -rlptgoD (no -A,-X,-U,-N,-H)
