@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    />
+	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+	<title>Wordle, step by step</title>
+	
+	<script src='/opt/kwynn/js/utils.js'></script> <!-- an "include" going back to the C language -->
+	
+	<script>
+		function pickWord(n) {
+			const r10 = Math.random();
+			const r20 = n * r10;
+			const r30 = Math.floor(r20);
+			const r40 = parseInt(r30);
+			return r40;
+		}
+	</script>
+	
+	<script>
+		const WORDLIST = ['a', 'i'];
+		
+		onDOMLoad(() => 
+			{ 
+				const theWordN = pickWord(WORDLIST.length);
+				const theWord  = WORDLIST[theWordN];
+				inht('answerE10', theWord);
+				
+			});
+	</script>
+
+</head>
+<body>
+	
+	<p>Right now all that exists is the answer out of 1 letter Wordle, where the only 1 letter words are a and I (using lower case 'i').  
+		
+	</p>
+	
+	<div>
+		<table>
+			<tbody>
+				<tr><td id='answerE10'></td></tr>
+			</tbody>
+		</table>
+	</div>
+	
+	
+	<div>
+		<a href="https://kwynn.com/htval/?doc=https://kwynn.com/t/21/12/personal_blog.html"><img
+		src="/t/5/02/html5_valid.jpg"
+		alt="HTML5 validation check" width="103" height="36" /></a>
+	</div>
+</body>
+</html>
+
