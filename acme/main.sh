@@ -1,5 +1,6 @@
 FILELS=`pwd`/files.txt
-BASE=/tmp
+CREATE=`pwd`/create.sh
+
 
 cd $BASE
 IAMSHELLRAW=`ps -p $$`
@@ -9,23 +10,7 @@ echo "This shell that is running is $IAMSHELL"
 
 while IFS= read line; do
     
-    THISP=$BASE$line
-
-    if [ "$line" = "" ]; then
-        continue
-    fi
-
-    if test -f $THISP; then
-	echo "$line already exists"
-	continue
-    fi
-
-    if [ -d "$THISP" ]; then
-	mkdir -p "$THISP"
-    fi
-
-    touch $THISP
-    echo "$THISP created"
+   bash $CREATE $line
     
     
 
