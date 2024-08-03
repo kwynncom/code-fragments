@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- First-ever working example: veritcal orientation, 20% height of
-first child -->
-
-
+<!-- red -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -21,6 +17,8 @@ first child -->
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:gravity="top"
-            android:layout_weight="20" />
+            android:layout_weight="20"
+            android:background="#FF0000"
+            />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
