@@ -7,25 +7,29 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
-<script>
+<script> // 4:52am - iframe starting to work
 class kwstopwatch {
     
-    setU(U) {
-	const min = 1727597589000;
+    setU() {
+	
+	const e = window.parent.document.getElementById('kwstopwatch');
+	const Us = e.dataset.u;
+	let U = parseInt(Us);
+	
+	const min = 1327599879000;
 	if (U < min) U *= 1000;
 	kwas(U > min, 'timestamp too early');
 	this.U = U;
     }
     
-    constructor(id, U) {
-	this.id = id;
-	this.setU(U);
+    constructor() {
+	this.oute = byid('out10');
+	this.setU();
 	this.doit();
     }
     
     doit() {
 	
-	// 227 too fast
 	const interval = 269;
 	this.doon10();
 	this.theintv = setInterval(() => { this.doon10(); }, interval);
@@ -36,11 +40,17 @@ class kwstopwatch {
 	const ds  = dms / 1000;
 	const df  = ds.toFixed(2);
 	// const df = df10.r
-	inht(this.id, df);
+	inht(this.oute, df);
     }
     
 
 }
+
+onDOMLoad(
+    () => {
+	new kwstopwatch();
+    }
+);
 </script>
 
 </head>
@@ -48,17 +58,7 @@ class kwstopwatch {
 <div id='out10'>
 
 </div>
-<div>
-<?php 
-    require_once('/opt/kwynn/kwutils.php');
-    $now = time();
-    echo(date('r', $now)); 
-?>
-</div>
 
-<script>
-    new kwstopwatch('out10', <?php echo($now); ?>);
-</script>
 
 </body>
 </html>
