@@ -14,7 +14,7 @@
     require_once('/opt/kwynn/kwutils.php');
     $U = time();
 ?>
-<iframe id='kwstopwatch' src='./stopwatch.php' style='width: 10em; height: 1.6em; border: none; font-size: 90%; ' 
+<iframe id='kwstopwatch' src='./stopwatch.php' style='width: 10em; height: 1.6em; border: none; font-size: 130%; ' 
     data-u='<?php echo($U); ?>'>
 
 </iframe>
