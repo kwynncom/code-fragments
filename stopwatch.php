@@ -73,9 +73,10 @@ onDOMLoad(
 
 </head>
 <body style='padding: 0; margin: 0; '>
-<div style='font-size: 10vw; '>
-    <div id='out10' style='font-family: monospace; display: inline-block; '></div>
-    <button id='btn10' style='display: inline-block; transform: scale(0.8, 0.8);  ' onclick='KWSW.toggle(); '>stop</button>
+<div style=''>
+    <div id='out10' style='font-size: 10vw;  font-family: monospace; display: inline-block; '></div>
+    <button id='btn10' style='display: inline-block; height: 90vh; width: 27vw; transform: scale(0.9, 0.9); ' 
+	    onclick='KWSW.toggle(); '>stop</button>
 </div>
 
 </body>
