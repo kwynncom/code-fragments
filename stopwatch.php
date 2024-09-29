@@ -7,7 +7,7 @@
 
 <script src='/opt/kwynn/js/utils.js'></script>
 
-<script> // 4:52am - iframe starting to work
+<script> // stop and start working
 class kwstopwatch {
     
     setU() {
@@ -25,40 +25,58 @@ class kwstopwatch {
     constructor() {
 	this.oute = byid('out10');
 	this.setU();
-	this.doit();
+	this.start();
     }
     
-    doit() {
+   
+    
+    start() {
 	
 	const interval = 269;
 	this.doon10();
 	this.theintv = setInterval(() => { this.doon10(); }, interval);
     }
     
+    toggle() { 
+	if (this.theintv) {
+	    clearInterval(this.theintv);
+	    this.theintv = null;
+	    const e10 = byid('btn10');
+	    e10.innerHTML = 'start';
+	    const ignore46 = true;
+	}
+	else {
+	    this.start();
+	     byid('btn10').innerHTML = 'stop';
+	}
+
+    }
+    
     doon10() {
 	const dms = time() - this.U;
 	const ds  = dms / 1000;
-	const df  = ds.toFixed(2);
-	// const df = df10.r
+	const df  = ds.toFixed(1);
 	inht(this.oute, df);
     }
     
 
 }
 
+var KWSW;
+
 onDOMLoad(
     () => {
-	new kwstopwatch();
+	KWSW = new kwstopwatch(); 
     }
 );
 </script>
 
 </head>
-<body>
-<div id='out10'>
-
+<body style='padding: 0; margin: 0; '>
+<div>
+    <div id='out10' style='font-family: monospace; display: inline-block; '></div>
+    <button id='btn10' style='display: inline-block; transform: scale(0.8, 0.8);  ' onclick='KWSW.toggle(); '>stop</button>
 </div>
-
 
 </body>
 </html>
