@@ -1,6 +1,7 @@
-drop database airbnb;
-create database airbnb;
-use airbnb;
+-- rc3 version of whole file 02:10
+DROP DATABASE IF EXISTS airbnb;
+CREATE DATABASE airbnb;
+USE airbnb;
 
 CREATE TABLE `airbnb`.`dim_listings_airbnb` (
   `listing_id` INT NOT NULL AUTO_INCREMENT,
@@ -14,7 +15,7 @@ CREATE TABLE `airbnb`.`dim_bookings_airbnb` (
    FOREIGN KEY (`listing_id`) REFERENCES dim_listings_airbnb(listing_id),
   `reservation_time` DATETIME NOT NULL,
   PRIMARY KEY (`reservation_id`));
-  
+ 
   INSERT INTO
 dim_listings_airbnb
 (country, listing_created_at)
@@ -26,21 +27,16 @@ dim_listings_airbnb
 (country, listing_created_at)
 VALUES
 ('Australia', '2024-10-03 01:47:12');
-  
-    INSERT INTO
-dim_listings_airbnb
-(country, listing_created_at)
-VALUES
-('Australia', '2024-10-03 01:47:12');
+ 
 
 
-    INSERT INTO
+	INSERT INTO
 dim_listings_airbnb
 (country, listing_created_at)
 VALUES
 ('Sweden', '2024-10-05 08:51:46');
 
-INSERT INTO dim_bookings_airbnb 
+INSERT INTO dim_bookings_airbnb
 (
 listing_id,
 reservation_time
@@ -77,37 +73,150 @@ INSERT INTO dim_bookings_airbnb ( listing_id, reservation_time ) VALUES (
 );
 
 -- basic query 1
-SELECT 
+SELECT
 reservation_id,
 l.listing_id,
 country,
 reservation_time
 listing_created_at
-FROM 
+FROM
 dim_listings_airbnb l,
 dim_bookings_airbnb b
 WHERE l.listing_id = b.listing_id;
 
 -- Narrowing attempt 1; maybe it works?  Not sure yet
 -- I think it does work.
-SELECT 
+SELECT
 reservation_id,
 l.listing_id,
 country,
 reservation_time,
 listing_created_at
-FROM 
+FROM
 dim_listings_airbnb l,
 dim_bookings_airbnb b
 WHERE l.listing_id = b.listing_id
-AND 
-reservation_id = 
+AND
+reservation_id =
 (
-SELECT reservation_id FROM 
+SELECT reservation_id FROM
 dim_bookings_airbnb b2
 WHERE
 b2.listing_id = b.listing_id
 ORDER BY reservation_time ASC
 LIMIT 1 OFFSET 1
 );
+
+-- for testing
+select * from dim_bookings_airbnb
+ORDER BY
+reservation_time ASC;
+
+-- datediff almost 00:27
+SELECT
+reservation_id,
+l.listing_id,
+country,
+reservation_time,
+listing_created_at,
+CASE
+	WHEN country LIKE '%land' THEN 'Land Countries'
+	WHEN country LIKE '%a'	THEN 'Ending A Countries'
+	ELSE 'Other Countries'
+END AS country_type
+-- DATEDIFF(days, reservation_time, listing_created_at)
+FROM
+dim_listings_airbnb l,
+dim_bookings_airbnb b
+WHERE l.listing_id = b.listing_id
+AND
+reservation_id =
+(
+SELECT reservation_id FROM
+dim_bookings_airbnb b2
+WHERE
+b2.listing_id = b.listing_id
+ORDER BY reservation_time ASC
+LIMIT 1 OFFSET 1
+)
+GROUP BY country_type;
+
+-- TIMESTAMPDIFF 01:12
+SELECT
+reservation_id,
+l.listing_id,
+country,
+reservation_time,
+listing_created_at,
+CASE
+	WHEN country LIKE '%land' THEN 'Land Countries'
+	WHEN country LIKE '%a'	THEN 'Ending A Countries'
+	ELSE 'Other Countries'
+END AS country_type,
+ROUND(TIMESTAMPDIFF(second, listing_created_at, reservation_time) / 86400, 3) AS days
+FROM
+dim_listings_airbnb l,
+dim_bookings_airbnb b
+WHERE l.listing_id = b.listing_id
+AND
+reservation_id =
+(
+SELECT reservation_id FROM
+dim_bookings_airbnb b2
+WHERE
+b2.listing_id = b.listing_id
+ORDER BY reservation_time ASC
+LIMIT 1 OFFSET 1
+)
+GROUP BY country_type;
+
+-- rc1 01:13
+SELECT
+CASE
+	WHEN country LIKE '%land' THEN 'Land Countries'
+	WHEN country LIKE '%a'	THEN 'Ending A Countries'
+	ELSE 'Other Countries'
+END AS country_type,
+ROUND(TIMESTAMPDIFF(second, listing_created_at, reservation_time) / 86400, 3) AS days
+FROM
+dim_listings_airbnb l,
+dim_bookings_airbnb b
+WHERE l.listing_id = b.listing_id
+AND
+reservation_id =
+(
+SELECT reservation_id FROM
+dim_bookings_airbnb b2
+WHERE
+b2.listing_id = b.listing_id
+ORDER BY reservation_time ASC
+LIMIT 1 OFFSET 1
+)
+GROUP BY country_type
+ORDER BY days;
+
+-- FINAL ANSWER rc2 / release candidate 2 / try 2 - with AVG; 01:54
+SELECT
+CASE
+	WHEN country LIKE '%land' THEN 'Land Countries'
+	WHEN country LIKE '%a'	THEN 'Ending A Countries'
+	ELSE 'Other Countries'
+END AS country_type,
+ROUND(AVG(TIMESTAMPDIFF(second, listing_created_at, reservation_time)) / 86400, 3) AS days
+FROM
+dim_listings_airbnb l,
+dim_bookings_airbnb b
+WHERE l.listing_id = b.listing_id
+AND
+reservation_id =
+(
+SELECT reservation_id FROM
+dim_bookings_airbnb b2
+WHERE
+b2.listing_id = b.listing_id
+ORDER BY reservation_time ASC
+LIMIT 1 OFFSET 1
+)
+GROUP BY country_type
+ORDER BY days;
 
