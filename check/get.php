@@ -10,30 +10,60 @@ class mysckCl implements mysckpopa {
     const shouldDoIt = false;
     const maxRLen = 4500;
     const minRLen = 3000;
+    const minCopyrightYear = 2024;
     
-    private readonly object $dom;
-    private readonly string $lval;
+    private readonly string $theHTRT10;
+    private readonly string $theHTRVal30;
     private readonly int    $ridx;
+    private readonly bool   $needToAct;
 
     public function __construct() {
 	$res = $this->get();
-	$this->do10($res); unset($res);
-	$this->do20();
+	$dom = $this->getDOM($res); unset($res);
+	$this->do20($dom); unset($dom);
 	$this->do30();
+	$this->do40();
     }
+
+    private function do40() {
+	$ss = substr($this->theHTRVal30, 0, 7);
+	if ($ss === 'You are' && self::replyBools[$this->ridx] === true) {  $this->needToAct = true; return; } unset($ss);
+	$ss20 = substr($this->theHTRVal30, 12, 6);
+	if ($ss20 === 'is not' && self::replyBools[$this->ridx] === false) {
+	    $this->needToAct = false; 
+	    return;
+	}
+	
+	kwas(false, 'bad HT value 350418');
+    }
+    
 
     private function do30() {
 	$test = self::replies[$this->ridx] . date('F d') . '.';
-	kwas($this->lval === $test, 'bad result 270335' );
+	kwas($this->theHTRT10 === $test, 'bad result 270335' ); unset($test);
+	$this->theHTRVal30 = $this->theHTRT10;
     }
 
-    private function do20() {
-	$f = $this->dom->getElementById('en-result');
-	$l = $f->getElementsByTagName('label')->item(0);
+    private function do25(object $dom) : bool {
+	$p = $dom->getElementById('en-copy');
+	$c10 = mb_substr($p->nodeValue, 0, 1);
+	kwas($c10 === '©', 'bad value reply 480431');
+	$c20 = intval(mb_substr($p->nodeValue, 2, 4));
+	kwas(is_integer($c20) && $c20 >= self::minCopyrightYear, 'bad value 510438');
+	$c30 = mb_substr($p->nodeValue, 7, strlen(self::copyrightOwner));
+	kwas($c30 === self::copyrightOwner, 'bad value 530441');
+	return true;
+
+    }
+
+    private function do20(object $dom) {
+	kwas($this->do25($dom), 'bad value 590441');
+	$f = $dom->getElementById('en-result'); unset($dom);
+	$l = $f->getElementsByTagName('label')->item(0); unset($f);
 	kwas($l->getAttribute('for') === 'reply', 'bad match ele 230321');
-	$this->lval = $l->nodeValue;
+	$this->theHTRT10 = $l->nodeValue; unset($l);
 	foreach(self::replies as $i => $vv) {
-	    $ss = substr($this->lval, 0, strlen($vv));
+	    $ss = substr($this->theHTRT10, 0, strlen($vv));
 	    if ($ss === $vv) {
 		$this->ridx = $i;
 		return;
@@ -44,13 +74,12 @@ class mysckCl implements mysckpopa {
 	return;
     }
 
-    private function do10(string $t) {
+    private function getDOM(string $t) : object {
 	$o = new DOMDocument();
 	libxml_use_internal_errors(true);
 	$o->loadHTML($t); unset($t);
 	libxml_clear_errors();	
-	$this->dom = $o;
-	return;
+	return $o;
 
     }
 
@@ -63,10 +92,21 @@ class mysckCl implements mysckpopa {
     
     private function get() {
 	if (self::shouldDoIt) return $this->getActual();
-	$rand = random_int(0, 1);
+	$rand = random_int(0, count(self::tf) - 1);
 	$tr = file_get_contents(self::tf[$rand]);
 	return $this->validrord($tr);
 	
+    }
+
+    private function putRecord(string $res) : string {
+
+	static $i = 0;
+
+	$f = date('Y-m-d_Hi_s_') . '' . ++$i . '_' . (PHP_SAPI === 'cli' ? 'cli' : 'www') . '_' . (self::shouldDoIt ? 'live' : 'test') . '.html';
+	$p = self::resStoragePath . $f;
+	$fpr = file_put_contents($p, $res);
+	kwas($fpr === strlen($res), 'bad file put 770356');
+	return $res;
     }
 
     private function getActual() : string {
@@ -80,7 +120,8 @@ class mysckCl implements mysckpopa {
 	if (self::shouldDoIt) {
 	    $response = curl_exec($ch);
 	    curl_close($ch);
-	    return $this->validord($response);
+	    $vres = $this->validrord($response);
+	    return $this->putRecord($vres);
 	}
 
 	return 'check is turned off';
