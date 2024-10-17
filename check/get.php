@@ -13,7 +13,7 @@ class mysckCl implements mysckpopa {
     const minCopyrightYear = 2024;
     
     private readonly string $theHTRT10;
-    private readonly string $theHTRVal30;
+    private readonly string $todayValR;
     private readonly int    $ridx;
     private readonly bool   $needToAct;
 
@@ -21,30 +21,30 @@ class mysckCl implements mysckpopa {
 	$res = $this->get();
 	$dom = $this->getDOM($res); unset($res);
 	$this->do20($dom); unset($dom);
-	$this->do30();
+	$this->todayTest();
 	$this->do40();
     }
 
-    private function do40() {
-	$ss = substr($this->theHTRVal30, 0, 7);
-	if ($ss === 'You are' && self::replyBools[$this->ridx] === true) {  $this->needToAct = true; return; } unset($ss);
-	$ss20 = substr($this->theHTRVal30, 12, 6);
+    private function do40() : bool {
+	$ss = substr($this->todayValR, 0, 7);
+	if ($ss === 'You are' && self::replyBools[$this->ridx] === true) {  $this->needToAct = true; return $this->needToAct; } unset($ss);
+	$ss20 = substr($this->todayValR, 12, 6);
 	if ($ss20 === 'is not' && self::replyBools[$this->ridx] === false) {
 	    $this->needToAct = false; 
-	    return;
+	    return  $this->needToAct;
 	}
 	
 	kwas(false, 'bad HT value 350418');
     }
     
 
-    private function do30() {
+    private function todayTest() {
 	$test = self::replies[$this->ridx] . date('F d') . '.';
-	kwas($this->theHTRT10 === $test, 'bad result 270335' ); unset($test);
-	$this->theHTRVal30 = $this->theHTRT10;
+	kwas($this->theHTRT10 === $test, 'bad result 270335 - date is not today' ); unset($test);
+	$this->todayValR = $this->theHTRT10;
     }
 
-    private function do25(object $dom) : bool {
+    private function checkCopyrightOrDie(object $dom) : bool {
 	$p = $dom->getElementById('en-copy');
 	$c10 = mb_substr($p->nodeValue, 0, 1);
 	kwas($c10 === '©', 'bad value reply 480431');
@@ -57,7 +57,7 @@ class mysckCl implements mysckpopa {
     }
 
     private function do20(object $dom) {
-	kwas($this->do25($dom), 'bad value 590441');
+	kwas($this->checkCopyrightOrDie($dom) === true, 'bad value 590441');
 	$f = $dom->getElementById('en-result'); unset($dom);
 	$l = $f->getElementsByTagName('label')->item(0); unset($f);
 	kwas($l->getAttribute('for') === 'reply', 'bad match ele 230321');
