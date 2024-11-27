@@ -1,6 +1,6 @@
 <?php
 
-class genericGETCl {
+class genericGETCl implements mysckpopa_get {
 
 
     const maxRLen = 4500;
@@ -15,13 +15,13 @@ class genericGETCl {
     public	    array  $validations;
     public readonly object $dom;
 
-    public static function get(string $source, string $copyrightOwner, array $posta = []) : object {
+    public static function get(string $source, array $posta = []) : object {
 	$o = new self();
-	$o->getI($source, $copyrightOwner, $posta);
+	$o->getI($source, $posta);
 	return $o;
     }
 
-    private function getI(string $source, string $cro, array $posta) {
+    private function getI(string $source, array $posta) {
 	
 	$this->UusBeforeGET = microtime(true);
 	
@@ -38,13 +38,13 @@ class genericGETCl {
 
 	$this->validrord($this->body);
 
-	$this->checkCopyrightOrDie($this->body, $cro);
+	$this->checkCopyrightOrDie($this->body);
 
     }
 
 
 
-    private function checkCopyrightOrDie(string $t, string $cro) : bool {
+    private function checkCopyrightOrDie(string $t) : bool {
 
 	$this->dom = getDOM($t); unset($t);
 	$p = $this->dom->getElementById('en-copy');
@@ -54,11 +54,11 @@ class genericGETCl {
 	kwas(is_integer($c20) && $c20 >= self::minCopyrightYear, 'bad value 510438');
 	$this->validations['copyright_year'] = true;
 
-	$cro = trim($cro);
+	$cro = trim(self::copyrightOwner);
 	$lcro = strlen($cro);
 	kwas($lcro > 0, 'bad owner len bownl');
 	$c30 = mb_substr($p->nodeValue, 7, $lcro);
-	kwas($c30 === $cro, 'bad value 530441');
+	kwas($c30 === self::copyrightOwner, 'bad value 530441');
 	$this->validations['copyright_owner'] = true;
 
 	return true;

@@ -7,15 +7,16 @@ require_once('/var/kwynn/mystery_2024_0920_1/params.php');
 require_once('getDOM.php');
 require_once('getGeneric.php');
 
-class mysckCl implements mysckpopa {
+class mysckCl implements mysckpopa_parse {
 
     const shouldDoIt = false;
     
-    private readonly string $pageActionRawTxt;
-    private readonly string $pageActionTodayTxt;
+    public  readonly string $pageActionRawTxt;
+    public  readonly string $pageActionTodayTxt;
     private readonly string $replyKey;
-    private readonly bool   $needToAct;
+    public  readonly bool   $needToAct;
     private readonly object $dom;
+    public  readonly string $rawht;
 
     public function __construct() {
 	$dom = $this->getDOM();
@@ -79,7 +80,8 @@ class mysckCl implements mysckpopa {
 	    $posta = [];
 	}
 
-	$reso = genericGETCl::get($source, self::copyrightOwner, $posta);
+	$reso = genericGETCl::get($source, $posta);
+	$this->rawht = $reso->body;
 	return $reso->dom;
 
 	
