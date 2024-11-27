@@ -12,9 +12,9 @@ class mysckCl implements mysckpopa {
     const minRLen = 3000;
     const minCopyrightYear = 2024;
     
-    private readonly string $theHTRT10;
-    private readonly string $todayValR;
-    private readonly int    $ridx;
+    private readonly string $pageActionRawTxt;
+    private readonly string $pageActionTodayTxt;
+    private readonly string $replyKey;
     private readonly bool   $needToAct;
 
     public function __construct() {
@@ -23,25 +23,30 @@ class mysckCl implements mysckpopa {
 	$this->do20($dom); unset($dom);
 	$this->todayTest();
 	$this->do40();
+	$this->reportCli();
+    }
+
+    private function reportCli() {
+	if (!iscli()) return;
+	echo('Action Needed = ' . ($this->needToAct ? 'Yes' : 'no') . "\n");
     }
 
     private function do40() : bool {
-	$ss = substr($this->todayValR, 0, 7);
-	if ($ss === 'You are' && self::replyBools[$this->ridx] === true) {  $this->needToAct = true; return $this->needToAct; } unset($ss);
-	$ss20 = substr($this->todayValR, 12, 6);
-	if ($ss20 === 'is not' && self::replyBools[$this->ridx] === false) {
-	    $this->needToAct = false; 
-	    return  $this->needToAct;
-	}
+
+	if   (   substr($this->pageActionTodayTxt,  0, 7) === 'You are' && $this->replyKey === 'Y') $this->needToAct = true; 
+	else if (substr($this->pageActionTodayTxt, 12, 6) === 'is not'  && $this->replyKey === 'N') $this->needToAct = false;
+
 	
-	kwas(false, 'bad HT value 350418');
+	kwas(      isset  ($this->needToAct) 
+	        && is_bool($this->needToAct), 'bad YN-field value 350418 badhtv');
+	return	           $this->needToAct; // redundant check
     }
     
 
     private function todayTest() {
-	$test = self::replies[$this->ridx] . date('F d') . '.';
-	kwas($this->theHTRT10 === $test, 'bad result 270335 - date is not today' ); unset($test);
-	$this->todayValR = $this->theHTRT10;
+	$test = self::replyStrings[$this->replyKey] . date('F d') . '.';
+	kwas($this->pageActionRawTxt === $test, 'bad result 270335 - date is not today' ); unset($test);
+	$this->pageActionTodayTxt = $this->pageActionRawTxt;
     }
 
     private function checkCopyrightOrDie(object $dom) : bool {
@@ -61,11 +66,11 @@ class mysckCl implements mysckpopa {
 	$f = $dom->getElementById('en-result'); unset($dom);
 	$l = $f->getElementsByTagName('label')->item(0); unset($f);
 	kwas($l->getAttribute('for') === 'reply', 'bad match ele 230321');
-	$this->theHTRT10 = $l->nodeValue; unset($l);
-	foreach(self::replies as $i => $vv) {
-	    $ss = substr($this->theHTRT10, 0, strlen($vv));
+	$this->pageActionRawTxt = $l->nodeValue; unset($l);
+	foreach(self::replyStrings as $tfv => $vv) {
+	    $ss = substr($this->pageActionRawTxt, 0, strlen($vv));
 	    if ($ss === $vv) {
-		$this->ridx = $i;
+		$this->replyKey = $tfv;
 		return;
 	    }
 	}
