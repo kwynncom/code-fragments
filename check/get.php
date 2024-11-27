@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('/var/kwynn/mystery_2024_0920_1/params.php');
+require_once('getDOM.php');
 require_once('getGeneric.php');
 
 class mysckCl implements mysckpopa {
 
     const shouldDoIt = false;
-    const minCopyrightYear = 2024;
     
     private readonly string $pageActionRawTxt;
     private readonly string $pageActionTodayTxt;
     private readonly string $replyKey;
     private readonly bool   $needToAct;
+    private readonly object $dom;
 
     public function __construct() {
-	$res = $this->getHT();
-	$dom = $this->getDOM($res); unset($res);
+	$dom = $this->getDOM();
 	$this->do20($dom); unset($dom);
 	$this->todayTest();
 	$this->do40();
@@ -48,20 +48,8 @@ class mysckCl implements mysckpopa {
 	$this->pageActionTodayTxt = $this->pageActionRawTxt;
     }
 
-    private function checkCopyrightOrDie(object $dom) : bool {
-	$p = $dom->getElementById('en-copy');
-	$c10 = mb_substr($p->nodeValue, 0, 1);
-	kwas($c10 === '©', 'bad value reply 480431');
-	$c20 = intval(mb_substr($p->nodeValue, 2, 4));
-	kwas(is_integer($c20) && $c20 >= self::minCopyrightYear, 'bad value 510438');
-	$c30 = mb_substr($p->nodeValue, 7, strlen(self::copyrightOwner));
-	kwas($c30 === self::copyrightOwner, 'bad value 530441');
-	return true;
-
-    }
 
     private function do20(object $dom) {
-	kwas($this->checkCopyrightOrDie($dom) === true, 'bad value 590441');
 	$f = $dom->getElementById('en-result'); unset($dom);
 	$l = $f->getElementsByTagName('label')->item(0); unset($f);
 	kwas($l->getAttribute('for') === 'reply', 'bad match ele 230321');
@@ -78,17 +66,9 @@ class mysckCl implements mysckpopa {
 	return;
     }
 
-    private function getDOM(string $t) : object {
-	$o = new DOMDocument();
-	libxml_use_internal_errors(true);
-	$o->loadHTML($t); unset($t);
-	libxml_clear_errors();	
-	return $o;
-
-    }
 
     
-    private function getHT() : string {
+    private function getDOM() : object {
 	if (self::shouldDoIt) {
 	    $source = mysckpopa::url;
 	    $posta  = mysckpopa::post;
@@ -99,8 +79,8 @@ class mysckCl implements mysckpopa {
 	    $posta = [];
 	}
 
-	$reso = genericGETCl::get($source, $posta);
-	return $reso->body;
+	$reso = genericGETCl::get($source, self::copyrightOwner, $posta);
+	return $reso->dom;
 
 	
     }
