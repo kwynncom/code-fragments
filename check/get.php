@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
 require_once('/var/kwynn/mystery_2024_0920_1/params.php');
+require_once('getGeneric.php');
 
 class mysckCl implements mysckpopa {
 
     const shouldDoIt = false;
-    const maxRLen = 4500;
-    const minRLen = 3000;
     const minCopyrightYear = 2024;
     
     private readonly string $pageActionRawTxt;
@@ -18,7 +17,7 @@ class mysckCl implements mysckpopa {
     private readonly bool   $needToAct;
 
     public function __construct() {
-	$res = $this->get();
+	$res = $this->getHT();
 	$dom = $this->getDOM($res); unset($res);
 	$this->do20($dom); unset($dom);
 	$this->todayTest();
@@ -88,18 +87,21 @@ class mysckCl implements mysckpopa {
 
     }
 
-    private function validrord($resin) : string {
-	kwas($resin && is_string($resin), 'response fail 1100302');
-	$l = strlen($resin);
-	kwas($l >= self::minRLen && $l <= self::maxRLen, 'response fail 2140303');
-	return $resin;
-    }
     
-    private function get() {
-	if (self::shouldDoIt) return $this->getActual();
-	$rand = random_int(0, count(self::tf) - 1);
-	$tr = file_get_contents(self::tf[$rand]);
-	return $this->validrord($tr);
+    private function getHT() : string {
+	if (self::shouldDoIt) {
+	    $source = mysckpopa::url;
+	    $posta  = mysckpopa::post;
+	}
+	else { 
+	    $rand = random_int(0, count(self::tf) - 1);
+	    $source = self::tf[$rand];
+	    $posta = [];
+	}
+
+	$reso = genericGETCl::get($source, $posta);
+	return $reso->body;
+
 	
     }
 
@@ -114,24 +116,6 @@ class mysckCl implements mysckpopa {
 	return $res;
     }
 
-    private function getActual() : string {
-
-
-	$ch = curl_init(mysckpopa::url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, mysckpopa::post);
-
-
-	if (self::shouldDoIt) {
-	    $response = curl_exec($ch);
-	    curl_close($ch);
-	    $vres = $this->validrord($response);
-	    return $this->putRecord($vres);
-	}
-
-	return 'check is turned off';
-
-    }
 }
 
 if (didCLICallMe(__FILE__)) new mysckCl();
