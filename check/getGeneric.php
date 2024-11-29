@@ -27,7 +27,7 @@ class genericGETCl implements mysckpopa_get {
 	
 	if ($source[0] !== '/') {
 	    $this->sourceHighLevel = 'curl';
-	    $this->body = $this->curlGET($url, $posta);
+	    $this->body = $this->curlGET($source, $posta);
 	} else {
 	    $this->sourceHighLevel = 'file_local_test';
 	    $this->body = file_get_contents($source);
@@ -83,7 +83,7 @@ class genericGETCl implements mysckpopa_get {
 
 	$response = curl_exec($ch);
 	curl_close($ch);
-	return $reponse;
+	return $response;
 
     }
 

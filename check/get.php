@@ -9,7 +9,7 @@ require_once('getGeneric.php');
 
 class mysckCl implements mysckpopa_parse {
 
-    const shouldDoIt = false;
+    const shouldDoIt = true;
     
     public  readonly string $pageActionRawTxt;
     public  readonly string $pageActionTodayTxt;
@@ -71,8 +71,8 @@ class mysckCl implements mysckpopa_parse {
     
     private function getDOM() : object {
 	if (self::shouldDoIt) {
-	    $source = mysckpopa::url;
-	    $posta  = mysckpopa::post;
+	    $source = mysckpopa_get::url;
+	    $posta  = mysckpopa_get::post;
 	}
 	else { 
 	    $rand = random_int(0, count(self::tf) - 1);
