@@ -10,10 +10,12 @@ class genericGETCl implements mysckpopa_get {
 
     public readonly float  $UusBeforeGET;
     public readonly float  $UusAfterGET ;
+    public readonly int    $U;
     public readonly string $sourceHighLevel;
     public readonly string $body;
     public	    array  $validations;
     public readonly object $dom;
+    public readonly array  $posta;
 
     public static function get(string $source, array $posta = []) : object {
 	$o = new self();
@@ -22,6 +24,8 @@ class genericGETCl implements mysckpopa_get {
     }
 
     private function getI(string $source, array $posta) {
+
+	    $this->posta = $posta;
 	
 	$this->UusBeforeGET = microtime(true);
 	
@@ -34,7 +38,8 @@ class genericGETCl implements mysckpopa_get {
 	}
 
 
-	$this->UusAfterGET  = microtime(true);
+	$tu38 = $this->UusAfterGET  = microtime(true);
+	$this->U = roint($tu38); unset($tu38);
 
 	$this->validrord($this->body);
 
@@ -77,6 +82,7 @@ class genericGETCl implements mysckpopa_get {
     private static function curlGET(string $url, array $posta) : string {
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $posta);
 
 	if (iscli()) echo('Running CURL...' . "\n");

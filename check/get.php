@@ -6,6 +6,7 @@ require_once('/opt/kwynn/kwutils.php');
 require_once('/var/kwynn/mystery_2024_0920_1/params.php');
 require_once('getDOM.php');
 require_once('getGeneric.php');
+require_once('dao.php');
 
 class mysckCl implements mysckpopa_parse {
 
@@ -70,17 +71,19 @@ class mysckCl implements mysckpopa_parse {
 
     
     private function getDOM() : object {
+
+	$posta  = mysckpopa_get::post;
+
 	if (self::shouldDoIt) {
 	    $source = mysckpopa_get::url;
-	    $posta  = mysckpopa_get::post;
 	}
 	else { 
 	    $rand = random_int(0, count(self::tf) - 1);
 	    $source = self::tf[$rand];
-	    $posta = [];
 	}
 
 	$reso = genericGETCl::get($source, $posta);
+	actCheckBegin2024DAOCl::put($reso);
 	$this->rawht = $reso->body;
 	return $reso->dom;
 
