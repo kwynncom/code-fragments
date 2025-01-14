@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'    >
+<meta name='viewport' content='width=device-width, initial-scale=1.0' >
+<title>Wordle analysis</title>
+
+<style>
+    input:invalid { background: salmon; }
+    input { font-size: 150%; }
+</style>
+
+<script src='/opt/kwynn/js/utils.js'></script>
+<script src='list2309.js'></script>
+<script>
+onDOMLoad(() =>
+    {
+	onInputF(byid('theguess'));
+    }
+);
+
+
+
+    const LLEN =  LIST.length;
+    const KWWL = 5;
+
+    String.prototype.l = function(hui) {
+	return this.substring(hui - 1, hui);
+    };
+    
+    const blankCmp = { 1 : '?', 2: '?', 3: '?', 4: '?', 5 : '?'};
+
+    class guessVWOTD {
+	constructor(wogu, wotd) {
+	    this.wogu = wogu;
+	    this.wotd = wotd;
+	    this.reso = {...blankCmp};
+	    this.do10();
+	    this.toString();
+	}
+	
+	toString() {
+	    let t = '';
+	    for (let i=1; i <= KWWL; i++) {
+		t += this.reso[i + ''];
+	    }
+	    
+	    this.ress = t;
+	    
+	    return;
+	}
+	
+	do10() {
+	    const g = this.wogu;
+	    const d = this.wotd;
+	    
+	    for(let i=1; i <= KWWL; i++) {
+		
+		if (this.reso[i + ''] !== '?') continue;
+		
+		const gl = g.l(i);
+		for(let j=1; j <= KWWL; j++) {
+		    
+		    const dl = d.l(j);
+		    if (gl === dl) {
+			if (i === j)  { this.reso[i + ''] = 'g'; break; }
+			else if (this.reso[i + ''] === '?')  { this.reso[i + ''] = 'y'; break; } 
+		    }
+		    
+		    if (j === KWWL) this.reso[i + ''] = '-';
+		}
+	    }
+	}
+    }
+
+
+    class guessGenAnalCl {
+	constructor(wogu) {
+	    this.wogu = wogu;
+	    this.do10();
+	}
+	
+	do10() {
+	    for (let i=0; i < LLEN; i++) {	    
+		new guessVWOTD(this.wogu, LIST[i]);
+		// break; // @(@(@(@(@(
+	    }
+	}
+    }
+
+    function wEvalAll(guessW) {
+
+	    new guessGenAnalCl(guessW);
+
+	    
+	
+    }
+
+    function onInputF(e) {
+	if (!e.validity.valid) return;
+	const s = e.value.toLowerCase();
+	wEvalAll(s);
+	
+	
+    }
+</script>
+
+</head>
+<body>
+    <div>
+	<label>guess:</label>
+	<input type='text' minlength='5' maxlength='5' size='5' pattern='^([A-Za-z]{5})$' oninput='onInputF(this);' id='theguess' />
+	
+
+    </div>
+</body>
+</html>
