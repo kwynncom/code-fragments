@@ -2,20 +2,26 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
-class actCheckBegin2024DAOCl {
+class actCheckBegin2024DAOCl extends dao_generic_4 {
     
     const dbname = 'actCheckBegin2024';
-    private readonly object $dato;
+    const actioncollnm = 'action';
+    private readonly array $data;
     private readonly string $f;
     
+    private readonly object $actionc;
 
-    public static function put(object $dato) {
-	new self($dato);
+
+    public static function put(array $data) {
+	new self($data);
     }
 
-    private function __construct(object $dato) {
-	$this->dato = $dato;
+    private function __construct(array $data) {
+	parent::__construct(self::dbname);
+	$this->actionc = $this->kwsel(self::actioncollnm);
+	$this->data = $data;
 	$this->tmpFilePut();
+	$this->actionc->insertOne($data);
     }
 
     private function getfn() {
@@ -30,7 +36,7 @@ class actCheckBegin2024DAOCl {
 	$res = file_put_contents($this->f, 'test');
 	kwas($res === 4, 'cannot write to file 310351');
 	kwas(chmod($this->f, 0600), 'cannot change file perms 310350');
-	file_put_contents($this->f, json_encode($this->dato, JSON_PRETTY_PRINT));
+	file_put_contents($this->f, json_encode($this->data, JSON_PRETTY_PRINT));
     }
 }
 

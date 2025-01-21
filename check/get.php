@@ -83,7 +83,9 @@ class mysckCl implements mysckpopa_parse {
 	}
 
 	$reso = genericGETCl::get($source, $posta);
-	actCheckBegin2024DAOCl::put($reso);
+	$resa = (array)$reso;
+	unset($resa['dom']);
+	actCheckBegin2024DAOCl::put($resa);
 	$this->rawht = $reso->body;
 	return $reso->dom;
 

@@ -5,7 +5,7 @@ require_once('/opt/kwynn/kwutils.php');
 
 class dailyCheckDao extends dao_generic_4 {
 
-    const dbname = 'dailyCheckMys202410';
+    const dbname = 'dailyCheckMys2024';
     const rawcollnm = 'raw';
 
     private readonly object $rawc;
