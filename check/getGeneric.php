@@ -80,6 +80,10 @@ class genericGETCl implements mysckpopa_get {
 
 
     private static function curlGET(string $url, array $posta) : string {
+
+
+	kwas(iscli(), 'not yet allowed in web mode');
+
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
