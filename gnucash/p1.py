@@ -2,6 +2,7 @@
 
 import sys
 from datetime import datetime
+import json
 
 from gnucash import GncNumeric, Session, SessionOpenMode
 
@@ -24,6 +25,8 @@ if __name__ == '__main__':
         splits = account.GetSplitList()
 
         tot = 0
+        list = []
+        i = 0
 
         for split in splits:
             transaction = split.GetParent()
@@ -37,11 +40,34 @@ if __name__ == '__main__':
 
                 # Convert to human-readable format
                 hu = trans_date.strftime('%m/%d')
+                huyr = trans_date.strftime('%m/%d/%Y')
                 f = trans_split.GetValue().to_double()
                 fs =  "{:,.2f}".format(f)
                 tot += f
                 tots = "{:,.2f}".format(tot)
+                descr = transaction.GetDescription()
+                recon = trans_split.GetReconcile()
 
-                print(hu, transaction.GetDescription(), aname, fs, tots)
+                o = {
+                    'hu' : hu,
+                    'd'  : descr,
+                    'nm' : aname,
+                    'r'  : recon,
+                    'f'  : f,
+                    'bal' : round(tot, 2),
+                    'huyr' : huyr,
+                    'U' : trans_date.timestamp(),
+                    'i' : i
+                }
+
+                i += 1
+
+                list.append(o)
+
+                # print(hu, descr , aname, recon, fs, tots)
+
+        json.dump(list, sys.stdout, indent=4)
+        print()
+
         ignore = 1
 
