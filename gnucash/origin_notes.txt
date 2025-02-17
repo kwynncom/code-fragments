@@ -11,6 +11,7 @@ python3-gnucash: /usr/share/doc/python3-gnucash/examples/export_account_totals.p
 
 sudo apt install python3-gnucash
 
+# in another directory from the installed above
  git remote show origin
 * remote origin
   Fetch URL: https://github.com/Gnucash/gnucash.git
