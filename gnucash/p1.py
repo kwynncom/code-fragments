@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+from datetime import datetime
 
 from gnucash import GncNumeric, Session, SessionOpenMode
 
@@ -22,6 +23,8 @@ if __name__ == '__main__':
         account = find_account_by_name(root_account, relevant_aname)
         splits = account.GetSplitList()
 
+        tot = 0
+
         for split in splits:
             transaction = split.GetParent()
             trans_splits = transaction.GetSplitList()
@@ -30,6 +33,15 @@ if __name__ == '__main__':
                 if aname == relevant_aname:
                     continue
 
-                print(trans_split.GetValue().to_double(), aname, transaction.GetDescription())
+                trans_date = transaction.GetDate()
+
+                # Convert to human-readable format
+                hu = trans_date.strftime('%m/%d')
+                f = trans_split.GetValue().to_double()
+                fs =  "{:,.2f}".format(f)
+                tot += f
+                tots = "{:,.2f}".format(tot)
+
+                print(hu, transaction.GetDescription(), aname, fs, tots)
         ignore = 1
 
