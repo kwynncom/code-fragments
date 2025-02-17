@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 from datetime import datetime
 import json
@@ -17,17 +15,18 @@ def find_account_by_name(root_account, name):
 
 if __name__ == '__main__':
     with Session(sys.argv[1], SessionOpenMode.SESSION_READ_ONLY) as session:
-        root_account = session.book.get_root_account()
 
         relevant_aname = 'secret25'
 
+        root_account = session.book.get_root_account()
         account = find_account_by_name(root_account, relevant_aname)
         splits = account.GetSplitList()
 
+        iacct = 0
         tot = 0
         list = []
-        iacct = 0
-        recon = '?'
+
+        asj = 1 # as JSON
 
         for split in splits:
 
@@ -36,6 +35,7 @@ if __name__ == '__main__':
             for i, trans_split in enumerate(trans_splits):
                 recon = '?'
                 aname = trans_split.GetAccount().GetName()
+
                 if aname == relevant_aname:
                     continue
                 else :
@@ -43,10 +43,7 @@ if __name__ == '__main__':
                     ir1 =  (1 - i) if nlen == 2 else  0
                     recon = trans_splits[ir1].GetReconcile()
 
-
                 trans_date = transaction.GetDate()
-
-                # Convert to human-readable format
                 hu = trans_date.strftime('%m/%d')
                 huyr = trans_date.strftime('%m/%d/%Y')
                 f = trans_split.GetValue().to_double()
@@ -69,10 +66,7 @@ if __name__ == '__main__':
                 }
 
                 iacct += 1
-
                 list.append(o)
-
-                asj = 0
 
                 if not asj :
                     print(hu, descr , aname, recon, fs, tots)
@@ -80,6 +74,3 @@ if __name__ == '__main__':
         if asj:
             json.dump(list, sys.stdout, indent=4)
             print()
-
-        ignore = 1
-
