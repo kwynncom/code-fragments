@@ -26,15 +26,23 @@ if __name__ == '__main__':
 
         tot = 0
         list = []
-        i = 0
+        iacct = 0
+        recon = '?'
 
         for split in splits:
+
             transaction = split.GetParent()
             trans_splits = transaction.GetSplitList()
-            for trans_split in trans_splits:
+            for i, trans_split in enumerate(trans_splits):
+                recon = '?'
                 aname = trans_split.GetAccount().GetName()
                 if aname == relevant_aname:
                     continue
+                else :
+                    nlen = len(trans_splits)
+                    ir1 =  (1 - i) if nlen == 2 else  0
+                    recon = trans_splits[ir1].GetReconcile()
+
 
                 trans_date = transaction.GetDate()
 
@@ -46,7 +54,7 @@ if __name__ == '__main__':
                 tot += f
                 tots = "{:,.2f}".format(tot)
                 descr = transaction.GetDescription()
-                recon = trans_split.GetReconcile()
+                # recon = trans_split.GetReconcile()
 
                 o = {
                     'hu' : hu,
@@ -57,17 +65,21 @@ if __name__ == '__main__':
                     'bal' : round(tot, 2),
                     'huyr' : huyr,
                     'U' : trans_date.timestamp(),
-                    'i' : i
+                    'i' : iacct
                 }
 
-                i += 1
+                iacct += 1
 
                 list.append(o)
 
-                # print(hu, descr , aname, recon, fs, tots)
+                asj = 0
 
-        json.dump(list, sys.stdout, indent=4)
-        print()
+                if not asj :
+                    print(hu, descr , aname, recon, fs, tots)
+
+        if asj:
+            json.dump(list, sys.stdout, indent=4)
+            print()
 
         ignore = 1
 
