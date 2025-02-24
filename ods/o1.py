@@ -1,5 +1,8 @@
 # Written by Grok 3 Beta
 
+# Need a server running:
+# soffice --headless --accept="socket,host=localhost,port=2002;urp;"
+
 import uno
 from com.sun.star.beans import PropertyValue
 import os
