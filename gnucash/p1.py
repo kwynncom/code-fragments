@@ -8,6 +8,7 @@ def find_account_by_name(root_account, name):
     if root_account.name == name:
         return root_account
     for child in root_account.get_children():
+        ckname = child.name
         found = find_account_by_name(child, name)
         if found:
             return found
@@ -15,6 +16,8 @@ def find_account_by_name(root_account, name):
 
 if __name__ == '__main__':
     with Session(sys.argv[1], SessionOpenMode.SESSION_READ_ONLY) as session:
+
+# Remember that GNUCash creates a new XML file with each save, so hard links don't work
 
         relevant_aname = 'secret25'
 
@@ -53,6 +56,8 @@ if __name__ == '__main__':
                 descr = transaction.GetDescription()
                 # recon = trans_split.GetReconcile()
 
+                entered_time64 = transaction.GetDateEntered()
+
                 o = {
                     'hu' : hu,
                     'd'  : descr,
@@ -61,8 +66,9 @@ if __name__ == '__main__':
                     'f'  : f,
                     'bal' : round(tot, 2),
                     'huyr' : huyr,
-                    'U' : trans_date.timestamp(),
-                    'i' : iacct
+                    'Upost' : int(trans_date.timestamp()),
+                    'i' : iacct,
+                    'Ucre' : int(entered_time64.timestamp()),
                 }
 
                 iacct += 1
