@@ -1,6 +1,8 @@
-import sys
-from datetime import datetime
 import json
+import sys # used for sys.stdout / output
+
+GNUCASH_FILE_PATH = '/var/kwynn/gnucash.xml.gnucash'
+GNUCASH_ACCT = 'secret25'
 
 from gnucash import GncNumeric, Session, SessionOpenMode
 
@@ -15,11 +17,11 @@ def find_account_by_name(root_account, name):
     return None
 
 if __name__ == '__main__':
-    with Session(sys.argv[1], SessionOpenMode.SESSION_READ_ONLY) as session:
+    with Session(GNUCASH_FILE_PATH, SessionOpenMode.SESSION_READ_ONLY) as session:
 
 # Remember that GNUCash creates a new XML file with each save, so hard links don't work
 
-        relevant_aname = 'secret25'
+        relevant_aname = GNUCASH_ACCT
 
         root_account = session.book.get_root_account()
         account = find_account_by_name(root_account, relevant_aname)
@@ -59,9 +61,11 @@ if __name__ == '__main__':
                 entered_time64 = transaction.GetDateEntered()
 
                 o = {
+                    'splitGUID': split.GetGUID().to_string(),
                     'hu' : hu,
                     'd'  : descr,
                     'nm' : aname,
+                    'aGUID' : trans_split.GetAccount().GetGUID().to_string(),
                     'r'  : recon,
                     'f'  : f,
                     'bal' : round(tot, 2),
@@ -69,6 +73,7 @@ if __name__ == '__main__':
                     'Upost' : int(trans_date.timestamp()),
                     'i' : iacct,
                     'Ucre' : int(entered_time64.timestamp()),
+
                 }
 
                 iacct += 1
@@ -78,5 +83,7 @@ if __name__ == '__main__':
                     print(hu, descr , aname, recon, fs, tots)
 
         if asj:
-            json.dump(list, sys.stdout, indent=4)
-            print()
+           json.dump(list, sys.stdout, indent=4)
+           print()
+           # print('done')
+
