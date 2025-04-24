@@ -1,5 +1,0 @@
-            json.dump([account_name,
-                            account.GetCommodity().get_mnemonic(),
-                            account.GetBalance(),
-                            account.GetBalanceInCurrency(USD, True)
-                            ], sys.stdout)
