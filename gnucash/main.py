@@ -25,7 +25,7 @@ if __name__ == '__main__':
                 'i': o.i,
                 'Uposted'  : int(trans_date.timestamp()),
                 'Ucreated' : int(o.transaction.GetDateEntered().timestamp()),
-                'splitGUID': o.trans_split.GetGUID().to_string(),
+                'splitGUID': o.split.GetGUID().to_string(),
             }
 
             list.append(listo)

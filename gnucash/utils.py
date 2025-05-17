@@ -59,7 +59,7 @@ def get_to_splits(gnucash_file_path, account_name):
             o.amount = amount
             o.balance = runningBalance
             o.reconciled = reconciled
-            o.trans_split = trans_split
+            o.split = trans_split
             o.transaction = transaction
             o.i = ilist
 
