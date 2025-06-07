@@ -1,30 +1,18 @@
 <?php
 
+require_once('fileGet.php');
+
 do10();
 
 function do10() {
 
-$t = shell_exec('python3 ' . __DIR__ . '/../pygnucash/main.py');
-$afwd = json_decode($t, true); unset($t);
-$a = array_reverse($afwd); unset($afwd);
+    $o = new xactsGetCl();
 
-$startBal = -1;
+    $arev = array_reverse($o->currXacts);
+    var_dump($arev); unset($arev);
+    echo($o->balStart . "\n");
 
-foreach($a as $i => $r) {
-    if ($r['reconciled'] === 'y') {
-	$startBal = $r['bal'];
-	break;
-    }
-} unset($r);
+    unset($o);
 
-$a = array_slice($a, 0, $i + 1); unset($i);
-$arev = array_reverse($a);
-
-$vars = get_defined_vars();
-var_dump($vars); unset($vars);
-unset($a);
-$a = array_reverse($arev); 
-unset($arev);
-return;
 }
 
