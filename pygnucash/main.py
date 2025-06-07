@@ -1,4 +1,4 @@
-GNUCASH_FILE_PATH = '/var/kwynn/gnucash.xml.gnucash'
+GNUCASH_FILE_PATH = '/var/kwynn/gnucash/gnucash.xml.gnucash'
 GNUCASH_ACCT_NAME_TO_SHOW = 'secret25'
 
 import json

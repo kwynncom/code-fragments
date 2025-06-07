@@ -5,12 +5,31 @@ require_once('/opt/kwynn/kwutils.php');
 class xactsGetCl {
     
     const pyCmd = 'python3 ' . __DIR__ . '/../pygnucash/main.py';
+    const cachePre  = '/var/kwynn/gnucash/cache';
+    const cacheSfx = '.json';
 
     public readonly float $balStart;
     public readonly array $currXacts;
 
     public function __construct() {
 	$this->do10();
+	$this->putCache();
+    }
+
+    private function putCache() {
+	$f  = '';
+	$f .= self::cachePre;
+	$f .= '-';
+	$f .= PHP_SAPI === 'cli' ? 'cli' : 'www';
+	$f .= self::cacheSfx;
+
+	file_put_contents($f, '');
+	kwas(chmod($f, 0600), "cannot chmod $f");
+	$j = json_encode($this->currXacts, JSON_PRETTY_PRINT);
+	$n = file_put_contents($f, $j); 
+	kwas($n && $n === strlen($j), "bad write to $f");
+	unset($f, $j, $n);
+	
     }
 
     private function do10() {
