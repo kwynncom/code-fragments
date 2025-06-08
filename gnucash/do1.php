@@ -2,17 +2,27 @@
 
 require_once('fileGet.php');
 
-do10();
+class balancesCl {
 
-function do10() {
+    private readonly float $balStart;
+    private readonly array $currx;
 
-    $o = new xactsGetCl();
+    public function __construct() {
+	$this->init10();
+    }
 
-    $arev = array_reverse($o->currXacts);
-    var_dump($arev); unset($arev);
-    echo($o->balStart . "\n");
+    private function init10() {
+	$o = new xactsGetCl();
+	$this->balStart = $o->balStart;
+	$this->currx    = $o->currXacts;
 
-    unset($o);
+	$disp = $this->currx;
+	var_dump($disp);
+
+	
+    }
 
 }
+
+if (didCLICallMe(__FILE__)) new balancesCl();
 

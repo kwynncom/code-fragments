@@ -71,8 +71,9 @@ class xactsGetCl {
     private function do20A(string $t) {
 
 	$afwd = json_decode($t, true); unset($t);
-	if (!$this->iAmCache) $a = array_reverse($afwd); 
-	else $a = $afwd;
+	if (true && !$this->iAmCache) $a = array_reverse($afwd); 
+	else 
+	$a = $afwd;
 
 	unset($afwd);
 
@@ -89,9 +90,10 @@ class xactsGetCl {
 
 	if (!is_float($startBal)) $startBal = floatval($startBal);
 
-	if (!$this->iAmCache) $a = array_slice($a, 0, $i + 1); unset($i);
-
-	// $a = array_reverse($a);
+	if (!$this->iAmCache) {
+	    $a = array_slice($a, 0, $i + 1); unset($i);
+	    $a = array_reverse($a);
+	}
 	
 	$this->balStart = $startBal; unset($startBal);
 	$this->currXacts = $a;
