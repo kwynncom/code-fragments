@@ -9,7 +9,6 @@ class xactsGetCl {
     const cacheSfx = '.json';
     const xmlf = '/var/kwynn/gnucash/gnucash.xml.gnucash';
 
-    public readonly float $balStart;
     public readonly array $currXacts;
     private	    bool  $iAmCache = false;
 
@@ -71,35 +70,28 @@ class xactsGetCl {
     private function do20A(string $t) {
 
 	$afwd = json_decode($t, true); unset($t);
-	if (true && !$this->iAmCache) $a = array_reverse($afwd); 
-	else 
-	$a = $afwd;
-
-	unset($afwd);
+	if (!$this->iAmCache) $a = array_reverse($afwd); 
+	else $a = $afwd; unset($afwd);
 
 	kwas($a && is_array($a), 'JSON did not yield initial array err# 063933');
 
-	$startBal = 0;
+	if ($this->iAmCache) {
+	    $this->currXacts = $a; unset($a);
+	    return;
+	}
 
 	foreach($a as $i => $r) {
 	    if ($r['reconciled'] === 'y') {
-		$startBal = $r['bal'];
 		break;
 	    }
 	} unset($r);
 
-	if (!is_float($startBal)) $startBal = floatval($startBal);
 
-	if (!$this->iAmCache) {
-	    $a = array_slice($a, 0, $i + 1); unset($i);
-	    $a = array_reverse($a);
-	}
-	
-	$this->balStart = $startBal; unset($startBal);
-	$this->currXacts = $a;
+	$a = array_slice($a, 0, $i + 1); unset($i);
+	$a = array_reverse($a);
+	$this->currXacts = $a; unset($a);
 
 	return;
-
     }
 
     private function getRaw() : string {

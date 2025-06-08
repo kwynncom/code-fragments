@@ -4,7 +4,6 @@ require_once('fileGet.php');
 
 class balancesCl {
 
-    private readonly float $balStart;
     private readonly array $currx;
 
     public function __construct() {
@@ -13,13 +12,8 @@ class balancesCl {
 
     private function init10() {
 	$o = new xactsGetCl();
-	$this->balStart = $o->balStart;
 	$this->currx    = $o->currXacts;
-
-	$disp = $this->currx;
-	var_dump($disp);
-
-	
+	var_dump($this->currx);
     }
 
 }
