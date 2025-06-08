@@ -29,11 +29,21 @@ class balancesCl implements balancesPrivateIntf {
 	$thea = array_slice($this->currx, 1);
 	// next($thea);
 	$com = 0;
+	$pay = 0;
+	$purch = 0;
 
 	foreach($thea as $r) {
-	    if ($r['Uposted'] < $this->now) {
-		if ($r['amount'] > 0) $mis += $r['amount'];
-		if ($r['reconciled'] === 'c') $com += $r['amount'];
+
+	    $amt    = $r['amount'];
+	    $isPast = $r['Uposted'] < $this->now;
+	    $rest   = $r['reconciled'];
+	    $isPos  = $amt > 0;
+
+	    if ($isPast) {
+		if ($isPos  )     { $mis += $amt; $purch += $amt; }
+		else		    $pay += $amt;
+		
+		if ($rest === 'c')  $com += $amt;
 		continue;
 	    }
 	}

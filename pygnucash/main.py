@@ -1,5 +1,5 @@
 GNUCASH_FILE_PATH = '/var/kwynn/gnucash/gnucash.xml.gnucash'
-GNUCASH_ACCT_NAME_TO_SHOW = 'secret25'
+GNUCASH_FOCUS_ACCT_GUID_FILE = '/var/kwynn/gnucash/focus_guid.txt'
 
 import json
 import sys # used for sys.stdout / output
@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
     list = []
 
-    splits = get_to_splits(GNUCASH_FILE_PATH, GNUCASH_ACCT_NAME_TO_SHOW)
+    splits = get_to_splits(GNUCASH_FILE_PATH, GNUCASH_FOCUS_ACCT_GUID_FILE)
 
     for o in splits:
 
@@ -17,6 +17,8 @@ if __name__ == '__main__':
 
             listo = {
                 'to': o.acctName,
+                'foAcctName' : o.foAcctName,
+                'foAcctGUID' : o.foAcctGUID,
                 'huDatePosted': trans_date.strftime('%m/%d/%Y'),
                 'amount': o.amount,
                 'bal': round(o.balance, 2),
