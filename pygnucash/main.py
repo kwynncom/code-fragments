@@ -16,9 +16,9 @@ if __name__ == '__main__':
             trans_date = o.transaction.GetDate()
 
             listo = {
-                'to': o.acctName,
-                'foAcctName' : o.foAcctName,
-                'foAcctGUID' : o.foAcctGUID,
+                'otherAcctName': o.acctName,
+                'focusAcctName' : o.foAcctName,
+                'focusAcctGUID' : o.foAcctGUID,
                 'huDatePosted': trans_date.strftime('%m/%d/%Y'),
                 'amount': o.amount,
                 'bal': round(o.balance, 2),

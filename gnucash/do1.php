@@ -31,6 +31,7 @@ class balancesCl implements balancesPrivateIntf {
 	$com = 0;
 	$pay = 0;
 	$purch = 0;
+	$pendch = 0;
 
 	foreach($thea as $r) {
 
@@ -40,10 +41,11 @@ class balancesCl implements balancesPrivateIntf {
 	    $isPos  = $amt > 0;
 
 	    if ($isPast) {
-		if ($isPos  )     { $mis += $amt; $purch += $amt; }
+		if ($isPos  )     { $mis += $amt;  }
 		else		    $pay += $amt;
 		
-		if ($rest === 'c')  $com += $amt;
+		if ($rest === 'c') { $com += $amt; $purch += $amt; }
+		else $pendch += $amt;
 		continue;
 	    }
 	}
@@ -52,6 +54,8 @@ class balancesCl implements balancesPrivateIntf {
 	$this->cec('starting ' . $this->nf($balStart));
 	$this->crlim($balStart + $mis);
 	$this->cec('naive balance '. $this->nf($balStart + $com));
+	$this->cec('completed purchases: ' . $this->nf($purch));
+	$this->cec('pend charges: ' . $this->nf($pendch));
     }
 
     private function crlim(float $bal) {
