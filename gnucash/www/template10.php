@@ -12,7 +12,7 @@ class acctTemplate10Cl {
 
     private function head() {
 	$this->ht  = '';
-	$this->ht .= file_get_contents(__DIR__ . '/html/head.html');
+	$this->ht .= file_get_contents(__DIR__ . '/head.html');
 	$this->ht .= '<table>' . "\n";
 
     }

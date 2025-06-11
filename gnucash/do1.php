@@ -2,13 +2,14 @@
 
 require_once('fileGet.php');
 require_once('/var/kwynn/gnucash/privateInfo.php');
-require_once('template10.php');
+require_once(__DIR__ . '/www/template10.php');
 
 class balancesCl implements balancesPrivateIntf {
 
     private readonly array $currx;
     private readonly int   $now;
     private readonly object $hto;
+    public  readonly string $html;
 
     public function __construct() {
 	$this->init10();
@@ -61,7 +62,8 @@ class balancesCl implements balancesPrivateIntf {
 	$this->cec('completed purchases: ' . $this->nf($purch));
 	$this->cec('pend charges: ' . $this->nf($pendch));
 
-	echo($this->hto->getHTML());
+	$this->html = $this->hto->getHTML();
+	echo($this->html);
     }
 
     private function crlim(float $bal) {
