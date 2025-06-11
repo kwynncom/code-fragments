@@ -75,6 +75,7 @@ def get_to_splits(gnucash_file_path, guid_file):
 
             o = SplitData()
             o.acctName = acctName
+            o.acctGUID = tGUID
             o.foAcctName = focusAcctName
             o.foAcctGUID = focusAcctGUID
             o.amount = amount

@@ -2,11 +2,13 @@
 
 require_once('fileGet.php');
 require_once('/var/kwynn/gnucash/privateInfo.php');
+require_once('template10.php');
 
 class balancesCl implements balancesPrivateIntf {
 
     private readonly array $currx;
     private readonly int   $now;
+    private readonly object $hto;
 
     public function __construct() {
 	$this->init10();
@@ -35,6 +37,8 @@ class balancesCl implements balancesPrivateIntf {
 
 	foreach($thea as $r) {
 
+	    $this->hto->putLine($r);
+
 	    $amt    = $r['amount'];
 	    $isPast = $r['Uposted'] < $this->now;
 	    $rest   = $r['reconciled'];
@@ -56,6 +60,8 @@ class balancesCl implements balancesPrivateIntf {
 	$this->cec('naive balance '. $this->nf($balStart + $com));
 	$this->cec('completed purchases: ' . $this->nf($purch));
 	$this->cec('pend charges: ' . $this->nf($pendch));
+
+	echo($this->hto->getHTML());
     }
 
     private function crlim(float $bal) {
@@ -71,6 +77,7 @@ class balancesCl implements balancesPrivateIntf {
 	$this->now = time();
 	$o = new xactsGetCl();
 	$this->currx    = $o->currXacts;
+	$this->hto = new acctTemplate10Cl();
 
     }
 

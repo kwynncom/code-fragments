@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
             listo = {
                 'otherAcctName': o.acctName,
+                'otherAcctGUID' : o.acctGUID,
                 'focusAcctName' : o.foAcctName,
                 'focusAcctGUID' : o.foAcctGUID,
                 'huDatePosted': trans_date.strftime('%m/%d/%Y'),
