@@ -80,18 +80,23 @@ class balancesCl implements balancesPrivateIntf {
 
     private function calcInEx() {
 	$ta = [];
+	$ba = [];
 	$n  = count($this->penda);
 	$np = pow(2, $n);
 	for ($i=0; $i < $np; $i++) {
 	    $tb = $this->balEnd;
 	    for($j=0; $j < $n; $j++) {
-		$mask = $i & (2 << $j);
-		if ($mask) $tb -= $this->penda[$j]['amount'];
-		
-	    }
+		$mask = $i & (1 << $j);
+		$isOn = $mask ? true : false;
+		if ($isOn) $tb -= $this->penda[$j]['amount']; unset($mask);
+		$ta[$i]['amt'] = $tb;
+		$ta[$i][$this->penda[$j]['splitGUID']] = $isOn;
 
-	    $ta[] = $tb;
-	}
+	    } unset($isOn, $j);
+
+	    $ba[] = $tb;
+	    
+	} unset($i, $np, $n);
 
 	return;
     }
