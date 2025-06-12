@@ -65,7 +65,7 @@ class balancesCl implements balancesPrivateIntf {
 		}
 		else {
 		    $purchPending += $amt;
-		    $penda[] = $r;
+		    $penda[$r['splitGUID']] = $r;
 		}
 	    }
 
@@ -89,14 +89,14 @@ class balancesCl implements balancesPrivateIntf {
 	for ($i=0; $i < $np; $i++) {
 	    $tb = $balEndCents;
 	    $cleara = [];
-	    for($j=0; $j < $n; $j++) {
+	    $j = 0;
+	    foreach($this->penda as $xact) {
 		$mask = $i & (1 << $j);
 		$isClear = $mask ? false : true; unset($mask);
-		$xact = $this->penda[$j];
-		$amtCents = roint($xact['amount'] * 100);
+			$amtCents = roint($xact['amount'] * 100);
 		if (!$isClear) $tb -= $amtCents; 
 		else $cleara[] = $xact['splitGUID'];
-
+		$j++;
 	    } unset($j, $xact, $amtCents, $isClear);
 
 	    $ba[] = $tb;
