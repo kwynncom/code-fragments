@@ -10,6 +10,8 @@ class balancesCl implements balancesPrivateIntf {
     private readonly int   $now;
     private readonly object $hto;
     private readonly bool   $htmlOnly;
+    private readonly array $penda;
+    private readonly float $balEnd;
    
 
     public function __construct(string $argsin = '') {
@@ -32,69 +34,112 @@ class balancesCl implements balancesPrivateIntf {
 
     private function nf(float $f) : string { 	return '$' . number_format ($f, 2);     }
 
+    private function calc20Loop() {
+	
+	$balStart = $this->currx[0]['bal'];
+	$balRunning = $balStart;
+
+	$thea = array_slice($this->currx, 1);
+
+	$payments = 0;
+	$purchCompleted = 0;
+	$purchPending = 0;
+	$penda = [];
+
+	foreach($thea as $r) {
+
+	    $this->hto->putLine($r);
+
+	    $balRunning = $r['bal'];
+
+	    $amt    = $r['amount'];
+	    $isPast = $r['Uposted'] < $this->now;
+	    $recon   = $r['reconciled'];
+	    $isPos  = $amt > 0;
+
+	    if ($isPast) {
+	
+		if ($recon === 'c') { 
+		    if ($isPos) $purchCompleted += $amt;
+		    else	$payments += $amt;
+		}
+		else {
+		    $purchPending += $amt;
+		    $penda[] = $r;
+		}
+	    }
+
+	    unset($amt, $isPast, $recon, $isPos);
+	} unset($thea, $r);
+
+	$this->penda = $penda; unset($penda);
+	$this->balEnd = $balRunning;
+
+	return get_defined_vars();
+    }
+
+    private function calcInEx() {
+	$ta = [];
+	$n  = count($this->penda);
+	$np = pow(2, $n);
+	for ($i=0; $i < $np; $i++) {
+	    $tb = $this->balEnd;
+	    for($j=0; $j < $n; $j++) {
+		$mask = $i & (2 << $j);
+		if ($mask) $tb -= $this->penda[$j]['amount'];
+		
+	    }
+
+	    $ta[] = $tb;
+	}
+
+	return;
+    }
+
     private function calc10() {
 
 	if (!$this->currx  || count($this->currx) < 2) return;
 
 	if (!$this->htmlOnly) var_dump($this->currx);
 
-	$balanceStart = $this->currx[0]['bal'];
-	$mis = 0;
+	$vars = $this->calc20Loop();
+	extract($vars); unset($vars);
 
-	$thea = array_slice($this->currx, 1);
-
-	$completedAll = 0;
-	$payments = 0;
-	$completedPurch = 0;
-	$pendingPurch = 0;
-	$balanceRunning = $balanceStart;
-
-	foreach($thea as $r) {
-
-	    $this->hto->putLine($r);
-
-	    $balanceRunning = $r['bal'];
-
-	    $amt    = $r['amount'];
-	    $isPast = $r['Uposted'] < $this->now;
-	    $rest   = $r['reconciled'];
-	    $isPos  = $amt > 0;
-
-	    if ($isPast) {
-		if ($isPos  )     { $mis += $amt;  }
-		else		    $payments += $amt;
-		
-		if ($rest === 'c') { 
-		    $completedAll += $amt; 
-		    if ($isPos) $completedPurch += $amt; 
-		}
-		else $pendingPurch += $amt;
-	    }
-
-	    unset($amt, $isPast, $rest, $isPos);
-	} unset($thea, $r);
+	$this->calcInEx();
 
 	$payments = -$payments;
 
-	$balanceNaive = $balanceStart + $completedAll;
-	$this->cec('starting ' . $this->nf($balanceStart));
-	$this->crlim($balanceRunning);
-	$this->cec('naive balance '. $this->nf($balanceNaive));
-	$this->cec('completed purchases: ' . $this->nf($completedPurch));
-	$this->cec('pend charges: ' . $this->nf($pendingPurch));
+	$balNaive = $balStart + $purchCompleted - $payments;
+
+
+	$this->cec('naive balance '. $this->nf($balNaive));
+
+	$showRem = false;
+	if ($payments > 0.001) $showRem = true;
+	if ($showRem) 	$this->cec('rem st bal: ' . $this->nf($balStart - $payments));
+	else		$this->cec('starting ' . $this->nf($balStart));
+
+	$this->cec('avail cr ' .  $this->getAvCr($balRunning));
+
+	$this->cec('pend charges: ' . $this->nf($purchPending));
+
+	$this->cec('starting ' . $this->nf($balStart));
 	$this->cec('payments: ' . $this->nf($payments));
-	$this->cec('rem st bal: ' . $this->nf($balanceStart - $payments));
+	$this->cec('completed purchases: ' . $this->nf($purchCompleted));
 
+	unset($showRem);
+
+	return;
     }
 
-    private function crlim(float $balance) {
-	$this->cec('avail credit ' . $this->nf(self::creditLimit - $balance));
+    private function getAvCr(float $bal) : string {
+	return $this->nf(self::creditLimit - $bal);
     }
 
-    private function cec(mixed $out) {
+    private function cec(mixed $toOutput) {
 	if (PHP_SAPI !== 'cli') return;
 	if ($this->htmlOnly) return;
-	echo($out . "\n");
+	echo($toOutput . "\n");
     }
 
     private function init10() {
