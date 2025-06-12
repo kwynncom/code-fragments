@@ -79,25 +79,36 @@ class balancesCl implements balancesPrivateIntf {
     }
 
     private function calcInEx() {
-	$ta = [];
+	$xa = [];
 	$ba = [];
 	$n  = count($this->penda);
 	$np = pow(2, $n);
+
+	$balEndCents = roint($this->balEnd * 100);
+
 	for ($i=0; $i < $np; $i++) {
-	    $tb = $this->balEnd;
+	    $tb = $balEndCents;
+	    $oo = [];
 	    for($j=0; $j < $n; $j++) {
 		$mask = $i & (1 << $j);
-		$isOn = $mask ? true : false;
-		if ($isOn) $tb -= $this->penda[$j]['amount']; unset($mask);
-		$ta[$i]['amt'] = $tb;
-		$ta[$i][$this->penda[$j]['splitGUID']] = $isOn;
+		$isClear = $mask ? false : true;
+		$xact = $this->penda[$j];
+		$amtCents = roint($xact['amount'] * 100);
+		if (!$isClear) $tb -= $amtCents; unset($mask);
+		$oo[$xact['splitGUID']] = $isClear;
 
-	    } unset($isOn, $j);
+	    } unset($isOn, $j, $xact, $amtCents);
 
 	    $ba[] = $tb;
+	    foreach($oo as $guid => $isOn) $xa[$tb][$guid] = $isOn;
 	    
-	} unset($i, $np, $n);
+	    unset($oo, $guid, $isOn);
+	    
+	} unset($i, $np, $n, $tb, $balEndCents);
 
+	$ba = array_unique($ba);
+	rsort($ba);
+	
 	return;
     }
 
