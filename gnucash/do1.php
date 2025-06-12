@@ -88,21 +88,33 @@ class balancesCl implements balancesPrivateIntf {
 
 	for ($i=0; $i < $np; $i++) {
 	    $tb = $balEndCents;
-	    $oo = [];
+	    $cleara = [];
 	    for($j=0; $j < $n; $j++) {
 		$mask = $i & (1 << $j);
 		$isClear = $mask ? false : true;
 		$xact = $this->penda[$j];
 		$amtCents = roint($xact['amount'] * 100);
-		if (!$isClear) $tb -= $amtCents; unset($mask);
+		if (!$isClear) $tb -= $amtCents; 
+		else $cleara[] = $xact['splitGUID'];
+		unset($mask);
 		$oo[$xact['splitGUID']] = $isClear;
-
-	    } unset($isOn, $j, $xact, $amtCents);
+	    } unset($j, $xact, $amtCents, $isClear);
 
 	    $ba[] = $tb;
-	    foreach($oo as $guid => $isOn) $xa[$tb][$guid] = $isOn;
+
+	    $xa[$tb][] = $cleara;
+
+	    if (false) { 
+		foreach($oo as $guid => $bool) {
+		    if (!isset($xa[$tb][$guid])) 
+			       $xa[$tb][$guid] = [];
+
+		    if (!in_array($bool, $xa[$tb][$guid])) 
+					 $xa[$tb][$guid][] = $bool;
+		}
+	    }
 	    
-	    unset($oo, $guid, $isOn);
+	    unset($oo, $guid, $bool);
 	    
 	} unset($i, $np, $n, $tb, $balEndCents);
 
