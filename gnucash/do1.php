@@ -19,22 +19,18 @@ class balancesCl implements balancesPrivateIntf {
 	$this->end();
     }
 
-    private function end() {
-	// if (!$this->htmlOnly) return;
-	echo($this->hto->getHTML());
+    private function end() { 
+	if (!$this->htmlOnly) return;
+	echo($this->hto->getHTML());     
     }
 
     public function args(string $conArgs) {
-
 	if ($conArgs === 'html') { $this->htmlOnly = true; return; }
-
 	global $argv;
 	$this->htmlOnly = (kwifs($argv, 1) === 'html');
     }
 
-    private function nf(float $f) : string {
-	return '$' . number_format ($f, 2);
-    }
+    private function nf(float $f) : string { 	return '$' . number_format ($f, 2);     }
 
     private function calc10() {
 
@@ -42,19 +38,22 @@ class balancesCl implements balancesPrivateIntf {
 
 	if (!$this->htmlOnly) var_dump($this->currx);
 
-	$balStart = $this->currx[0]['bal'];
+	$balanceStart = $this->currx[0]['bal'];
 	$mis = 0;
 
 	$thea = array_slice($this->currx, 1);
-	// next($thea);
-	$com = 0;
-	$pay = 0;
-	$purch = 0;
-	$pendch = 0;
+
+	$completedAll = 0;
+	$payments = 0;
+	$completedPurch = 0;
+	$pendingPurch = 0;
+	$balanceRunning = $balanceStart;
 
 	foreach($thea as $r) {
 
 	    $this->hto->putLine($r);
+
+	    $balanceRunning = $r['bal'];
 
 	    $amt    = $r['amount'];
 	    $isPast = $r['Uposted'] < $this->now;
@@ -63,26 +62,33 @@ class balancesCl implements balancesPrivateIntf {
 
 	    if ($isPast) {
 		if ($isPos  )     { $mis += $amt;  }
-		else		    $pay += $amt;
+		else		    $payments += $amt;
 		
-		if ($rest === 'c') { $com += $amt; $purch += $amt; }
-		else $pendch += $amt;
-		continue;
+		if ($rest === 'c') { 
+		    $completedAll += $amt; 
+		    if ($isPos) $completedPurch += $amt; 
+		}
+		else $pendingPurch += $amt;
 	    }
-	}
 
-	// this becomes rem st bal if payment
-	$this->cec('starting ' . $this->nf($balStart));
-	$this->crlim($balStart + $mis);
-	$this->cec('naive balance '. $this->nf($balStart + $com));
-	$this->cec('completed purchases: ' . $this->nf($purch));
-	$this->cec('pend charges: ' . $this->nf($pendch));
+	    unset($amt, $isPast, $rest, $isPos);
+	} unset($thea, $r);
 
+	$payments = -$payments;
+
+	$balanceNaive = $balanceStart + $completedAll;
+	$this->cec('starting ' . $this->nf($balanceStart));
+	$this->crlim($balanceRunning);
+	$this->cec('naive balance '. $this->nf($balanceNaive));
+	$this->cec('completed purchases: ' . $this->nf($completedPurch));
+	$this->cec('pend charges: ' . $this->nf($pendingPurch));
+	$this->cec('payments: ' . $this->nf($payments));
+	$this->cec('rem st bal: ' . $this->nf($balanceStart - $payments));
 
     }
 
-    private function crlim(float $bal) {
-	$this->cec('avail credit ' . $this->nf(self::creditLimit - $bal));
+    private function crlim(float $balance) {
+	$this->cec('avail credit ' . $this->nf(self::creditLimit - $balance));
     }
 
     private function cec(mixed $out) {

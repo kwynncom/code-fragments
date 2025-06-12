@@ -1,3 +1,22 @@
+later:
+
+I can run 2>&1 from the script but it should not and can not be in the sudoer line because 2>&1 is not sent to sudo for checking
+
 2025/06/12 02:14 EDT
 
 This upcoming commit will have some notes on the sudoer.
+
+**************
+02:14
+
+
+// sudo -u www-data getent passwd 1000 | cut -d: -f1
+// results in "bob" or the main / first / creator Ubuntu login user
+// don't forget to trim it
+// 
+// $ visudo
+// include a secret (sort of a password)
+// test that the exact command must include the secret for sudo to run
+// www-data mymachinename=(bob) NOPASSWD: /usr/bin/php /path/to/your/script.sh
+// 
+// Picky tidbits like that courtesy of Grok 3.0 2025/06/11 08:45am EDT
