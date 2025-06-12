@@ -9,11 +9,27 @@ class balancesCl implements balancesPrivateIntf {
     private readonly array $currx;
     private readonly int   $now;
     private readonly object $hto;
-    public  readonly string $html;
+    private readonly bool   $htmlOnly;
+   
 
-    public function __construct() {
+    public function __construct(string $argsin = '') {
+	$this->args($argsin);
 	$this->init10();
 	$this->calc10();
+	$this->end();
+    }
+
+    private function end() {
+	// if (!$this->htmlOnly) return;
+	echo($this->hto->getHTML());
+    }
+
+    public function args(string $conArgs) {
+
+	if ($conArgs === 'html') { $this->htmlOnly = true; return; }
+
+	global $argv;
+	$this->htmlOnly = (kwifs($argv, 1) === 'html');
     }
 
     private function nf(float $f) : string {
@@ -24,7 +40,7 @@ class balancesCl implements balancesPrivateIntf {
 
 	if (!$this->currx  || count($this->currx) < 2) return;
 
-	var_dump($this->currx);
+	if (!$this->htmlOnly) var_dump($this->currx);
 
 	$balStart = $this->currx[0]['bal'];
 	$mis = 0;
@@ -62,8 +78,7 @@ class balancesCl implements balancesPrivateIntf {
 	$this->cec('completed purchases: ' . $this->nf($purch));
 	$this->cec('pend charges: ' . $this->nf($pendch));
 
-	$this->html = $this->hto->getHTML();
-	echo($this->html);
+
     }
 
     private function crlim(float $bal) {
@@ -72,6 +87,7 @@ class balancesCl implements balancesPrivateIntf {
 
     private function cec(mixed $out) {
 	if (PHP_SAPI !== 'cli') return;
+	if ($this->htmlOnly) return;
 	echo($out . "\n");
     }
 
