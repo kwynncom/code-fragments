@@ -37,6 +37,18 @@ class balancesCl implements balancesPrivateIntf {
 
     private function nf(float $f) : string { 	return '$' . number_format ($f, 2);     }
 
+    private function toLocalMidnight(int $Uin) : int { // GNUCash sets transaction times to 10:59am UTC
+	$epochTimestamp = $Uin; // unset($Uin);
+	$date = DateTime::createFromFormat('U', $epochTimestamp, new DateTimeZone('UTC'));
+	$systemTimezone = date_default_timezone_get();
+	$date->setTimezone(new DateTimeZone($systemTimezone));
+	$date->setTime(0, 0, 0);
+	$Uout = intval($date->format('U'));
+	$d = $Uin - $Uout; // for testing / watching in the debugger
+	return $Uout;
+	
+    }
+
     private function calc20Loop() {
 	
 	$balStart = $this->currx[0]['bal'];
@@ -56,13 +68,13 @@ class balancesCl implements balancesPrivateIntf {
 	    $balRunning = $r['bal'];
 
 	    $amt    = $r['amount'];
-	    $isPast = $r['Uposted'] < $this->now;
+	    $isPast = $this->toLocalMidnight($r['Uposted']) < $this->now;
 	    $recon   = $r['reconciled'];
 	    $isPos  = $amt > 0;
 
 	    if ($isPast) {
 	
-		if ($recon === 'c') { 
+		if ($recon === 'c') {
 		    if ($isPos) $purchCompleted += $amt;
 		    else	$payments += $amt;
 		}
@@ -113,19 +125,18 @@ class balancesCl implements balancesPrivateIntf {
 	$ba = array_unique($ba);
 	rsort($ba);
 	
-	return;
+	$ret = get_defined_vars();
+	return $ret;
     }
 
     private function calc10() {
 
 	if (!$this->currx  || count($this->currx) < 2) return;
 
-	if (!$this->htmlOnly) var_dump($this->currx);
+	if (true || !$this->htmlOnly) var_dump($this->currx);
 
 	$vars = $this->calc20Loop();
 	extract($vars); unset($vars);
-
-	$this->calcInEx();
 
 	$payments = -$payments;
 
@@ -155,6 +166,8 @@ class balancesCl implements balancesPrivateIntf {
 	unset($showRem);
 
 	$minPayment = $this->getMinPayment($balStart);
+
+	$possBals = $this->calcInEx();
 
 	$this->calcs = get_defined_vars();
 
