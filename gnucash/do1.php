@@ -6,12 +6,15 @@ require_once(__DIR__ . '/www/template10.php');
 
 class balancesCl implements balancesPrivateIntf {
 
+    public  readonly array $calcs;
+
     private readonly array $currx;
     private readonly int   $now;
     private readonly object $hto;
     private readonly bool   $htmlOnly;
     private readonly array $penda;
     private readonly float $balEnd;
+
    
 
     public function __construct(string $argsin = '') {
@@ -23,7 +26,7 @@ class balancesCl implements balancesPrivateIntf {
 
     private function end() { 
 	if (!$this->htmlOnly) return;
-	echo($this->hto->getHTML());     
+	echo($this->hto->getHTML($this->calcs));     
     }
 
     public function args(string $conArgs) {
@@ -132,11 +135,16 @@ class balancesCl implements balancesPrivateIntf {
 	$this->cec('naive balance '. $this->nf($balNaive));
 
 	$showRem = false;
-	if ($payments > 0.001) $showRem = true;
-	if ($showRem) 	$this->cec('rem st bal: ' . $this->nf($balStart - $payments));
+	$remStBal = $balStart;
+	if ($payments > 0.001) {
+	    $showRem = true;
+	    $remStBal -= $payments;
+	}
+	if ($showRem) 	$this->cec('rem st bal: ' . $this->nf($remStBal));
 	else		$this->cec('starting ' . $this->nf($balStart));
 
-	$this->cec('avail cr ' .  $this->getAvCr($balRunning));
+	$avCr = $this->getAvCr($balRunning); unset($balRunning);
+	$this->cec('avail cr *** ' . $this->nf($avCr) . ' ***');
 
 	$this->cec('pend charges: ' . $this->nf($purchPending));
 
@@ -146,11 +154,28 @@ class balancesCl implements balancesPrivateIntf {
 
 	unset($showRem);
 
+	$minPayment = $this->getMinPayment($balStart);
+
+	$this->calcs = get_defined_vars();
+
 	return;
     }
 
-    private function getAvCr(float $bal) : string {
-	return $this->nf(self::creditLimit - $bal);
+    private function getMinPayment(float $bal) : float {
+	// 31 days will be an overestimate for Feb, April, June, etc.
+	// 0.01 to convert from 11% (yeah, right) APR to 0.11
+	$interest = (31 / 365) * self::APR * 0.01 *  $bal;
+	$more = $bal * 0.01; // min payment is interest plus fees plus 1%
+	$min10 = $interest + $more;
+	$ceil = ceil($min10);
+	$min = $ceil;
+
+	return $min;
+
+    }
+
+    private function getAvCr(float $bal) : float {
+	return self::creditLimit - $bal;
     }
 
     private function cec(mixed $toOutput) {
