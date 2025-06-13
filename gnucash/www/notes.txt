@@ -1,3 +1,9 @@
+2025/06/13 05:35 EDT (America/New_York)
+
+<!-- I did not create the SVG.  It comes from one of what Clark Howard would call "A giant, monster mega-bank" and should more properly be called 
+evil in a profound, Satanic sense.   It's the check mark that means that one does not have a minimum payment due.  I fished it out of the bank's HTML.
+Note that inspecting the HTML caused Firefox to crash, but I got what I wanted. -->
+***********
 later:
 
 I can run 2>&1 from the script but it should not and can not be in the sudoer line because 2>&1 is not sent to sudo for checking

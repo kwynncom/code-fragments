@@ -188,7 +188,7 @@ class balancesCl implements balancesPrivateIntf {
 	$this->now = time();
 	$o = new xactsGetCl();
 	$this->currx    = $o->currXacts;
-	$this->hto = new acctTemplate10Cl();
+	$this->hto = new acctTemplate10Cl(file_get_contents(self::bpidir . '/svg1.txt'));
 
     }
 

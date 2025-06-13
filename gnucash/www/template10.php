@@ -7,6 +7,7 @@ class acctTemplate10Cl {
     private readonly array $a;
     private readonly array $calcs;
     private	     string $table = '';
+    private readonly string $svg;
 
     private function renderCalcs() {
 	$t = '';
@@ -18,7 +19,8 @@ class acctTemplate10Cl {
 	$this->ht .= $t;
     }
 
-    public function __construct() {
+    public function __construct($svg1) {
+	$this->svg = $svg1;
 	$this->head();
     }
 
