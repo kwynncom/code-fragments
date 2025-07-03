@@ -8,6 +8,8 @@ class balancesCl implements balancesPrivateIntf {
 
     public  readonly array $calcs;
 
+    private readonly string $guid;
+
     private readonly array $currx;
     private readonly int   $now;
     private readonly object $hto;
@@ -48,6 +50,16 @@ class balancesCl implements balancesPrivateIntf {
 	return $Uout;
 	
     }
+    
+    private function setGUID(string $in) {
+	if (isset($this->guid)) {
+	    kwas($this->guid === $in, 'assuming one focus account GUID (like a credit card) for now (err#101755)');
+	    return; 
+	}
+
+	kwas($in && is_string($in) && trim($in)  && strlen($in) > 3, 'bad guid (err #101856)');
+	$this->guid = $in;
+    }
 
     private function calc20Loop() {
 	
@@ -62,6 +74,8 @@ class balancesCl implements balancesPrivateIntf {
 	$penda = [];
 
 	foreach($thea as $r) {
+
+	    $this->setGUID($r['focusAcctGUID']);
 
 	    $this->hto->putLine($r);
 
@@ -89,7 +103,7 @@ class balancesCl implements balancesPrivateIntf {
 
 	$this->penda = $penda; unset($penda);
 	$this->balEnd = $balRunning;
-
+	
 	return get_defined_vars();
     }
 
@@ -133,7 +147,7 @@ class balancesCl implements balancesPrivateIntf {
 
 	if (!$this->currx  || count($this->currx) < 2) return;
 
-	if (true || !$this->htmlOnly) var_dump($this->currx);
+	if (false || !$this->htmlOnly) var_dump($this->currx);
 
 	$vars = $this->calc20Loop();
 	extract($vars); unset($vars);
@@ -165,16 +179,17 @@ class balancesCl implements balancesPrivateIntf {
 
 	unset($showRem);
 
-	$minPayment = $this->getMinPayment($balStart);
+	$minPaymentEst = $this->getMinPaymentEst($balStart);
 
 	$possBals = $this->calcInEx();
+	$guid = $this->guid;
 
 	$this->calcs = get_defined_vars();
 
 	return;
     }
 
-    private function getMinPayment(float $bal) : float {
+    private function getMinPaymentEst(float $bal) : float {
 	// 31 days will be an overestimate for Feb, April, June, etc.
 	// 0.01 to convert from 11% (yeah, right) APR to 0.11
 	$interest = (31 / 365) * self::APR * 0.01 *  $bal;

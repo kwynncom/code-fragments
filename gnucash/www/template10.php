@@ -56,12 +56,20 @@ class acctTemplate10Cl {
 
 	$t .= '<tr>';
 	
-	$d = date('F d, Y', strtotime($r['huDatePosted']));
+	$d = date('F d', strtotime($r['huDatePosted']));
 	$amt = number_format($r['amount'], 2);
 	$bal = number_format($r['bal'], 2);
 	
+	$isPay = $amt < 0;
+	$acl = $isPay ? ' class="payCSCl amtCSCl numCSCl" ' : ' class="amtCSCl numCSCl" ';
+	$oan = $isPay ? 'payment' : $r['otherAcctName'];
+
+	if ($isPay) {
+	    kwnull();
+	}
+
 	$t .= trim(<<<HTTD38
-	    <td>$d</td><td>$r[otherAcctName]</td><td>$amt</td><td>$bal</td>\n
+	    <td class='dateCSCl'>$d</td><td>$oan</td><td $acl>$amt</td><td class='numCSCl'>$bal</td>\n
 HTTD38);
 
 	$t .= '</tr>' . "\n";	
