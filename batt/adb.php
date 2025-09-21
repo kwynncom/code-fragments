@@ -4,15 +4,48 @@ declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
 
-
 class adbBatt {
+
+    private readonly array $sns;
+
    public function __construct() {
 	try {
 	    $this->do10();
+	    $this->do40();
 	} catch(Throwable $ex12) {
 	    $this->doEx($ex12);
 	}
    }
+
+    private function do40() {
+	kwas(isset($this->sns) && count($this->sns) >= 1, 'no adb devices - inconsistent - err # 051421');
+	foreach($this->sns as $sn => $sna) {
+	    $this->do50($sna, $sn);
+	}
+    }
+
+    private function do50(array $a, string $sn) {
+
+	$res = [];
+
+	foreach(['sn', 'ip'] as $type) {
+	    if (!isset($a[$type])) continue; 
+	    $id =      $a[$type];
+	    break;
+	}
+
+	kwas(isset($id), 'no ID to call ADB - err # 051736');
+
+	$this->do60($id);
+
+	return;
+    }
+    
+    private function do60(string $did) {
+	$c = 'adb -s ' . $did . ' shell dumpsys battery';
+	$res = shell_exec($c);
+	return;
+    }
 
     private function doEx(Throwable $exin) {
 	echo($exin->getMessage() . "\n");
@@ -51,6 +84,7 @@ class adbBatt {
 	    }
 	}
 
+	$this->sns = $sns;
 	return;
     }
 
