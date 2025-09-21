@@ -37,14 +37,32 @@ class adbBatt {
    }
 
     private function do30(array $a) {
+
+	$sns = [];
+
 	foreach($a as $s) {
 	    kwas($s && is_string($s), 'non-string for device ID - err # 410449');
 	    if ($this->isIPv4Loose($s)) {
-		$sn = trim(shell_exec('adb -s ' . $s . ' shell getprop ro.serialno'));
-		kwas($sn && is_string($sn) && strlen($sn) > 4, 'bad serial number.  err # 440454');
-		kwas(preg_match('/^\S+$/', $sn), 'spaces in serial number err # 450455');
+		$sn = $this->getVSN(shell_exec('adb -s ' . $s . ' shell getprop ro.serialno'));
+		$sns[$sn]['ip'] = $s;
+	    } else {
+		$sn = $this->getVSN($s);
+		$sns[$sn]['sn'] = $sn;
 	    }
 	}
+
+	return;
+    }
+
+    private function getVSN(string $sn) : string {
+
+	$sn = trim($sn);
+
+	try {
+	    kwas($sn && is_string($sn) && strlen($sn) > 4, 'bad serial number.  err # 440454');
+	    kwas(preg_match('/^\S+$/', $sn), 'spaces in serial number err # 450455');
+	} catch(Throwable $ex54) { throw $ex54; }
+	return $sn;
     }
 
     private function isIPv4Loose(string $s) : bool {
