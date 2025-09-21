@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('parse.php');
 
 class adbBatt {
 
@@ -20,11 +21,12 @@ class adbBatt {
     private function do40() {
 	kwas(isset($this->sns) && count($this->sns) >= 1, 'no adb devices - inconsistent - err # 051421');
 	foreach($this->sns as $sn => $sna) {
-	    $this->do50($sna, $sn);
+	    $a = $this->do50($sna, $sn);
+	    new adbBattParseCl($a);
 	}
     }
 
-    private function do50(array $a, string $sn) {
+    private function do50(array $a, string $sn) : array {
 
 	$res = [];
 
@@ -36,15 +38,38 @@ class adbBatt {
 
 	kwas(isset($id), 'no ID to call ADB - err # 051736');
 
-	$this->do60($id);
+	return $this->do60($id);
 
-	return;
+	
     }
     
-    private function do60(string $did) {
+    private function do60(string $did) : array {
 	$c = 'adb -s ' . $did . ' shell dumpsys battery';
-	$res = shell_exec($c);
-	return;
+	$res = trim(shell_exec($c));
+	kwas($res && is_string($res) && strlen($res) > 150, 'bad adb batt result - err # 052847');
+	$a = $this->do70($res);
+	return $a;
+    }
+
+    private function do70(string $b) : array {
+	$lines = preg_split("/\n/", $b); kwas($lines && is_array($lines) && count($lines) >= 14, 
+					    'bad array-parsed batt - err # 053054');
+
+	$res = [];
+	foreach($lines as $line) {
+	    $ta = $this->do80($line);
+	    $res[key($ta)] = reset($ta);
+	}
+
+	return $res;
+    }
+
+    private function do80(string $line) {
+	$parts = explode(':', trim($line), 2);
+	kwas (count($parts) === 2, 'bad adb batt line parse - err # 670539');
+        $key = trim($parts[0]);
+        $result[$key] = $parts[1];
+	return $result;
     }
 
     private function doEx(Throwable $exin) {
