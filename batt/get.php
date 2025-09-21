@@ -68,7 +68,7 @@ class adbBatt {
 	$parts = explode(':', trim($line), 2);
 	kwas (count($parts) === 2, 'bad adb batt line parse - err # 670539');
         $key = trim($parts[0]);
-        $result[$key] = $parts[1];
+        $result[$key] = trim($parts[1]);
 	return $result;
     }
 
