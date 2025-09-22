@@ -12,9 +12,19 @@ class adbBattParseCl {
     public readonly float  $C;
     public readonly int	   $uAh;
 
-    public function __construct(array $a) {
+    public static function get(array $a) {
+	$o = new self($a);
+	return $o;
+    }
+
+    private function __construct(array $a) {
 	$this->do10($a);
     }
+
+    // max possible ch A is 13
+    // max possible ch V is 25
+    // both are given in u, so uA and uV
+    // check rest of settings
 
     private function do10(array $a) {
 
