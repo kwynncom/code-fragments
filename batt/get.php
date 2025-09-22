@@ -7,7 +7,7 @@ require_once('parse.php');
 
 class adbCl {
 
-    private readonly array $snsGetA;
+    private  readonly array $snsGetA;
     private  readonly array $props;
     public   readonly array $info;
 
@@ -32,6 +32,7 @@ class adbCl {
 	foreach($a as $sn => $batt) {
 	    $ret[$sn]['battery'] = $batt;
 	    $ret[$sn]['gen'] = $this->props[$sn];
+	    $ret[$sn]['Uat'] = time();
 	}
 	
 	$this->info = $ret;

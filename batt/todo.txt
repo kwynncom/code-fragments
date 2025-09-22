@@ -1,0 +1,5 @@
+2025/09/22 04:48
+
+write clean output to stdout
+write more details to a file, including U and data version / generation ID
+

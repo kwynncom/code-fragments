@@ -34,3 +34,8 @@ Current Battery Service state:
   temperature: 300
   technology: Li-ion
 
+// ro.com.google.gmsversion // Google Mobile Services, includes .go
+// ro.product.manufacturer  // 
+// ro.serialno
+// adb -s   shell getprop
+// adb -s   shell pm list packages | grep -P "\Wgo\b" // .go count
