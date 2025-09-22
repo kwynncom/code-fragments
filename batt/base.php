@@ -2,4 +2,4 @@
 
 require_once('get.php');
 
-$dat = adbBattCl::get();
+$dat = adbCl::get();

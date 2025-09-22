@@ -5,29 +5,36 @@ declare(strict_types=1);
 require_once('/opt/kwynn/kwutils.php');
 require_once('parse.php');
 
-class adbBattCl {
+class adbCl {
 
     private readonly array $snsGetA;
-    private readonly array $battA;
-    public  readonly array $dat;
-    public  readonly array $props;
+    private  readonly array $props;
+    public   readonly array $info;
 
     public static function get() {
 	$o = new self();
-	return $o->dat;
+	return $o->info;
     }
 
    private function __construct() {
 	try {
 	    $this->do10();
-	    $this->dat = $this->do40();
+	    $tbatta = $this->do40();
+	    $this->do90SetAll($tbatta);
+	    
 	} catch(Throwable $ex12) {
 	    $this->doEx($ex12);
 	}
    }
 
-    private function do90ID() {
+    private function do90SetAll(array $a) {
+	$ret = [];
+	foreach($a as $sn => $batt) {
+	    $ret[$sn]['battery'] = $batt;
+	    $ret[$sn]['gen'] = $this->props[$sn];
+	}
 	
+	$this->info = $ret;
     }
 
     private function do40() : array {
@@ -35,7 +42,6 @@ class adbBattCl {
 
 	$ret = [];
 	foreach($this->snsGetA as $sn => $sna) {
-	    $b = $this->do90ID();
 	    $a = $this->do50($sna, $sn); // battery stuff
 	    $ret[$sn] = adbBattParseCl::get($a);
 	}
@@ -163,20 +169,27 @@ class adbBattCl {
     private function do30(array $a) {
 
 	$snsGetA = [];
+	$props = [];
 
-	foreach($a as $s) {
-	    kwas($s && is_string($s), 'non-string for device ID - err # 410449');
-	    $isip = $this->isIPv4Loose($s);
+	foreach($a as $did) {
+	    kwas($did && is_string($did), 'non-string for device ID - err # 410449');
+
+	    $sn = $this->getVSN($this->getProps($did, 'ro.serialno'));
+
+	    $isip = $this->isIPv4Loose($did);
 	    if ($isip) {
-		$sn = $this->getVSN($this->getProps($s, 'ro.serialno'));
-		$snsGetA[$sn]['ip'] = $s;
+		$key = 'ip';
 	    } else {
-		$sn = $this->getVSN($s);
-		$snsGetA[$sn]['sn'] = $sn;
+		kwas($sn === $did, 'failed assuming that device ID is a serial number if not IP - err # 0355176');
+		$key = 'sn';
 	    }
+	    
+	    $snsGetA[$sn][$key] = $did;
+	  
 	}
 
 	$this->snsGetA = $snsGetA;
+	$this->props = $this->getProps();
 	return;
     }
 
