@@ -13,18 +13,22 @@ class adbDisplayCl {
 	    $batt = $a['battery'];
 	    $U  = $a['Uat'];
 	    $s .= $batt->level;
+	    $f  = $s . ' ';
 	    $s .= '%';
 	    $s .= ' ';
-	    $s .= $batt->chargingBy ? '++' : '--';
+	    $ch = $batt->chargingBy ? '++' : '--';
+	    $s .= $ch;
+	    $f .= $ch;
 	    $s .= ' ';
-	    $f  = $s;
-	    $s .= sprintf('%0.3f', $batt->V);
-	    $f .= $batt->V;
+	    $f .= ' ';
+	    $bd = sprintf('%0.03f', $batt->V);
+	    $s .= $bd;
+	    $f .= $bd;
 	    $s .= 'V';
 	    $s .= ' '; 
 	    $f .= ' ';
 	    $s .= number_format($batt->uAh) . 'uAh';
-	    $f .= $batt->uAh;
+	    $f .= sprintf('%7s', $batt->uAh);
 	    $s .= ' ';
 	    $f .= ' ';
 	    $hu = date('H:i:s D', $U);
@@ -36,7 +40,7 @@ class adbDisplayCl {
 	    $f .= $a['gen']['ro.serialno'];
 	    $f .= ' ';
 	    $s .= ' ';
-	    $f .= 'v925-1';
+	    $f .= 'v925-8';
 	    $f .= ' ';
 	    $f .= $U;
 	    $s .= ' ';
@@ -45,14 +49,18 @@ class adbDisplayCl {
 	}
 
 	$f .= "\n";
-	if (iscli()) {
-	    echo($s . "\n");
-	    if (false) echo($f);
-	}
 
 	$fn = '/var/kwynn/batt.txt';
 	$n = file_put_contents($fn, $f, FILE_APPEND);
 	kwas($n === strlen($f), 'bad write to ' . $fn);
+
+	if (iscli()) {
+	    echo(shell_exec('tail -n 20 ' . $fn));
+	    echo($s . "\n");
+	    if (false) echo($f);
+	}
+
+
 
     }
 
