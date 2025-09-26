@@ -28,26 +28,35 @@ def get_shell_output(command):
         if result.isdigit() and 1 <= len(result) <= 2:
             return result
         else:
-            sys.exit("Error: Command output is not a 1- or 2-digit number")
+            raise ValueError("Command output is not a 1- or 2-digit number")
     except subprocess.CalledProcessError:
-        sys.exit("Error: Command execution failed")
+        raise RuntimeError("Command execution failed")
 
 def run_update_loop(icon, command):
     while True:
-        text = get_shell_output(command)
-        icon.icon = create_tray_icon(text)
+        try:
+            text = get_shell_output(command)
+            icon.icon = create_tray_icon(text)
+        except (ValueError, RuntimeError) as e:
+            print(f"Error: {str(e)}", file=sys.stderr)
+            icon.stop()  # Stop the system tray icon
+            sys.exit(1)  # Exit the program
         time.sleep(UPDATE_INTERVAL_SECONDS)
 
 if __name__ == "__main__":
     # command = "echo 42"  # Replace with your desired shell command
     command = "php /var/kwynn/batt/code/base.php no"
-    initial_text = get_shell_output(command)
-    icon = pystray.Icon("battLevKw", title="battery lev")
-    icon.icon = create_tray_icon(initial_text)
-    
-    # Start the update loop in a separate thread
-    update_thread = threading.Thread(target=run_update_loop, args=(icon, command), daemon=True)
-    update_thread.start()
-    
-    # Run the system tray icon
-    icon.run()
+    try:
+        initial_text = get_shell_output(command)
+        icon = pystray.Icon("battLevKw", title="battery lev")
+        icon.icon = create_tray_icon(initial_text)
+        
+        # Start the update loop in a separate thread
+        update_thread = threading.Thread(target=run_update_loop, args=(icon, command), daemon=True)
+        update_thread.start()
+        
+        # Run the system tray icon
+        icon.run()
+    except (ValueError, RuntimeError) as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)
