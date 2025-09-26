@@ -31,7 +31,7 @@ class adbDisplayCl {
 	$a = array_values($this->a)[0];
 	$i = intval($a['battery']->level);
 	kwas($i >= 0 && $i <= 100, 'bad number-only batt level');
-	if ($i === 100) $i = 9;
+	if ($i === 100) $i = 99;
 	echo($i . "\n");
 	return;
     }

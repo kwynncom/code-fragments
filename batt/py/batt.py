@@ -34,13 +34,9 @@ def get_shell_output(command):
 
 def run_update_loop(icon, command):
     while True:
-        try:
-            text = get_shell_output(command)
-            icon.icon = create_tray_icon(text)
-        except (ValueError, RuntimeError) as e:
-            print(f"Error: {str(e)}", file=sys.stderr)
-            icon.stop()  # Stop the system tray icon
-            sys.exit(1)  # Exit the program
+        text = get_shell_output(command)
+        icon.icon = create_tray_icon(text)
+
         time.sleep(UPDATE_INTERVAL_SECONDS)
 
 if __name__ == "__main__":
@@ -57,4 +53,5 @@ if __name__ == "__main__":
         icon.run()
     except (ValueError, RuntimeError) as e:
         print(f"Error: {str(e)}", file=sys.stderr)
+        icon.stop()  # Stop the system tray icon
         sys.exit(1)
