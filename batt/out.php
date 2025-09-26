@@ -21,8 +21,8 @@ class adbDisplayCl {
     }
 
     private function branch10() {
-	if (!$this->isNumOnly()) return $this->do10();
-	return $this->doNum();
+	$this->do10();
+	if ($this->isNumOnly()) return $this->doNum();
 	
     }
 
@@ -85,7 +85,7 @@ class adbDisplayCl {
 	$n = file_put_contents($fn, $f, FILE_APPEND);
 	kwas($n === strlen($f), 'bad write to ' . $fn);
 
-	if (iscli()) {
+	if (iscli() && !$this->isNumOnly()) {
 	    echo(shell_exec('tail -n 20 ' . $fn));
 	    echo($s . "\n");
 	    if (false) echo($f);

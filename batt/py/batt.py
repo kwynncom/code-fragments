@@ -6,7 +6,7 @@ import sys
 import threading
 import time
 
-UPDATE_INTERVAL_SECONDS = 30
+UPDATE_INTERVAL_SECONDS = 61
 
 def create_tray_icon(text):
     icon_size = (24, 24)
@@ -48,14 +48,12 @@ if __name__ == "__main__":
     command = "php /var/kwynn/batt/code/base.php no"
     try:
         initial_text = get_shell_output(command)
-        icon = pystray.Icon("battLevKw", title="battery lev")
+        icon = pystray.Icon("cell battery", title="cell battery")
         icon.icon = create_tray_icon(initial_text)
         
-        # Start the update loop in a separate thread
         update_thread = threading.Thread(target=run_update_loop, args=(icon, command), daemon=True)
         update_thread.start()
         
-        # Run the system tray icon
         icon.run()
     except (ValueError, RuntimeError) as e:
         print(f"Error: {str(e)}", file=sys.stderr)
