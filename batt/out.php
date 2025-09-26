@@ -2,6 +2,8 @@
 
 class adbDisplayCl {
 
+    const outfile = '/var/kwynn/batt/batt.txt';
+
     private readonly array $a;
 
     public function __construct(array $din) {
@@ -34,11 +36,11 @@ class adbDisplayCl {
 	return;
     }
 
-    private function do10(array $ain) {
+    private function do10() {
 	$s  = '';
 	$f  = '';
 
-	foreach($ain as $sn => $a) {
+	foreach($this->a as $sn => $a) {
 	    $batt = $a['battery'];
 	    $U  = $a['Uat'];
 	    $s .= $batt->level;
@@ -79,7 +81,7 @@ class adbDisplayCl {
 
 	$f .= "\n";
 
-	$fn = '/var/kwynn/batt.txt';
+	$fn = self::outfile;
 	$n = file_put_contents($fn, $f, FILE_APPEND);
 	kwas($n === strlen($f), 'bad write to ' . $fn);
 

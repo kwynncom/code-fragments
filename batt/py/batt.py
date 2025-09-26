@@ -1,6 +1,12 @@
 import pystray
 from PIL import Image, ImageDraw, ImageFont
 import os
+import subprocess
+import sys
+import threading
+import time
+
+UPDATE_INTERVAL_SECONDS = 30
 
 def create_tray_icon(text):
     icon_size = (24, 24)
@@ -14,10 +20,34 @@ def create_tray_icon(text):
     text_x = (icon_size[0] - text_width) // 2
     text_y = (icon_size[1] - text_height) // 2 - 2
     draw.text((text_x, text_y), text, font=font, fill=(255, 255, 255, 255))
-    icon = pystray.Icon("battLevKw")
-    icon.icon = image
-    icon.title = "battery lev"
-    icon.run()
+    return image
+
+def get_shell_output(command):
+    try:
+        result = subprocess.check_output(command, shell=True, text=True).strip()
+        if result.isdigit() and 1 <= len(result) <= 2:
+            return result
+        else:
+            sys.exit("Error: Command output is not a 1- or 2-digit number")
+    except subprocess.CalledProcessError:
+        sys.exit("Error: Command execution failed")
+
+def run_update_loop(icon, command):
+    while True:
+        text = get_shell_output(command)
+        icon.icon = create_tray_icon(text)
+        time.sleep(UPDATE_INTERVAL_SECONDS)
 
 if __name__ == "__main__":
-    create_tray_icon("42")
+    # command = "echo 42"  # Replace with your desired shell command
+    command = "php /var/kwynn/batt/code/base.php no"
+    initial_text = get_shell_output(command)
+    icon = pystray.Icon("battLevKw", title="battery lev")
+    icon.icon = create_tray_icon(initial_text)
+    
+    # Start the update loop in a separate thread
+    update_thread = threading.Thread(target=run_update_loop, args=(icon, command), daemon=True)
+    update_thread.start()
+    
+    # Run the system tray icon
+    icon.run()
