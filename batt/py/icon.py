@@ -1,4 +1,5 @@
 
+import pystray
 from PIL import Image, ImageDraw, ImageFont
 
 class TrayIconCreator:
@@ -6,6 +7,9 @@ class TrayIconCreator:
         self.font_name = font_name
         self.icon_size = icon_size
         self.font_size = font_size
+
+        self.iconP = pystray.Icon("cell battery", title="cell battery")
+        self.create_tray_icon('??')
 
     def create_tray_icon(self, text):
         image = Image.new("RGBA", self.icon_size, (0, 0, 0, 0))
@@ -17,4 +21,10 @@ class TrayIconCreator:
         text_x = (self.icon_size[0] - text_width) // 2
         text_y = (self.icon_size[1] - text_height) // 2 - 2
         draw.text((text_x, text_y), text, font=font, fill=(255, 255, 255, 255))
-        return image
+        self.iconP.icon = image
+
+    def run(self):
+        self.iconP.run()
+
+    def stop(self):
+        self.iconP.stop()
