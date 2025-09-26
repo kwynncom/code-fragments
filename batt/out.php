@@ -1,9 +1,38 @@
 <?php
 
 class adbDisplayCl {
-    public function __construct(array $dat) {
-	$this->do10($dat);
+
+    private readonly array $a;
+
+    public function __construct(array $din) {
+	$this->a = $din; unset($din);
+	$this->branch10();
     } 
+
+    private function isNumOnly() : bool {
+	global $argv;
+	if (!isset($argv[1])) return false;
+	$s = strtolower($argv[1]);
+	if ($s === 'no') return true;
+	if (substr($s, 0, 3) === 'num') return true;
+	return false;
+    }
+
+    private function branch10() {
+	if (!$this->isNumOnly()) return $this->do10();
+	return $this->doNum();
+	
+    }
+
+    private function doNum() {
+	kwas(count($this->a) === 1, '0 or 2+ phones'); 
+	$a = array_values($this->a)[0];
+	$i = intval($a['battery']->level);
+	kwas($i >= 0 && $i <= 100, 'bad number-only batt level');
+	if ($i === 100) $i = 9;
+	echo($i . "\n");
+	return;
+    }
 
     private function do10(array $ain) {
 	$s  = '';
