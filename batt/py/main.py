@@ -16,6 +16,7 @@ def run_update_loop(iconoin):
     except Exception as e:
         print(f"Error loop thread: {str(e)}", file=sys.stderr)
         iconoin.stop()
+        sys.exit(-5)
 
 def init():
     iconol = TrayIconCreator()
