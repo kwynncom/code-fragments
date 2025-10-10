@@ -1,5 +1,8 @@
 
 import pystray
+import signal
+from pystray import MenuItem as item
+from pystray import Menu
 from PIL import Image, ImageDraw, ImageFont
 
 class TrayIconCreator:
@@ -8,8 +11,17 @@ class TrayIconCreator:
         self.icon_size = icon_size
         self.font_size = font_size
 
-        self.iconP = pystray.Icon("cell battery", title="cell battery")
+        menu = Menu(item('Exit', self.quit))  # Create menu with Exit item
+        self.iconP = pystray.Icon("cell battery", title="cell battery", menu=menu)
+        signal.signal(signal.SIGTERM, self.signal_handler)  # Handles kill/termination
+        signal.signal(signal.SIGINT , self.signal_handler)  # Handles Ctrl+C
         self.create_tray_icon('??')
+
+    def quit(self):
+        self.iconP.stop()
+
+    def signal_handler(self, sig, frame):
+        self.quit()
 
     def create_tray_icon(self, text):
         image = Image.new("RGBA", self.icon_size, (0, 0, 0, 0))

@@ -18,12 +18,12 @@ def run_update_loop(iconoin):
         iconoin.stop()
         sys.exit(-5)
 
-def init():
+def initIcon():
     iconol = TrayIconCreator()
     update_thread = threading.Thread(target=run_update_loop, args=(iconol, ), daemon=True)
     update_thread.start()
     iconol.run()  # blocking
 
 if __name__ == "__main__":
-    init()
+    initIcon()
 
