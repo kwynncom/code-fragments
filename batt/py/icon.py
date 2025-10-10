@@ -1,12 +1,15 @@
 
 import pystray
 import signal
+import sys
 from pystray import MenuItem as item
 from pystray import Menu
 from PIL import Image, ImageDraw, ImageFont
 
 class TrayIconCreator:
-    def __init__(self, font_name="Ubuntu-B.ttf", icon_size=(24, 24), font_size=24):
+    def __init__(self, threadIn, stop_event, font_name="Ubuntu-B.ttf", icon_size=(24, 24), font_size=24):
+        self.thread = threadIn
+        self.stop_event = stop_event
         self.font_name = font_name
         self.icon_size = icon_size
         self.font_size = font_size
@@ -18,7 +21,10 @@ class TrayIconCreator:
         self.create_tray_icon('??')
 
     def quit(self):
+        self.stop_event.set()
+        self.thread.join()
         self.iconP.stop()
+        sys.exit(0)
 
     def signal_handler(self, sig, frame):
         self.quit()
