@@ -5,30 +5,33 @@ require_once('/opt/kwynn/kwutils.php');
 class odsFirstSheetCl {
     const source = '/var/kwynn/hours/';
     const marker = 'autoKw18';
-    const fs = ['marker', 'start', 'hours', 'permonth', 'rate'];
+    const fs = ['marker', 'start', 'hours', 'permonth', 'rate']; // just a reminder
     const dperm = 30.416667;
     
+    public readonly array $hours;
+    
 
-    private function do40(array $a) {
-	if (!$a) return;
+    private function do40(array $a) : array {
+	if (!$a) return [];
 
 	$now = time();
 
 	$s = $now - strtotime($a[1]);
-	$hus = number_format($s);
-	$elapM = ($s) / (self::dperm * DAY_S);
-	$paid  = $elapM * $a[3];
-	$dph   = $paid /  $a[2];
+	$hus = number_format($s); unset($hus);
+	$elapM = $s / (self::dperm * DAY_S); unset($s);
+	$paid  = $elapM * $a[3]; unset($elapM);
+	$dollarsPerHour   = $paid /  $a[2];
 	$worked = $a[4] * $a[2];
-	$dahead  = $worked - $paid;
-	$hrahead = $dahead / $a[4];
+	$dolahead  = $worked - $paid; unset($worked, $paid);
+	$hoursAhead = $dolahead / $a[4];
 	$targdpd = $a[3] / self::dperm;
-	$targhpd = $targdpd / $a[4];
-	$daysahead = $dahead / $targdpd;
-	$Uearnto = roint($now + $daysahead * DAY_S);
-	$earntohu = date('r', $Uearnto);
+	$targhpd = $targdpd / $a[4]; unset($targhpd);
+	$daysAhead = $dolahead / $targdpd; unset($dolahead, $targdpd);
+	$Uearnto = roint($now + $daysAhead * DAY_S); unset($now);
+	$earnedTo = date('r', $Uearnto); unset($Uearnto);
+	unset($a);
 	
-	return;
+	return get_defined_vars();
     }
 
 
@@ -46,22 +49,32 @@ class odsFirstSheetCl {
     }
 
     private function do10() {
+
+	$ret = [];
 	$fs = glob(self::source . '*.ods');
 	foreach($fs as $f) {
 	    $this->do20 ($f);
-	    $this->parse30($f);
+	    $t = $this->parse30($f);
+	    if (!$t) continue;
+	    $ret[$t['projectName']] = $t;
 	}
+
+	$this->hours = $ret;
+
 	return;
     }
 
 
 
-    private function parse30(string $f) {
+    private function parse30(string $f) : array {
 	$csv = $this->otoc($f);
 	$t = file_get_contents($csv);
 	$a = str_getcsv($t);
-	$this->do40($this->findMarker($a));
-	return;
+	$dat = $this->do40($this->findMarker($a));
+	if (!$dat) return [];
+	$dat['projectName'] = pathinfo($f, PATHINFO_FILENAME);
+	$dat['Ufile'  ] = filemtime($f);
+	return $dat;
     }
 
     private function otoc(string $f) {
