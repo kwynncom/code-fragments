@@ -6,7 +6,7 @@ class odsFirstSheetCl {
     const source = '/var/kwynn/hours/';
     const marker = 'autoKw18';
     const fs = ['marker', 'start', 'hours', 'permonth', 'rate'];
-    const dperm = 30.42;
+    const dperm = 30.416667;
     
 
     private function do40(array $a) {
@@ -14,8 +14,7 @@ class odsFirstSheetCl {
 
 	$now = time();
 
-	// $tz = date_default_timezone_get();
-	$s = $now - strtotime($a[1]); // . ' ' . $tz);
+	$s = $now - strtotime($a[1]);
 	$hus = number_format($s);
 	$elapM = ($s) / (self::dperm * DAY_S);
 	$paid  = $elapM * $a[3];
