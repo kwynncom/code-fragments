@@ -13,19 +13,19 @@ class odsFirstSheetCl {
     public  readonly array $hours;
     public  readonly array $indat;
     private	     array $asof;
-    
 
-    private static function getRate($vin) : int | float {
-	$fl = floatval($vin);
-	$iv = roint   ($vin);
-	if (abs($fl - $iv) < 0.001) return $iv;
-	return $fl;
+    private static function procA(array $ain, array $vars) : array {
+	$ret = [];
+
+	kwas($ain[0] === self::marker, 'array bad err # 080827-20');
+	return [];
+
     }
 
     public static function calcs(array $a) : array {
 	if (!$a) return [];
 
-	kwas($a[0] === self::marker, 'array bad err # 080827');
+	kwas($a[0] === self::marker, 'array bad err # 080827-30');
 
 	$now = time();
 
@@ -42,11 +42,19 @@ class odsFirstSheetCl {
 	$targhpd = $targdpd / $a[4]; unset($targhpd);
 	$days = $dolahead / $targdpd; unset($dolahead, $targdpd);
 	$earnedTo = roint($now + $days * DAY_S); unset($now);
-	unset($a);
 	
-	return get_defined_vars();
+	$vars = get_defined_vars(); 
+	$input = self::procA($a, $vars); 	unset($a);
+
+	return $vars;
     }
 
+    private static function getRate($vin) : int | float {
+	$fl = floatval($vin);
+	$iv = roint   ($vin);
+	if (abs($fl - $iv) < 0.001) return $iv;
+	return $fl;
+    }
 
     private function findMarker(array $a) : array {
 	foreach($a as $i => $c) {
@@ -71,12 +79,16 @@ class odsFirstSheetCl {
     private function do10() {
 
 	$ret = [];
+	$db  = [];
+
 	$fs = glob(self::source . '*.csv');
 	foreach($fs as $f) {
 	    $this->do20 ($f);
 	    $t = $this->parse30($f);
 	    if (!$t) continue;
-	    $ret[$t['calcs']['project']] = $t['calcs'];
+	    $proj = $t['calcs']['project'];
+	    $ret[$proj] = $t['calcs']; unset($t['calcs']);
+	    $db [$proj] = $t;
 	}
 
 	$this->hours = $ret;
@@ -88,8 +100,9 @@ class odsFirstSheetCl {
 
     private function parse30(string $f) : array {
 	$t = file_get_contents($f);
-	$a = str_getcsv($t);
-	$dat = $this->calcs($this->findMarker($a));
+	$aall = str_getcsv($t);
+	$a = $this->findMarker($aall);
+	$dat = $this->calcs($a);
 	if (!$dat) return [];
 	$uq = [];
 	$uq['project'] = pathinfo($f, PATHINFO_FILENAME);
