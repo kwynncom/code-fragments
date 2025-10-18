@@ -4,13 +4,16 @@ require_once('head.html');
 ?>
 <body>
 
-<pre>
 <?php require_once('do10.php');
 
 echo(odsDo10Cl::getHT());
 
 ?>
-</pre>
+
+<div style='margin-top: 1.1em; '>
+    <button onclick='window.location.reload();'>redo</button>
+    <div>as of <?php echo(date('r')); ?></div>
+</div>
 </body>
 </html>
 

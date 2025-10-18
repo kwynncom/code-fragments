@@ -8,7 +8,8 @@ class odsFirstSheetCl {
     const fs = ['marker', 'start', 'hours', 'permonth', 'rate']; // just a reminder
     const dperm = 30.416667;
     
-    public readonly array $hours;
+    public  readonly array $hours;
+    private	     array $asof;
     
 
     private function do40(array $a) : array {
@@ -20,15 +21,16 @@ class odsFirstSheetCl {
 	$hus = number_format($s); unset($hus);
 	$elapM = $s / (self::dperm * DAY_S); unset($s);
 	$paid  = $elapM * $a[3]; unset($elapM);
-	$dollarsPerHour   = $paid /  $a[2];
+	$dphNow   = $paid /  $a[2];
+	$rate = $a[4];
 	$worked = $a[4] * $a[2];
 	$dolahead  = $worked - $paid; unset($worked, $paid);
 	$hoursAhead = $dolahead / $a[4];
 	$targdpd = $a[3] / self::dperm;
 	$targhpd = $targdpd / $a[4]; unset($targhpd);
 	$daysAhead = $dolahead / $targdpd; unset($dolahead, $targdpd);
-	$Uearnto = roint($now + $daysAhead * DAY_S); unset($now);
-	$earnedTo = date('r', $Uearnto); unset($Uearnto);
+	$UEarnedTo = roint($now + $daysAhead * DAY_S); unset($now);
+	// $earnedToHu = date('r', $UearnedTo); 
 	unset($a);
 	
 	return get_defined_vars();
@@ -38,7 +40,6 @@ class odsFirstSheetCl {
     private function findMarker(array $a) : array {
 	foreach($a as $i => $c) {
 	    if (!$c) continue;
-	    if (!trim($c)) continue;
 	    if (trim($c) !== self::marker) continue;
 	    $ret = array_slice($a, $i);
 	    return $ret;
@@ -53,7 +54,7 @@ class odsFirstSheetCl {
     private function do10() {
 
 	$ret = [];
-	$fs = glob(self::source . '*.ods');
+	$fs = glob(self::source . '*.csv');
 	foreach($fs as $f) {
 	    $this->do20 ($f);
 	    $t = $this->parse30($f);
@@ -69,39 +70,60 @@ class odsFirstSheetCl {
 
 
     private function parse30(string $f) : array {
-	$csv = $this->otoc($f);
-	$t = file_get_contents($csv);
+	$t = file_get_contents($f);
 	$a = str_getcsv($t);
 	$dat = $this->do40($this->findMarker($a));
 	if (!$dat) return [];
 	$dat['projectName'] = pathinfo($f, PATHINFO_FILENAME);
-	$dat['Ufile'  ] = filemtime($f);
+	$dat['Ufile'  ] = $this->asof[$this->ctoo($f)];
 	return $dat;
+    }
+
+    private function getmt(string $csv) {
+	
+    }
+
+    private function ctoo(string $f) {
+	return str_replace('.csv', '.ods', $f);
     }
 
     private function otoc(string $f) {
 	return str_replace('.ods', '.csv', $f);
     }
 
-    private function already(string $f) : bool {
-	$csv = $this->otoc($f);
-	if (!file_exists($csv)) return false;
-	if (filemtime($csv) >= filemtime($f)) return true;
-	else return false;
+
+    private function setAsOf(string $f, int $U) : int {
+	$this->asof[$f] = $U;
+	return $U;
     }
 
-    private function do20(string $f) {
+    private function already(string $csv) : bool {
+	if (!file_exists($csv)) return false;
 
-	if ($this->already($f)) return;
+	$pdf = $this->ctoo($csv);
+	if (file_exists($pdf)) {
+	    $cm = filemtime($csv);
+	    $pm = filemtime($pdf);
+	    $this->setAsOf($pdf, $pm);
+	    if ($cm >= $pm) return true;
+	    else return false;
+	}  
 
-	$c = 'soffice --headless --convert-to csv ' . $f . ' --outdir ' . self::source;
+	return true;
+    }
+
+    private function do20(string $csv)  {
+
+	if ($this->already($csv)) return;
+	$pdf = $this->ctoo($csv);
+	if (!is_readable($pdf)) return;
+
+	$this->setAsOf($pdf, filemtime($pdf));
+	$c = 'soffice --headless --convert-to csv ' . $pdf . ' --outdir ' . self::source;
 	$res = shell_exec($c);
-
-// "convert /var/kwynn/hours/blah.ods as a Calc document -> /var/kwynn/hours/blah.csv using 
-// filter : Text - txt - csv (StarCalc) "
-
+	$csv = $this->otoc($pdf);
+	kwas(is_readable($csv) && filemtime($csv) >= $this->asof[$pdf], 'ods to csv fail (err # 0614126)');
 	return;
-
     }
 }
 

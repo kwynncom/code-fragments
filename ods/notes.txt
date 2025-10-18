@@ -1,4 +1,18 @@
+10/18 06:41am 
+
+I considered copying the .csv to kwynn.com.  Thus, the CSV versus PDF process is a bit convoluted.  I tried to make it work with either CSV or PDF.  I may never really test that, though.
+
+TO DO / TODO: The plan now is to send a small packet to kwynn.com.
+
+
+**********
 2025/10/18 01:24 EDT
 
 Grok 3 Beta wrote me a Python version months ago.  That version could read all sheets (tabs) of a file.
 I'm going to use a simpler tool in this case.  I'll delete the Python stuff.
+
+**********
+
+// If I wanted to validate the output:
+// "convert /var/kwynn/hours/blah.ods as a Calc document -> /var/kwynn/hours/blah.csv using 
+// filter : Text - txt - csv (StarCalc) "

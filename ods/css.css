@@ -1,0 +1,23 @@
+body {
+    font-family: sans-serif;
+}
+
+table {
+  border-collapse: collapse; /* Merges cell borders */
+}
+
+tr:nth-child(even) {
+  background-color: hsl(0, 0%, 95%);
+}
+
+th {
+    font-size: 90%; 
+}
+
+td { 
+    font-family: monospace;
+    padding: 1ex; 
+    
+}
+
+
