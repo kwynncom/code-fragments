@@ -11,45 +11,58 @@ class odsFirstSheetCl {
     const dperm = 30.416667;
     
     public  readonly array $hours;
-    public  readonly array $indat;
+    public  readonly array $input;
     private	     array $asof;
 
-    private static function procA(array $ain, array $vars) : array {
+    private static function procA(array $vin) : array {
 	$ret = [];
-
-	kwas($ain[0] === self::marker, 'array bad err # 080827-20');
-	return [];
-
+	$ret['Ustart']   = $vin['Ustart'];
+	$ret['hours']    = $vin['hoursWorked'];
+	$ret['permonth'] = $vin['permonth'];
+	$ret['rate']	 = $vin['rate'];
+	return $ret;
+	
     }
 
-    public static function calcs(array $a) : array {
+    private static function getValidStart(string $hu) : int {
+	$U = strtotime($hu); unset($hu);
+	$now = time();
+	kwas($U >= 1634387606 && $U <= $now, 'bad start time err # 083425');
+	return $U;
+    }
+
+    public static function getCalcs(array $a) : array {
 	if (!$a) return [];
 
 	kwas($a[0] === self::marker, 'array bad err # 080827-30');
 
 	$now = time();
 
-	$s = $now - strtotime($a[1]);
+	$Ustart = self::getValidStart($a[1]);
+	$hoursWorked = floatval($a[2]);
+	$s = $now - $Ustart;
 	$hus = number_format($s); unset($hus);
 	$elapM = $s / (self::dperm * DAY_S); unset($s);
-	$paid  = $elapM * $a[3]; unset($elapM);
-	$dph   = $paid /  $a[2];
-	$rate = self::getRate($a[4]);
-	$worked = $a[4] * $a[2];
+	$permonth = self::getIntOrFl($a[3]);
+	$paid  = $elapM * $permonth; unset($elapM);
+	$dph   = $paid /  $hoursWorked;
+	$rate = self::getIntOrFl($a[4]); unset($a);
+	$worked = $rate * $hoursWorked;
 	$dolahead  = $worked - $paid; unset($worked, $paid);
-	$hours = $dolahead / $a[4];
-	$targdpd = $a[3] / self::dperm;
-	$targhpd = $targdpd / $a[4]; unset($targhpd);
+	$hours = $dolahead / $rate;
+	$targdpd = $permonth / self::dperm;
+	$targhpd = $targdpd / $rate; unset($targhpd);
 	$days = $dolahead / $targdpd; unset($dolahead, $targdpd);
 	$earnedTo = roint($now + $days * DAY_S); unset($now);
 	
 	$vars = get_defined_vars(); 
-	$input = self::procA($a, $vars); 	unset($a);
+	$input = self::procA($vars);
+	$vars['input'] = $input; unset($input);
 
 	return $vars;
     }
 
-    private static function getRate($vin) : int | float {
+    private static function getIntOrFl($vin) : int | float {
 	$fl = floatval($vin);
 	$iv = roint   ($vin);
 	if (abs($fl - $iv) < 0.001) return $iv;
@@ -73,7 +86,7 @@ class odsFirstSheetCl {
 
     private function toDB() {
 	require_once(__DIR__ . '/db.php');
-	odsDBCl::put($this->hours);
+	odsDBCl::put($this->input);
     }
 
     private function do10() {
@@ -88,10 +101,11 @@ class odsFirstSheetCl {
 	    if (!$t) continue;
 	    $proj = $t['calcs']['project'];
 	    $ret[$proj] = $t['calcs']; unset($t['calcs']);
-	    $db [$proj] = $t;
+	    $db [$proj] = kwam($t['uq'], $t['input']);
 	}
 
 	$this->hours = $ret;
+	$this->input = $db;
 
 	return;
     }
@@ -102,13 +116,15 @@ class odsFirstSheetCl {
 	$t = file_get_contents($f);
 	$aall = str_getcsv($t);
 	$a = $this->findMarker($aall);
-	$dat = $this->calcs($a);
+	$dat = $this->getCalcs($a);
 	if (!$dat) return [];
 	$uq = [];
 	$uq['project'] = pathinfo($f, PATHINFO_FILENAME);
 	$uq['Ufile'  ] = $this->asof[$this->ctoo($f)];
+	$input = $dat['input']; 
+	unset   ($dat['input']);
 	$ret = kwam($dat, $uq);
-	return ['uq' => $uq, 'calcs' => $ret, 'input' => $a];
+	return ['uq' => $uq, 'calcs' => $ret, 'input' => $input];
     }
 
     private function getmt(string $csv) {

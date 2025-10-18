@@ -45,8 +45,9 @@ class odsDBCl extends dao_generic_4 {
 
 	$dat = $this->vala[$proj];
 	$dat['_id'] = $_id;
-	
-	
+
+	$this->c->insertOne($dat);
+		
 	return;
     }
 
