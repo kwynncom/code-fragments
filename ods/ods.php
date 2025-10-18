@@ -37,6 +37,8 @@ class odsFirstSheetCl {
 
     private function findMarker(array $a) : array {
 	foreach($a as $i => $c) {
+	    if (!$c) continue;
+	    if (!trim($c)) continue;
 	    if (trim($c) !== self::marker) continue;
 	    $ret = array_slice($a, $i);
 	    return $ret;
@@ -83,6 +85,7 @@ class odsFirstSheetCl {
 
     private function already(string $f) : bool {
 	$csv = $this->otoc($f);
+	if (!file_exists($csv)) return false;
 	if (filemtime($csv) >= filemtime($f)) return true;
 	else return false;
     }
