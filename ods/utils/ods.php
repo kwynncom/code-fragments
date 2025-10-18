@@ -1,19 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 require_once('/opt/kwynn/kwutils.php');
 
 class odsFirstSheetCl {
     const source = '/var/kwynn/hours/';
     const marker = 'autoKw18';
-    const fs = ['marker', 'start', 'hours', 'permonth', 'rate']; // just a reminder
+    const fs = ['marker', 'start', 'hours', 'permonth', 'rate'];
     const dperm = 30.416667;
     
     public  readonly array $hours;
+    public  readonly array $indat;
     private	     array $asof;
     
 
-    private function do40(array $a) : array {
+    private static function getRate($vin) : int | float {
+	$fl = floatval($vin);
+	$iv = roint   ($vin);
+	if (abs($fl - $iv) < 0.001) return $iv;
+	return $fl;
+    }
+
+    public static function calcs(array $a) : array {
 	if (!$a) return [];
+
+	kwas($a[0] === self::marker, 'array bad err # 080827');
 
 	$now = time();
 
@@ -21,16 +33,15 @@ class odsFirstSheetCl {
 	$hus = number_format($s); unset($hus);
 	$elapM = $s / (self::dperm * DAY_S); unset($s);
 	$paid  = $elapM * $a[3]; unset($elapM);
-	$dphNow   = $paid /  $a[2];
-	$rate = $a[4];
+	$dph   = $paid /  $a[2];
+	$rate = self::getRate($a[4]);
 	$worked = $a[4] * $a[2];
 	$dolahead  = $worked - $paid; unset($worked, $paid);
-	$hoursAhead = $dolahead / $a[4];
+	$hours = $dolahead / $a[4];
 	$targdpd = $a[3] / self::dperm;
 	$targhpd = $targdpd / $a[4]; unset($targhpd);
-	$daysAhead = $dolahead / $targdpd; unset($dolahead, $targdpd);
-	$UEarnedTo = roint($now + $daysAhead * DAY_S); unset($now);
-	// $earnedToHu = date('r', $UearnedTo); 
+	$days = $dolahead / $targdpd; unset($dolahead, $targdpd);
+	$earnedTo = roint($now + $days * DAY_S); unset($now);
 	unset($a);
 	
 	return get_defined_vars();
@@ -49,6 +60,12 @@ class odsFirstSheetCl {
 
     public function __construct() {
 	$this->do10();
+	$this->toDB();
+    }
+
+    private function toDB() {
+	require_once(__DIR__ . '/db.php');
+	odsDBCl::put($this->hours);
     }
 
     private function do10() {
@@ -59,7 +76,7 @@ class odsFirstSheetCl {
 	    $this->do20 ($f);
 	    $t = $this->parse30($f);
 	    if (!$t) continue;
-	    $ret[$t['projectName']] = $t;
+	    $ret[$t['calcs']['project']] = $t['calcs'];
 	}
 
 	$this->hours = $ret;
@@ -72,11 +89,13 @@ class odsFirstSheetCl {
     private function parse30(string $f) : array {
 	$t = file_get_contents($f);
 	$a = str_getcsv($t);
-	$dat = $this->do40($this->findMarker($a));
+	$dat = $this->calcs($this->findMarker($a));
 	if (!$dat) return [];
-	$dat['projectName'] = pathinfo($f, PATHINFO_FILENAME);
-	$dat['Ufile'  ] = $this->asof[$this->ctoo($f)];
-	return $dat;
+	$uq = [];
+	$uq['project'] = pathinfo($f, PATHINFO_FILENAME);
+	$uq['Ufile'  ] = $this->asof[$this->ctoo($f)];
+	$ret = kwam($dat, $uq);
+	return ['uq' => $uq, 'calcs' => $ret, 'input' => $a];
     }
 
     private function getmt(string $csv) {

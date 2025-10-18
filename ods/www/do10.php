@@ -1,6 +1,6 @@
 <?php
 
-require_once('ods.php');
+require_once(__DIR__ . '/../utils/ods.php');
 
 class odsDo10Cl {
 
@@ -14,7 +14,7 @@ class odsDo10Cl {
     }
 
     private function do10(array $ain) {
-	uasort($ain, function($a, $b) { return $a['UEarnedTo'] <=> $b['UEarnedTo']; });
+	uasort($ain, function($a, $b) { return $a['earnedTo'] <=> $b['earnedTo']; });
 	$a = $ain; unset($ain);
 	ob_start();
 	require_once('T10.php');

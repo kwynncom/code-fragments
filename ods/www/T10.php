@@ -21,31 +21,31 @@
 	<?php foreach($a as $r) {  ?>
 	    
 	    <tr>
-		<td><?php echo(substr($r['projectName'], 0, 3)); ?></td>
+		<td><?php echo(substr($r['project'], 0, 3)); ?></td>
 		<td style='text-align: center; '>
 		    <?php
-			echo(sprintf('%0.1f', $r['daysAhead']));
+			echo(sprintf('%0.1f', $r['days']));
 		    ?>
 		</td>
 		<td style='text-align: center; '>
 		    <?php
-			echo(sprintf('%0.1f', $r['hoursAhead']));
+			echo(sprintf('%0.1f', $r['hours']));
 		    ?>
 		</td>
 
 		<td><?php 
 		    if ($showD) $fmt = 'D, M d H:i';
 		    else	$fmt = 'D H:i';
-		    echo(date  ($fmt, $r['UEarnedTo'])); ?>
+		    echo(date  ($fmt, $r['earnedTo'])); ?>
 		</td>
 
 		<?php if ($showD) { ?>
-		    <td><?php echo('$' . sprintf('%0.2f', $r['dphNow'])); ?></td>
+		    <td><?php echo('$' . sprintf('%0.2f', $r['dph'])); ?></td>
 
 
 		    <td style=''>
 			<?php
-			    echo(sprintf('%0.5f', $r['daysAhead']));
+			    echo(sprintf('%0.5f', $r['days']));
 			?>
 		    </td>
 		<?php } ?>

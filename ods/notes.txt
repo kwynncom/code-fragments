@@ -1,9 +1,21 @@
+08:03am
+
+separate the data into input and output; only store the input in the DB
+abstract the calculation function
+***********
 10/18 06:41am 
 
-I considered copying the .csv to kwynn.com.  Thus, the CSV versus PDF process is a bit convoluted.  I tried to make it work with either CSV or PDF.  I may never really test that, though.
-
 TO DO / TODO: The plan now is to send a small packet to kwynn.com.
+Make a simple code.  Put it in /var/kwynn/hours or maybe just use a hash.
+Make sure www can read it
+Do some error checking on kwjss or whatever?  That is, do some on the old code, not just the currently passed
+    result.
 
+***********
+
+10/18 06:41am
+
+I considered copying the .csv to kwynn.com.  Thus, the CSV versus PDF process is a bit convoluted.  I tried to make it work with either CSV or PDF.  I may never really test that, though.
 
 **********
 2025/10/18 01:24 EDT
