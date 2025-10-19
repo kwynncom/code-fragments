@@ -57,15 +57,18 @@ class odsFirstSheetCl {
 
     private function getLatest() : array {
 	$db = $this->dbo->getLatest();
-	return []; // @(@(@(*#
+	$arr = odsDoCl::get($db);
+	return $arr;
     }
 
 
     public function __construct() {
 	$this->dbo = new odsDBCl();
-	$this->getLatest();
-	$this->do10($aa);
-	$this->toDB();
+	$aa = $this->getLatest();
+	if (true) { 
+	    $this->do10($aa);
+	    $this->toDB();
+	}
     }
 
     private function toDB() {

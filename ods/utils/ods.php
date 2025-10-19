@@ -8,28 +8,31 @@ require_once(__DIR__ . '/validate.php');
 class odsDoCl {
     const source = '/var/kwynn/hours/';
 
-    private	     array  $asof;
+    private	     array  $asoff;
     private readonly object $lo;
     public  readonly array  $cvsArrs;
+    private readonly array  $asofdb;
 
-    public static function get() : array {
-	$o = new self();
+    public static function get($gt = []) : array {
+	$o = new self($gt);
 	if (!isset($o->cvsArrs)) return [];
 	return     $o->cvsArrs;
     }
 
-    private static function getProj(string $f) : string { return pathinfo($f, PATHINFO_FILENAME);    }
+    private static function getProjectName(string $f) : string { 
+	return pathinfo($f, PATHINFO_FILENAME);    
+    }
 
     private function pop() {
 	$fs = glob(self::source . '*.csv');
 	$ret = [];
 	foreach($fs as $f) {
-	    $key = self::getProj($f);
+	    $key = self::getProjectName($f);
 	    $v = $this->pop20($f);
 	    if (!$v) continue;
 	    $ret[$key] = [];
 	    $ret[$key]['all'] = $v;
-	    $ret[$key]['Ufile'] = $this->getAsOf($f);
+	    $ret[$key]['Ufile'] = $this->getAsOf($this->ctoo($f));
 	    $ret[$key]['project'] = $key;
 	}
 
@@ -47,10 +50,11 @@ class odsDoCl {
 	return $a;
     }
 
-    private function __construct() {
+    private function __construct(array $ifgtin) {
+	$this->asofdb = $ifgtin; unset($ifgtin);
 	$wb = $this->lock(true);
 	$this->lock();
-	if (!$wb) $this->doFileLoop();
+	if (!$wb) $this->doFileLoop(); unset($wb);
 	$this->pop();
 	$this->lo->unlock();
     }
@@ -67,37 +71,62 @@ class odsDoCl {
 
     private function otoc(string $f) { return str_replace('.ods', '.csv', $f); }
     private function ctoo(string $f) { return str_replace('.csv', '.ods', $f); }
-    private function setAsOf(string $f, int $U) : int { $this->asof[$f] = $U; return $U;    }
+    private function setAsOf(string $f, int $U) : int { $this->asoff[$f] = $U; return $U;    }
     private function getAsOf(string $f) {
-	if (!isset ($this->asof[$f])) 
-		$this->setAsOf ($f, filemtime($f));
-	return  $this->asof    [$f];
+	if (!isset ($this->asoff[$f])) {
+	    if (file_exists($f)) $this->setAsOf ($f, filemtime($f));
+	    else $this->setAsOf($f, 0);
+	}
+	return  $this->asoff    [$f];
+    }
+
+    function mostRecentType(array $types): string { // probably not needed
+	if (empty($types)) {
+	    return '';
+	}
+
+	$hierarchy = ['db' => 3, 'ods' => 1];
+
+	uasort($types, function($a, $b) use ($hierarchy, $types) {
+	    if ($a === $b) {
+		return $hierarchy[array_search($b, $types)] <=> $hierarchy[array_search($a, $types)];
+	    }
+	    return $b <=> $a;
+	});
+
+	return key($types);
     }
 
     private function already(string $csv) : bool {
-	if (!file_exists($csv)) return false;
 
-	$pdf = $this->ctoo($csv);
-	if (file_exists($pdf)) {
-	    $cm = $this->getAsOf($csv);
-	    $pm = $this->getAsOf($pdf);
-	    if ($cm >= $pm) return true;
-	    else return false;
-	}  
+	$mts = [];
+	$mts['ods'] = $this->getAsOf($this->ctoo($csv));
+	$mts['db' ] = $this->getAsOfDB($csv);
 
-	return true;
+	return $mts['db'] >= $mts['ods'];
     }
+    
+    private function getAsOfDB(string $f) {
+	$key = $this->getProjectName($f);
+	if (isset( $this->asofdb[$key]['Ufile'])) {
+	    return $this->asofdb[$key]['Ufile'];
+	}
+	return 0;
+
+    }
+    
+
 
     private function doFile(string $csv)  {
 	if ($this->already($csv)) return;
-	$pdf = $this->ctoo($csv);
-	if (!is_readable($pdf)) return;
+	$ods = $this->ctoo($csv);
+	if (!is_readable($ods)) return;
 
-	$c = 'soffice --headless --convert-to csv ' . $pdf . ' --outdir ' . self::source;
+	$c = 'soffice --headless --convert-to csv ' . $ods . ' --outdir ' . self::source;
 	$res = shell_exec($c);
-	$csv = $this->otoc($pdf);
+	$csv = $this->otoc($ods);
 	$this->setAsOf($csv, filemtime($csv));
-	kwas(is_readable($csv) && $this->getAsOf($csv) >= $this->getAsOf($pdf), 
+	kwas(is_readable($csv) && $this->getAsOf($csv) >= $this->getAsOf($ods), 
 		'ods to csv fail (err # 0614126)');
 
 	return;
