@@ -7,19 +7,11 @@ require_once(__DIR__ . '/validate.php');
 require_once('ods.php');
 
 class odsFirstSheetCl {
-    const source = '/var/kwynn/hours/';
 
-    const dperm = 30.416667;
+    const dperm = 30.416666667;
     
     public  readonly array $hours;
     public  readonly array $input;
-    private	     array $asof;
-
-    public static function getCalcs(array $ain) : array {
-	$o = new self($ain);
-
-    }
-    
 
     private static function getCalcsI(array $ain) : array {
 	if (!$ain) return [];
@@ -49,8 +41,6 @@ class odsFirstSheetCl {
 
 	return $vars;
     }
-
-
 
     private function findMarker(array $a) : array {
 	foreach($a as $i => $c) {
@@ -91,8 +81,6 @@ class odsFirstSheetCl {
 	return;
     }
 
-
-
     private function parse30(array $aall) : array {
 	$a = $this->findMarker($aall['all']);
 	$dat = $this->getCalcsI($a);
@@ -107,8 +95,3 @@ class odsFirstSheetCl {
     }
  
 }
-
-if (didCLICallMe(__FILE__)) new odsFirstSheetCl();
-
-
-

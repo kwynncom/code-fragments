@@ -1,0 +1,4 @@
+	require_once(__DIR__ . '/db.php');
+
+private readonly object $dbo;
+	$this->dbo = new odsDBCl();

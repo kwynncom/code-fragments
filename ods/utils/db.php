@@ -13,15 +13,24 @@ class odsDBCl extends dao_generic_4 {
     private readonly object $p;
 
     public static function put(array $a) {
-	try {  new self($a); unset($a);	} 
+	try {  $o = new self();
+	       $o->putI($a);
+	       unset($a);	
+	} 
 	catch(Throwable $ex) {  if (iscli()) echo($ex->getMessage());}
     }
 
-    private function __construct(array $a) {
+    public function __construct() {
+	$this->initDB();
+    }
+ 
+    
+
+    public function putI(array $a) {
 	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
 	foreach($this->vala as $proj => $a) $this->putI20($proj);
     }
- 
+
     private function initDB() {
 	if (isset($this->c)) return;
 	parent::__construct(self::dbname);

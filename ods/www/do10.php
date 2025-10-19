@@ -8,12 +8,9 @@ class odsDo10Cl {
     public readonly string $ht;
 
     private function __construct() {
-
-	$araw = odsDoCl::get();
-	$a = odsFirstSheetCl::getCalcs($araw);
-	$this->do10($a);
-	// exit(0); // @(@(@(@(@(
-	
+	$a = odsDoCl::get();
+	$o2 = new odsFirstSheetCl($a);
+	$this->do10($o2->hours);
     }
 
     private function do10(array $ain) {

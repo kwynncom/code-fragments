@@ -18,16 +18,18 @@ class odsDoCl {
 	return     $o->cvsArrs;
     }
 
+    private static function getProj(string $f) : string { return pathinfo($f, PATHINFO_FILENAME);    }
+
     private function pop() {
 	$fs = glob(self::source . '*.csv');
 	$ret = [];
 	foreach($fs as $f) {
-	    $key = pathinfo($f, PATHINFO_FILENAME);
+	    $key = self::getProj($f);
 	    $v = $this->pop20($f);
 	    if (!$v) continue;
 	    $ret[$key] = [];
 	    $ret[$key]['all'] = $v;
-	    $ret[$key]['Ufile'] = filemtime($f);
+	    $ret[$key]['Ufile'] = $this->getAsOf($f);
 	    $ret[$key]['project'] = $key;
 	}
 
@@ -66,15 +68,19 @@ class odsDoCl {
     private function otoc(string $f) { return str_replace('.ods', '.csv', $f); }
     private function ctoo(string $f) { return str_replace('.csv', '.ods', $f); }
     private function setAsOf(string $f, int $U) : int { $this->asof[$f] = $U; return $U;    }
+    private function getAsOf(string $f) {
+	if (!isset ($this->asof[$f])) 
+		$this->setAsOf ($f, filemtime($f));
+	return  $this->asof    [$f];
+    }
 
     private function already(string $csv) : bool {
 	if (!file_exists($csv)) return false;
 
 	$pdf = $this->ctoo($csv);
 	if (file_exists($pdf)) {
-	    $cm = filemtime($csv);
-	    $pm = filemtime($pdf);
-	    $this->setAsOf($pdf, $pm);
+	    $cm = $this->getAsOf($csv);
+	    $pm = $this->getAsOf($pdf);
 	    if ($cm >= $pm) return true;
 	    else return false;
 	}  
@@ -87,11 +93,13 @@ class odsDoCl {
 	$pdf = $this->ctoo($csv);
 	if (!is_readable($pdf)) return;
 
-	$this->setAsOf($pdf, filemtime($pdf));
 	$c = 'soffice --headless --convert-to csv ' . $pdf . ' --outdir ' . self::source;
 	$res = shell_exec($c);
 	$csv = $this->otoc($pdf);
-	kwas(is_readable($csv) && filemtime($csv) >= $this->asof[$pdf], 'ods to csv fail (err # 0614126)');
+	$this->setAsOf($csv, filemtime($csv));
+	kwas(is_readable($csv) && $this->getAsOf($csv) >= $this->getAsOf($pdf), 
+		'ods to csv fail (err # 0614126)');
+
 	return;
     }
 }
