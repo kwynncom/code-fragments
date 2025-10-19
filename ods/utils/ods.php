@@ -80,23 +80,6 @@ class odsDoCl {
 	return  $this->asoff    [$f];
     }
 
-    function mostRecentType(array $types): string { // probably not needed
-	if (empty($types)) {
-	    return '';
-	}
-
-	$hierarchy = ['db' => 3, 'ods' => 1];
-
-	uasort($types, function($a, $b) use ($hierarchy, $types) {
-	    if ($a === $b) {
-		return $hierarchy[array_search($b, $types)] <=> $hierarchy[array_search($a, $types)];
-	    }
-	    return $b <=> $a;
-	});
-
-	return key($types);
-    }
-
     private function already(string $csv) : bool {
 
 	$mts = [];
@@ -114,8 +97,6 @@ class odsDoCl {
 	return 0;
 
     }
-    
-
 
     private function doFile(string $csv)  {
 	if ($this->already($csv)) return;

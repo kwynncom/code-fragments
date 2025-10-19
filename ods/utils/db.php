@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once('post.php');
+
 class odsDBCl extends dao_generic_4 {
 
     const dbname = 'hours';
@@ -72,10 +74,14 @@ class odsDBCl extends dao_generic_4 {
 	$upres38 = $this->p->upsert($qp, $qp);
 	$q = $qp;
 	$q['Ufile'] = $this->vala[$proj]['Ufile'];
-	if ($this->c->count($q) >= 1) {    return; 	}
+
 	$_id = $this->vala[$proj]['project'] . '-' . date('md-Hi-Y-s', $this->vala[$proj]['Ufile']);
 	$dat = $this->vala[$proj];
 	$dat['_id'] = $_id;
+
+	hoursPostCl::post($dat);
+
+	if ($this->c->count($q) >= 1) {    return; 	}
 	$inres55 = $this->c->insertOne($dat);
 	return;
     } // func

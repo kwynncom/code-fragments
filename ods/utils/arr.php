@@ -65,14 +65,11 @@ class odsFirstSheetCl {
     public function __construct() {
 	$this->dbo = new odsDBCl();
 	$aa = $this->getLatest();
-	if (true) { 
-	    $this->do10($aa);
-	    $this->toDB();
-	}
+        $this->do10($aa);
+        $this->toDB();
     }
 
     private function toDB() {
-	require_once(__DIR__ . '/db.php');
 	odsDBCl::put($this->input);
     }
 
