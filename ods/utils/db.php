@@ -24,7 +24,32 @@ class odsDBCl extends dao_generic_4 {
 	$this->initDB();
     }
  
-    
+
+
+    public function getLatest() : array {
+	$ps = $this->getProjects();
+	if (!$ps) return [];
+
+	$ret = [];
+	foreach($ps as $p) {
+	    $ret[$p] = $this->c->findOne(['project' => $p], ['sort' => ['Ufile' => -1]]);
+	}
+
+	return $ret;
+    }
+
+    private function getProjects() : array {
+	$res = $this->p->find([]);
+	if (!$res) return [];
+
+	$ps = [];
+	foreach($res as $r) {
+	    $ps[] = $r['project'];
+	}
+
+	return $ps;
+
+    }
 
     public function putI(array $a) {
 	$this->vala = odsArrValCl::getValidAProj($a); unset($a);

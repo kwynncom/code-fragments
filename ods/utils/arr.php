@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/validate.php');
 require_once('ods.php');
+require_once(__DIR__ . '/db.php');
 
 class odsFirstSheetCl {
 
@@ -12,6 +13,8 @@ class odsFirstSheetCl {
     
     public  readonly array $hours;
     public  readonly array $input;
+
+    private readonly object $dbo;
 
     private static function getCalcsI(array $ain) : array {
 	if (!$ain) return [];
@@ -52,7 +55,15 @@ class odsFirstSheetCl {
 	return [];
     }
 
-    public function __construct(array $aa) {
+    private function getLatest() : array {
+	$db = $this->dbo->getLatest();
+	return []; // @(@(@(*#
+    }
+
+
+    public function __construct() {
+	$this->dbo = new odsDBCl();
+	$this->getLatest();
 	$this->do10($aa);
 	$this->toDB();
     }
