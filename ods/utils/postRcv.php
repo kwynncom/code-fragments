@@ -1,10 +1,12 @@
 <?php
 
+
+
+if (true) {
 require_once('/opt/kwynn/kwutils.php');
 require_once('/var/kwynn/hours/PRIVATE_config.php');
 require_once('db.php');
 
-// header('Content-Type: application/json');
 header('Content-Type: text/plain');
 
 
@@ -13,9 +15,11 @@ class postReceiveCl {
     public function __construct() {
 
 	try {
+	    ob_start();
 	    $dat = $this->do10();
 	    echo('dat');
-	    odsDBCl::put($dat);
+	    odsDBCl::put($dat, true);
+	    echo(ob_get_clean());
 	    
 	} catch (Throwable $ex) {
 	    $this->htCrash($ex);
@@ -26,6 +30,7 @@ class postReceiveCl {
 
 	$j = file_get_contents('php://input');
 	kwas($j && is_string($j) && strlen($j) >= 10 && strlen($j) < 300, 'bad data err # 010821');
+	echo($j);
 	$d = json_decode($j, true);
 	kwas($d && is_array($d) && count($d) >= 1, 'bad data err # 010923');
 	kwas(isset($d['secret']), 'secret not set err # 023328');
@@ -42,30 +47,19 @@ class postReceiveCl {
 
     private function htCrash(Throwable $ex) {
 	http_response_code(400);
-	echo json_encode(['error' => $ex->getMessage(), 'status' => false]);
+	echo(ob_get_clean());
+	echo($ex->getMessage());
 	exit(-1);
     }
 
 }
 
-if (isrv('post')) {
+if (didCLICallMe(__FILE__) || isrv('post')) {
     echo('hi');
     new postReceiveCl();
 }
 
-/*
-if (true) { // data validation
-    $response = [
-        'status' => 'OK',
-    ];
-    http_response_code(200);
-} else {
-    $response = [
-        'status' => 'error',
-        'message' => 'Missing required fields'
-    ];
-    http_response_code(400);
+} // if true / false
+else {
+    echo('hi');
 }
-
-echo json_encode($response);
-*/

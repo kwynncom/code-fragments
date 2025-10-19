@@ -7,9 +7,12 @@ class hoursPostCl {
 
     // const url = 'https://kwynn.com/t/25/10/hours/utils/postRcv.php?post=1';
     // const url     = 'http://' . DEV_HOST . ':' . 8001 . '/?post=1';
-    const url     = 'http://' . DEV_HOST . ':' . 8001 . '/utils/postRcv.php?post=1';
+    const url     = 'http://' . DEV_HOST . ':' . 8000 . '/utils/postRcv.php?post=1';
 
      public static function post(array $data) {
+
+	if (isrv('post')) return;
+	if (!$data) return;
 
 	$data['secret'] = KW_HOURS_PRIVATE_SECRET;
 
@@ -24,7 +27,11 @@ class hoursPostCl {
 	]);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
 
+	if (iscli()) echo('precurl');
+
 	$response = curl_exec($ch);
+
+	if (iscli()) echo($response);
 
 	if (curl_errno($ch)) {
 	    echo 'Error: ' . curl_error($ch);

@@ -45,7 +45,7 @@ class odsArrValCl {
 	kwas(count($can) === count(self::fs) - 1, 'bad array count err # 204744');
 	kwas(count($can) <= self::maxOutn, 'array too big err # 201215'); 
 
-	$vret = self::getValidA20OrDie($can); unset($can);
+	$vret = self::getValidOneRow($can); unset($can);
 	return $vret;
 
 	
@@ -72,13 +72,15 @@ class odsArrValCl {
 	foreach($a as $proj => $a) {
 	    kwas($proj && is_string($proj), 'bad project val (err # 071718 )');
 	    self::validWOrDie($proj);
-	    $ret[$proj] = self::getValidA20OrDie($a);
+
+
+	    $ret[$proj] = self::getValidOneRow($a);
 	}
 
 	return $ret;
     }
 
-    private static function getValidA20OrDie(array $a) : array {
+    public static function getValidOneRow(array $a) : array {
 
 	$ret = [];
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once('post.php');
+require_once('validate.php');
 
 class odsDBCl extends dao_generic_4 {
 
@@ -14,12 +15,15 @@ class odsDBCl extends dao_generic_4 {
     private readonly object $c;
     private readonly object $p;
 
-    public static function put(array $a) {
-	try {  $o = new self();
-	       $o->putI($a);
-	       unset($a);	
+    public static function put(array $a, bool $doec = false) {
+	try {  
+	    if ($doec) echo('put 0356');
+	    $o = new self();
+	    $o->putI($a, $doec || isrv('post'));
+	    unset($a);	
+	    if ($doec) echo('lvput');
 	} 
-	catch(Throwable $ex) {  if (iscli()) echo($ex->getMessage());}
+	catch(Throwable $ex) {  if ($doec || iscli() || $this->tm()) echo($ex->getMessage());}
     }
 
     public function __construct() {
@@ -53,18 +57,29 @@ class odsDBCl extends dao_generic_4 {
 
     }
 
-    public function putI(array $a) {
+    public function putI(array $a, bool $dec) {
+	if ($dec) {
+	    echo('putI');
+	    // var_dump($a);
+	}
 	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
+	if (!isrv('post')) hoursPostCl::post($this->vala);
+
+	// if ($this->tm()) return;
+
 	foreach($this->vala as $proj => $a) {
+	    if ($dec) echo('pre20');
 	    $res = $this->putI20($proj);
-	    if ($res === 2) continue;
-	    $this->okOrDie($res);
+	    if ($dec) echo('post20');
+	    if ($res === 2) {
+		if ($dec) echo('dup');
+		continue;
+	    }
 	}
     }
 
-    private function okOrDie(object $res) {
-	
-
+    private function tm() : bool {
+	return (ispkwd() && time() < strtotime('2024-10-19 04:30'));
     }
 
     private function initDB() {
@@ -75,9 +90,15 @@ class odsDBCl extends dao_generic_4 {
 
 	$this->p = $this->kwsel(self::co20name);
 	$this->p->createIndex(['project' => 1], ['unique' => true]);
+
+	if ($this->tm()) {
+	    echo('deleting');
+	    $this->c->deleteMany([]);
+	}
+
     }
 
-    private function putI20(string $proj) : int | object {
+    private function putI20(string $proj) {
 	$this->initDB();
 	$qp = ['project' => $proj];
 	$upres38 = $this->p->upsert($qp, $qp);
@@ -88,10 +109,11 @@ class odsDBCl extends dao_generic_4 {
 	$dat = $this->vala[$proj];
 	$dat['_id'] = $_id;
 
-	hoursPostCl::post($dat);
-
 	if ($this->c->count($q) >= 1) {    return 2; 	}
 	$inres55 = $this->c->insertOne($dat);
-	return $inres55;
+	if ($inres55->getInsertedCount() === 1) {
+	    echo("\n" . $proj . 'INSERTED_OK' . "\n");
+	}
+
     } // func
 } // class

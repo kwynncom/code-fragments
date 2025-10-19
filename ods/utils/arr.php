@@ -57,9 +57,58 @@ class odsFirstSheetCl {
 
     private function getLatest() : array {
 	$db = $this->dbo->getLatest();
-	$arr = odsDoCl::get($db);
-	return $arr;
+	$f = odsDoCl::get($db);
+	$ret = $this->findHighestUfilePerProject($db, $f);
+	return $ret;
     }
+
+// Function to find the highest Ufile for each project with all fields as siblings
+// Function to find the highest Ufile for each project with all fields as siblings
+function findHighestUfilePerProject($databases, $files) {
+    $results = [];
+
+    // Get all unique project names from both arrays, handling empty arrays
+    $dbKeys = is_array($databases) ? array_keys($databases) : [];
+    $fileKeys = is_array($files) ? array_keys($files) : [];
+    $projects = array_unique(array_merge($dbKeys, $fileKeys));
+
+    // Iterate through all projects
+    foreach ($projects as $project) {
+        // Initialize max Ufile and data for this project
+        $maxUfile = 0;
+        $maxData = [];
+
+        // Check databases for this project
+        if (isset($databases[$project]) && is_array($databases[$project])) {
+	    
+	    $entry = $databases[$project];
+	    if (isset($entry['Ufile']) && $entry['Ufile'] > $maxUfile) {
+		$maxUfile = $entry['Ufile'];
+		$maxData = $entry;
+	    }
+            
+        }
+
+        // Check files for this project
+        if (isset($files[$project]) && is_array($files[$project])) {
+	    $entry = $files[$project];
+	    if (isset($entry['Ufile']) && $entry['Ufile'] > $maxUfile) {
+		$maxUfile = $entry['Ufile'];
+		$maxData = $entry;
+	    }
+	}
+        
+
+        // Store result for this project if it exists
+        if (!empty($maxData)) {
+            $results[$project] = $maxData;
+        }
+    }
+
+    return $results;
+}
+
+
 
 
     public function __construct() {
