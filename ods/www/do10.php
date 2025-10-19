@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../utils/ods.php');
+require_once(__DIR__ . '/../utils/arr.php');
 
 class odsDo10Cl {
 
@@ -8,8 +9,10 @@ class odsDo10Cl {
 
     private function __construct() {
 
-	$o = new odsFirstSheetCl();
-	$this->do10($o->hours);
+	$araw = odsDoCl::get();
+	$a = odsFirstSheetCl::getCalcs($araw);
+	$this->do10($a);
+	// exit(0); // @(@(@(@(@(
 	
     }
 
