@@ -55,7 +55,16 @@ class odsDBCl extends dao_generic_4 {
 
     public function putI(array $a) {
 	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
-	foreach($this->vala as $proj => $a) $this->putI20($proj);
+	foreach($this->vala as $proj => $a) {
+	    $res = $this->putI20($proj);
+	    if ($res === 2) continue;
+	    $this->okOrDie($res);
+	}
+    }
+
+    private function okOrDie(object $res) {
+	
+
     }
 
     private function initDB() {
@@ -68,7 +77,7 @@ class odsDBCl extends dao_generic_4 {
 	$this->p->createIndex(['project' => 1], ['unique' => true]);
     }
 
-    private function putI20(string $proj) {
+    private function putI20(string $proj) : int | object {
 	$this->initDB();
 	$qp = ['project' => $proj];
 	$upres38 = $this->p->upsert($qp, $qp);
@@ -81,8 +90,8 @@ class odsDBCl extends dao_generic_4 {
 
 	hoursPostCl::post($dat);
 
-	if ($this->c->count($q) >= 1) {    return; 	}
+	if ($this->c->count($q) >= 1) {    return 2; 	}
 	$inres55 = $this->c->insertOne($dat);
-	return;
+	return $inres55;
     } // func
 } // class

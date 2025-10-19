@@ -1,13 +1,18 @@
 <?php
 
 require_once('config.php');
+require_once('/var/kwynn/hours/PRIVATE_config.php');
 
 class hoursPostCl {
 
-    // const urlProd = 'https://kwynn.com/t/25/10/hours/utils/postRcv.php';
-    const url     = 'http://' . DEV_HOST . ':' . DEV_PORT . '/utils/postRcv.php';
+    // const url = 'https://kwynn.com/t/25/10/hours/utils/postRcv.php?post=1';
+    // const url     = 'http://' . DEV_HOST . ':' . 8001 . '/?post=1';
+    const url     = 'http://' . DEV_HOST . ':' . 8001 . '/utils/postRcv.php?post=1';
 
      public static function post(array $data) {
+
+	$data['secret'] = KW_HOURS_PRIVATE_SECRET;
+
 	$jsonData = json_encode($data);
 
 	$ch = curl_init(self::url);
