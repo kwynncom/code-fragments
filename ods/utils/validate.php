@@ -21,30 +21,29 @@ class odsArrValCl {
     	kwas($ain && is_array($ain), 'val fail # 201112');
 	$n = count($ain);
 	kwas($n <= self::maxInn, 'array too big err # 201215'); unset($n);
+	kwas(isset($ain[0]), 'bad array err # 205524');
+
+	kwas($ain[0] === self::marker, 'array bad err # 080811');
+	$a = array_slice($ain, 0, count(self::fs)); unset($ain);
+	kwas(count($a) === count(self::fs), 'bad array n count err # 203731');
 
 	$can = [];
 
-	
-	if (isset($ain[0])) {
-	    kwas($ain[0] === self::marker, 'array bad err # 080811');
-	    $a = array_slice($ain, 0, count(self::fs)); unset($ain);
-	    kwas(count($a) === count(self::fs), 'bad array n count err # 203731');
-	    for($i=1; $i < count(self::fs); $i++) {
-		$k = self::validWOrDie(self::fs[$i]);
-		$v = $a[$i];
-		switch($k) {
-		    case 'Ustart' : $can[$k] = self::getValidStart($v); break;
-		    case 'hours' : $can[$k] = self::getValidHours(floatval($v)); break;
-		    case 'rate'  : case 'permonth' : $can[$k] = self::getIntOrFl($v); break;
-		    default      : kwas(false, 'unknown key to array err # 201936'); break;
-		}
-
-		kwas(isset($can[$k]), "key $k not set err # 202139");
-		
+	for($i=1; $i < count(self::fs); $i++) {
+	    $k = self::validWOrDie(self::fs[$i]);
+	    $v = $a[$i];
+	    switch($k) {
+		case 'Ustart' : $can[$k] = self::getValidStart($v); break;
+		case 'hours' : $can[$k] = self::getValidHours(floatval($v)); break;
+		case 'rate'  : case 'permonth' : $can[$k] = self::getIntOrFl($v); break;
+		default      : kwas(false, 'unknown key to array err # 201936'); break;
 	    }
+
+	    kwas(isset($can[$k]), "key $k not set err # 202139");
 	}
 
-	kwas(count($can) <= self::maxOutn, 'array too big err # 201215'); unset($n);
+	kwas(count($can) === count(self::fs) - 1, 'bad array count err # 204744');
+	kwas(count($can) <= self::maxOutn, 'array too big err # 201215'); 
 
 	$vret = self::getValidA20OrDie($can); unset($can);
 	return $vret;
@@ -66,7 +65,7 @@ class odsArrValCl {
 	return $fl;
     }
 
-    private static function getValidA(array $a) : array {
+    public static function getValidAProj(array $a) : array {
 
 	$ret = [];
 

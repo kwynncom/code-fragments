@@ -6,51 +6,43 @@ class odsDBCl extends dao_generic_4 {
 
     const dbname = 'hours';
     const coname = 'hours';
+    const co20name = 'projects';
 
-
-    private readonly array $vala;
+    private readonly array  $vala;
     private readonly object $c;
+    private readonly object $p;
 
     public static function put(array $a) {
-	try { 
-	    $o = new self($a); unset($a);
-	} catch(Throwable $ex) {
-	    if (iscli()) echo($ex->getMessage());
-	}
+	try {  new self($a); unset($a);	} 
+	catch(Throwable $ex) {  if (iscli()) echo($ex->getMessage());}
     }
 
     private function __construct(array $a) {
-	$this->setValidA($a); unset($a);
-	$this->putI();
-    }
-
-    private function putI() {
+	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
 	foreach($this->vala as $proj => $a) $this->putI20($proj);
     }
-
+ 
     private function initDB() {
 	if (isset($this->c)) return;
 	parent::__construct(self::dbname);
 	$this->c = $this->kwsel(self::coname);
 	$this->c->createIndex(['project' => 1, 'Ufile' => -1], ['unique' => true]);
+
+	$this->p = $this->kwsel(self::co20name);
+	$this->p->createIndex(['project' => 1], ['unique' => true]);
     }
 
     private function putI20(string $proj) {
 	$this->initDB();
-
-	$q = ['project' => $proj, 'Ufile' => $this->vala[$proj]['Ufile']];
-	if ($this->c->count($q) >= 1) return;
-
+	$qp = ['project' => $proj];
+	$upres38 = $this->p->upsert($qp, $qp);
+	$q = $qp;
+	$q['Ufile'] = $this->vala[$proj]['Ufile'];
+	if ($this->c->count($q) >= 1) {    return; 	}
 	$_id = $this->vala[$proj]['project'] . '-' . date('md-Hi-Y-s', $this->vala[$proj]['Ufile']);
-
 	$dat = $this->vala[$proj];
 	$dat['_id'] = $_id;
-
-	$this->c->insertOne($dat);
-		
+	$inres55 = $this->c->insertOne($dat);
 	return;
-    }
-
-
-
-}
+    } // func
+} // class
