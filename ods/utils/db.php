@@ -58,28 +58,63 @@ class odsDBCl extends dao_generic_4 {
     }
 
     public function putI(array $a, bool $dec) {
-	if ($dec) {
-	    echo('putI');
-	    // var_dump($a);
-	}
-	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
-	if (!isrv('post')) hoursPostCl::post($this->vala);
 
-	// if ($this->tm()) return;
+	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
 
 	foreach($this->vala as $proj => $a) {
-	    if ($dec) echo('pre20');
 	    $res = $this->putI20($proj);
-	    if ($dec) echo('post20');
 	    if ($res === 2) {
-		if ($dec) echo('dup');
+		if (isrv('post')) echo($proj . 'OKDB_DUPLICATE');
 		continue;
 	    }
 	}
+
+	$this->doPost();
+    }
+
+    private function already() {
+	
+    }
+
+    private function doPost() {
+	if (isrv('post')) return;
+	if ($this->already()) return;
+	$pmac = hoursPostCl::statusKey();
+
+	$topost = [];
+	foreach($this->vala as $proj => $a) {
+	   $q = [   'project' => $a['project'], 
+		    'Ufile' => $a['Ufile'],
+		    'posted.' . $pmac => ['$exists' => true]
+		];
+
+	    if ($this->c->count($q) >= 1) continue;
+	    
+	    $topost[$proj] = $a;
+	    
+	}
+
+	if (!$topost) return;
+	$pok = hoursPostCl::post($topost);
+	if (!$pok) return;
+
+
+	foreach($pok as $a) {
+
+	   $q = [   'project' => $a['project'], 
+		    'Ufile' => $a['Ufile']
+		    ];
+	    $dat = ['posted' => $a['posted']];
+	    $upres84 = $this->c->upsert($q, $dat);
+	    continue;
+	}
+
+
+	
     }
 
     private function tm() : bool {
-	return (ispkwd() && time() < strtotime('2024-10-19 04:30'));
+	return (ispkwd() && time() < strtotime('2024-10-19 05:30'));
     }
 
     private function initDB() {
@@ -112,7 +147,7 @@ class odsDBCl extends dao_generic_4 {
 	if ($this->c->count($q) >= 1) {    return 2; 	}
 	$inres55 = $this->c->insertOne($dat);
 	if ($inres55->getInsertedCount() === 1) {
-	    echo("\n" . $proj . 'INSERTED_OK' . "\n");
+	    if (isrv('post')) echo("\n" . $proj . 'OKDB_INSERTED' . "\n");
 	}
 
     } // func

@@ -5,11 +5,37 @@ require_once('/var/kwynn/hours/PRIVATE_config.php');
 
 class hoursPostCl {
 
-    // const url = 'https://kwynn.com/t/25/10/hours/utils/postRcv.php?post=1';
-    // const url     = 'http://' . DEV_HOST . ':' . 8001 . '/?post=1';
-    const url     = 'http://' . DEV_HOST . ':' . 8000 . '/utils/postRcv.php?post=1';
+    const sfx = 'utils/postRcv.php?post=1';
 
-     public static function post(array $data) {
+    // const urlBase = 'https://kwynn.com/t/25/10/hours/';
+    const urlBase     = 'http://' . DEV_HOST . ':' . DEV_PORT . '/';
+    const url = self::urlBase . self::sfx;
+
+    public static function post(array $data) : array {
+	if (!$data || !is_array($data)) return [];
+
+	$now = time();
+	$res = self::postDo($data); 
+	$ret = [];
+
+
+	foreach($data as $proj => $a) {
+	    $proj = $a['project'];
+	    if (strpos($res, $proj . 'OKDB') === false) continue;
+
+	    $a['posted'] = [self::statusKey() => $now];
+	    $ret[$proj] = $a;
+	}
+
+	return $ret;
+    }
+
+    public static function statusKey() : string {
+	if (strpos(self::url, DEV_HOST) !== false) return 'dev';
+	return 'live';
+    }
+
+    public static function postDo($data) {
 
 	if (isrv('post')) return;
 	if (!$data) return;
@@ -27,20 +53,8 @@ class hoursPostCl {
 	]);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
 
-	if (iscli()) echo('precurl');
-
 	$response = curl_exec($ch);
-
-	if (iscli()) echo($response);
-
-	if (curl_errno($ch)) {
-	    echo 'Error: ' . curl_error($ch);
-	} else {
-	    echo $response;
-	}
-
 	curl_close($ch);
-	
-	return;
+	return $response;
     }
 }

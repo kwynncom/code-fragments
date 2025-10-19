@@ -62,44 +62,27 @@ class odsFirstSheetCl {
 	return $ret;
     }
 
-// Function to find the highest Ufile for each project with all fields as siblings
-// Function to find the highest Ufile for each project with all fields as siblings
-function findHighestUfilePerProject($databases, $files) {
+private function findHighestUfilePerProject($databases, $files) {
     $results = [];
 
-    // Get all unique project names from both arrays, handling empty arrays
     $dbKeys = is_array($databases) ? array_keys($databases) : [];
     $fileKeys = is_array($files) ? array_keys($files) : [];
     $projects = array_unique(array_merge($dbKeys, $fileKeys));
 
-    // Iterate through all projects
     foreach ($projects as $project) {
-        // Initialize max Ufile and data for this project
         $maxUfile = 0;
         $maxData = [];
 
-        // Check databases for this project
-        if (isset($databases[$project]) && is_array($databases[$project])) {
-	    
-	    $entry = $databases[$project];
-	    if (isset($entry['Ufile']) && $entry['Ufile'] > $maxUfile) {
-		$maxUfile = $entry['Ufile'];
-		$maxData = $entry;
-	    }
-            
+        foreach ([$databases, $files] as $source) {
+            if (isset($source[$project]) && is_array($source[$project])) {
+                $entry = $source[$project];
+                if (isset($entry['Ufile']) && $entry['Ufile'] > $maxUfile) {
+                    $maxUfile = $entry['Ufile'];
+                    $maxData = $entry;
+                }
+            }
         }
 
-        // Check files for this project
-        if (isset($files[$project]) && is_array($files[$project])) {
-	    $entry = $files[$project];
-	    if (isset($entry['Ufile']) && $entry['Ufile'] > $maxUfile) {
-		$maxUfile = $entry['Ufile'];
-		$maxData = $entry;
-	    }
-	}
-        
-
-        // Store result for this project if it exists
         if (!empty($maxData)) {
             $results[$project] = $maxData;
         }
@@ -107,6 +90,8 @@ function findHighestUfilePerProject($databases, $files) {
 
     return $results;
 }
+
+
 
 
 
@@ -141,8 +126,13 @@ function findHighestUfilePerProject($databases, $files) {
 	return;
     }
 
+    private function isolate(array $ain) {
+	if (isset($ain['all'])) return $this->findMarker($ain['all']);
+	return $ain;
+    }
+
     private function parse30(array $aall) : array {
-	$a = $this->findMarker($aall['all']);
+	$a = $this->isolate($aall);
 	$dat = $this->getCalcsI($a);
 	if (!$dat) return [];
 	$uq = [];

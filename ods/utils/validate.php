@@ -16,9 +16,25 @@ class odsArrValCl {
 	return $U;
     }
 
+    private static function doDBRow(array $r) : array {
+	$vf = self::fs;
+	unset($vf['marker']);
+	$vf[] = 'Ufile';
+	$vf[] = 'project';
+	$rcp = $r;
+	foreach($rcp as $f => $vignore) {
+	   if (!in_array($f, $vf)) unset($r[$f]);
+	}
+
+	return $r;
+    }
+
     public static function getValid(array $ain) : array {
 
     	kwas($ain && is_array($ain), 'val fail # 201112');
+
+	if (!isset($ain[0])) return self::getValidOneRow(self::doDBRow($ain));
+
 	$n = count($ain);
 	kwas($n <= self::maxInn, 'array too big err # 201215'); unset($n);
 	kwas(isset($ain[0]), 'bad array err # 205524');
