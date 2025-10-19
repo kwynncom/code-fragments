@@ -1,7 +1,10 @@
+as of 08:57, see 06:41am to do items - still valid
+
 08:03am
 
-separate the data into input and output; only store the input in the DB
-abstract the calculation function
+DONE
+    separate the data into input and output; only store the input in the DB
+    abstract the calculation function
 ***********
 10/18 06:41am 
 

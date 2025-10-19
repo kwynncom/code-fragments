@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
+require_once(__DIR__ . '/validate.php');
 
 class odsFirstSheetCl {
     const source = '/var/kwynn/hours/';
-    const marker = 'autoKw18';
-    const fs = ['marker', 'start', 'hours', 'permonth', 'rate'];
+
     const dperm = 30.416667;
     
     public  readonly array $hours;
@@ -24,29 +24,26 @@ class odsFirstSheetCl {
 	
     }
 
-    private static function getValidStart(string $hu) : int {
-	$U = strtotime($hu); unset($hu);
-	$now = time();
-	kwas($U >= 1634387606 && $U <= $now, 'bad start time err # 083425');
-	return $U;
-    }
 
-    public static function getCalcs(array $a) : array {
-	if (!$a) return [];
 
-	kwas($a[0] === self::marker, 'array bad err # 080827-30');
+    public static function getCalcs(array $ain) : array {
+	if (!$ain) return [];
+
+	
+
+	$input = $a = odsArrValCl::getValid($ain); unset($ain);
 
 	$now = time();
 
-	$Ustart = self::getValidStart($a[1]);
-	$hoursWorked = floatval($a[2]);
+	$Ustart = $a['Ustart'];
+	$hoursWorked = $a['hours'];
 	$s = $now - $Ustart;
 	$hus = number_format($s); unset($hus);
 	$elapM = $s / (self::dperm * DAY_S); unset($s);
-	$permonth = self::getIntOrFl($a[3]);
+	$permonth = $a['permonth'];
 	$paid  = $elapM * $permonth; unset($elapM);
 	$dph   = $paid /  $hoursWorked;
-	$rate = self::getIntOrFl($a[4]); unset($a);
+	$rate = $a['rate']; unset($a);
 	$worked = $rate * $hoursWorked;
 	$dolahead  = $worked - $paid; unset($worked, $paid);
 	$hours = $dolahead / $rate;
@@ -56,23 +53,17 @@ class odsFirstSheetCl {
 	$earnedTo = roint($now + $days * DAY_S); unset($now);
 	
 	$vars = get_defined_vars(); 
-	$input = self::procA($vars);
 	$vars['input'] = $input; unset($input);
 
 	return $vars;
     }
 
-    private static function getIntOrFl($vin) : int | float {
-	$fl = floatval($vin);
-	$iv = roint   ($vin);
-	if (abs($fl - $iv) < 0.001) return $iv;
-	return $fl;
-    }
+
 
     private function findMarker(array $a) : array {
 	foreach($a as $i => $c) {
 	    if (!$c) continue;
-	    if (trim($c) !== self::marker) continue;
+	    if (trim($c) !== odsArrValCl::marker) continue;
 	    $ret = array_slice($a, $i);
 	    return $ret;
 	}
