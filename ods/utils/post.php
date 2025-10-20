@@ -7,12 +7,14 @@ class hoursPostCl {
 
     const sfx = 'utils/postRcv.php?post=1';
 
-    // const urlBase = 'https://kwynn.com/t/25/10/hours/';
-    const urlBase     = 'http://' . DEV_HOST . ':' . DEV_PORT . '/';
+    const urlBase = 'https://kwynn.com/t/25/10/hours/';
+    // const urlBase     = 'http://' . DEV_HOST . ':' . DEV_PORT . '/';
     const url = self::urlBase . self::sfx;
 
     public static function post(array $data) : array {
 	if (!$data || !is_array($data)) return [];
+
+	if (self::statusKey() === 'dev' && !iscli()) return [];
 
 	$now = time();
 	$res = self::postDo($data); 

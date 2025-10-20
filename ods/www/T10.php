@@ -1,4 +1,4 @@
-<?php $showD = true && ispkwd(); ?>
+<?php $showD = false && ispkwd(); ?>
 <table>	
     <thead>
 	<tr>

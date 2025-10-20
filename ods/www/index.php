@@ -9,4 +9,7 @@ echo(odsDo10Cl::getHT());
 ?>
 <div style='margin-top: 1.1em; '><button onclick='window.location.reload();'>redo</button>
     <div>as of <?php echo(date('r')); ?></div>
-</div></body></html>
+</div>
+<?php require_once('info_frag.html'); ?>
+</body>
+</html>
