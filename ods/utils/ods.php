@@ -102,6 +102,7 @@ class odsDoCl {
 	if ($this->already($csv)) return;
 	$ods = $this->ctoo($csv);
 	if (!is_readable($ods)) return;
+	
 
 	$c = 'soffice --headless --convert-to csv ' . $ods . ' --outdir ' . self::source;
 	$res = shell_exec($c);

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/validate.php');
-require_once('ods.php');
+// require_once('ods.php');
 require_once(__DIR__ . '/db.php');
+require_once('odsSA.php');
 
 class odsFirstSheetCl {
 
@@ -57,8 +58,20 @@ class odsFirstSheetCl {
 
     private function getLatest() : array {
 	$db = $this->dbo->getLatest();
-	$f = odsDoCl::get($db);
-	$ret = $this->findHighestUfilePerProject($db, $f);
+	$ret = $this->getLatestLoop($db);
+	return $ret;
+    }
+
+    private function getLatestLoop(array $db) {
+	$ret = [];
+
+	foreach($db as $da) {
+	    $prnm = $da['project'];
+	    $mt = getHoursSACl::getMTime($prnm);
+	    if ($da['Ufile'] < $mt) $ret[$prnm] = getHoursSACl::get($prnm);
+	    else $ret[$prnm] = $da;
+	}
+
 	return $ret;
     }
 

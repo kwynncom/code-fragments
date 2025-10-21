@@ -17,7 +17,6 @@ class postReceiveCl {
 	try {
 	    ob_start();
 	    $dat = $this->do10();
-	    echo('dat');
 	    odsDBCl::put($dat, true);
 	    echo(ob_get_clean());
 	    
@@ -35,9 +34,7 @@ class postReceiveCl {
 	kwas($d && is_array($d) && count($d) >= 1, 'bad data err # 010923');
 	kwas(isset($d['secret']), 'secret not set err # 023328');
 	$s =       $d['secret'];
-	kwas(
-		is_string($s)
-		&& strlen($s) > 10
+	kwas($s && is_string($s) && strlen(trim($s)) > 10
 		, 'no valid secret err # 011025 at ' . date('r'));
 	kwas ($s === KW_HOURS_PRIVATE_SECRET, 'incorrect secret err # 011127');
 	unset($d['secret'], $s);
