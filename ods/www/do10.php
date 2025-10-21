@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../utils/ods.php');
 require_once(__DIR__ . '/../utils/arr.php');
 
 class odsDo10Cl {

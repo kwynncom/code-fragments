@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/validate.php');
-// require_once('ods.php');
 require_once(__DIR__ . '/db.php');
 require_once('odsSA.php');
 
@@ -156,5 +155,6 @@ private function findHighestUfilePerProject($databases, $files) {
 	$ret = kwam($dat, $uq);
 	return ['uq' => $uq, 'calcs' => $ret, 'input' => $input];
     }
- 
 }
+
+if (didCLICallMe(__FILE__)) new odsFirstSheetCl();

@@ -16,8 +16,6 @@ class getHoursSACl {
     public  readonly string $project;
 
     private readonly bool   $wouldBlock;
- 
-
 
     private function lock($async = false) : bool {
 	$id = $this->project . '_odsToCSVKw25';
@@ -38,37 +36,31 @@ class getHoursSACl {
 
     private function do10() {
 	$this->setFileInfo('csv');
-	if (file_exists($this->csv) && (filemtime($this->csv) >= $this->mtime)) return;
-	$this->doit();
+	if (
+		    (!file_exists($this->csv) && (filemtime($this->csv) >= $this->mtime))
+		&&   !$this->wouldBlock
+	) $this->doActual();
+	$this->popDat();
 
     }
 
-    private function popDat() : array {
+    private function popDat()  {
 	$dat = $this->parseCSV();
 
 	$ret = [];
 	$ret['status'] = 'OK';
 	$ret['error' ] = '';
 	$ret['all'] = $dat;
-	$ret['Ufile'] = this->mtime;
+	$ret['Ufile'] = $this->mtime;
 	$ret['project'] = $this->project;
-	return $ret;
+	$this->odat = $ret;
 	
     }
 
-    private function parseCSV() {
-	$t = file_get_contents($this->csv);
-	$a =  str_getcsv($t); unset($t);
-	if (!$a || !is_array($a)) return [];
-	return $a;
+    private function parseCSV() : array {
+	$a =  str_getcsv(file_get_contents($this->csv));
+	return !$a || !is_array($a) ? [] : $a;
     }	
-
-    private function doit() {
-
-	if (!$this->wouldBlock) $this->doActual();
-	$this->popDat();
-
-    }
 
     private function doActual() {
 	$c = 'soffice --headless --convert-to csv ' . $this->ods . ' --outdir ' . self::source;
@@ -88,7 +80,6 @@ class getHoursSACl {
 	    $this->project = 'error';
 	    throw $ex;
 	}
-
     }
 
     public static function getMTime(string $proj) : int {
@@ -137,7 +128,7 @@ class getHoursSACl {
 	$a['error' ] = $ex->getMessage();
 	$a['project'] = $this->project;
 	$this->mtime = 0;
-	$this->csvArr = $a;
+	$this->odat = $a;
     }
 
     public static function get(string $proj) : array {
