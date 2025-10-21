@@ -5,16 +5,23 @@ declare(strict_types=1);
 require_once('/opt/kwynn/kwutils.php');
 require_once(__DIR__ . '/validate.php');
 require_once(__DIR__ . '/db.php');
-require_once('odsSA.php');
+require_once('ods.php');
 
 class odsFirstSheetCl {
 
-    const dperm = 30.416666667;
+    const logPrefix = '/tmp/kwhl';
+
+    const dperm = 30.41666666667;
     
     public  readonly array $hours;
     public  readonly array $input;
 
     private readonly object $dbo;
+
+    private function log() {
+	$f = self::logPrefix . (iscli() ? 'cli' : 'www');
+	file_put_contents($f, date('r') . ' - arrLog' . "\n", FILE_APPEND);
+    }
 
     private static function getCalcsI(array $ain) : array {
 	if (!$ain) return [];
@@ -109,6 +116,7 @@ private function findHighestUfilePerProject($databases, $files) {
 
 
     public function __construct() {
+	$this->log();
 	$this->dbo = new odsDBCl();
 	$aa = $this->getLatest();
         $this->do10($aa);

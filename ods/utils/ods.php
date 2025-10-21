@@ -1,11 +1,12 @@
 <?php
 
 declare(strict_types=1);
-require_once('/opt/kwynn/kwutils.php');
 
-class getHoursSACl {
+require_once('config.php');
+
+class getHoursSACl implements hoursIntf {
     
-    const source = '/var/kwynn/hours/';
+
     const minFSize = 12;
 
     private readonly object $lo;
@@ -24,7 +25,7 @@ class getHoursSACl {
     }
 
     private function setFileInfo(string $sfx) {
-	$p = self::source . $this->project . '.' . $sfx;
+	$p = self::filePath . $this->project . '.' . $sfx;
 	if (!($sfx === 'csv' && !file_exists($p))) {
 	    kwas(is_readable($p), $this->project .   " $sfx file not readable");
 	    kwas(filesize   ($p) >= self::minFSize,  " $sfx not big enough");
@@ -37,9 +38,12 @@ class getHoursSACl {
     private function do10() {
 	$this->setFileInfo('csv');
 	if (
-		    (!file_exists($this->csv) && (filemtime($this->csv) >= $this->mtime))
-		&&   !$this->wouldBlock
-	) $this->doActual();
+		!(
+		        (file_exists($this->csv) && (filemtime($this->csv) >= $this->mtime))
+		    ||	 $this->wouldBlock
+		)
+	) { $this->doActual(); }
+
 	$this->popDat();
 
     }
@@ -63,9 +67,22 @@ class getHoursSACl {
     }	
 
     private function doActual() {
-	$c = 'soffice --headless --convert-to csv ' . $this->ods . ' --outdir ' . self::source;
+	$c = 'soffice --headless --convert-to csv ' . $this->ods . ' --outdir ' . self::filePath;
 	$res = shell_exec($c);
-	kwas(is_readable($this->csv) && filesize($this->csv) >= self::minFSize && filemtime($this->csv) >= filemtime($this->ods), 
+	$this->checkConvOrDie();
+	return;
+
+    }
+
+    private function checkConvOrDie() {
+
+	$ir  = is_readable($this->csv);
+	$sz = filesize($this->csv) ;
+	clearstatcache(true, $this->csv);
+	$ct =  filemtime($this->csv);
+	$ot = $this->mtime;
+
+	kwas($ir && $sz >= self::minFSize && $ct >= $this->mtime, 
 		'ods to csv fail (err # 0614126)');
     }
 
@@ -106,7 +123,7 @@ class getHoursSACl {
     }
 
     public static function getAllFiles() : array {
-	$fs = glob(self::source . '*.ods');
+	$fs = glob(self::glob);
 	if (!$fs) return [];
 	return $fs;	
     }
@@ -127,7 +144,8 @@ class getHoursSACl {
 	$a['status'] = 'error';
 	$a['error' ] = $ex->getMessage();
 	$a['project'] = $this->project;
-	$this->mtime = 0;
+	$a['Ufile'] = 0;
+	if (!isset($this->mtime)) $this->mtime = 0;
 	$this->odat = $a;
     }
 

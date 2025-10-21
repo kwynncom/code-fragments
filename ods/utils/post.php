@@ -8,7 +8,7 @@ class hoursPostCl {
     const sfx = 'utils/postRcv.php?post=1';
 
     const urlBase = 'https://kwynn.com/t/25/10/hours/';
-    // const urlBase     = 'http://' . DEV_HOST . ':' . DEV_PORT . '/';
+    // const urlBase     = 'http://' . hoursIntf::host . ':' . hoursIntf::port . '/';
     const url = self::urlBase . self::sfx;
 
     public static function post(array $data) : array {
@@ -33,7 +33,7 @@ class hoursPostCl {
     }
 
     public static function statusKey() : string {
-	if (strpos(self::url, DEV_HOST) !== false) return 'dev';
+	if (strpos(self::url, hoursIntf::host) !== false) return 'dev';
 	return 'live';
     }
 
