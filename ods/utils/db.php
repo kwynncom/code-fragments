@@ -38,14 +38,14 @@ class odsDBCl extends dao_generic_4 {
 
 	$ret = [];
 	foreach($ps as $p) {
-	    $ret[$p] = $this->c->findOne(['project' => $p], ['sort' => ['Ufile' => -1]]);
+	    $ret[$p] = $this->c->findOne(['project' => $p, 'active' => ['$ne' => false]], ['sort' => ['Ufile' => -1]]);
 	}
 
 	return $ret;
     }
 
     private function getProjects() : array {
-	$res = $this->p->find([]);
+	$res = $this->p->find(['active' => ['$ne' => false]]);
 	if (!$res) return [];
 
 	$ps = [];

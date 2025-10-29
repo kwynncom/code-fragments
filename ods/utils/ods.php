@@ -105,7 +105,9 @@ class getHoursSACl implements hoursIntf {
     }
 
     public function getMTimeI() : int {
-	return filemtime($this->ods);
+	if (	       !isset($this->ods)) return 0;
+	if (     !is_readable($this->ods)) return 0;
+	else				   return filemtime($this->ods);
     }
 
     public static function getProjects() : array {
