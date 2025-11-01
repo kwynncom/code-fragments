@@ -9,14 +9,10 @@ final class WordleOCR
 
     public static function read(string $inputFile): string
     {
-        if (!is_file($inputFile)) {
-            return "ERROR: File not found: $inputFile\n";
-        }
+        if (!is_file($inputFile)) return "ERROR: File not found\n";
 
         $img = @imagecreatefrompng($inputFile);
-        if (!$img) {
-            return "ERROR: Cannot load PNG: $inputFile\n";
-        }
+        if (!$img) return "ERROR: Cannot load PNG\n";
 
         $w = imagesx($img);
         $h = imagesy($img);
@@ -35,7 +31,7 @@ final class WordleOCR
             }
         }
 
-        // 2. Otsu Threshold
+        // 2. Otsu
         $hist = array_fill(0, 256, 0);
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
@@ -69,14 +65,35 @@ final class WordleOCR
             }
         }
 
-        // 4. Edge white → black
+        // 4. Flood fill from edges
+        function floodFill(&$img, $x, $y, $w, $h, $white, $black) {
+            $queue = [[$x, $y]];
+            $visited = [];
+            while ($queue) {
+                [$cx, $cy] = array_pop($queue);
+                $key = "$cx,$cy";
+                if (isset($visited[$key])) continue;
+                $visited[$key] = true;
+
+                if ($cx < 0 || $cx >= $w || $cy < 0 || $cy >= $h) continue;
+                if (imagecolorat($img, $cx, $cy) !== $white) continue;
+
+                imagesetpixel($img, $cx, $cy, $black);
+
+                $queue[] = [$cx+1, $cy];
+                $queue[] = [$cx-1, $cy];
+                $queue[] = [$cx, $cy+1];
+                $queue[] = [$cx, $cy-1];
+            }
+        }
+
         for ($x = 0; $x < $w; $x++) {
-            if (imagecolorat($bw, $x, 0) === $white) imagesetpixel($bw, $x, 0, $black);
-            if (imagecolorat($bw, $x, $h-1) === $white) imagesetpixel($bw, $x, $h-1, $black);
+            if (imagecolorat($bw, $x, 0) === $white) floodFill($bw, $x, 0, $w, $h, $white, $black);
+            if (imagecolorat($bw, $x, $h-1) === $white) floodFill($bw, $x, $h-1, $w, $h, $white, $black);
         }
         for ($y = 0; $y < $h; $y++) {
-            if (imagecolorat($bw, 0, $y) === $white) imagesetpixel($bw, 0, $y, $black);
-            if (imagecolorat($bw, $w-1, $y) === $white) imagesetpixel($bw, $w-1, $y, $black);
+            if (imagecolorat($bw, 0, $y) === $white) floodFill($bw, 0, $y, $w, $h, $white, $black);
+            if (imagecolorat($bw, $w-1, $y) === $white) floodFill($bw, $w-1, $y, $w, $h, $white, $black);
         }
 
         // 5. All non-white → black
