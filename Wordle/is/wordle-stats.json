@@ -1,0 +1,37 @@
+{
+    "#FFFFFF": {
+        "observed_min": 219038,
+        "observed_max": 355333,
+        "margin_pct": 10,
+        "allowed_min": 197134,
+        "allowed_max": 390866
+    },
+    "#D3D6DA": {
+        "observed_min": 48489,
+        "observed_max": 125903,
+        "margin_pct": 10,
+        "allowed_min": 43640,
+        "allowed_max": 138493
+    },
+    "#787C7E": {
+        "observed_min": 43893,
+        "observed_max": 178072,
+        "margin_pct": 10,
+        "allowed_min": 39503,
+        "allowed_max": 195879
+    },
+    "#6AAA64": {
+        "observed_min": 49592,
+        "observed_max": 113885,
+        "margin_pct": 10,
+        "allowed_min": 44632,
+        "allowed_max": 125273
+    },
+    "#C9B458": {
+        "observed_min": 0,
+        "observed_max": 33285,
+        "margin_pct": 10,
+        "allowed_min": 0,
+        "allowed_max": 36613
+    }
+}
