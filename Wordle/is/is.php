@@ -1,12 +1,13 @@
 <?php
 
 /**
- * WordleColorPalette – FINAL, OTHER ≤ 1.6%
- * -----------------------------------------
- * - Source: /tmp/w/Wordle/*.png
- * - "Other" pixels ≤ 1.6%
+ * WordleColorPalette – FINAL, MAX_COLORS AFTER LOOP
+ * -------------------------------------------------
+ * - $namedColors declared when needed
+ * - MAX_COLORS = 1100 checked AFTER loop
+ * - filesize + total_pixels = early filter
+ * - Other ≤ 1.6%
  * - Integer-keyed
- * - Early exit: filesize → total_pixels → max_colors → other%
  */
 final class WordleColorPalette
 {
@@ -76,49 +77,46 @@ final class WordleColorPalette
             return false;
         }
 
-        // ——— 3. MAX_COLORS + OTHER% (early) ———
+        // ——— 3. LOOP: COUNT ALL COLORS ———
         $counts = [];
-        $unique = 0;
-        $namedSum = 0;
-        $namedColors = [self::WHITE, self::UNUSED, self::ALL_WRONG, self::GREEN, self::YELLOW, self::BLACK];
-
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
                 $rgb = imagecolorat($img, $x, $y) & 0xFFFFFF;
-                if (!isset($counts[$rgb])) {
-                    $unique++;
-                    if ($unique > self::MAX_COLORS) {
-                        imagedestroy($img);
-                        return false;
-                    }
-                }
                 $counts[$rgb] = ($counts[$rgb] ?? 0) + 1;
-                if (in_array($rgb, $namedColors, true)) {
-                    $namedSum++;
-                }
             }
         }
         imagedestroy($img);
 
+        // ——— 4. MAX_COLORS (after loop) ———
+        if (count($counts) > self::MAX_COLORS) {
+            return false;
+        }
+
+        // ——— 5. OTHER% ———
+        $namedColors = [self::WHITE, self::UNUSED, self::ALL_WRONG, self::GREEN, self::YELLOW, self::BLACK];
+        $namedSum = 0;
+        foreach ($namedColors as $rgb) {
+            $namedSum += $counts[$rgb] ?? 0;
+        }
         $otherSum = $totalPixels - $namedSum;
         $otherPct = $totalPixels > 0 ? ($otherSum / $totalPixels) * 100 : 0;
         if ($otherPct > self::MAX_OTHER_PERCENT) {
             return false;
         }
 
-        // ——— 4. WHITE = #1 ———
+        // ——— 6. WHITE = #1 ———
         arsort($counts);
         $top = array_keys($counts);
         if ($top[0] !== self::WHITE) return false;
 
-        // ——— 5. GREEN, ALL_WRONG, UNUSED in 2–4 ———
+        // ——— 7. GREEN, ALL_WRONG, UNUSED in 2–4 ———
         $pos2to4 = array_slice($top, 1, 3);
         $req = [self::GREEN, self::ALL_WRONG, self::UNUSED];
         foreach ($req as $c) {
             if (!in_array($c, $pos2to4, true)) return false;
         }
 
-        // ——— 6. COLOR RANGES ———
+        // ——— 8. COLOR RANGES ———
         foreach (self::ranges()['colors'] as $rgb => [$min, $max]) {
             $cnt = $counts[$rgb] ?? 0;
             if ($cnt < $min || $cnt > $max) return false;
@@ -126,84 +124,27 @@ final class WordleColorPalette
 
         return true;
     }
-
-    // ——— DEBUG WITH % BREAKDOWN ———
-    public static function debug(string $file): void
-    {
-        if (!is_file($file)) { echo "Not file: $file\n"; return; }
-
-        $filesize = filesize($file);
-        $img = @imagecreatefrompng($file);
-        if (!$img) { echo "Not PNG: $file\n"; return; }
-
-        $w = imagesx($img); $h = imagesy($img);
-        $total = $w * $h;
-        $counts = [];
-        $unique = 0;
-        $namedSum = 0;
-        $namedColors = [self::WHITE, self::UNUSED, self::ALL_WRONG, self::GREEN, self::YELLOW, self::BLACK];
-
-        for ($x = 0; $x < $w; $x++) {
-            for ($y = 0; $y < $h; $y++) {
-                $rgb = imagecolorat($img, $x, $y) & 0xFFFFFF;
-                if (!isset($counts[$rgb])) $unique++;
-                $counts[$rgb] = ($counts[$rgb] ?? 0) + 1;
-                if (in_array($rgb, $namedColors, true)) $namedSum++;
-            }
-        }
-        imagedestroy($img);
-
-        $otherSum = $total - $namedSum;
-        $otherPct = $total > 0 ? ($otherSum / $total) * 100 : 0;
-
-        $names = [
-            self::WHITE     => 'WHITE',
-            self::UNUSED    => 'UNUSED',
-            self::ALL_WRONG => 'ALL_WRONG',
-            self::GREEN     => 'GREEN',
-            self::YELLOW    => 'YELLOW',
-            self::BLACK     => 'BLACK',
-        ];
-
-        echo "=== " . basename($file) . " ===\n";
-        echo "Filesize: " . number_format($filesize) . " bytes\n";
-        echo "Total pixels: " . number_format($total) . "\n";
-        echo "Unique colors: $unique (max: " . self::MAX_COLORS . ")\n";
-        echo "Other pixels: " . number_format($otherSum) . " (" . number_format($otherPct, 3) . "%) — ";
-        echo $otherPct <= self::MAX_OTHER_PERCENT ? "PASS" : "FAIL";
-        echo "\n\n";
-
-        foreach ($namedColors as $rgb) {
-            $px = $counts[$rgb] ?? 0;
-            $pct = $total > 0 ? ($px / $total) * 100 : 0;
-            $hex = sprintf("#%06X", $rgb);
-            $name = $names[$rgb];
-            echo "  $hex ($name): " . number_format($px) . " px (" . number_format($pct, 3) . "%)\n";
-        }
-
-        echo "\n";
-        echo "  OTHER: " . number_format($otherSum) . " px (" . number_format($otherPct, 3) . "%)\n";
-        echo str_repeat("=", 60) . "\n\n";
-    }
 }
 
-// ——— ANALYSIS: /tmp/w/Wordle/*.png ———
+// ——— SORTER: /tmp/w/Wordle/*.png → same folder ———
 $srcp = '/tmp/w/Wordle/*.png';
-$files = glob($srcp);
+$dst  = '/tmp/w/Wordle';
 
+$files = glob($srcp);
 if (!$files) {
     echo "No files in /tmp/w/Wordle/\n";
     exit;
 }
 
-echo "Analyzing " . count($files) . " known Wordle screenshots...\n\n";
-
 foreach ($files as $file) {
-    WordleColorPalette::debug($file);
+    $ok = WordleColorPalette::isWordleImage($file);
+    $act = $ok ? 'MOVED' : 'SKIP ';
+    $lbl = $ok ? 'Wordle' : 'Other ';
 
-    // "Move" back to same folder (safe)
-    $target = dirname($file) . '/' . basename($file);
-    if ($file !== $target) {
+    if ($ok) {
+        $target = $dst . '/' . basename($file);
         rename($file, $target);
     }
+
+    echo "[$act] $lbl: " . basename($file) . PHP_EOL;
 }
