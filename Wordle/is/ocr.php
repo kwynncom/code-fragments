@@ -1,46 +1,49 @@
 <?php
 require '/opt/composer/vendor/autoload.php';
-
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
 final class WordleOCR
 {
-    public const TEMP_FILE = '/tmp/wordle_clean.png';
+    public const TEMP_GRID   = '/tmp/wordle_grid.png';
+    public const TEMP_KBD    = '/tmp/wordle_keyboard.png';
 
-    public static function read(string $inputFile): string
+    public static function read(string $inputFile): array
     {
-        if (!is_file($inputFile)) return "ERROR: File not found\n";
+        if (!is_file($inputFile)) {
+            return ['error' => "File not found: $inputFile"];
+        }
 
-        $img = @imagecreatefrompng($inputFile);
-        if (!$img) return "ERROR: Cannot load PNG\n";
+        $orig = @imagecreatefrompng($inputFile);
+        if (!$orig) {
+            return ['error' => "Cannot load PNG: $inputFile"];
+        }
 
-        $w = imagesx($img);
-        $h = imagesy($img);
+        $w = imagesx($orig);
+        $h = imagesy($orig);
 
-        // 1. Grayscale
+        /* --------------------------------------------------------------
+           1. Grayscale + Otsu → B&W (same for both regions)
+           -------------------------------------------------------------- */
         $gray = imagecreatetruecolor($w, $h);
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
-                $rgb = imagecolorat($img, $x, $y);
-                $r = ($rgb >> 16) & 0xFF;
-                $g = ($rgb >> 8)  & 0xFF;
-                $b = $rgb & 0xFF;
+                $rgb = imagecolorat($orig, $x, $y);
+                $r   = ($rgb >> 16) & 0xFF;
+                $g   = ($rgb >> 8)  & 0xFF;
+                $b   = $rgb & 0xFF;
                 $val = (int)(0.299 * $r + 0.587 * $g + 0.114 * $b);
-                $color = imagecolorallocate($gray, $val, $val, $val);
-                imagesetpixel($gray, $x, $y, $color);
+                $col = imagecolorallocate($gray, $val, $val, $val);
+                imagesetpixel($gray, $x, $y, $col);
             }
         }
 
-        // 2. Otsu
+        // Otsu
         $hist = array_fill(0, 256, 0);
         for ($x = 0; $x < $w; $x++) {
-            for ($y = 0; $y < $h; $y++) {
-                $val = imagecolorat($gray, $x, $y) & 0xFF;
-                $hist[$val]++;
-            }
+            for ($y = 0; $y < $h; $y++) $hist[imagecolorat($gray, $x, $y) & 0xFF]++;
         }
         $total = $w * $h;
-        $sum = array_sum(array_map(fn($i, $c) => $i * $c, array_keys($hist), $hist));
+        $sum   = array_sum(array_map(fn($i,$c)=>$i*$c, array_keys($hist), $hist));
         $sumB = $wB = $wF = $max = $threshold = 0;
         for ($i = 0; $i < 256; $i++) {
             $wB += $hist[$i];
@@ -54,79 +57,131 @@ final class WordleOCR
             if ($between > $max) { $max = $between; $threshold = $i; }
         }
 
-        // 3. B&W
-        $bw = imagecreatetruecolor($w, $h);
-        $black = imagecolorallocate($bw, 0, 0, 0);
-        $white = imagecolorallocate($bw, 255, 255, 255);
+        $black = imagecolorallocate($orig, 0,0,0);
+        $white = imagecolorallocate($orig, 255,255,255);
+
+        // --------------------------------------------------------------
+        // 2. Create two working canvases
+        // --------------------------------------------------------------
+        $gridImg = imagecreatetruecolor($w, $h);
+        $kbdImg  = imagecreatetruecolor($w, $h);
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
                 $val = imagecolorat($gray, $x, $y) & 0xFF;
-                imagesetpixel($bw, $x, $y, $val > $threshold ? $white : $black);
+                $c   = $val > $threshold ? $white : $black;
+                imagesetpixel($gridImg, $x, $y, $c);
+                imagesetpixel($kbdImg , $x, $y, $c);
             }
         }
 
-        // 4. Flood fill from edges
-        function floodFill(&$img, $x, $y, $w, $h, $white, $black) {
-            $queue = [[$x, $y]];
-            $visited = [];
-            while ($queue) {
-                [$cx, $cy] = array_pop($queue);
-                $key = "$cx,$cy";
-                if (isset($visited[$key])) continue;
-                $visited[$key] = true;
-
-                if ($cx < 0 || $cx >= $w || $cy < 0 || $cy >= $h) continue;
-                if (imagecolorat($img, $cx, $cy) !== $white) continue;
-
-                imagesetpixel($img, $cx, $cy, $black);
-
-                $queue[] = [$cx+1, $cy];
-                $queue[] = [$cx-1, $cy];
-                $queue[] = [$cx, $cy+1];
-                $queue[] = [$cx, $cy-1];
+        // --------------------------------------------------------------
+        // 3. Helper: flood-fill from a point
+        // --------------------------------------------------------------
+        $flood = function (&$img, $sx, $sy) use ($w,$h,$white,$black) {
+            $q = [[$sx,$sy]];
+            $v = [];
+            while ($q) {
+                [$cx,$cy] = array_pop($q);
+                $k = "$cx,$cy";
+                if (isset($v[$k])) continue;
+                $v[$k] = true;
+                if ($cx<0||$cx>=$w||$cy<0||$cy>=$h) continue;
+                if (imagecolorat($img,$cx,$cy) !== $white) continue;
+                imagesetpixel($img,$cx,$cy,$black);
+                $q[] = [$cx+1,$cy]; $q[] = [$cx-1,$cy];
+                $q[] = [$cx,$cy+1]; $q[] = [$cx,$cy-1];
             }
-        }
+        };
 
+        // --------------------------------------------------------------
+        // 4. Clean the **guess grid** – remove borders
+        // --------------------------------------------------------------
         for ($x = 0; $x < $w; $x++) {
-            if (imagecolorat($bw, $x, 0) === $white) floodFill($bw, $x, 0, $w, $h, $white, $black);
-            if (imagecolorat($bw, $x, $h-1) === $white) floodFill($bw, $x, $h-1, $w, $h, $white, $black);
+            if (imagecolorat($gridImg,$x,0) === $white) $flood($gridImg,$x,0);
+            if (imagecolorat($gridImg,$x,$h-1) === $white) $flood($gridImg,$x,$h-1);
         }
         for ($y = 0; $y < $h; $y++) {
-            if (imagecolorat($bw, 0, $y) === $white) floodFill($bw, 0, $y, $w, $h, $white, $black);
-            if (imagecolorat($bw, $w-1, $y) === $white) floodFill($bw, $w-1, $y, $w, $h, $white, $black);
+            if (imagecolorat($gridImg,0,$y) === $white) $flood($gridImg,0,$y);
+            if (imagecolorat($gridImg,$w-1,$y) === $white) $flood($gridImg,$w-1,$y);
         }
 
-        // 5. All non-white → black
+        // --------------------------------------------------------------
+        // 5. Clean the **keyboard** – fill background
+        // --------------------------------------------------------------
+        // Keyboard is at the bottom of the screenshot
+        $kbdTop = (int)($h * 0.70);
         for ($x = 0; $x < $w; $x++) {
-            for ($y = 0; $y < $h; $y++) {
-                if (imagecolorat($bw, $x, $y) !== $white) {
-                    imagesetpixel($bw, $x, $y, $black);
+            if (imagecolorat($kbdImg,$x,$kbdTop) === $white) $flood($kbdImg,$x,$kbdTop);
+        }
+
+        // --------------------------------------------------------------
+        // 6. Invert keyboard letters that are **surrounded**
+        // --------------------------------------------------------------
+        for ($x = 1; $x < $w-1; $x++) {
+            for ($y = $kbdTop+1; $y < $h-1; $y++) {
+                if (imagecolorat($kbdImg,$x,$y) !== $black) continue;
+                // 8-neighbour check
+                $surrounded = true;
+                for ($dx = -1; $dx <= 1; $dx++) {
+                    for ($dy = -1; $dy <= 1; $dy++) {
+                        if ($dx===0 && $dy===0) continue;
+                        if (imagecolorat($kbdImg,$x+$dx,$y+$dy) === $white) {
+                            $surrounded = false;
+                            break 2;
+                        }
+                    }
                 }
+                if ($surrounded) imagesetpixel($kbdImg,$x,$y,$white);
             }
         }
 
-        // 6. Save
-        imagepng($bw, self::TEMP_FILE);
+        // --------------------------------------------------------------
+        // 7. Save temporary images
+        // --------------------------------------------------------------
+        imagepng($gridImg, self::TEMP_GRID);
+        imagepng($kbdImg , self::TEMP_KBD);
 
-        // 7. OCR
-        $text = (new TesseractOCR(self::TEMP_FILE))
+        // --------------------------------------------------------------
+        // 8. OCR both regions
+        // --------------------------------------------------------------
+        $gridOCR = (new TesseractOCR(self::TEMP_GRID))
             ->lang('eng')
             ->psm(6)
-            ->allowlist(range('A', 'Z'))
+            ->allowlist(range('A','Z'))
             ->run();
 
-        // 8. Cleanup
-        imagedestroy($img);
-        imagedestroy($gray);
-        imagedestroy($bw);
+        $kbdOCR  = (new TesseractOCR(self::TEMP_KBD))
+            ->lang('eng')
+            ->psm(6)
+            ->allowlist(range('A','Z'))
+            ->run();
 
-        return $text;
+        // --------------------------------------------------------------
+        // 9. Cleanup
+        // --------------------------------------------------------------
+        imagedestroy($orig);
+        imagedestroy($gray);
+        imagedestroy($gridImg);
+        imagedestroy($kbdImg);
+
+        return [
+            'grid_text'   => trim($gridOCR),
+            'keyboard_text'=> trim($kbdOCR),
+            'grid_image'  => self::TEMP_GRID,
+            'kbd_image'   => self::TEMP_KBD,
+        ];
     }
 }
 
-// ——— YOUR FILE ———
+/* -----------------------------------------------------------------
+   USAGE
+   ----------------------------------------------------------------- */
 $f = '/home/' . get_current_user() . '/Screenshots/Screenshot from 2025-11-01 01-51-31.png';
 
 echo "Processing: $f\n";
-echo "Saved to: " . WordleOCR::TEMP_FILE . "\n\n";
-echo WordleOCR::read($f);
+$result = WordleOCR::read($f);
+
+echo "Grid OCR:\n{$result['grid_text']}\n\n";
+echo "Keyboard OCR:\n{$result['keyboard_text']}\n\n";
+echo "Saved grid image: {$result['grid_image']}\n";
+echo "Saved keyboard image: {$result['kbd_image']}\n";

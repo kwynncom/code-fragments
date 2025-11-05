@@ -1,0 +1,18 @@
+customer_key AKA API Key
+customer_secret AKA API Secret
+
+https://developer.x.com/en/portal/dashboard
+
+if $tc241 is your key array:
+
+
+$connection = new TwitterOAuth(
+    $tc241['consumer_key'], 
+    $tc241['consumer_secret'], 
+    $tc241['access_token'],
+    $tc241['access_token_secret']
+
+);
+
+// defaults to 2 in late 2025
+$connection->setApiVersion('2');
