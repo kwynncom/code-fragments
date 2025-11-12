@@ -1,0 +1,11 @@
+{
+  "name": "Top Panel Text",
+  "description": "Adds custom text to the right of the clock",
+  "uuid": "batt@kwynn.com",
+  "shell-version": [
+    "46"
+  ],
+  "version": 1,
+  "url": "https://github.com/yourname/top-panel-text"
+}
+

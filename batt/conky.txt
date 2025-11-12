@@ -1,0 +1,17 @@
+# ~/.conkyrc
+conky.config = {
+    alignment = 'top_right',
+    gap_x = 10,
+    gap_y = 10,
+    minimum_width = 60,
+    use_xft = true,
+    font = 'sans:size=12',
+    out_to_console = false,
+    out_to_x = true,
+    background = false,
+    update_interval = 5,
+}
+
+conky.text = [[
+${color white}85${color}
+]]

@@ -1,0 +1,5 @@
+All the following failed.  
+
+gi.require_version('AyatanaAppIndicator3', '0.1')
+from gi.repository import AyatanaAppIndicator3 as AppIndicator3
+gi.require_version('Gtk', '3.0')
