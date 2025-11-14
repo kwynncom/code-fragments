@@ -1,0 +1,20 @@
+#!/bin/bash
+# delete_port11.sh
+# Removes any device (real or ghost) on port 11
+
+XHCI="0000:00:14.0"
+PORT="11"
+
+echo "Scanning for devices on port $PORT..."
+
+find /sys/devices/pci0000:00/$XHCI/usb* -path "*/[12]-$PORT*" -print | while read devpath; do
+    dir=$(dirname "$devpath")
+    if [ -f "$dir/delete" ]; then
+        echo "Found: $dir"
+        echo "  → Deleting..."
+        echo 1 | sudo tee "$dir/delete" > /dev/null
+    fi
+done
+
+echo "Port $PORT cleared."
+

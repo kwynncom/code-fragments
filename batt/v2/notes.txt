@@ -1,7 +1,56 @@
+sudo cat /sys/kernel/debug/usb/xhci/0000:00:14.0/ports/port11/portsc
+
+# maybe more responsive than udevadm
+# no, probably *not* more responsive
+sudo dmesg -w
+
+When it works:
+
+# diff in out
+11c11
+< /sys/kernel/debug/usb/xhci/0000:00:14.0/ports/port11/portsc:Powered Connected Enabled Link:U0 PortSpeed:3 Change: Wake: 
+---
+> /sys/kernel/debug/usb/xhci/0000:00:14.0/ports/port11/portsc:Powered Not-connected Disabled Link:RxDetect PortSpeed:0 Change: Wake: 
+
+Does NOT seem to work with phone in question in charge-only mode
+
+
+
+grep -H Conn /sys/kernel/debug/usb/xhci/0000:00:14.0/ports/*/portsc
+
+/sys/kernel/debug/usb/xhci/0000:00:14.0/ports# cat */portsc | grep Conn
+Powered Connected Enabled Link:U0 PortSpeed:2 Change: Wake: 
+Powered Connected Enabled Link:U0 PortSpeed:3 Change: Wake: 
+Powered Connected Enabled Link:U0 PortSpeed:1 Change: Wake: 
+Powered Connected Enabled Link:U0 PortSpeed:3 Change: Wake: 
+Powered Connected Enabled Link:U0 PortSpeed:3 Change: Wake: 
+Powered Connected Enabled Link:U3 PortSpeed:1 Change: Wake: 
+Powered Connected Enabled Link:U3 PortSpeed:4 Change: Wake: WDE WOE 
+
+sudo nano /etc/default/grub
+
+# 2. Find the line:
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+
+# 3. Change it to:
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash xhci_hcd.power_meter=1"
+
+# 5. Update GRUB
+sudo update-grub
+
+# 6. Reboot
+sudo reboot
+
+
 # cannot restrict to usb because only block mode may work if charge-only
 $ udevadm monitor
 # My user is in the plugdev group.  Thus, that's why I apparently don't need root
 # the delay in detection can be something like 20 seconds
+
+cat /sys/devices/pci0000:00/0000:00:14.0/usb1/1-9/1-9.2/1-9.2:1.0/host6/target6:0:0/6:0:0:0/power/runtime_status
+active
+# some delay before vanishes....
+# a long delay???
 
 
 # /devices/pci0000:00/0000:00:14.0/usb1/1-9/1-9.2/1-9.2:1.0/host6/target6:0:0/6:0:0:0/block/sdb
