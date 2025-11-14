@@ -6,6 +6,9 @@ $ udevadm monitor
 
 # /devices/pci0000:00/0000:00:14.0/usb1/1-9/1-9.2/1-9.2:1.0/host6/target6:0:0/6:0:0:0/block/sdb
 # this should work from /sys/devices/...
+# or
+# /sys/devices/pci0000:00/
+
 
 # unsupported tentativley means unplugged
 /sys/bus/usb/devices/1-9/1-9.2/1-9.2:1.0/host6/target6:0:0/6:0:0:0/block/sdb/power$ cat runtime_status
