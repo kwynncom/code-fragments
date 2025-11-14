@@ -12,8 +12,8 @@ android {
         applicationId = "com.kwynn.battery"
         minSdk = 33
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "0.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,5 +42,6 @@ android {
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.10.01"));
     implementation("androidx.core:core-ktx:1.9.0");
-    implementation("androidx.compose.runtime:runtime")
+    implementation("androidx.compose.runtime:runtime");
+    implementation("androidx.appcompat:appcompat:1.6.0");
 }

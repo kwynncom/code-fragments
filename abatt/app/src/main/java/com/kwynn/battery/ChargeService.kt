@@ -1,47 +1,56 @@
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
-import android.os.IBinder
+package com.kwynn.battery
+
+import android.app.*
+import android.content.*
+import android.os.*
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 class ChargeService : Service() {
 
     private val NOTIFICATION_ID = 1
-    private lateinit var notification: Notification
+    private val CHANNEL_ID = "charge_channel"
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification())
+        Log.d("ChargeService", "SERVICE IS ALIVE - onCreate()")
 
-        // Register for charging events
+        createNotificationChannel()
+        val notification = createNotification()
+        startForeground(NOTIFICATION_ID, notification)  // MUST be here
+
+        registerChargingReceiver()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("ChargeService", "onStartCommand() called")
+        return START_STICKY  // Restart if killed
+    }
+
+    private fun registerChargingReceiver() {
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_POWER_CONNECTED)
             addAction(Intent.ACTION_POWER_DISCONNECTED)
         }
         registerReceiver(chargingReceiver, filter)
+        Log.d("ChargeService", "Charging receiver registered")
     }
 
     private val chargingReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val isCharging = intent.action == Intent.ACTION_POWER_CONNECTED
-            sendToServer(if (isCharging) "charging on" else "charging off")
+            val status = if (isCharging) "charging on" else "charging off"
+            Log.d("ChargeService", "EVENT: $status")
+            sendToServer(status)
         }
     }
 
     private fun sendToServer(status: String) {
         Thread {
             try {
-                val url = URL("https://kwynn.com/t/25/11/android.php")
+                val url = URL("https://kwynn.com/t/25/11/android.php")  // TEST FIRST
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json")
@@ -50,9 +59,10 @@ class ChargeService : Service() {
                 val json = "{\"status\":\"$status\"}"
                 conn.outputStream.use { it.write(json.toByteArray()) }
 
-                conn.responseCode // trigger request
+                val code = conn.responseCode
+                Log.d("ChargeService", "HTTP POST sent: $code")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("ChargeService", "HTTP failed", e)
             }
         }.start()
     }
@@ -60,8 +70,8 @@ class ChargeService : Service() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "charge_channel",
-                "Charge Events",
+                CHANNEL_ID,
+                "Charge Monitoring",
                 NotificationManager.IMPORTANCE_LOW
             )
             getSystemService(NotificationManager::class.java)
@@ -70,23 +80,18 @@ class ChargeService : Service() {
     }
 
     private fun createNotification(): Notification {
-        val builder = NotificationCompat.Builder(this, "charge_channel")
+        return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Charge Reporter")
             .setContentText("Monitoring charging events...")
-            .setSmallIcon(android.R.drawable.ic_notification_overlay)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
-
-        notification = builder.build()
-        return notification
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY // Restart if killed
+            .build()
     }
 
     override fun onDestroy() {
         unregisterReceiver(chargingReceiver)
+        Log.d("ChargeService", "Service destroyed")
         super.onDestroy()
     }
 
