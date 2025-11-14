@@ -1,0 +1,23 @@
+# cannot restrict to usb because only block mode may work if charge-only
+$ udevadm monitor
+# My user is in the plugdev group.  Thus, that's why I apparently don't need root
+# the delay in detection can be something like 20 seconds
+
+
+# /devices/pci0000:00/0000:00:14.0/usb1/1-9/1-9.2/1-9.2:1.0/host6/target6:0:0/6:0:0:0/block/sdb
+# this should work from /sys/devices/...
+
+# unsupported tentativley means unplugged
+/sys/bus/usb/devices/1-9/1-9.2/1-9.2:1.0/host6/target6:0:0/6:0:0:0/block/sdb/power$ cat runtime_status
+unsupported
+
+$ cat runtime_status
+suspended
+
+# suspended seems to be mean charging but no active data com
+# that's tentative, though
+# looks like the file can vanish without warning, too.  Maybe one has to go up a level and come back down, or read from / again
+# looks like the file is deleted and re-populated
+
+
+
