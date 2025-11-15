@@ -2,3 +2,11 @@ https://gist.githubusercontent.com/DevilXD/6ad6cc1fe37872d069a795edd51233b2/raw/
 
 
 https://techwiser.com/all-past-nyt-wordle-answers/
+
+https://www.kaggle.com/datasets/shamiljamion/wordle-answers
+
+
+https://raw.githubusercontent.com/stuartpb/wordles/main/wordles.json
+
+May 6, 2024 was "shave" - so one list is close and Grok goes back to Oct 2024, I think.
+So I have a small gap to fill.
