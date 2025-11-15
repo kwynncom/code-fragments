@@ -121,7 +121,7 @@ class odsDBCl extends dao_generic_4 {
 	if (isset($this->c)) return;
 	parent::__construct(self::dbname);
 	$this->c = $this->kwsel(self::coname);
-	$this->c->createIndex(['project' => 1, 'Ufile' => -1], ['unique' => true]);
+	// $this->c->createIndex(['project' => 1, 'Ufile' => -1], ['unique' => true]);
 
 	$this->p = $this->kwsel(self::co20name);
 	$this->p->createIndex(['project' => 1], ['unique' => true]);
@@ -136,11 +136,15 @@ class odsDBCl extends dao_generic_4 {
     private function putI20(string $proj) {
 	$this->initDB();
 	$qp = ['project' => $proj];
-	$upres38 = $this->p->upsert($qp, $qp);
+	if ($this->p->count($qp) === 0) {
+	    $upres38 = $this->p->upsert($qp, $qp);
+	}
 	$q = $qp;
 	$q['Ufile'] = $this->vala[$proj]['Ufile'];
 
-	$_id = $this->vala[$proj]['project'] . '-' . date('md-Hi-Y-s', $this->vala[$proj]['Ufile']);
+	$_id =  $this->vala[$proj]['project'] . '-' . 
+		date('md-Hi-Y-s', $this->vala[$proj]['Ufile']) . 
+		'-at-' . date('is') . '-'. base62(3);
 	$dat = $this->vala[$proj];
 	$dat['_id'] = $_id;
 
