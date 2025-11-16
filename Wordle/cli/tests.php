@@ -10,6 +10,15 @@ try {
 	['youth' => 'arise'],
 	['clung' => 'plumb'],
 	['freed' => 'ether'], // This caught a bug.
+	['quill' => 'arise'],
+	['eefgh' => 'abcee'],
+	['abcee' => 'eexyz'],
+	['yeyey' => 'exexe'],
+	['exexe' => 'yeyey'],
+	['ebcdx' => 'neeee'], // This also caught a bug.
+	['eeedx' => 'neeee'], // caught a bug
+	['neeee' => 'eeexx'], // bug
+
 ];
 
     foreach($ts as $ts => $t) {
