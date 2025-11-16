@@ -11,30 +11,31 @@ define('N',     '0');
 define('M',     '+');
 define('P',     '?');
 define('I', str_pad('', F, P));
-define('D', '!@#$%^&*()');
+define('D', '!@#$%^&*()`~,;:');
 
 function cmp(string $s, string $g) : string {
 
     $r = I;
     $q = 0;
 
-    for ($j=0; $j < F; $j++) {
-	if ($g[$j] !== $s[$j]) continue;
-	$r[$j] = Y;
-	$s[$j] = D[$q++];
-	$g[$j] = D[$q++];
-    }
-
     for ($j=0; $j < F; $j++) {	
-	for ($i=0; $i < F; $i++) {
-	    if ($g[$j] ===      $s[$i]) {
-		$r[$j] = M;
-		$g[$j] = D[$q++];
-		$s[$i] = D[$q++];
-	    }
+    for ($i=0; $i < F; $i++) {
+
+	    $y = $g[$i] === $s[$i]; 
+	    $m = $g[$j] === $s[$i];
+	
+	    if (!$y && !$m) continue;
+	    
+	    if (!$y) $r[$j] = M;
+	    else    $r[$i] = Y;
+
+	    $s[$i] = D[$q++];
+	    if ($y) $g[$i] = D[$q++];
+	    else    $g[$j] = D[$q++];
+	    
 	} // for
 
-	if ($r[$j] === P) $r[$j] = N;
+        if ($r[$j] === P) $r[$j] = N;
 
     } // for
 
