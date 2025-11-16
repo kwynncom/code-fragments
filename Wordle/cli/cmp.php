@@ -9,18 +9,15 @@ define('P',     '?');
 define('I', str_pad('', F, P));
 
 function cmp(string $a, string $b) : string {
-
     $r = I;
-
     for ($i=0; $i  < F ;  $i++) {	
-    for ($j=0; $j  < F ;  $j++) {
-
-	    if ($r[$j] !== P	 ) {				 continue; }
-	    if ($b[$j] === $a[$i]) { $r[$j] = $i === $j ? Y : M; continue; } 
-	    if (   $i  === U	 ) { $r[$j] =		      N; continue; }   
-
+	for ($j=0; $j < F;  $j++) 
+	{
+	    if ($r[$j] === Y     ) { continue; }
+	    if ($b[$j] === $a[$i]) { $r[$j] = $i === $j ? Y : M; continue; }
+	    if ($i < U)		   { continue;   }
+	    if ($r[$j] === P)	   { $r[$j] = N; }  
+	} // for
     } // for
-    } // for 
-
     return $r;
 }

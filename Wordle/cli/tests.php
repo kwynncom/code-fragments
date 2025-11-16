@@ -8,7 +8,8 @@ try {
 	['tinge' => 'arise'],
 	['tinge' => 'wound'],
 	['youth' => 'arise'],
-	['clung' => 'plumb']
+	['clung' => 'plumb'],
+	['freed' => 'ether'], // This caught a bug.
 ];
 
     foreach($ts as $ts => $t) {
