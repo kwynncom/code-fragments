@@ -17,7 +17,8 @@ try {
 	['exexe' => 'yeyey'],
 	['ebcdx' => 'neeee'], // This also caught a bug.
 	['eeedx' => 'neeee'], // caught a bug
-	['neeee' => 'eeexx'], // bug
+	['neeee' => 'eeexx'], // bug?
+	['quill' => 'quill'], 
 
 ];
 
