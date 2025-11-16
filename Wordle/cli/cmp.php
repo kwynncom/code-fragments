@@ -18,24 +18,24 @@ function cmp(string $s, string $g) : string {
     $r = I;
     $q = 0;
 
-    for	    ($j=0; $j < F; $j++) {	
-	for ($i=0; $i < F; $i++) 
-	{
-	    if  ($r[$i] === Y) continue;
-	    if  ($r[$j] === M) continue;
+    for	    ($i=0; $i < F; $i++) 
+    {	for ($j=0; $j < F; $j++) {
+	    if  ($r[$j] === Y)	    { break;	}
+	    if  ($r[$i] === M)	    { continue; }
 
-	    $y = $g[$i] === $s[$i]; 
-	    $m = $g[$j] === $s[$i];
-	    if (!$y && !$m) continue; unset($m);
+	    $y = $g[$j] === $s[$j]; 
+	    $m = $g[$i] === $s[$j];
 
-	    $k =     $y ? $i : $j;
+	    if (!$y && !$m)	    { continue; }
+
+	    $k =     $y ? $j : $i;
 	    $r[$k] = $y ?  Y :  M;
 	    $g[$k] = D[$q++];
-	    $s[$i] = D[$q++];
+	    $s[$j] = D[$q++];
 
 	} // inner for
 
-	if ($r[$j] === P) $r[$j] = N;
+	if ($r[$i] === P) { $r[$i] = N; }
 
     } // outer for
 
