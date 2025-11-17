@@ -7,21 +7,29 @@ class XRatiosODSCl {
     const from = '/var/kwynn/X/ratios.ods';
     const to   = '/tmp/';
 
+    public readonly array $xids;
+
     public function __construct() {
 	$a = $this->getA();
 	$this->do20($a); unset($a);
+	return;
     }
 
     private function do20(array $a) {
-	foreach($a as $r) $this->do30(trim($r));
+	$ret = [];
+	foreach($a as $r) {
+	    $s = $this->do30(trim($r));
+	    if ($s) $ret[] = $s;
+	}
+
+	$this->xids = $ret;
     }
 
-    private function do30(string $r) {
-	if (!$r) return;
+    private function do30(string $r) : string {
+	if (!$r) return '';
 	$re = '/https:\/\/x\.com\/.+\/(\d+)$/';
 	preg_match($re, $r, $ma);
-	if (!$ma) return;
-	return;
+	return $ma[1] ?? '';
     }
 
     private function getA() : array {
@@ -30,7 +38,9 @@ class XRatiosODSCl {
 	$c = ' soffice --headless --convert-to csv ' . $newFrom . ' --outdir ' . self::to;
 	$res = shell_exec($c);
 	unlink($newFrom);
-	kwas(!$res, "ODS conversion should result in silence but got $res");
+
+	// only correct if not overwriting
+	// kwas(!$res, "ODS conversion should result in silence but got $res");
 	$csv = self::to . basename($newFrom, '.ods') . '.csv';
 	kwas(is_readable($csv) && filesize($csv) > 30 && filemtime($csv) >= $Ufrom, 'problem with CSV (err # 201022)');
 	$a =  str_getcsv(file_get_contents($csv));
