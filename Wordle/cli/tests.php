@@ -4,8 +4,8 @@ require_once('utils.php');
 
 try {
     $ts = [
-	['agate' => 'slave'],
-	['above' => 'borne'],
+	['agate' => 'slave'], // one of the higher-up continues runs
+	['above' => 'borne'], // the other does
 	['above' => 'clone'],
 	['alive' => 'azure'],
 	['lurid' => 'arise'],
