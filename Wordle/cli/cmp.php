@@ -40,4 +40,5 @@ function cmp(string $s, string $g) : string {
     } // outer for
 
     return $r;
+
 } // func
