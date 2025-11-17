@@ -19,19 +19,34 @@ function cmp(string $s, string $g) : string {
     $q = 0;
 
     for	    ($i=0; $i < F; $i++) 
-    {	for ($j=0; $j < F; $j++) {
-	    if  ($r[$j] === Y)	    { break;	}
-	    if  ($r[$i] === M)	    { continue; }
+    {
 
-	    $y = $g[$j] === $s[$j]; 
-	    $m = $g[$i] === $s[$j];
+    
 
-	    if (!$y && !$m)	    { continue; }
+	if ($r[$i] === Y) { 
+	    continue; /* agate slave 00101 */
+
+	}
+
+	for ($j=0; $j < F; $j++) {
+	    if  ($r[$j] === Y)	    { 
+		continue; /* can happen: above borne ++001 */
+	    }
+
+	    $y = $g[$j] === $s[$j]; // green
+
+			 //    not yellow
+	    if (!$y && ($g[$i] !== $s[$j]))  { continue; }
 
 	    $k =     $y ? $j : $i;
 	    $r[$k] = $y ?  Y :  M;
-	    $g[$k] = D[$q++];
-	    $s[$j] = D[$q++];
+            $g[$k] = D[$q++];
+            $s[$j] = D[$q++];
+
+	    if (!$y) break;
+	    if ($i === $j) {
+		continue 2;
+	    }
 
 	} // inner for
 

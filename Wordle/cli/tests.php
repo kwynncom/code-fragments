@@ -4,6 +4,10 @@ require_once('utils.php');
 
 try {
     $ts = [
+	['agate' => 'slave'],
+	['above' => 'borne'],
+	['above' => 'clone'],
+	['alive' => 'azure'],
 	['lurid' => 'arise'],
 	['tinge' => 'arise'],
 	['tinge' => 'wound'],
@@ -19,6 +23,7 @@ try {
 	['eeedx' => 'neeee'], // caught a bug
 	['neeee' => 'eeexx'], // caught a bug, I think.
 	['quill' => 'quill'],
+	['ahead' => 'algae'], // caught bug
 ];
 
     foreach($ts as $ts => $t) {
