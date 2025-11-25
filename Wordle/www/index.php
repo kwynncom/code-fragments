@@ -8,7 +8,7 @@
 <style>
 input {
     width: 1.2em;
-    font-size: 500%;
+    font-size: 300%;
     text-align: center;
     font-family: monospace;
 }
@@ -32,8 +32,13 @@ input:invalid {
 	}
 	
 	e.value = e.value.toUpperCase();
+	
+	if (!e.value) return;
+	
 	const ti = e.tabIndex;
-	qs('[tabindex="' + (parseInt(ti) + 1) + '"]').focus();
+	const next = qs('[tabindex="' + (parseInt(ti) + 1) + '"]');
+	if (!next) return;
+	next.focus();
     }
 </script>
 
@@ -57,6 +62,10 @@ input:invalid {
 		$t .= "data-i='$j' data-g='$i'";
 		$t .= ' oninput = "oninputf(this);" ';
 		$t .= ' pattern="^[a-zA-Z]{1}$" ';
+
+		if ($i !== 0) 
+		$t .= ' disabled="true" ';
+
 		$t .= " tabindex='$k' ";
 		$t .= ' /></td>' . "\n";
 		
