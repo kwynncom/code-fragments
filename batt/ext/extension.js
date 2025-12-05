@@ -6,12 +6,12 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 export default class TestBatt extends Extension {
     enable() {
-        this.label = new St.Label({ text: 'v13', style_class: 'panel-button' });
+        this.label = new St.Label({ text: 'init14', style_class: 'panel-button' });
         Main.panel._rightBox.insert_child_at_index(this.label, 1);
 
         // THIS IS THE ONLY LINE THAT WORKS IN NESTED TODAY
         Gio.DBus.session.signal_subscribe(
-            null, null, null, '/test/batt', null, 0,
+            null, null, null, '/kwynn/batt', null, 0,
             (c, s, p, i, sig, params) => {
                 if (params?.n_children()) {
                     const v = params.get_child_value(0);

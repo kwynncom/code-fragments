@@ -13,5 +13,12 @@ WAYLAND_DISPLAY=nested gnome-terminal &   # your nested terminal
 echo "NESTED PID: $$ | WAYLAND_DISPLAY=$WAYLAND_DISPLAY | DBUS=$DBUS_SESSION_BUS_ADDRESS"
 pgrep -fl gnome-shell
 
+# v 14
 
-busctl --user emit /test/batt org.test Test s "100"
+busctl --user emit /kwynn/batt com.kwynn Test s "98"
+# or
+busctl --user emit /kwynn/batt com.kwynn Boo s "97"
+
+
+# v13 of code 2025/12/05 07:12am
+busctl --user emit /kwynn/batt org.test Test s "100"
