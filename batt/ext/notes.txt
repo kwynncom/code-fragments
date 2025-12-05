@@ -6,7 +6,7 @@ Those 2 are hard links to the gnome shell extension directory
 
 gnome-shell --nested --wayland --wayland-display=nested --replace &
 sleep 3
-WAYLAND_DISPLAY=nested gnome-terminal &   # your nested terminal
+WAYLAND_DISPLAY=nested gnome-terminal &
 
 # confirm:
 
@@ -18,7 +18,3 @@ pgrep -fl gnome-shell
 busctl --user emit /kwynn/batt com.kwynn Test s "98"
 # or
 busctl --user emit /kwynn/batt com.kwynn Boo s "97"
-
-
-# v13 of code 2025/12/05 07:12am
-busctl --user emit /kwynn/batt org.test Test s "100"

@@ -1,15 +1,19 @@
-// extension.js
 import St from 'gi://St';
 import Gio from 'gi://Gio';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-export default class TestBatt extends Extension {
+export default class Battery extends Extension {
     enable() {
-        this.label = new St.Label({ text: 'init14', style_class: 'panel-button' });
+
+	this.label = new St.Label({
+		    text: 'v17-2',
+		    style_class: 'panel-button',
+		    style: 'font-size: 120%; '
+		});
+;
         Main.panel._rightBox.insert_child_at_index(this.label, 1);
 
-        // THIS IS THE ONLY LINE THAT WORKS IN NESTED TODAY
         Gio.DBus.session.signal_subscribe(
             null, null, null, '/kwynn/batt', null, 0,
             (c, s, p, i, sig, params) => {
