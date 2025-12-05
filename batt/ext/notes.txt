@@ -1,0 +1,17 @@
+extension.js
+metadata.json
+
+Those 2 are hard links to the gnome shell extension directory
+
+
+gnome-shell --nested --wayland --wayland-display=nested --replace &
+sleep 3
+WAYLAND_DISPLAY=nested gnome-terminal &   # your nested terminal
+
+# confirm:
+
+echo "NESTED PID: $$ | WAYLAND_DISPLAY=$WAYLAND_DISPLAY | DBUS=$DBUS_SESSION_BUS_ADDRESS"
+pgrep -fl gnome-shell
+
+
+busctl --user emit /test/batt org.test Test s "100"
