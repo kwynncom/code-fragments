@@ -1,11 +1,10 @@
 {
-  "name": "Top Panel Text",
-  "description": "Adds custom text to the right of the clock",
+  "name": "Cell Battery Display",
+  "description": "battery percentage at top right",
   "uuid": "batt@kwynn.com",
   "shell-version": [
     "46"
   ],
-  "version": 1,
+  "version": 2,
   "url": "https://github.com/yourname/top-panel-text"
 }
-

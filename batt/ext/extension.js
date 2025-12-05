@@ -1,5 +1,5 @@
-import GLib from 'gi://GLib';
-import Gio from 'gi://Gio';
+// import GLib from 'gi://GLib';
+// import Gio from 'gi://Gio';
 import Clutter from 'gi://Clutter';
 import St from 'gi://St';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -9,7 +9,7 @@ export default class BattExtension extends Extension {
     enable() {
         // Create the label
         this._label = new St.Label({
-            text: 'BATT',
+            text: 'B2',
             style_class: 'panel-button',  // Optional: match panel style
             y_align: Clutter.ActorAlign.CENTER,  // Correct enum
             // Or use: y_align: 2  (if you prefer numeric)
