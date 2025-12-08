@@ -10,20 +10,30 @@ class USBADBCl extends adbCl implements battExtIntf {
     private static bool $initV = false;
   
     private mixed $stdout;
+    private mixed $stderr;
     private mixed $process;
     
 
     private function initMonitor() {
 
-	$c = '';
+	$c  = '';
+	$c .= ' nohup ';
 
 	if ($this->timeout) $c .= 'timeout ' . $this->timeout . ' ';
-	$c .= 'udevadm monitor -s usb';
-	$descriptors = [  1 => ['pipe', 'w'], ];
+	$c .= 'udevadm monitor -s usb ';
+	$c .= '& ';
 
-	belg('proc_open ' .  $c . ' t-imeout is ' . $this->timeout . "\n");
+	$c = trim($c);
+	belg($c);
+
+	$descriptors = [  1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+	$this->process = $this->stdout = $this->stderr = false;
+
+
 	$this->process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
-	$this->stdout = $pipes[1]; unset($pipes);
+	$this->stdout = $pipes[1]; 
+	$this->stderr = $pipes[2];
+	unset($pipes);
 
     }
 
@@ -34,18 +44,31 @@ class USBADBCl extends adbCl implements battExtIntf {
     }
 
     private function close() {
-	if ($this->stdout) fclose($this->stdout);
+
+	belg('closing usb process stuff');
+
+	if ($this->stdout ?? false) fclose($this->stdout);
 	$this->stdout = false;
-	if ($this->process) {
-	    proc_terminate($this->process, SIGTERM);
+
+	if ($this->stderr ?? false) fclose($this->stderr);
+	$this->stderr = false;
+
+	if ($this->process ?? false) {
+	    proc_terminate($this->process, SIGTERM); // SIGTERM too polite? 
 	    proc_close($this->process);
 	}
 	$this->process = false;
+
+
+
     }
 
     protected function setADB() {
+	beout('setADB() child start - pre-monitor USB');
 	$this->monitorUSB();
+	beout('setADB() child post-monitor USB; pre parent');
 	parent::setADB();
+	beout('setADB() post parent');
 	
     }
 
@@ -77,9 +100,8 @@ class USBADBCl extends adbCl implements battExtIntf {
 	    }
 	} unset($l);
 
+	belg('c-lose USB()' . "\n");
 	$this->close();
-
-	belg('e-xiting m-onitorUSB()' . "\n");
 
 	if ($add) $this->setOn();
 	if ($rm ) {
