@@ -11,7 +11,6 @@ class adbCl {
     protected function reset() {
 	$this->level = -1;
 	$this->valid = false;
-	beout('');
     }
 
     private function setLevel() {
@@ -19,7 +18,7 @@ class adbCl {
 	try {
 	    $this->reset();
 	    $c = 'adb shell cat /sys/class/power_supply/battery/capacity';
-	    echo('running adb battery check' . "\n");
+	    belg('running adb battery check' . "\n");
 	    $res = trim(shell_exec($c));
 	    kwas(is_numeric($res), 'not numeric');
 	    kwas(is_string($res), 'not string');
@@ -29,11 +28,11 @@ class adbCl {
 	    kwas($i10 >= 0 && $i10 <= 100, 'invalid l-evel as int');
 	    $this->level = $i10;
 	    $this->valid = true;
-	    echo('LEVEL *** ' . $this->level . " ***\n");
+	    belg('LEVEL *** ' . $this->level . " ***\n");
 
 	} catch(Throwable $ex) {
 	    $this->msg = $ex->getMessage();
-	    echo('bad level ' . $this->msg . "\n");
+	    belg('bad level ' . $this->msg . "\n");
 	    $this->level = -1;
 	    $this->valid = false;
 	}
@@ -48,7 +47,7 @@ class adbCl {
 
     private function devices() : string {
 	$c = 'adb devices';
-	echo('running ' . $c . "\n");
+	belg('running ' . $c . "\n");
 	$res = shell_exec($c);
 	return $this->parseDevices($res);
 	
@@ -67,7 +66,7 @@ class adbCl {
 	    if (!$l) continue;
 	    
 	    $this->something = true;
-	    echo($l . "\n");
+	    belg($l . "\n");
 	    $k = 'no permissions';
 	    if (strpos($l, $k) !== false) {
 		$this->noPerm = true;

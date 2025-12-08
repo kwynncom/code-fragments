@@ -5,6 +5,9 @@ require_once('adb.php');
 
 class USBADBCl extends adbCl {
 
+    const timeoutInit = 10;
+
+
     public  bool|null $usb;
     private int   $timeout;
     private static bool $initV = false;
@@ -21,14 +24,14 @@ class USBADBCl extends adbCl {
 	$c .= 'udevadm monitor -s usb';
 	$descriptors = [  1 => ['pipe', 'w'], ];
 
-	echo('proc_open ' .  $c . ' t-imeout is ' . $this->timeout . "\n");
+	belg('proc_open ' .  $c . ' t-imeout is ' . $this->timeout . "\n");
 	$this->process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
 	$this->stdout = $pipes[1]; unset($pipes);
 
     }
 
     public function __destruct() {
-	echo('d-stuctor calling e-xit' . "\n");
+	belg('d-stuctor calling e-xit' . "\n");
 	$this->exit();
 	
     }
@@ -46,19 +49,18 @@ class USBADBCl extends adbCl {
     protected function setADB() {
 	$this->monitorUSB();
 	parent::setADB();
-	if ($this->valid) $this->timeout = 67;
 	
     }
 
     private function monitorUSB() {
 
 	if ($this->obi++ === 0) {
-	    echo('skipping monitor; i === ' . $this->obi . "\n");
+	    belg('skipping monitor; i === ' . $this->obi . "\n");
 	    return;
 	}
 
 	if ((time() - $this->Uon < 8) && !$this->valid) {
-	    echo('u-sbMonSleep' . "\n");
+	    belg('u-sbMonSleep' . "\n");
 	    sleep(1);
 	    return;
 	}
@@ -69,7 +71,7 @@ class USBADBCl extends adbCl {
 	$add = false;
 	$rm  = false;
 
-	echo('reading usb log' . "\n");
+	belg('reading usb log' . "\n");
 	while ($l = fgets($this->stdout)) {
 	    $add = strpos($l, 'add') !== false;
 	    $rm  = strpos($l, 'remove') !== false;
@@ -80,11 +82,11 @@ class USBADBCl extends adbCl {
 
 	$this->close();
 
-	echo('e-xiting m-onitorUSB()' . "\n");
+	belg('e-xiting m-onitorUSB()' . "\n");
 
 	if ($add) $this->setOn();
 	if ($rm ) {
-	    echo('u-sb removed' . "\n");
+	    belg('u-sb removed' . "\n");
 	    $this->usb = $rm;
 	    $this->reset();
 	    beout('USB removed...');
@@ -99,7 +101,7 @@ class USBADBCl extends adbCl {
     private int $Uon = 0;
 
     private function setOn() {
-	echo('u-sb detected' . "\n");
+	belg('u-sb detected' . "\n");
 	$this->usb = true;
 	$this->Uon = time();
     }
@@ -119,12 +121,12 @@ class USBADBCl extends adbCl {
 	if (!($this->exiting ?? false)) {
 	    $this->exiting = true;
 	} else {
-	    echo('dup usb e-xiting call.  returning...' . "\n");
+	    belg('dup usb e-xiting call.  returning...' . "\n");
 	    return;
 	}
 
 
-	echo('usb e xit called' . "\n");
+	belg('usb e xit called' . "\n");
 	
 	$this->close();
 
@@ -143,7 +145,7 @@ class USBADBCl extends adbCl {
     }
 
     private function __construct() {
-	$this->timeout = 67;
+	$this->timeout = self::timeoutInit;
 	$this->initSignals();
     }
 
