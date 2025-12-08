@@ -36,7 +36,7 @@ class adbCl {
 
     private function devices($doTO) : string {
 
-	$n = 5;
+	$n = 8;
 	$sleep = 1;
 	$ret = 'unk';
 

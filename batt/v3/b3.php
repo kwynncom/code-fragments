@@ -1,13 +1,13 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
+require_once('config.php');
 require_once('usb.php');
 
 
 class battExtCl {
     public function __construct() {
 	self::bout('init');
-	$this->initSignals();
 	$this->monitor();
     }
 
@@ -15,19 +15,19 @@ class battExtCl {
 
     public function exit() {
 	self::bout('');
-	echo('Exiting now.' . "\n");
+	echo('b3 exit called' . "\n");
 	exit(0);
     }
 
-    private function initSignals() {
-	pcntl_async_signals(true);
-	pcntl_signal(SIGINT , [$this, 'exit']);
-	pcntl_signal(SIGTERM, [$this, 'exit']);
-    }
+
 
     private function monitor() {
-	for($i=0; $i < 5; $i++) {
-	    $o = USBADBCl::getLevel($i === 0 ? 0 : 10);
+	for($i=0; $i < 8; $i++) {
+	    
+	    echo('checking level' . "\n");
+
+
+	    $o = USBADBCl::getLevel($i === 0 ? 0 : 7);
 
 	    if (($o->usb ?? null) === false) {
 		self::bout('USB disconnect.  Exiting...');
@@ -35,41 +35,36 @@ class battExtCl {
 		$this->exit();
 	    }
 
-
-	    if ($o->level < 0) {
-		if ($o->noPerm) $this->seekPerm();
-		self::bout('lost connection');
-	    } else  self::bout($o->level);
+	    if ($o->noPerm) $o = $this->seekPerm();
+ 
+	    self::outvlev($o->level);
 
 
 
-	    $n = 3;
+	    $n = 0;
 	    echo('sleep outer ' . $n . "\n");
-	    sleep($n);
+	    if ($n) sleep($n);
 	}
 
 	self::bout('exit per normal (for now) max loop');
     }
 
+    private static function outvlev(int $lev) {
+	if ($lev < 0) 
+	     self::bout('no connection');
+	else self::bout($lev);
+    }
 
     private function seekPerm() : object {
 	for ($i=0; $i < 45; $i++) {
-	    $o = adbCl::getLevel();
+	    $o = USBADBCl::getLevel(0);
 	    if ($o->noPerm === false) break;
 	    sleep(1);
 	}
-
-	if (isset($o)) self::bout($o->msg);
-
 	return $o;
     }
 
-    private static function bout(string $s) {
-	echo($s . "\n");
-	$c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
-	shell_exec($c);
-
-    }
+    private static function bout(string $s) { beout($s);  }
 
 }
 

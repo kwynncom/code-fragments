@@ -5,54 +5,20 @@ require_once('adb.php');
 
 class USBADBCl extends adbCl {
 
+    public  bool|null $usb;
+    private int   $timeout;
+    private static bool $initV = false;
+  
 
-    public bool|null $usb;
-
-    private readonly int $timeout;
-
-    public static function getLevel(int $timeout = 0) {
-	$o = new self($timeout);
-	return $o;
-    }
-
-    private function __construct(int $timeout) {
-	$this->timeout = $timeout;
-	$this->doit();
-    }
-
-
-    private function doit() : object {
-
-	    $n = 3;
-
-	    for($i = 0; $i < $n; $i++) {
-
-		if ($this->timeout || $i !== 0) $this->usb = $this->monitorUSB();
-		$o = $this->setADB($i === 0 && !$this->timeout);
-		if (isset($o) && ($o->level >= 0 || $o->noPerm || (($this->usb ?? null) === false))) {
-		    return $o;
-		}
-
-
-
-	    }
-
-	    return $o;
-	
-
-	
-
-    }
-
-    private function monitorUSB() : bool | null {
+    private function monitorUSB() {
 
 	$c = '';
-
 	if ($this->timeout > 0) $c .= 'timeout ' . $this->timeout . ' ';
-
-    
 	$c .= 'udevadm monitor -s usb';
 	$descriptors = [  1 => ['pipe', 'w'], ];
+
+	unset($this->usb);
+	echo('proc_open ' .  $c . ' timeout is ' . $this->timeout . "\n");
 	$process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
 	$stdout = $pipes[1]; unset($pipes);
 
@@ -69,10 +35,50 @@ class USBADBCl extends adbCl {
 	proc_terminate($process, SIGTERM);
 	proc_close($process); unset($process);
 
-	if ($add) return true;
-	if ($rm ) return false;
-	return null;
+	echo('exiting monitorUSB()' . "\n");
+
+	if ($add) return $this->usb = $add;
+	if ($rm ) {
+	    $this->usb = $rm;
+	    $this->exit();
+	}
 
     }
+
+    public static function getLevel(int $timeout = 0) {
+	static $o;
+
+	if (!isset($o)) $o = new self();
+	$o->doit($timeout);
+	return $o;
+    }
+
+    public function exit() {
+	echo('usb exit called' . "\n");
+	if (($this->usb ?? null) === false) {
+	    beout('USB disconnected.  Exiting...');
+	    sleep(3);
+	}
+	beout('');
+	exit(0);
+    }
+
+    private function initSignals() {
+	pcntl_async_signals(true);
+	pcntl_signal(SIGINT , [$this, 'exit']);
+	pcntl_signal(SIGTERM, [$this, 'exit']);
+    }
+
+    private function __construct() {
+	$this->initSignals();
+    }
+
+
+    private function doit(int $timeout) {
+	$this->timeout = $timeout;
+	if ($this->timeout) $this->monitorUSB();
+	$this->setADB((!$this->timeout) ||  ($this->usb ?? false) === true);
+    }
+
 }
 
