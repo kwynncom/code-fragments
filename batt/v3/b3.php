@@ -22,12 +22,12 @@ class battExtCl {
 
 
     private function monitor() {
-	for($i=0; $i < 8; $i++) {
+	for($i=0; $i < 12; $i++) {
 	    
 	    echo('checking level' . "\n");
 
 
-	    $o = USBADBCl::getLevel($i === 0 ? 0 : 7);
+	    $o = USBADBCl::getLevel();
 
 	    if (($o->usb ?? null) === false) {
 		self::bout('USB disconnect.  Exiting...');
@@ -57,7 +57,7 @@ class battExtCl {
 
     private function seekPerm() : object {
 	for ($i=0; $i < 45; $i++) {
-	    $o = USBADBCl::getLevel(0);
+	    $o = USBADBCl::getLevel();
 	    if ($o->noPerm === false) break;
 	    sleep(1);
 	}

@@ -9,20 +9,68 @@ class USBADBCl extends adbCl {
     private int   $timeout;
     private static bool $initV = false;
   
+    private mixed $stdout;
+    private mixed $process;
+    
 
-    private function monitorUSB() {
+    private function initMonitor() {
 
 	$c = '';
-	if ($this->timeout > 0) $c .= 'timeout ' . $this->timeout . ' ';
+
+	if ($this->timeout) $c .= 'timeout ' . $this->timeout . ' ';
 	$c .= 'udevadm monitor -s usb';
 	$descriptors = [  1 => ['pipe', 'w'], ];
 
-	unset($this->usb);
 	echo('proc_open ' .  $c . ' timeout is ' . $this->timeout . "\n");
-	$process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
-	$stdout = $pipes[1]; unset($pipes);
+	$this->process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
+	$this->stdout = $pipes[1]; unset($pipes);
 
-	while ($l = fgets($stdout)) {
+    }
+
+    public function __destruct() {
+	echo('d-stuctor calling e-xit' . "\n");
+	$this->exit();
+	
+    }
+
+    private function close() {
+	if ($this->stdout) fclose($this->stdout);
+	$this->stdout = false;
+	if ($this->process) {
+	    proc_terminate($this->process, SIGTERM);
+	    proc_close($this->process);
+	}
+	$this->process = false;
+    }
+
+    protected function setADB() {
+	$this->monitorUSB();
+	parent::setADB();
+	if ($this->valid) $this->timeout = 67;
+	
+    }
+
+    private function monitorUSB() {
+
+	if ($this->obi++ === 0) {
+	    echo('skipping monitor; i === ' . $this->obi . "\n");
+	    return;
+	}
+
+	if ((time() - $this->Uon < 8) && !$this->valid) {
+	    echo('u-sbMonSleep' . "\n");
+	    sleep(1);
+	    return;
+	}
+
+	$this->initMonitor();
+
+    	unset($this->usb);
+	$add = false;
+	$rm  = false;
+
+	echo('reading usb log' . "\n");
+	while ($l = fgets($this->stdout)) {
 	    $add = strpos($l, 'add') !== false;
 	    $rm  = strpos($l, 'remove') !== false;
 	    if ($add || $rm) {
@@ -30,33 +78,55 @@ class USBADBCl extends adbCl {
 	    }
 	} unset($l);
 
-	fclose($stdout); unset($stdout);
+	$this->close();
 
-	proc_terminate($process, SIGTERM);
-	proc_close($process); unset($process);
+	echo('e-xiting m-onitorUSB()' . "\n");
 
-	echo('exiting monitorUSB()' . "\n");
-
-	if ($add) return $this->usb = $add;
+	if ($add) $this->setOn();
 	if ($rm ) {
+	    echo('u-sb removed' . "\n");
 	    $this->usb = $rm;
 	    $this->exit();
+	    return;
 	}
+
 
     }
 
-    public static function getLevel(int $timeout = 0) {
+    private int $Uon = 0;
+
+    private function setOn() {
+	echo('u-sb detected' . "\n");
+	$this->usb = true;
+	$this->Uon = time();
+    }
+
+    public static function getLevel() {
 	static $o;
 
 	if (!isset($o)) $o = new self();
-	$o->doit($timeout);
+	$o->getLevelI();
 	return $o;
     }
 
+    private readonly bool $exiting;
+
     public function exit() {
-	echo('usb exit called' . "\n");
+
+	if (!($this->exiting ?? false)) {
+	    $this->exiting = true;
+	} else {
+	    echo('dup usb e-xiting call.  returning...' . "\n");
+	    return;
+	}
+
+
+	echo('usb e xit called' . "\n");
+	
+	$this->close();
+
 	if (($this->usb ?? null) === false) {
-	    beout('USB disconnected.  Exiting...');
+	    beout('USB disconnected.  E xiting...');
 	    sleep(3);
 	}
 	beout('');
@@ -70,14 +140,17 @@ class USBADBCl extends adbCl {
     }
 
     private function __construct() {
+	$this->timeout = 5;
 	$this->initSignals();
     }
 
+    private int $obi = 0;
 
-    private function doit(int $timeout) {
-	$this->timeout = $timeout;
-	if ($this->timeout) $this->monitorUSB();
-	$this->setADB((!$this->timeout) ||  ($this->usb ?? false) === true);
+    private function getLevelI() {
+
+
+	$this->setADB();
+
     }
 
 }
