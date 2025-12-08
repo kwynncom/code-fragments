@@ -15,44 +15,33 @@ class battExtCl {
 
     public function exit() {
 	self::bout('');
-	echo('b3 exit called' . "\n");
+	echo('b3 e-xit called' . "\n");
 	exit(0);
     }
 
 
 
     private function monitor() {
-	for($i=0; $i < 12; $i++) {
+
+	for($i=0; $i < PHP_INT_MAX; $i++) { //	PHP_INT_MAX
 	    
 	    echo('checking level' . "\n");
-
-
 	    $o = USBADBCl::getLevel();
-
-	    if (($o->usb ?? null) === false) {
-		self::bout('USB disconnect.  Exiting...');
-		sleep(3);
-		$this->exit();
-	    }
-
 	    if ($o->noPerm) $o = $this->seekPerm();
- 
 	    self::outvlev($o->level);
-
-
-
-	    $n = 0;
-	    echo('sleep outer ' . $n . "\n");
-	    if ($n) sleep($n);
 	}
 
-	self::bout('exit per normal (for now) max loop');
+	self::bout('e-xit per normal (for now) max loop after n iterations === ' . $i);
     }
 
     private static function outvlev(int $lev) {
-	if ($lev < 0) 
-	     self::bout('no connection');
-	else self::bout($lev);
+	if ($lev < 0) {
+	     self::bout('');
+	     
+	}
+	else {
+	    self::bout($lev);
+	}
     }
 
     private function seekPerm() : object {

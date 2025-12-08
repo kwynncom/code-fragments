@@ -21,7 +21,7 @@ class USBADBCl extends adbCl {
 	$c .= 'udevadm monitor -s usb';
 	$descriptors = [  1 => ['pipe', 'w'], ];
 
-	echo('proc_open ' .  $c . ' timeout is ' . $this->timeout . "\n");
+	echo('proc_open ' .  $c . ' t-imeout is ' . $this->timeout . "\n");
 	$this->process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
 	$this->stdout = $pipes[1]; unset($pipes);
 
@@ -86,8 +86,11 @@ class USBADBCl extends adbCl {
 	if ($rm ) {
 	    echo('u-sb removed' . "\n");
 	    $this->usb = $rm;
-	    $this->exit();
-	    return;
+	    $this->reset();
+	    beout('USB removed...');
+	    sleep(2);
+	    beout('');
+	    // $this->exit();
 	}
 
 
@@ -140,7 +143,7 @@ class USBADBCl extends adbCl {
     }
 
     private function __construct() {
-	$this->timeout = 5;
+	$this->timeout = 67;
 	$this->initSignals();
     }
 

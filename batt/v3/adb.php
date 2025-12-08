@@ -8,10 +8,16 @@ class adbCl {
     public  int $level = -1;
     public  bool $valid = false; 
 
+    protected function reset() {
+	$this->level = -1;
+	$this->valid = false;
+	beout('');
+    }
+
     private function setLevel() {
 
 	try {
-
+	    $this->reset();
 	    $c = 'adb shell cat /sys/class/power_supply/battery/capacity';
 	    echo('running adb battery check' . "\n");
 	    $res = trim(shell_exec($c));
@@ -23,9 +29,11 @@ class adbCl {
 	    kwas($i10 >= 0 && $i10 <= 100, 'invalid l-evel as int');
 	    $this->level = $i10;
 	    $this->valid = true;
+	    echo('LEVEL *** ' . $this->level . " ***\n");
 
 	} catch(Throwable $ex) {
 	    $this->msg = $ex->getMessage();
+	    echo('bad level ' . $this->msg . "\n");
 	    $this->level = -1;
 	    $this->valid = false;
 	}
@@ -33,6 +41,7 @@ class adbCl {
     }
 
     protected function setADB() {
+	$this->reset();
 	$this->noPerm = false;
 	$this->msg = $this->devices();
     }
