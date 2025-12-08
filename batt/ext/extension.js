@@ -7,7 +7,7 @@ export default class Battery extends Extension {
     enable() {
 
 	this.label = new St.Label({
-		    text: 'v17-2',
+		    text: '',
 		    style_class: 'panel-button',
 		    style: 'font-size: 120%; '
 		});

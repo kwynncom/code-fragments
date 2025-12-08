@@ -1,0 +1,12 @@
+2025/12/08 06:52am
+
+It's actually dying fairly quickly when it goes into the background.  It's not immediate but ...
+
+Wait, perhaps that's the control-Z
+   Grok says no.
+
+There are 18 echo instances.  Probably should make those into a log.
+
+
+I have a *lot* of udevadm hung or running and such.  Maybe that's the problem.
+    Most are from hours ago.
