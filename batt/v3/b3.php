@@ -8,9 +8,7 @@ class battUDevAdmCl {
     public function __construct() {
 
 	$this->initSignals();
-
-	$o = $this->initWatch();
-	if (!$o->something) return;
+	if (!$this->initWatch()) return;
 	$this->monitor();
     }
 
@@ -18,7 +16,7 @@ class battUDevAdmCl {
 	$this->exit();
     }
 
-    public function exit() {
+    public function exit() { // must be public for use by SIGINT / SIGTERM
 	self::bout('');
 	exit(0);
     }
@@ -36,19 +34,20 @@ class battUDevAdmCl {
 		self::bout('lost connection');
 	    } else  self::bout($o->level); // . ' at ' . date('H:i'));
 	    sleep(63);
+	    // $this->watchUSB();
 	}
 
 	self::bout('exit per normal (for now) max loop');
     }
 
-    private function initWatch() : object {
+    private function initWatch() : bool {
 	
 	self::bout('init');
 
 	$o = adbCl::getDevices();
-	if ($o->something) {
+	if ($o->level >= 0) {
 	    self::bout($o->msg);
-	    return $o;
+	    return true;
 	}
 
 	
@@ -76,7 +75,7 @@ class battUDevAdmCl {
 	proc_terminate($process, SIGTERM);
 	proc_close($process); unset($process);
 
-	return $o;
+	return $o->level >= 0;
     }
 
     private function seekPerm() : object {

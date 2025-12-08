@@ -3,7 +3,7 @@
 class adbCl {
 
     public  bool $something = false;
-    public  readonly string $msg;
+    public  string $msg = 'unk';
     public  readonly bool $noPerm;
     public  int $level = -1;
 
@@ -13,12 +13,23 @@ class adbCl {
     }
 
     private function setLevel() {
-	$c = 'adb shell cat /sys/class/power_supply/battery/capacity';
-	$res = trim(shell_exec($c));
-	if (!is_numeric($res)) return;
-	$i10 = intval($res);
-	if ($i10 < 0 || $i10 > 100) return;
-	$this->level = $i10;
+
+	try {
+
+	    $c = 'adb shell cat /sys/class/power_supply/battery/capacity';
+	    $res = trim(shell_exec($c));
+	    kwas(is_numeric($res), 'not numeric');
+	    kwas(is_string($res), 'not string');
+	    $n = strlen($res);
+	    kwas($n > 0 && $n <= 3, 'invalid level - string');
+	    $i10 = intval  ($res);
+	    kwas($i10 >= 0 && $i10 <= 100, 'invalid level as int');
+	    $this->level = $i10;
+
+	} catch(Throwable $ex) {
+	    $this->msg = $ex->getMessage();
+	    $this->level = -1;
+	}
 	
     }
 
