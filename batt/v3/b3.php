@@ -5,11 +5,9 @@ require_once('utils.php');
 require_once('usb.php');
 
 
-class battExtCl {
+class battExtCl implements battExtIntf {
 
-    const nMaxLoop = 50; //	PHP_INT_MAX
-
-    public function __construct() {
+     public function __construct() {
 	$this->killPrev();
 	self::bout('init');
 	$this->monitor();
@@ -19,9 +17,11 @@ class battExtCl {
 	global $argv;
 
 	$sub = 'php ' . implode(' ', $argv);
-	$cmd = 'pkill -x -f ' . '"' . $sub . '"';
-	belg($cmd);
-	// shell_exec($cmd);
+	$cmd = 'pgrep -f "php /home/k/sm20/frag/batt/v3/b3.php" | grep -v ' . getmypid() . ' | xargs -r kill';
+	if (true) {
+	    belg($cmd);
+	    shell_exec($cmd);
+	}
 	
     }
 

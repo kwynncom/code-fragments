@@ -3,10 +3,7 @@
 require_once('adb.php');
 
 
-class USBADBCl extends adbCl {
-
-    const timeoutInit = 10;
-
+class USBADBCl extends adbCl implements battExtIntf {
 
     public  bool|null $usb;
     private int   $timeout;
@@ -145,7 +142,7 @@ class USBADBCl extends adbCl {
     }
 
     private function __construct() {
-	$this->timeout = self::timeoutInit;
+	$this->timeout = self::usbTimeoutInit;
 	$this->initSignals();
     }
 

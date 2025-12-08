@@ -2,6 +2,12 @@
 
 require_once('/opt/kwynn/kwutils.php');
 
+interface battExtIntf {
+    const nMaxLoop       = 50; //	PHP_INT_MAX
+    const usbTimeoutInit =  5;
+}
+
+
 function beout(string $s) {
     battLogCl::put($s);
     $c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
