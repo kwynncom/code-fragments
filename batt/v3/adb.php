@@ -7,11 +7,6 @@ class adbCl {
     public  readonly bool $noPerm;
     public  int $level = -1;
 
-    public static function getLevel() : object {
-	$o = new self();
-	return $o;
-    }
-
     private function setLevel() {
 
 	try {
@@ -33,12 +28,13 @@ class adbCl {
 	
     }
 
-    private function __construct() {
-	$this->msg = $this->devices();
+    protected function setADB(bool $doTO) : object {
+	$this->msg = $this->devices($doTO);
 	if (!isset($this->noPerm)) $this->noPerm = false;
+	return $this;
     }
 
-    private function devices() : string {
+    private function devices($doTO) : string {
 
 	$n = 5;
 	$sleep = 1;
@@ -46,9 +42,9 @@ class adbCl {
 
 	for ($i = 0; $i < $n; $i++) {
 	    $ret = $this->devicesLoop();
-	    if ($this->something) break;
+	    if ($this->something || (!$doTO)) break;
 	    if ($i + 1 < $n) {
-		echo('sleep ' . $sleep . "\n");
+		echo('adb.php devices() sleep for ' . $sleep . ' i ' . $i . "\n");
 		sleep($sleep);
 	    }
 	}

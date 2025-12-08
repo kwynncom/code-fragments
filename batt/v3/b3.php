@@ -6,17 +6,16 @@ require_once('usb.php');
 
 class battExtCl {
     public function __construct() {
-
+	self::bout('init');
 	$this->initSignals();
 	$this->monitor();
     }
 
-    public function __destruct() {
-	$this->exit();
-    }
+    public function __destruct() { $this->exit();  }
 
-    public function exit() { // must be public for use by SIGINT / SIGTERM
+    public function exit() {
 	self::bout('');
+	echo('Exiting now.' . "\n");
 	exit(0);
     }
 
@@ -27,55 +26,31 @@ class battExtCl {
     }
 
     private function monitor() {
-	for($i=0; $i < 500; $i++) {
-	    $o = adbCl::getLevel();
+	for($i=0; $i < 5; $i++) {
+	    $o = USBADBCl::getLevel($i === 0 ? 0 : 10);
+
+	    if (($o->usb ?? null) === false) {
+		self::bout('USB disconnect.  Exiting...');
+		sleep(3);
+		$this->exit();
+	    }
+
+
 	    if ($o->level < 0) {
+		if ($o->noPerm) $this->seekPerm();
 		self::bout('lost connection');
-	    } else  self::bout($o->level); // . ' at ' . date('H:i'));
-	    sleep(63);
-	    // $this->watchUSB();
+	    } else  self::bout($o->level);
+
+
+
+	    $n = 3;
+	    echo('sleep outer ' . $n . "\n");
+	    sleep($n);
 	}
 
 	self::bout('exit per normal (for now) max loop');
     }
 
-    private function initWatch() : object {
-	
-	self::bout('init');
-
-	$o = adbCl::getLevel();
-	if ($o->level >= 0) {
-	    self::bout($o->msg);
-	    return $o;
-	}
-
-	
-	self::bout('seeking');
-
-	$command = 'udevadm monitor -s usb';
-	$descriptors = [  1 => ['pipe', 'w'], ];
-	$process = proc_open($command, $descriptors, $pipes); unset($command, $descriptors);
-	$stdout = $pipes[1]; unset($pipes);
-
-	self::bout('waiting');
-
-	while ($l = fgets($stdout)) {		    // do NOT want to match " unbind "
-	    if ((strpos($l, 'add') !== false) || (strpos($l, ' bind') !== false)) {
-		self::bout('USB connected');
-		$o = adbCl::getLevel();
-		self::bout($o->msg);
-		if ($o->noPerm) $o = $this->seekPerm();
-		break;
-	    }
-	} unset($l);
-
-	fclose($stdout); unset($stdout);
-
-	proc_terminate($process, SIGTERM);
-	proc_close($process); unset($process);
-
-	return $o;
-    }
 
     private function seekPerm() : object {
 	for ($i=0; $i < 45; $i++) {

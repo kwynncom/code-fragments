@@ -3,39 +3,63 @@
 require_once('adb.php');
 
 
-class battUDevAdmCl {
+class USBADBCl extends adbCl {
 
-    public function getLevel() {
-	
+
+    public bool|null $usb;
+
+    private readonly int $timeout;
+
+    public static function getLevel(int $timeout = 0) {
+	$o = new self($timeout);
+	return $o;
+    }
+
+    private function __construct(int $timeout) {
+	$this->timeout = $timeout;
+	$this->doit();
     }
 
 
-    private function initWatch() : object {
-	
-	self::bout('init');
+    private function doit() : object {
 
-	$o = adbCl::getLevel();
-	if ($o->level >= 0) {
-	    self::bout($o->msg);
+	    $n = 3;
+
+	    for($i = 0; $i < $n; $i++) {
+
+		if ($this->timeout || $i !== 0) $this->usb = $this->monitorUSB();
+		$o = $this->setADB($i === 0 && !$this->timeout);
+		if (isset($o) && ($o->level >= 0 || $o->noPerm || (($this->usb ?? null) === false))) {
+		    return $o;
+		}
+
+
+
+	    }
+
 	    return $o;
-	}
+	
 
 	
-	self::bout('seeking');
 
-	$command = 'udevadm monitor -s usb';
+    }
+
+    private function monitorUSB() : bool | null {
+
+	$c = '';
+
+	if ($this->timeout > 0) $c .= 'timeout ' . $this->timeout . ' ';
+
+    
+	$c .= 'udevadm monitor -s usb';
 	$descriptors = [  1 => ['pipe', 'w'], ];
-	$process = proc_open($command, $descriptors, $pipes); unset($command, $descriptors);
+	$process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
 	$stdout = $pipes[1]; unset($pipes);
 
-	self::bout('waiting');
-
-	while ($l = fgets($stdout)) {		    // do NOT want to match " unbind "
-	    if ((strpos($l, 'add') !== false) || (strpos($l, ' bind') !== false)) {
-		self::bout('USB connected');
-		$o = adbCl::getLevel();
-		self::bout($o->msg);
-		if ($o->noPerm) $o = $this->seekPerm();
+	while ($l = fgets($stdout)) {
+	    $add = strpos($l, 'add') !== false;
+	    $rm  = strpos($l, 'remove') !== false;
+	    if ($add || $rm) {
 		break;
 	    }
 	} unset($l);
@@ -45,8 +69,10 @@ class battUDevAdmCl {
 	proc_terminate($process, SIGTERM);
 	proc_close($process); unset($process);
 
-	return $o;
+	if ($add) return true;
+	if ($rm ) return false;
+	return null;
+
     }
 }
 
-new battUDevAdmCl();
