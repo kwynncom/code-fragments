@@ -1,14 +1,13 @@
 <?php
 
 require_once('/opt/kwynn/kwutils.php');
-require_once('adb.php');
+require_once('usb.php');
 
 
-class battUDevAdmCl {
+class battExtCl {
     public function __construct() {
 
 	$this->initSignals();
-	if (!$this->initWatch()) return;
 	$this->monitor();
     }
 
@@ -29,7 +28,7 @@ class battUDevAdmCl {
 
     private function monitor() {
 	for($i=0; $i < 500; $i++) {
-	    $o = adbCl::getDevices();
+	    $o = adbCl::getLevel();
 	    if ($o->level < 0) {
 		self::bout('lost connection');
 	    } else  self::bout($o->level); // . ' at ' . date('H:i'));
@@ -40,14 +39,14 @@ class battUDevAdmCl {
 	self::bout('exit per normal (for now) max loop');
     }
 
-    private function initWatch() : bool {
+    private function initWatch() : object {
 	
 	self::bout('init');
 
-	$o = adbCl::getDevices();
+	$o = adbCl::getLevel();
 	if ($o->level >= 0) {
 	    self::bout($o->msg);
-	    return true;
+	    return $o;
 	}
 
 	
@@ -63,7 +62,7 @@ class battUDevAdmCl {
 	while ($l = fgets($stdout)) {		    // do NOT want to match " unbind "
 	    if ((strpos($l, 'add') !== false) || (strpos($l, ' bind') !== false)) {
 		self::bout('USB connected');
-		$o = adbCl::getDevices();
+		$o = adbCl::getLevel();
 		self::bout($o->msg);
 		if ($o->noPerm) $o = $this->seekPerm();
 		break;
@@ -75,12 +74,12 @@ class battUDevAdmCl {
 	proc_terminate($process, SIGTERM);
 	proc_close($process); unset($process);
 
-	return $o->level >= 0;
+	return $o;
     }
 
     private function seekPerm() : object {
 	for ($i=0; $i < 45; $i++) {
-	    $o = adbCl::getDevices();
+	    $o = adbCl::getLevel();
 	    if ($o->noPerm === false) break;
 	    sleep(1);
 	}
@@ -99,4 +98,4 @@ class battUDevAdmCl {
 
 }
 
-new battUDevAdmCl();
+new battExtCl();

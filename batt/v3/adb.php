@@ -7,7 +7,7 @@ class adbCl {
     public  readonly bool $noPerm;
     public  int $level = -1;
 
-    public static function getDevices() : object {
+    public static function getLevel() : object {
 	$o = new self();
 	return $o;
     }
