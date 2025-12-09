@@ -18,9 +18,16 @@ class USBADBCl implements battExtIntf {
 	$this->initSignals();
     }
 
+    public static function runShellScript() {
+	$c = 'bash ' . __DIR__ . '/usb.sh';
+	belg($c);
+	shell_exec($c);
+	belg('exited shell script');
+    }
 
     private function initMonitor() {
 	$c  = '';
+	if (false) {
 	if ($this->standalone) 
 	{
 	    if ($this->timeout) {
@@ -32,6 +39,10 @@ class USBADBCl implements battExtIntf {
 	} else { 
 	    $c .= 'php ' . __FILE__;
 	}
+	}
+
+	$c .= 'bash ' . __DIR__ . '/usb.sh';
+
 	$c = trim($c);
 	belg($c);
 

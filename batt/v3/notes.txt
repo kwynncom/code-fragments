@@ -1,3 +1,5 @@
+I want a default timeout as given but, if a numerical argument comes in, use that timeout.
+
 $read is stdout
 $write  = null;
 $except = null;

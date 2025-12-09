@@ -20,7 +20,7 @@ class battExtCl implements battExtIntf {
 	    belg('checking l-evel. ' . $i . ' of max loop: ' . self::nMaxLoop . "\n");
 	    if (!adbCl::doit()) {
 		belg('running USB mon');
-		USBADBCl::monitor();
+		USBADBCl::runShellScript();
 	    }
 
 	    sleep(self::usbTimeoutInit);

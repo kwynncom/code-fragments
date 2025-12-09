@@ -3,7 +3,7 @@ COMMAND=(udevadm monitor -s usb)
 
 KEYWORDS=("add" "remove")
 
-timeout --foreground "$TIMEOUT_SECONDS" "${COMMAND[@]}" |
+timeout "$TIMEOUT_SECONDS" "${COMMAND[@]}" |
 while IFS= read -r line; do
     lowered="${line,,}"
     for kw in "${KEYWORDS[@]}"; do
@@ -14,5 +14,3 @@ while IFS= read -r line; do
         fi
     done
 done
-
-echo "TIMEOUT after ${TIMEOUT_SECONDS}s"
