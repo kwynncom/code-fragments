@@ -1,3 +1,9 @@
+If I want to background and then exit the calling bash shell, I have to use nohup on the php script.
+20:06pm 12/08
+
+
+***************
+
 2025/12/08 06:52am
 
 It's actually dying fairly quickly when it goes into the background.  It's not immediate but ...

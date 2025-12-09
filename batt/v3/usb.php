@@ -6,33 +6,50 @@ require_once('adb.php');
 class USBADBCl extends adbCl implements battExtIntf {
 
     public  bool|null $usb;
-    private int   $timeout;
+    private int   $timeout = self::usbTimeoutInit;
     private static bool $initV = false;
   
     private mixed $stdout;
-    private mixed $stderr;
     private mixed $process;
+
+    private int $obi = 0;
     
+
+    private function toBackoff() : bool {
+
+	if ((time() - $this->Uon < 8) && !$this->valid) {
+	    belg('u-sbMonSleep; skipping usb mon' . "\n");
+	    sleep(1);
+	    return false;
+	}
+
+
+	$a = [3, 3, 3, 5, 5, 5, 7];
+	$n = $a[$this->obi++] ?? self::usbTimeoutInit;
+	$this->timeout = $n;
+	if ($this->obi === 1) {
+	    belg('skipping usb mon due to obi');
+	    return false;
+	}
+
+	return true;
+    }
 
     private function initMonitor() {
 
 	$c  = '';
-	$c .= ' nohup ';
-
 	if ($this->timeout) $c .= 'timeout ' . $this->timeout . ' ';
 	$c .= 'udevadm monitor -s usb ';
-	$c .= '& ';
 
 	$c = trim($c);
 	belg($c);
 
 	$descriptors = [  1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
-	$this->process = $this->stdout = $this->stderr = false;
+	$this->process = $this->stdout = false;
 
 
 	$this->process = proc_open($c, $descriptors, $pipes); unset($c, $descriptors);
 	$this->stdout = $pipes[1]; 
-	$this->stderr = $pipes[2];
 	unset($pipes);
 
     }
@@ -50,9 +67,6 @@ class USBADBCl extends adbCl implements battExtIntf {
 	if ($this->stdout ?? false) fclose($this->stdout);
 	$this->stdout = false;
 
-	if ($this->stderr ?? false) fclose($this->stderr);
-	$this->stderr = false;
-
 	if ($this->process ?? false) {
 	    proc_terminate($this->process, SIGTERM); // SIGTERM too polite? 
 	    proc_close($this->process);
@@ -64,26 +78,17 @@ class USBADBCl extends adbCl implements battExtIntf {
     }
 
     protected function setADB() {
-	beout('setADB() child start - pre-monitor USB');
+	belg('setADB() child start - pre-monitor USB');
 	$this->monitorUSB();
-	beout('setADB() child post-monitor USB; pre parent');
+	belg('setADB() child post-monitor USB; pre parent');
 	parent::setADB();
-	beout('setADB() post parent');
+	belg('setADB() post parent');
 	
     }
 
     private function monitorUSB() {
 
-	if ($this->obi++ === 0) {
-	    belg('skipping monitor; i === ' . $this->obi . "\n");
-	    return;
-	}
-
-	if ((time() - $this->Uon < 8) && !$this->valid) {
-	    belg('u-sbMonSleep' . "\n");
-	    sleep(1);
-	    return;
-	}
+	if (!$this->toBackoff()) return;
 
 	$this->initMonitor();
 
@@ -164,11 +169,8 @@ class USBADBCl extends adbCl implements battExtIntf {
     }
 
     private function __construct() {
-	$this->timeout = self::usbTimeoutInit;
 	$this->initSignals();
     }
-
-    private int $obi = 0;
 
     private function getLevelI() {
 

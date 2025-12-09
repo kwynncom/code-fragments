@@ -3,8 +3,8 @@
 require_once('/opt/kwynn/kwutils.php');
 
 interface battExtIntf {
-    const nMaxLoop       = 15;  // PHP_INT_MAX
-    const usbTimeoutInit = 5;
+    const nMaxLoop       = 20;  // PHP_INT_MAX
+    const usbTimeoutInit = 67;
 }
 
 
