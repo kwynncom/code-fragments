@@ -3,7 +3,7 @@
 
 require_once('utils.php');
 require_once('usb.php');
-
+require_once('adb.php');
 
 class battExtCl implements battExtIntf {
 
@@ -20,7 +20,7 @@ class battExtCl implements battExtIntf {
 	    belg('checking l-evel. ' . $i . ' of max loop: ' . self::nMaxLoop . "\n");
 	    if (!adbCl::doit()) {
 		
-		USBADBCl::monitorUSB();
+		USBADBCl::monitor();
 	    }
 
 	    sleep(self::usbTimeoutInit);

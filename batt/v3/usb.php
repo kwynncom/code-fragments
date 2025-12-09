@@ -1,49 +1,65 @@
 <?php
 
-require_once('adb.php');
-
+require_once('utils.php');
 
 class USBADBCl implements battExtIntf {
 
     private int   $timeout = self::usbTimeoutInit;
+
     private mixed $inhan = false;
-    private int $obi = 0;
+    private mixed $process = false;
 
-    private function toBackoff() : bool {
+    private readonly bool $standalone;
+    private readonly bool $exiting;
 
-	$a = [3, 3, 3, 5, 5, 5, 7];
-	$n = $a[$this->obi++] ?? self::usbTimeoutInit;
-	$this->timeout = $n;
 
-	return true;
+    private function __construct(bool $standalone) {
+	$this->standalone = $standalone;
+	$this->initSignals();
     }
+
 
     private function initMonitor() {
 	$c  = '';
-	if ($this->timeout) $c .= 'timeout --foreground ' . $this->timeout . ' '; // --foreground responsds to control-C
+	if ($this->timeout) {
+	    $c .= 'timeout ';
+	    $c .= '--foreground ';
+	    $c .= $this->timeout . ' ';
+	}
 	$c .= 'udevadm monitor -s usb ';
 	$c = trim($c);
 	belg($c);
-	$this->inhan = popen($c, 'r');
+
+	$descriptors = [
+	    1 => ['pipe', 'w'],              // stdout - we want this
+	];
+
+	$this->process = proc_open($c, $descriptors, $pipes);
+	$this->inhan   = $pipes[1];
     }
 
     public function __destruct() { belg('d-stuctor calling e-xit' . "\n"); $this->exit();     }
 
     private function close() {
 	belg('closing usb p-rocess stuff');
-	if ($this->inhan ?? false) pclose($this->inhan);
+	if ($this->inhan ?? false) fclose($this->inhan);
 	$this->inhan = false;
+
+	if ($this->process ?? false) {
+	    proc_terminate($this->process);
+	    proc_close($this->process);
+	
+	}
+	$this->process = false;
     }
 
-    public static function monitorUSB() {
+    public static function monitor(bool $standalone = false) {
 	static $o;
-	if (!isset($o)) $o = new self();
+	if (!isset($o)) $o = new self($standalone);
 	$o->monitorI();
     }
 
     private function monitorI() {
-
-	if (!$this->toBackoff()) return;
 
 	$this->initMonitor();
 
@@ -59,34 +75,21 @@ class USBADBCl implements battExtIntf {
 	    }
 	} unset($l);
 
-	belg('c-lose USB()' . "\n");
-	$this->close();
-
-	if ($add) $this->setOn();
+	if ($add) {
+	    belg('KWBATTUSBADD' . "\n");
+	}
 	if ($rm ) {
 	    belg('u-sb removed' . "\n");
-	    $this->reset();
 	    beout('USB removed...');
 	    sleep(2);
 	    beout('');
-	    // $this->exit();
+	    belg('KWBATTUSBRM' . "\n");
 	}
 
+	if ($add || $rm) $this->exit();
 
     }
 
-    private int $Uon = 0;
-
-    private function setOn() {
-	belg('u-sb detected' . "\n");
-	$this->Uon = time();
-    }
-
-    public static function getLevel() {
-
-    }
-
-    private readonly bool $exiting;
 
     public function exit() {
 
@@ -102,10 +105,6 @@ class USBADBCl implements battExtIntf {
 	
 	$this->close();
 
-	if (($this->usb ?? null) === false) {
-	    beout('USB disconnected.  E xiting...');
-	    sleep(3);
-	}
 	beout('');
 	belg('exiting now......');
 	exit(0);
@@ -117,10 +116,8 @@ class USBADBCl implements battExtIntf {
 	pcntl_signal(SIGTERM, [$this, 'exit']);
     }
 
-    private function __construct() {
-	$this->initSignals();
-    }
 
 
 }
 
+if (didCLICallMe(__FILE__)) { USBADBCl::monitor(true);  }
