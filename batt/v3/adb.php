@@ -8,7 +8,7 @@ class adbCl {
 	try {
 	    $c = 'adb shell cat /sys/class/power_supply/battery/capacity';
 	    belg('running adb battery check' . "\n");
-	    $res = trim(shell_exec($c));
+	    $res = trim(shell_exec($c) ?? '');
 	    kwas(is_numeric($res), 'not numeric');
 	    kwas(is_string($res), 'not string');
 	    $n = strlen($res);
@@ -24,7 +24,7 @@ class adbCl {
 	    beout('');
 	    $msg = $ex->getMessage();
 	    belg('bad level ' . $msg . "\n");
-	    beout($msg);
+	    // beout($msg);
 	    return false;
 	}
 
