@@ -56,6 +56,7 @@ class adbCl {
 	    $c = 'adb devices';
 	    belg('running ' . $c . "\n");
 	    $shres = shell_exec($c);
+	    belg('finished ' . $c);
 	    $pares = self::parseDevices($shres);
 	    if ($pares === true)   { return self::sendLevel();    }
 	    if ($pares === 'perm') {  self::getPerm(); }

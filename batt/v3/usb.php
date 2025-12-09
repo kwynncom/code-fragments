@@ -42,11 +42,14 @@ class USBADBCl implements battExtIntf {
 
     private function close() {
 	belg('closing usb p-rocess stuff');
-	if ($this->inhan ?? false) fclose($this->inhan);
-	$this->inhan = false;
+
 
 	if ($this->process ?? false) {
 	    proc_terminate($this->process);
+
+	    if ($this->inhan ?? false) fclose($this->inhan);
+	    $this->inhan = false;
+
 	    proc_close($this->process);
 	
 	}
@@ -55,8 +58,17 @@ class USBADBCl implements battExtIntf {
 
     public static function monitor(bool $standalone = false) {
 	static $o;
-	if (!isset($o)) $o = new self($standalone);
-	$o->monitorI();
+
+	if ($standalone) { 
+	    if (!isset($o)) $o = new self($standalone);
+	    $o->monitorI();
+	}
+	else {
+	    $c = 'php ' . __FILE__;
+	    belg($c);
+	    shell_exec($c);
+	}
+	
     }
 
     private function monitorI() {
@@ -76,6 +88,7 @@ class USBADBCl implements battExtIntf {
 	} unset($l);
 
 	if ($add) {
+	    beout('USB connected');
 	    belg('KWBATTUSBADD' . "\n");
 	}
 	if ($rm ) {
@@ -86,7 +99,9 @@ class USBADBCl implements battExtIntf {
 	    belg('KWBATTUSBRM' . "\n");
 	}
 
-	if ($add || $rm) $this->exit();
+	if (($add || $rm) && $this->standalone) { $this->exit(); }
+	$this->close(); 
+
 
     }
 
