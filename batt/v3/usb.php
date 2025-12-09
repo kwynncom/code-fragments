@@ -21,12 +21,17 @@ class USBADBCl implements battExtIntf {
 
     private function initMonitor() {
 	$c  = '';
-	if ($this->timeout) {
-	    $c .= 'timeout ';
-	    $c .= '--foreground ';
-	    $c .= $this->timeout . ' ';
+	if ($this->standalone) 
+	{
+	    if ($this->timeout) {
+		$c .= 'timeout ';
+		$c .= '--foreground ';
+		$c .= $this->timeout . ' ';
+	    }
+	    $c .= 'udevadm monitor -s usb ';
+	} else { 
+	    $c .= 'php ' . __FILE__;
 	}
-	$c .= 'udevadm monitor -s usb ';
 	$c = trim($c);
 	belg($c);
 
@@ -58,17 +63,8 @@ class USBADBCl implements battExtIntf {
 
     public static function monitor(bool $standalone = false) {
 	static $o;
-
-	if ($standalone) { 
-	    if (!isset($o)) $o = new self($standalone);
-	    $o->monitorI();
-	}
-	else {
-	    $c = 'php ' . __FILE__;
-	    belg($c);
-	    shell_exec($c);
-	}
-	
+        if (!isset($o)) $o = new self($standalone);
+        $o->monitorI();
     }
 
     private function monitorI() {
