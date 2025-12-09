@@ -1,40 +1,52 @@
-#!/usr/bin/env python3
-# usb_monitor.py
-# Wait for USB add/remove or KWBATTUSB device, with configurable timeout
-# Usage: ./usb_monitor.py          → 20 seconds (default)
-#        ./usb_monitor.py 45       → 45 seconds
-# Exit 1  → keyword found
-# Exit 124 → timeout
-# written by Grok (Fast Mode, v3.x-ish)
-
 import pyudev
 import time
 import sys
+import signal
 
-# Default timeout = 20 seconds
-default_timeout = 20
+# ------------------------------------------------------------------
+# Configurable part
+# ------------------------------------------------------------------
+DEFAULT_TIMEOUT = 20
+KEYWORDS = {"add", "remove", "kwbattusb"}
 
-# Parse optional timeout from command line (must be ≥1)
+# ------------------------------------------------------------------
+# Graceful Ctrl-C handling
+# ------------------------------------------------------------------
+interrupted = False
+
+def signal_handler(sig, frame):
+    global interrupted
+    interrupted = True
+    sys.exit(130)                     # standard exit code for SIGINT
+
+signal.signal(signal.SIGINT, signal_handler)
+
+# ------------------------------------------------------------------
+# Parse timeout argument
+# ------------------------------------------------------------------
 try:
     arg = sys.argv[1] if len(sys.argv) > 1 else ""
-    timeout = int(arg) if arg.isdigit() and int(arg) >= 1 else default_timeout
+    timeout = int(arg) if arg.isdigit() and int(arg) >= 1 else DEFAULT_TIMEOUT
 except:
-    timeout = default_timeout
+    timeout = DEFAULT_TIMEOUT
 
 deadline = time.time() + timeout
-keywords = {"add", "remove", "kwbattusb"}
 
+# ------------------------------------------------------------------
+# udev monitoring
+# ------------------------------------------------------------------
 context = pyudev.Context()
 monitor = pyudev.Monitor.from_netlink(context)
 monitor.filter_by(subsystem='usb')
 monitor.start()
 
 while True:
-    device = monitor.poll(timeout=1)  # 1-second poll so we can check deadline
+    if time.time() > deadline:
+        print(f"TIMEOUT after {timeout}s")
+        sys.exit(124)
+
+    device = monitor.poll(timeout=1)      # 1-second poll so we stay responsive
     if device is None:
-        if time.time() > deadline:
-            print(f"TIMEOUT after {timeout}s")
-            sys.exit(124)
         continue
 
     action = (device.action or "").lower()
@@ -43,6 +55,6 @@ while True:
 
     line = f"{action} {vendor} {model}"
 
-    if any(k in line for k in keywords):
+    if any(k in line for k in KEYWORDS):
         print(f"FOUND: {device.action} {vendor}/{model}".strip())
         sys.exit(1)

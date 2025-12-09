@@ -25,7 +25,7 @@ class battExtCl implements battExtIntf {
 		sleep(2);
 	    } else {
 		belg('sleeping / monitoring, steady state: ' . self::timeoutSteadyState . 's' );
-		self::usbMonitor(self::timeoutSteadyState);
+		$this->usbMonitor(self::timeoutSteadyState);
 	    }
 
 	}
@@ -35,11 +35,20 @@ class battExtCl implements battExtIntf {
 	belg('e-xit per normal (for now) max loop after n iterations === ' . $i);
     }
 
-    public static function usbMonitor(int $timeout = self::usbTimeoutInit) {
+    private function processUSB(string $r) {
+	if (strpos($r, 'FOUND: remove ') !== false) {
+	    beout('USB disconnect...');
+	    sleep(2);
+	    beout('');
+	}
+    }
+
+    private function usbMonitor(int $timeout = self::usbTimeoutInit) {
 	$c = 'python3 ' . __DIR__ . '/usb.py ' . $timeout . ' 2>&1';		
 	belg($c);
 	$res = shell_exec($c);
 	belg('exited shell script: ' . $res);
+	$this->processUSB($res ?? '');
     }
 
     public function __destruct() { $this->exit();  }
