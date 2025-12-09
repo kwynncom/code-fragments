@@ -1,6 +1,5 @@
 <?php
 
-
 require_once('utils.php');
 require_once('usb.php');
 require_once('adb.php');
@@ -20,10 +19,14 @@ class battExtCl implements battExtIntf {
 	    belg('checking l-evel. ' . $i . ' of max loop: ' . self::nMaxLoop . "\n");
 	    if (!adbCl::doit()) {
 		belg('running USB mon');
+		beout('seeking USB');
 		USBADBCl::runShellScript();
+		belg('exited USB mon');
+	    } else {
+		belg('sleeping, steady state: ' . self::timeoutSteadyState . 's' );
+		sleep(self::timeoutSteadyState);
 	    }
 
-	    sleep(self::usbTimeoutInit);
 	}
 
 	beout('b3 mon loop time/n out');

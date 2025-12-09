@@ -19,10 +19,11 @@ class USBADBCl implements battExtIntf {
     }
 
     public static function runShellScript() {
-	$c = 'bash ' . __DIR__ . '/usb.sh';
+	$c = 'python3 ' . __DIR__ . '/usb.py 2>&1';		
+	// $c = 'bash ' . __DIR__ . '/usb.sh 2>&1';
 	belg($c);
-	shell_exec($c);
-	belg('exited shell script');
+	$res = shell_exec($c);
+	belg('exited shell script: ' . $res);
     }
 
     private function initMonitor() {

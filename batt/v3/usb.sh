@@ -1,16 +1,18 @@
-TIMEOUT_SECONDS=20
-COMMAND=(udevadm monitor -s usb)
+#!/bin/bash
+# monitor-usb.sh
 
-KEYWORDS=("add" "remove")
+TIMEOUT=25
 
-timeout "$TIMEOUT_SECONDS" "${COMMAND[@]}" |
+timeout --signal=TERM --kill-after=5 "$TIMEOUT" \
+  udevadm monitor -s usb 2>&1 |
+stdbuf -oL tr '[:upper:]' '[:lower:]' |
 while IFS= read -r line; do
-    lowered="${line,,}"
-    for kw in "${KEYWORDS[@]}"; do
-        if [[ "$lowered" == *"${kw,,}"* ]]; then
-            echo "FOUND: $kw"
-            echo "$line"
-            exit 1
-        fi
-    done
+    if [[ "$line" == *add* ]] || [[ "$line" == *remove* ]] || [[ "$line" == *kwbattusb* ]]; then
+        echo "DETECTED: $line"
+        exit 1
+    fi
 done
+
+# only reached on real timeout
+echo "TIMEOUT"
+exit 124
