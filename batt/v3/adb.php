@@ -2,58 +2,82 @@
 
 class adbCl {
 
-    public  bool $something = false;
-    public  string $msg = 'unk';
-    public  bool $noPerm;
-    public  int $level = -1;
-    public  bool $valid = false; 
 
-    protected function reset() {
-	$this->level = -1;
-	$this->valid = false;
-    }
-
-    private function setLevel() {
+    private static function sendLevel() : bool {
 
 	try {
-	    $this->reset();
 	    $c = 'adb shell cat /sys/class/power_supply/battery/capacity';
 	    belg('running adb battery check' . "\n");
 	    $res = trim(shell_exec($c));
 	    kwas(is_numeric($res), 'not numeric');
 	    kwas(is_string($res), 'not string');
 	    $n = strlen($res);
-	    kwas($n > 0 && $n <= 3, 'invalid l-evel - string');
-	    $i10 = intval  ($res);
+	    kwas($n > 0 && $n <= 3, 'invalid l-evel - string'); unset($n);
+	    $i10 = intval  ($res); unset($res);
 	    kwas($i10 >= 0 && $i10 <= 100, 'invalid l-evel as int');
-	    $this->level = $i10;
-	    $this->valid = true;
-	    belg('LEVEL *** ' . $this->level . " ***\n");
+	    $level = $i10; unset($i10);
+	    beout($level);
+	    belg('LEVEL *** ' . $level . " ***\n");
+	    return true;
 
 	} catch(Throwable $ex) {
-	    $this->msg = $ex->getMessage();
-	    belg('bad level ' . $this->msg . "\n");
-	    $this->level = -1;
-	    $this->valid = false;
+	    beout('');
+	    $msg = $ex->getMessage();
+	    belg('bad level ' . $msg . "\n");
+	    beout($msg);
+	    return false;
 	}
+
+	return false;
 	
     }
 
-    protected function setADB() {
-	$this->reset();
-	$this->noPerm = false;
-	$this->msg = $this->devices();
+    public static function doit() : bool {
+	self::condSend();
+	$ret = self::devices();
+	self::condSend($ret);
+	return $ret;
     }
 
-    private function devices() : string {
-	$c = 'adb devices';
-	belg('running ' . $c . "\n");
-	$res = shell_exec($c);
-	return $this->parseDevices($res);
+    private static function condSend(bool $nv = false) {
+	static $i  = 0;
+	static $ov = false;
+
+	if ($nv) return;
+
+	if ($i++ === 0) { beout('init'); return; }
+	
+
+    }
+
+    private static function devices() : bool {
+	
+	for ($i=0; $i < 2; $i++) {
+	    $c = 'adb devices';
+	    belg('running ' . $c . "\n");
+	    $shres = shell_exec($c);
+	    $pares = self::parseDevices($shres);
+	    if ($pares === true)   { return self::sendLevel();    }
+	    if ($pares === 'perm') {  self::getPerm(); }
+	    else { return false; }
+	}
+
+	return false;
 	
     }
 
-    private function parseDevices(string $s) : string {
+    private static function getPerm() {
+	beout('need permission');
+	belg ('need perm');
+	$timeout = 20;
+	$c = 'timeout --foreground ' . $timeout . ' adb wait-for-device';
+	belg($c);
+	shell_exec($c);
+	belg('wait for devices exited one way or another');
+	
+    }
+
+    private static function parseDevices(string $s) : bool | string {
 	$a = explode("\n", $s); unset($s);
 	$dline = false;
 	foreach($a as $rawl) {
@@ -65,21 +89,16 @@ class adbCl {
 	    if (!$dline) continue;
 	    if (!$l) continue;
 	    
-	    $this->something = true;
 	    belg($l . "\n");
 	    $k = 'no permissions';
 	    if (strpos($l, $k) !== false) {
-		$this->noPerm = true;
-		return $k;
+		return 'perm';
 	    }
 
-	    $this->noPerm = false;
-
-	    $this->setLevel();
-
+	    return true;
 	}
 
-	return $this->something ? 'something' : 'nothing';
+	return false;
     }
 }
 

@@ -1,3 +1,11 @@
+$read is stdout
+$write  = null;
+$except = null;
+
+if (stream_select($read, $write, $except, 0, 200000) > 0)
+
+
+
 If I want to background and then exit the calling bash shell, I have to use nohup on the php script.
 20:06pm 12/08
 

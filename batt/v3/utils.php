@@ -3,10 +3,18 @@
 require_once('/opt/kwynn/kwutils.php');
 
 interface battExtIntf {
-    const nMaxLoop       = 20;  // PHP_INT_MAX
-    const usbTimeoutInit = 67;
+    const nMaxLoop       = 10;  // PHP_INT_MAX
+    const usbTimeoutInit = 10;
 }
 
+
+function batt_killPrev() {
+    global $argv;
+    $sub = 'php ' . implode(' ', $argv);
+    $cmd = 'pgrep -f "' . $sub . '" | grep -v ' . getmypid() . ' | xargs -r kill';
+    belg($cmd);
+    shell_exec($cmd);
+}
 
 function beout(string $s) {
     battLogCl::put($s);
