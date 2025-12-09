@@ -1,12 +1,12 @@
 <?php
 
 require_once('utils.php');
-require_once('usb.php');
 require_once('adb.php');
 
 class battExtCl implements battExtIntf {
 
      public function __construct() {
+	$this->initSignals();
 	batt_killPrev();
 	beout('init');
 	$this->monitor();
@@ -20,11 +20,12 @@ class battExtCl implements battExtIntf {
 	    if (!adbCl::doit()) {
 		belg('running USB mon');
 		beout('seeking USB');
-		USBADBCl::runShellScript();
+		self::usbMonitor();
 		belg('exited USB mon');
+		sleep(2);
 	    } else {
-		belg('sleeping, steady state: ' . self::timeoutSteadyState . 's' );
-		sleep(self::timeoutSteadyState);
+		belg('sleeping / monitoring, steady state: ' . self::timeoutSteadyState . 's' );
+		self::usbMonitor(self::timeoutSteadyState);
 	    }
 
 	}
@@ -34,7 +35,21 @@ class battExtCl implements battExtIntf {
 	belg('e-xit per normal (for now) max loop after n iterations === ' . $i);
     }
 
+    public static function usbMonitor(int $timeout = self::usbTimeoutInit) {
+	$c = 'python3 ' . __DIR__ . '/usb.py ' . $timeout . ' 2>&1';		
+	belg($c);
+	$res = shell_exec($c);
+	belg('exited shell script: ' . $res);
+    }
+
     public function __destruct() { $this->exit();  }
+
+
+    private function initSignals() {
+	pcntl_async_signals(true);
+	pcntl_signal(SIGINT , [$this, 'exit']);
+	pcntl_signal(SIGTERM, [$this, 'exit']);
+    }
 
     public function exit() {
 	beout('');
