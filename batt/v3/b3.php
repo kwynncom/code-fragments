@@ -2,8 +2,9 @@
 
 require_once('utils.php');
 require_once('adb.php');
+require_once('/var/kwynn/batt/PRIVATEphones.php');
 
-class battExtCl implements battExtIntf {
+class battExtCl implements battExtIntf, KWPhonesPRIVATE {
 
     const msgSeek = 'seeking USB';
     const msgRm   = 'USB disconnect...';
@@ -17,13 +18,17 @@ class battExtCl implements battExtIntf {
 
 	static $curr = '';
 
+	if ($s === self::msgAdd && is_numeric($curr)) {
+	    return;
+	}
+
 	if (is_numeric($s)) {
 	    $show = true;
 	    $this->state = 'working';
 	}  else $this->state = 'not';
 
 	$show = true;
-	if ($this->since(self::msgRm) > 2 && ($curr === self::msgRm) && $s === self::msgRm) $show = false;
+	if ($this->since(self::msgRm) > 2.5 && ($curr === self::msgRm) && $s === self::msgRm) $show = false;
 	if ($this->since(self::msgRm) < 2)  {
 	    if ($s === self::msgSeek) $show = false;
 	    if ($s !== self::msgRm && !is_numeric($s)) $show = false;
@@ -33,7 +38,7 @@ class battExtCl implements battExtIntf {
 	if ( ($this->since(self::msgAdd) < 2) && !is_numeric($s)) $show = false;
 
 	if (	    $s === self::msgSeek && $this->state !== 'working'
-		&& ($this->since(self::msgSeek, 'low') > 3)
+		&& ($this->since(self::msgSeek, 'low') > 1.8)
 	   ) {
 	    $s = '';
 	    $show = true;
@@ -46,20 +51,36 @@ class battExtCl implements battExtIntf {
 
 
 	if ($show) {
-	    $this->msgs[$s] = microtime(true);
+	    $this->msgs[$this->msgkconv($s)] = microtime(true);
 	    $curr = $s;
 	    beout($s);
 	    sleep(2);
 	}
     }
 
+    private function msgkconv(string $sin) : string {
+	if (is_numeric($sin)) return 'numeric';
+	if (!trim($sin)) return '(blank)';
+	return $sin;
+    }
+
     private function since(string $s, string $tend = 'high') : float {
-	if ($this->msgs[$s] ?? false) {
-	    $ret = microtime(true) - $this->msgs[$s];
+	$k = $this->msgkconv($s);
+	if ($this->msgs[$k] ?? false) {
+	    $ret = microtime(true) - $this->msgs[$k];
 	    return $ret;
 	}
 	if ($tend === 'high') return PHP_INT_MAX;
 	else return PHP_INT_MIN;
+    }
+
+    private function to10($default) {
+	static $i = 0;
+	static $a = [2, 2, 3, 3];
+
+	if ($this->since(self::msgAdd) < 5) $i = 0;
+
+	return $a[$i++] ?? $default;
     }
 
     private function monitor() {
@@ -73,12 +94,12 @@ class battExtCl implements battExtIntf {
 		if (!$sma2) {
 		    self::beout(self::msgSeek);
 		    $tout = self::usbTimeoutInit;
-		    self::usbMonitor($tout);
+		    self::usbMonitor($this->to10($tout));
 		} else usleep(500000);
 		belg('exited USB mon');
 	    } else {
 		belg('sleeping / monitoring, steady state: ' . self::timeoutSteadyState . 's' );
-		$this->usbMonitor(self::timeoutSteadyState);
+		$this->usbMonitor(self::timeoutSteadyState, true);
 	    }
 	}
 
@@ -87,6 +108,7 @@ class battExtCl implements battExtIntf {
     }
 
     private function processUSB(string $r) {
+    
 	if (strpos($r, 'FOUND: remove ') !== false) {
 	    self::beout(self::msgRm);
 	} else if 
@@ -96,8 +118,36 @@ class battExtCl implements battExtIntf {
 
     }
 
-    private function usbMonitor(int $timeout = self::usbTimeoutInit) {
-	$c = 'python3 ' . __DIR__ . '/usb.py ' . $timeout . ' 2>&1';		
+    private function lsusb() : bool {
+
+	$b = microtime(true);
+    	$s = shell_exec('timeout -k 0.1 0.15 lsusb');
+	$e = microtime(true);
+	belg('lsusb took ' . sprintf('%0.3f', $e - $b) . 's');
+	if (!$s || !is_string($s)) return false;
+
+	foreach(KWPhonesPRIVATE::list as $r) {
+	    if (strpos($s, $r['vidpid']) !== false) return true;
+	}
+
+	return false;
+    }
+
+    private function usbMonitor(int $timeout = self::usbTimeoutInit, bool $isconn = false) {
+
+	if ($this->lsusb()) {
+	    
+	    if (!$isconn) { 
+		self::beout(self::msgAdd);
+		return;
+	    }
+	}
+
+	$c  = '';
+	// $c .= 'nohup ';
+	$c .= 'python3 ' . __DIR__ . '/usb.py ' . $timeout . ' 2>&1 ';
+	// $c .= '& ';		
+	$c = trim($c);
 	belg($c);
 	$res = shell_exec($c);
 	belg('exited shell script: ' . $res);

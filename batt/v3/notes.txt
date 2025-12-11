@@ -1,3 +1,33 @@
+2025/12/11 07:52
+
+PHP React
+has a lines feature
+has a signal handling feature
+
+
+# clears buffer
+adb logcat -c
+
+
+# current phone - does exactly what I want at a reasonable data rate
+# Note that it seems to mix in old timestamps and then maybe stabilizes
+# cat'ing adb shell is much faster, but the following will start, well, following the data I want:
+adb logcat BatteryService:D *:S
+
+
+# Android 5
+# probably too loud / too much data; haven't tried the above
+adb logcat BatteryMeterView:D *:S
+
+************
+2025/12/09 08:43am
+
+If lsusb() is true (perhaps make static?), then adb kill-server
+Check for other processes before the older one blanks the output when it's killed.  Separate the functions into ID other and kill other.
+
+Note that I am not accounting for TCP/IP adb
+
+****************
 # sudo apt install python3-pyudev
 
 I want a default timeout as given but, if a numerical argument comes in, use that timeout.
