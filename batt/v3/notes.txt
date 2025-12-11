@@ -1,8 +1,12 @@
-2025/12/11 07:52
+2025/12/11 07:52 - 08:23+
+
+timeout 3 adb wait-for-device
+
 
 PHP React
 has a lines feature
 has a signal handling feature
+has a setTimeout equivalent
 
 
 # clears buffer

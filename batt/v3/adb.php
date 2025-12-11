@@ -3,33 +3,15 @@
 class adbCl {
 
 
-    private static function sendLevel() : bool {
-
-	try {
-	    $c = 'adb shell cat /sys/class/power_supply/battery/capacity';
-	    belg('running adb battery check' . "\n");
-	    $res = trim(shell_exec($c) ?? '');
-	    kwas(is_numeric($res), 'not numeric');
-	    kwas(is_string($res), 'not string');
-	    $n = strlen($res);
-	    kwas($n > 0 && $n <= 3, 'invalid l-evel - string'); unset($n);
-	    $i10 = intval  ($res); unset($res);
-	    kwas($i10 >= 0 && $i10 <= 100, 'invalid l-evel as int');
-	    $level = $i10; unset($i10);
-	    beout($level);
-	    belg('LEVEL *** ' . $level . " ***\n");
-	    return true;
-
-	} catch(Throwable $ex) {
-	    beout('');
-	    $msg = $ex->getMessage();
-	    belg('bad level ' . $msg . "\n");
-	    // beout($msg);
-	    return false;
-	}
-
-	return false;
-	
+    private static function sendLevelFromPhoneFile() : bool {
+	$c = 'adb shell cat /sys/class/power_supply/battery/capacity';
+	belg('running adb battery check' . "\n");
+	$tlev = self::filtLevel(shell_exec($c));
+	if ($tlev === false) return false;
+	$level = $tlev; unset($tlev);
+	beout($level);
+	belg('LEVEL *** ' . $level . " ***\n");
+	return true;
     }
 
     public static function doit() : bool {
@@ -58,7 +40,7 @@ class adbCl {
 	    $shres = shell_exec($c);
 	    belg('finished ' . $c);
 	    $pares = self::parseDevices($shres);
-	    if ($pares === true)   { return self::sendLevel();    }
+	    if ($pares === true)   { return self::sendLevelFromPhoneFile();    }
 	    if ($pares === 'perm') {  self::getPerm(); }
 	    else { return false; }
 	}
@@ -101,5 +83,28 @@ class adbCl {
 
 	return false;
     }
+
+    private static function filtLevel(mixed $res) : int | false {
+
+	try {
+	    kwas($res && is_string($res), 'bad res type');
+	    $res = trim($res);
+	    kwas(is_numeric($res), 'not numeric');
+	    kwas(is_string($res), 'not string');
+	    $n = strlen($res);
+	    kwas($n > 0 && $n <= 3, 'invalid l-evel - string'); unset($n);
+	    $i10 = intval  ($res); unset($res);
+	    kwas($i10 >= 0 && $i10 <= 100, 'invalid l-evel as int');
+	    $level = $i10; unset($i10);
+	    return $level;
+	} catch(Throwable $ex) {
+	    beout('');
+	    $msg = $ex->getMessage();
+	    belg('bad level ' . $msg . "\n");
+	}
+
+	return false;
+    }
+
 }
 

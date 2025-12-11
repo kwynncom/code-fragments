@@ -121,7 +121,9 @@ class battExtCl implements battExtIntf, KWPhonesPRIVATE {
     private function lsusb() : bool {
 
 	$b = microtime(true);
-    	$s = shell_exec('timeout -k 0.1 0.15 lsusb');
+
+	// in background / non-foreground mode, this still hangs; probably should put this on PHP React, of course
+    	$s = shell_exec('timeout --foreground -k 0.1 0.15 lsusb');
 	$e = microtime(true);
 	belg('lsusb took ' . sprintf('%0.3f', $e - $b) . 's');
 	if (!$s || !is_string($s)) return false;
