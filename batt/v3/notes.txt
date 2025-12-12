@@ -12,6 +12,9 @@ has a setTimeout equivalent
 # clears buffer
 adb logcat -c
 
+# ??
+# probably not
+adb logcat -c BatteryService:D *:S
 
 # current phone - does exactly what I want at a reasonable data rate
 # Note that it seems to mix in old timestamps and then maybe stabilizes

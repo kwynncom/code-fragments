@@ -158,7 +158,7 @@ class battExtCl implements battExtIntf, KWPhonesPRIVATE {
 
      public function __construct() {
 	$this->initSignals();
-	batt_killPrev();
+	battKillCl::killPrev();
 	beout('init');
 	$this->monitor();
     }
@@ -172,7 +172,8 @@ class battExtCl implements battExtIntf, KWPhonesPRIVATE {
     }
 
     public function exit() {
-	beout('');
+
+	if (!battKillCl::isPrev()) beout('');
 	belg('b3 e-xit called' . "\n");
 	exit(0);
     }

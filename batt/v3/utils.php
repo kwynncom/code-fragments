@@ -3,19 +3,35 @@
 require_once('/opt/kwynn/kwutils.php');
 
 interface battExtIntf {
-    const nMaxLoop       = 70;  // PHP_INT_MAX
-    const usbTimeoutInit =  15;
+    const nMaxLoop       = 120;  // PHP_INT_MAX
+    const usbTimeoutInit =  20;
     const timeoutSteadyState = 67;
 }
 
+class battKillCl {
 
-function batt_killPrev() {
-    global $argv;
-    $sub = 'php ' . implode(' ', $argv);
-    $cmd = 'pgrep -f "' . $sub . '" | grep -v ' . getmypid() . ' | xargs -r kill';
-    belg($cmd);
-    shell_exec($cmd);
+    public static function isPrev() : string {
+	global $argv;
+	$sub = 'php ' . implode(' ', $argv);
+	$cmd = 'pgrep -f "' . $sub . '" | grep -v ' . getmypid();
+	belg($cmd);
+	$res = trim(shell_exec($cmd));
+	return $res && is_string($res) ? $res : '';
+	
+    }
+
+
+    public static function killPrev() {
+	$res = self::isPrev();
+	if (!$res) return;
+	shell_exec($res . ' | xargs -r kill');
+    }
+
+
+
 }
+
+
 
 function beout(string $s) {
     battLogCl::put($s);
