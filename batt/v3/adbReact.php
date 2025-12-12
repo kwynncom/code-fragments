@@ -1,6 +1,8 @@
 <?php
 
-require_once('utils.php');
+declare(strict_types=1);
+
+// require_once('utils.php');
 
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
@@ -8,19 +10,50 @@ use React\Stream\ReadableStreamInterface;
 use React\EventLoop\Loop;
 use ReactLineStream\LineStream;  // ← Correct import, but installed from Tsufeki
 
-final class FileLineReader
+final class ADBLogReaderCl
 {
+
+    const adbService = 'BatteryService';
+
     private readonly object $lines;
     private readonly object $loop;
     private readonly mixed  $file;
 
-    private function getFile() {
-	return 'adb logcat BatteryService:D *:S 2>&1';
+    private readonly mixed $cb;
+
+
+    private function setstat(bool $setto) {
+	belg('logcat to ' . ($setto ? 'true' : 'false'));
+	($this->cb)($setto);
     }
 
-    public function __construct() {
+    private function checkDat(string $line) {
+	if (strpos($line, self::adbService) !== false) {
+	    $this->setstat(true);
+	    if ($this->cb ?? false) ($this->cb)(true);
+	}
+	if (trim($line) === '- waiting for device -') {
+	    belg($line);
+	}
+
+    }
+
+    private function getFile() {
+	return 'adb logcat ' . self::adbService . ':D *:S 2>&1';
+    }
+
+    public function __construct(callable $cb = null) {
+	$this->cb = $cb;
 	$this->init();
 	$this->use();
+    }
+
+    public function __destruct() { $this->close(); }
+
+    public function sigintHandler(int $signal) {
+	    echo "\nCaught SIGINT (Ctrl+C) – shutting down gracefully…\n";
+	    // Loop::get()->stop();    
+	    $this->close('control-C / SIGINT'); 
     }
 
     private function init(
@@ -28,22 +61,9 @@ final class FileLineReader
     ) {
 
         $filename = $this->getFile();
+	belg($filename);
 	$this->loop = Loop::get();
-
-	$this->loop->addSignal(SIGINT, function (int $signal) {
-	    echo "\nCaught SIGINT (Ctrl+C) – shutting down gracefully…\n";
-
-	    // Your cleanup here
-	    
-	    $this->close('control-C / SIGINT'); 
-	     
-	    // $this->lines->close();   // if you have a stream
-	    // $server->close();        // if you have an HTTP server
-	    // file_put_contents('state.json', json_encode($state));
-
-	    Loop::get()->stop();  // stops the loop cleanly
-	});
-
+	$this->loop->addSignal(SIGINT, [$this, 'sigintHandler']);
 
         $this->file = popen($filename, 'r');
         if (!$this->file) {
@@ -58,7 +78,7 @@ final class FileLineReader
     public function use(): void
     {
         $this->lines->on('data', function (string $line) {
-            echo date('H:i:s') . ' → ' . $line . PHP_EOL;
+            $this->checkDat($line);
         });
 
 	$this->lines->on('close', function(string $ev = 'closeunk') {    $this->close($ev);	} );
@@ -69,11 +89,17 @@ final class FileLineReader
         $this->loop->run();
     }
 
-    // Optional helpers if you ever need finer control
     public function lines(): LineReader { return $this->lines; }
     public function pause(): void        { $this->lines->pause(); }
     public function resume(): void       { $this->lines->resume(); }
     public function close(string $ev = 'unknown event'): void        { 
+
+	$this->setstat(false);
+
+	Loop::get()->removeSignal(SIGINT, [$this, 'sigintHandler']);
+	
+	Loop::get()->stop();
+
 	belg('logcat ' . $ev);
 	if (isset($this->lines)) $this->lines->close();
 
@@ -84,5 +110,5 @@ final class FileLineReader
 }
 
 if (didCLICallMe(__FILE__)) {
-    new FileLineReader();
+    new ADBLogReaderCl();
 }

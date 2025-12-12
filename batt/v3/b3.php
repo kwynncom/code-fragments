@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once('utils.php');
 require_once('adb.php');
 require_once('/var/kwynn/batt/PRIVATEphones.php');
@@ -86,24 +88,15 @@ class battExtCl implements battExtIntf, KWPhonesPRIVATE {
     private function monitor() {
 
 	for($i=0; $i < self::nMaxLoop; $i++) { 
-	    
-	    belg('checking l-evel. ' . $i . ' of max loop: ' . self::nMaxLoop . "\n");
-	    if (!adbCl::doit()) {
 
-		$sma2 = $this->since(self::msgAdd) < 2;
-		if (!$sma2) {
-		    self::beout(self::msgSeek);
-		    $tout = self::usbTimeoutInit;
-		    self::usbMonitor($this->to10($tout));
-		} else usleep(500000);
-		belg('exited USB mon');
-	    } else {
-		belg('sleeping / monitoring, steady state: ' . self::timeoutSteadyState . 's' );
-		$this->usbMonitor(self::timeoutSteadyState, true);
-	    }
+	    if ($this->adbo->doit());
+
+	    belg('checking l-evel. ' . $i . ' of max loop: ' . self::nMaxLoop . "\n");
+
+	    sleep(2);
 	}
 
-	beout('b3 mon loop time/n out');
+	// beout('b3 mon loop time/n out');
 	belg('e-xit per normal (for now) max loop after n iterations === ' . $i);
     }
 
@@ -156,10 +149,12 @@ class battExtCl implements battExtIntf, KWPhonesPRIVATE {
 	$this->processUSB($res ?? '');
     }
 
+    private readonly object $adbo;
+
      public function __construct() {
+	$this->adbo = new adbCl();
 	$this->initSignals();
 	battKillCl::killPrev();
-	beout('init');
 	$this->monitor();
     }
 

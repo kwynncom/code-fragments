@@ -1,38 +1,63 @@
 <?php
+declare(strict_types=1);
+
+require_once('adbReact.php');
 
 class adbCl {
 
+    private object $logcato;
 
-    private static function sendLevelFromPhoneFile() : bool {
+    private int|false $levelV = false;
+
+    private static function sendLevelFromPhoneFile() : int | false {
 	$c = 'adb shell cat /sys/class/power_supply/battery/capacity';
 	belg('running adb battery check' . "\n");
 	$tlev = self::filtLevel(shell_exec($c));
 	if ($tlev === false) return false;
 	$level = $tlev; unset($tlev);
-	beout($level);
 	belg('LEVEL *** ' . $level . " ***\n");
-	return true;
+	return $level;
     }
 
-    public static function doit() : bool {
-	self::condSend();
-	$ret = self::devices();
-	self::condSend($ret);
+
+    private int $Uvalid = 0;
+
+    const sendLimit = 5;
+
+    public function bufferedSend(bool $prob) : bool {
+
+	if (!$prob && isset($this->logcato)) unset($this->logcato);
+
+	if ($prob && (time() - $this->Uvalid < self::sendLimit)) {
+	    belg('buffered / redudant catlog info; ignoring');
+	    return true;
+	}
+	$prev = $this->levelV;
+	$this->levelV = self::sendLevelFromPhoneFile();
+	if ($this->levelV !== false) {
+	    if ($this->levelV !== $prev) {
+		$this->Uvalid = time();
+		beout($this->levelV);
+	        return true;
+	    }
+	} else {
+	    beout('');
+	}
+	
+	return false;
+	
+    }
+
+    public function doit() : bool {
+	$ret = $this->devices();
+	if ($ret === true) { 
+	    if (!isset($this->logcato)) $this->logcato = new ADBLogReaderCl([$this, 'bufferedSend']);
+	}
 	return $ret;
     }
 
-    private static function condSend(bool $nv = false) {
-	static $i  = 0;
-	static $ov = false;
 
-	if ($nv) return;
-
-	if ($i++ === 0) { beout('init'); return; }
-	
-
-    }
-
-    private static function devices() : bool {
+    private function devices() : bool {
 	
 	for ($i=0; $i < 2; $i++) {
 	    $c = 'adb devices';
@@ -40,7 +65,7 @@ class adbCl {
 	    $shres = shell_exec($c);
 	    belg('finished ' . $c);
 	    $pares = self::parseDevices($shres);
-	    if ($pares === true)   { return self::sendLevelFromPhoneFile();    }
+	    if ($pares === true)   { return $this->bufferedSend(true);    }
 	    if ($pares === 'perm') {  self::getPerm(); }
 	    else { return false; }
 	}
@@ -87,6 +112,7 @@ class adbCl {
     private static function filtLevel(mixed $res) : int | false {
 
 	try {
+	    belg('filt string = ' . $res);
 	    kwas($res && is_string($res), 'bad res type');
 	    $res = trim($res);
 	    kwas(is_numeric($res), 'not numeric');
@@ -96,6 +122,7 @@ class adbCl {
 	    $i10 = intval  ($res); unset($res);
 	    kwas($i10 >= 0 && $i10 <= 100, 'invalid l-evel as int');
 	    $level = $i10; unset($i10);
+	    belg('returning ' . $level);
 	    return $level;
 	} catch(Throwable $ex) {
 	    beout('');
@@ -103,6 +130,7 @@ class adbCl {
 	    belg('bad level ' . $msg . "\n");
 	}
 
+	belg('returning false');
 	return false;
     }
 

@@ -1,62 +1,79 @@
 <?php
 
+declare(strict_types=1);
+
 require_once('/opt/kwynn/kwutils.php');
+require_once('kill.php');
 
 interface battExtIntf {
-    const nMaxLoop       = 120;  // PHP_INT_MAX
-    const usbTimeoutInit =  20;
+    const nMaxLoop       = 20;  // PHP_INT_MAX
+    const usbTimeoutInit =  5;
     const timeoutSteadyState = 67;
 }
 
 class battKillCl {
 
-    public static function isPrev() : string {
-	global $argv;
-	$sub = 'php ' . implode(' ', $argv);
-	$cmd = 'pgrep -f "' . $sub . '" | grep -v ' . getmypid();
-	belg($cmd);
-	$res = trim(shell_exec($cmd));
-	return $res && is_string($res) ? $res : '';
-	
+    const lockf = '/tmp/kwbatt.pid';
+
+    public static function isPrev() : bool {
+	return PidFileGuard::isRunning(self::lockf);
     }
 
 
     public static function killPrev() {
 	$res = self::isPrev();
-	if (!$res) return;
-	shell_exec($res . ' | xargs -r kill');
+	if ($res) belg('another process to kill...');
+	PidFileGuard::acquire(self::lockf);
     }
 
 
 
 }
 
+if (!isset($BEOUTO)) { 
+    $BEOUTO = new battLogCl();
+}
 
+function beout($s) {
+    global $BEOUTO;
 
-function beout(string $s) {
-    battLogCl::put($s);
+    $BEOUTO->put($s);
+    
+    $t  = '';
+    $t .= 'emitting ' . $s . ' ';
+    $t .= PHP_EOL;
+
+    echo($t);
     $c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
     shell_exec($c);
 }
 
 function belg(string $s) {
-    battLogCl::put($s);
+    global $BEOUTO;
+
+    $BEOUTO->put($s);
+}
+
+function getbeout() : string {
+    return $BEOUTO->get();
 }
 
 class battLogCl {
 
     private readonly string $logf;
 
-    public static function put(string|int $s) {
-	static $o = false;
-	if (!$o) $o = new self();
-	$o->putI($s);
+    private string|int $theV = '';
+
+    public function get() : string {
+	return $this->theV;
     }
 
-    private function putI($s) {
+    public function put($s) {
 	static $i = 1;
 
-	if (!$s) $s = '(blanking)';
+	$this->theV = $s;
+
+	if (!$s && is_string($s) && strlen(trim($s)) === 0) $s = '(blanking)';
 
 	$t  = '';
 	$t .= $i;
@@ -68,7 +85,7 @@ class battLogCl {
 	$i++;
     }
 
-    private function __construct() {
+    public function __construct() {
 	$this->initLog();
     }
 
@@ -84,7 +101,7 @@ class battLogCl {
 	kwas(touch($f), "cannot create / touch $f");
 	kwas(chmod($f, 0600), "cannot chmod $f");
 	$this->logf = $f;
-	$this->putI(date('Y-m-d'));
+	$this->put(date('Y-m-d'));
     }
 
 }
