@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require_once('adbReact.php');
+require_once('adbLog.php');
+require_once('wait.php');
 
 class adbCl {
 
@@ -22,13 +23,17 @@ class adbCl {
 
     private int $Uvalid = 0;
 
-    const sendLimit = 5;
+    const sendLimitS = 20;
 
     public function bufferedSend(bool $prob) : bool {
 
-	if (!$prob && isset($this->logcato)) unset($this->logcato);
+	if (!$prob) {
+	    unset($this->logcato);
+	    beout('');
+	    return false;
+	}
 
-	if ($prob && (time() - $this->Uvalid < self::sendLimit)) {
+	if ($prob && (time() - $this->Uvalid < self::sendLimitS)) {
 	    belg('buffered / redudant catlog info; ignoring');
 	    return true;
 	}
@@ -52,6 +57,9 @@ class adbCl {
 	$ret = $this->devices();
 	if ($ret === true) { 
 	    if (!isset($this->logcato)) $this->logcato = new ADBLogReaderCl([$this, 'bufferedSend']);
+	} else {
+	    // new procWaitCl('kwbattusb');
+	    new procWaitCl('adb wait-for-device');
 	}
 	return $ret;
     }
@@ -60,7 +68,7 @@ class adbCl {
     private function devices() : bool {
 	
 	for ($i=0; $i < 2; $i++) {
-	    $c = 'adb devices';
+	    $c = 'adb devices 2>&1';
 	    belg('running ' . $c . "\n");
 	    $shres = shell_exec($c);
 	    belg('finished ' . $c);

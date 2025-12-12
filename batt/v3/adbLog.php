@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-// require_once('utils.php');
-
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use React\Stream\ReadableStreamInterface;
@@ -51,7 +49,7 @@ final class ADBLogReaderCl
     public function __destruct() { $this->close(); }
 
     public function sigintHandler(int $signal) {
-	    echo "\nCaught SIGINT (Ctrl+C) – shutting down gracefully…\n";
+	    echo "\nCaught SIGINT (Ctrl+C) – shutting down gracefully (adb log)…\n";
 	    // Loop::get()->stop();    
 	    $this->close('control-C / SIGINT'); 
     }
