@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once('adbLog.php');
 require_once('wait.php');
+require_once('waitUSB.php');
 
 class adbCl {
 
@@ -37,14 +38,14 @@ class adbCl {
 	    belg('buffered / redudant catlog info; ignoring');
 	    return true;
 	}
-	$prev = $this->levelV;
+
 	$this->levelV = self::sendLevelFromPhoneFile();
 	if ($this->levelV !== false) {
-	    if ($this->levelV !== $prev) {
-		$this->Uvalid = time();
-		beout($this->levelV);
-	        return true;
-	    }
+
+	    $this->Uvalid = time();
+	    beout($this->levelV);
+	    return true;
+
 	} else {
 	    beout('');
 	}
@@ -55,10 +56,11 @@ class adbCl {
 
     public function doit() : bool {
 	$ret = $this->devices();
+	belg('adb doit ret = ' . ($ret ? 'true' : 'false'));
 	if ($ret === true) { 
 	    if (!isset($this->logcato)) $this->logcato = new ADBLogReaderCl([$this, 'bufferedSend']);
 	} else {
-	    // new procWaitCl('kwbattusb');
+	    usbWaitCl::wait([$this, 'doit']);
 	    new procWaitCl('adb wait-for-device');
 	}
 	return $ret;

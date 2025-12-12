@@ -152,6 +152,7 @@ class battExtCl implements battExtIntf, KWPhonesPRIVATE {
     private readonly object $adbo;
 
      public function __construct() {
+	beout('');
 	$this->adbo = new adbCl();
 	$this->initSignals();
 	battKillCl::killPrev();

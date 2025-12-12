@@ -5,8 +5,57 @@ require_once('utils.php');
 use React\ChildProcess\Process;
 use React\EventLoop\Loop;
 
-$loop = Loop::get();
+class usbWaitCl {
 
+    public static function wait() {
+	$o = new self();
+	$o->waitI();
+    }
+
+
+private readonly mixed $cb;
+private readonly object $loop;
+
+private function waitI(callable $cb = null) {
+    $this->cb = $cb; unset($cb);
+    if (!isset($this->loop)) $this->loop = Loop::get();
+
+
+
+
+
+    $process = new Process($this->getCmd(),
+	
+	null,
+	null,
+	null,
+	['pty' => true, 'pty_columns' => 120, 'pty_rows' => 40]  // CRITICAL: pty + size
+    );
+
+    $process->start();
+
+    echo "Waiting for USB device add event (plug in any USB device)...\n";
+
+
+    $process->stdout->on('data', function ($chunk) {
+	$this->ondata($chunk);
+    });
+
+
+    $this->loop->run();
+
+    } // func
+ 
+    private function ondata(string $data) {
+
+	Loop::get()->stop();
+	echo "udev: $data";
+	onUsbDeviceAdded();
+	sleep(2);
+	if ($this->cb) ($this->cb)();
+    }
+
+    private function getCmd() : string {
 $script = <<<'BASH'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -18,52 +67,30 @@ exec "${COMMAND[@]}" |
 while IFS= read -r line; do
     lowered="${line,,}"
     for kw in "${KEYWORDS[@]}"; do
-        if [[ "$lowered" == *"${kw,,}"* ]]; then
-            echo "FOUND: USB device added!"
-            echo "$line"
-            exit 0
-        fi
+	if [[ "$lowered" == *"${kw,,}"* ]]; then
+	    echo "FOUND: USB device added!"
+	    echo "$line"
+	    exit 0
+	fi
     done
 done
 BASH;
 
-$process = new Process(
-    'bash -c ' . escapeshellarg($script),
-    null,
-    null,
-    null,
-    ['pty' => true, 'pty_columns' => 120, 'pty_rows' => 40]  // CRITICAL: pty + size
-);
+	$cmd = 'bash -c ' . escapeshellarg($script);
 
-$process->start();
-
-echo "Waiting for USB device add event (plug in any USB device)...\n";
-
-$process->stdout->on('data', function ($chunk) {
-    echo "udev: $chunk";
-});
-
-$process->stderr->on('data', function ($chunk) {
-    echo "udev error: $chunk";
-});
-
-$process->on('exit', function ($code) use ($loop) {
-    if ($code === 0) {
-        echo "\nUSB DEVICE DETECTED! Doing your thing now...\n";
-        // ←←← Your real code goes here
-        onUsbDeviceAdded();
-    } else {
-        echo "\nudev script exited with code $code (probably killed)\n";
+	return $cmd;
     }
-    // Keep waiting for next device? Restart:
-    // Loop::addTimer(1, __NAMESPACE__ . '\startWatcher');
-});
 
-$loop->run();
 
-function onUsbDeviceAdded()
-{
-    echo "You can now run adb, flash firmware, mount drive, etc.\n";
-    // Example:
-    // (new Process('adb wait-for-device'))->start();
+}
+
+   function onUsbDeviceAdded(string $from = '')
+    {
+	echo('You can now run adb, flash firmware, mount drive, etc. From ' . "$from\n");
+	// Example:
+	// (new Process('adb wait-for-device'))->start();
+    }
+
+if (didCLICallMe(__FILE__)) {
+    usbWaitCl::wait();
 }
