@@ -7,55 +7,33 @@ use React\EventLoop\Loop;
 
 class usbWaitCl {
 
-    public static function wait() {
-	$o = new self();
-	$o->waitI();
-    }
-
+public static function wait(callable $cb) {
+    $o = new self();
+    $o->waitI($cb);
+}
 
 private readonly mixed $cb;
-private readonly object $loop;
 
-private function waitI(callable $cb = null) {
+private function waitI(callable $cb) {
     $this->cb = $cb; unset($cb);
-    if (!isset($this->loop)) $this->loop = Loop::get();
-
-
-
-
-
-    $process = new Process($this->getCmd(),
-	
-	null,
-	null,
-	null,
-	['pty' => true, 'pty_columns' => 120, 'pty_rows' => 40]  // CRITICAL: pty + size
-    );
-
+    $loop = Loop::get();
+    $process = new Process($this->getCmd(), null, null, null,['pty' => true, 'pty_columns' => 120, 'pty_rows' => 40]);
     $process->start();
-
     echo "Waiting for USB device add event (plug in any USB device)...\n";
+    $process->stdout->on('data', function ($chunk) { 	$this->ondata($chunk);     });
+    $loop->run();
 
-
-    $process->stdout->on('data', function ($chunk) {
-	$this->ondata($chunk);
-    });
-
-
-    $this->loop->run();
-
-    } // func
+} // func
  
-    private function ondata(string $data) {
+private function ondata(string $data) {
 
-	Loop::get()->stop();
-	echo "udev: $data";
-	onUsbDeviceAdded();
-	sleep(2);
-	if ($this->cb) ($this->cb)();
-    }
+    Loop::get()->stop();
+    echo('found usb'. PHP_EOL);
+    sleep(2);
+    ($this->cb)();
+}
 
-    private function getCmd() : string {
+private function getCmd() : string {
 $script = <<<'BASH'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -65,32 +43,23 @@ KEYWORDS=("add")
 
 exec "${COMMAND[@]}" |
 while IFS= read -r line; do
-    lowered="${line,,}"
-    for kw in "${KEYWORDS[@]}"; do
-	if [[ "$lowered" == *"${kw,,}"* ]]; then
-	    echo "FOUND: USB device added!"
-	    echo "$line"
-	    exit 0
-	fi
-    done
+lowered="${line,,}"
+for kw in "${KEYWORDS[@]}"; do
+    if [[ "$lowered" == *"${kw,,}"* ]]; then
+	echo "FOUND: USB device added!"
+	echo "$line"
+	exit 0
+    fi
+done
 done
 BASH;
 
-	$cmd = 'bash -c ' . escapeshellarg($script);
+    $cmd = 'bash -c ' . escapeshellarg($script);
 
-	return $cmd;
-    }
-
-
-}
-
-   function onUsbDeviceAdded(string $from = '')
-    {
-	echo('You can now run adb, flash firmware, mount drive, etc. From ' . "$from\n");
-	// Example:
-	// (new Process('adb wait-for-device'))->start();
-    }
+    return $cmd;
+} // func
+} // class
 
 if (didCLICallMe(__FILE__)) {
-    usbWaitCl::wait();
+    usbWaitCl::wait(); // need callable
 }

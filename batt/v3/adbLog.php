@@ -61,7 +61,7 @@ final class ADBLogReaderCl
         $filename = $this->getFile();
 	belg($filename);
 	$this->loop = Loop::get();
-	$this->loop->addSignal(SIGINT, [$this, 'sigintHandler']);
+	// $this->loop->addSignal(SIGINT, [$this, 'sigintHandler']);
 
         $this->file = popen($filename, 'r');
         if (!$this->file) {
@@ -73,7 +73,7 @@ final class ADBLogReaderCl
     }
 
 
-    public function use(): void
+    private function use(): void
     {
         $this->lines->on('data', function (string $line) {
             $this->checkDat($line);
@@ -87,14 +87,14 @@ final class ADBLogReaderCl
         $this->loop->run();
     }
 
-    public function lines(): LineReader { return $this->lines; }
-    public function pause(): void        { $this->lines->pause(); }
-    public function resume(): void       { $this->lines->resume(); }
+    private function lines(): LineReader { return $this->lines; }
+    private function pause(): void        { $this->lines->pause(); }
+    private function resume(): void       { $this->lines->resume(); }
     public function close(string $ev = 'unknown event'): void        { 
 
 	$this->setstat(false);
 
-	Loop::get()->removeSignal(SIGINT, [$this, 'sigintHandler']);
+	//Loop::get()->removeSignal(SIGINT, [$this, 'sigintHandler']);
 	
 	Loop::get()->stop();
 

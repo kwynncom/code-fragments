@@ -30,15 +30,18 @@ class adbCl {
 
 	if (!$prob) {
 	    unset($this->logcato);
+	    $this->Uvalid = 0;
+	    $this->levelV = false;
 	    beout('');
 	    return false;
 	}
 
-	if ($prob && (time() - $this->Uvalid < self::sendLimitS)) {
+	if (($prob && $this->levelV !== false) && (time() - $this->Uvalid < self::sendLimitS)) {
 	    belg('buffered / redudant catlog info; ignoring');
 	    return true;
 	}
 
+	// $prev = $this->levelV;
 	$this->levelV = self::sendLevelFromPhoneFile();
 	if ($this->levelV !== false) {
 
@@ -54,20 +57,35 @@ class adbCl {
 	
     }
 
-    public function doit() : bool {
+    public function doit() {
+
+	for($i=0; $i < 30; $i++) {
+
+	    if (isset($this->logcato) && (time() - $this->Uvalid < 20)) {
+		belg('adb log object defined and thus running; Uvalid recent.  Happy.');
+	    } else $this->doit20();
+
+	    $sleep = 10;
+	    belg('adb doit sleep ' . $sleep);
+	    sleep($sleep);
+	}
+
+    }
+
+    private function doit20() : bool {
 	$ret = $this->devices();
-	belg('adb doit ret = ' . ($ret ? 'true' : 'false'));
+	belg('adb d-oit ret = ' . ($ret ? 'true' : 'false'));
 	if ($ret === true) { 
 	    if (!isset($this->logcato)) $this->logcato = new ADBLogReaderCl([$this, 'bufferedSend']);
 	} else {
-	    usbWaitCl::wait([$this, 'doit']);
-	    new procWaitCl('adb wait-for-device');
+	    usbWaitCl::wait([$this, 'devices']);
+	    
 	}
 	return $ret;
     }
 
 
-    private function devices() : bool {
+    public function devices() : bool {
 	
 	for ($i=0; $i < 2; $i++) {
 	    $c = 'adb devices 2>&1';
@@ -76,7 +94,7 @@ class adbCl {
 	    belg('finished ' . $c);
 	    $pares = self::parseDevices($shres);
 	    if ($pares === true)   { return $this->bufferedSend(true);    }
-	    if ($pares === 'perm') {  self::getPerm(); }
+	    if ($pares === 'perm') {  self::waitForDevice(true); }
 	    else { return false; }
 	}
 
@@ -84,14 +102,13 @@ class adbCl {
 	
     }
 
-    private static function getPerm() {
-	beout('need permission');
-	belg ('need perm');
-	$timeout = 20;
-	$c = 'timeout --foreground ' . $timeout . ' adb wait-for-device';
-	belg($c);
-	shell_exec($c);
-	belg('wait for devices exited one way or another');
+    public function waitForDevice(bool $needPerm = false) {
+	if ($needPerm) { 
+	    beout('need permission');
+	    belg ('need perm');
+	}
+
+	new ADBLogReaderCl([$this, 'bufferedSend']);
 	
     }
 

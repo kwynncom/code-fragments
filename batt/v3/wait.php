@@ -25,7 +25,7 @@ public function __destruct() { $this->close(); }
 
 private function close() {
     Loop::get()->stop();
-    Loop::get()->removeSignal(SIGINT, [$this, 'sigintHandler']);
+    // Loop::get()->removeSignal(SIGINT, [$this, 'sigintHandler']);
 }
 
 private readonly bool $exiting;
@@ -50,7 +50,7 @@ private function wait() {
 
     $loop = Loop::get();
 
-    $loop->addSignal(SIGINT, [$this, 'sigintHandler']);
+    // $loop->addSignal(SIGINT, [$this, 'sigintHandler']);
 
     $process = new Process($this->cmd);
     $process->start();

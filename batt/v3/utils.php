@@ -9,6 +9,11 @@ interface battExtIntf {
     const nMaxLoop       = 20;  // PHP_INT_MAX
     const usbTimeoutInit =  5;
     const timeoutSteadyState = 67;
+
+    const msgSeek = 'seeking USB'; // 3 messages not used at the moment, I don't think.
+    const msgRm   = 'USB disconnect...';
+    const msgAdd  = 'USB connected...';
+
 }
 
 class battKillCl {
@@ -37,13 +42,7 @@ if (!isset($BEOUTO)) {
 function beout($s) {
     global $BEOUTO;
 
-    $BEOUTO->put($s);
-    
-    $t  = '';
-    $t .= 'emitting ' . $s . ' ';
-    $t .= PHP_EOL;
-
-    echo($t);
+    $BEOUTO->put($s, true);
     $c = 'busctl --user emit /kwynn/batt com.kwynn IamArbitraryNameButNeeded s ' . '"' . $s . '"';
     shell_exec($c);
 }
@@ -62,16 +61,8 @@ class battLogCl {
 
     private readonly string $logf;
 
-    private string|int $theV = '';
-
-    public function get() : string {
-	return $this->theV;
-    }
-
-    public function put($s) {
+    public function put($s, bool $emitting = false) {
 	static $i = 1;
-
-	$this->theV = $s;
 
 	if (!$s && is_string($s) && strlen(trim($s)) === 0) $s = '(blanking)';
 
@@ -80,6 +71,7 @@ class battLogCl {
 	$t .= ' ';
 	$t .= date('H:i:s');
 	$t .= ' ';
+	if ($emitting) $t .= 'emitting ';
 	$t .= $s;
 	$this->putA($t);
 	$i++;

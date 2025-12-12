@@ -1,3 +1,7 @@
+2025/12/12 05:08am
+
+is lsusb still useful?
+
 2025/12/11 07:52 - 08:23+
 
 timeout 3 adb wait-for-device
