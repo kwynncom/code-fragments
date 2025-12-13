@@ -13,11 +13,11 @@ public static function doit() {
     if (!$o) $o = new self();
 
     $o->debounce();
-    // self::devsActual(); 
+  
 }
 
 private function debounce() {
-    $debounceTimer = null;
+    static $debounceTimer = null;
 
     if ($debounceTimer) {
         $this->loop->cancelTimer($debounceTimer);
@@ -26,12 +26,11 @@ private function debounce() {
     }
 
     $debounceTimer = $this->loop->addTimer(3.0, function ()  {
-        echo "Performing debounced action now!\n";
+        belg('debounce call');
 	self::devsActual();
         $debounceTimer = null;
     });
 
-    echo "Request received – debouncing...\n";
 }
 
 private readonly object $loop;

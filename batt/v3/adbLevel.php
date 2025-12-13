@@ -11,18 +11,23 @@ class adbLevelCl {
 	static $prev;
     
 	if (!$dir) {
+	    $prev = $dir;
 	    beout('');
 	    return;
 	}
 
 	$now = time();
 
-	if ($now - $lat < 3 && $prev) {
-	    belg('discarding just before adb level call');
+	// belg('current beout = ' . getbeout());
+
+	if ($now - $lat < 67 && $prev) {
+	    // belg('discarding just before adb level call');
 	    return;
 	}
 
+	$lat = $now;
 	$prev = self::sendLevelFromPhoneFile();
+	
 	
     }
 

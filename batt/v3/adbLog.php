@@ -14,7 +14,7 @@ final class ADBLogReaderCl
     const adbService = 'BatteryService';
     const cmd = 'adb logcat ' . self::adbService . ':D *:S 2>&1';
 
-    private object $lines;
+    private	     object $lines;
     private readonly object $loop;
     private mixed  $inputStream;
 
@@ -30,7 +30,8 @@ final class ADBLogReaderCl
 	$now = time();
 
 	if ($now - $lat < 7) {
-	    belg('discarding multiple positives in logcat');
+	    // maybe with a higher debug level
+	    // belg('discarding multiple positives in logcat');
 	    return;
 	}
 	($this->cb)(true);
@@ -41,7 +42,7 @@ final class ADBLogReaderCl
 
 	static $prev;
 
-	belg('logcat status is now ' . ($setto ? 'true' : 'false'));
+	// belg('logcat status is now ' . ($setto ? 'true' : 'false'));
 	if ((!$setto) || ($prev !== true)) { 
 	    ($this->cb)($setto); 
 	} else if ($setto) $this->bufferTrueSend();
@@ -51,8 +52,6 @@ final class ADBLogReaderCl
     }
 
     private function checkDat(string $line) {
-
-	belg($line);
 
 	if (strpos($line, self::adbService) !== false) {
 	    $this->sendStatus(true);
@@ -74,7 +73,7 @@ final class ADBLogReaderCl
 	$this->cb = $cb;
 
 
-	if (false) {
+	if (true) {
 	belg('calling usb');
 	new usbMonitorCl();
 	belg('returning from usb');
@@ -87,27 +86,22 @@ final class ADBLogReaderCl
 
 
     private function reinit(string $ev) {
+	
+	global $PHPREACTLOOPGL;
 
-	static $i = 0;
-	static $doing = false;
+	belg('logcat r-einit event ' . $ev);
 
-	belg('logcat reinit event ' . $ev);
-
-	if ($doing) return;
-
-	$doing = true;
-
-	belg('logcat reinit');
-
-	if ($i++ > 0) {
+	if ($ev !== 'init') {
 	    beout('');
-	    belg('blanking due to *re*-init of :' . self::cmd);
-	} else $this->close();
+	    belg('blanking due to pure r-einit (>0) of :' . self::cmd);
+	    $this->close();
+	} 
+
+	if ($PHPREACTLOOPGL === false) return;
 
 	$this->checkDevices();
-
 	$this->init();
-	$doing = false;
+
     }
 
     private function init(
@@ -115,7 +109,6 @@ final class ADBLogReaderCl
     ) {
 
  	belg(self::cmd);
-
 
         $this->inputStream = popen(self::cmd, 'r');
         if (!$this->inputStream) {
@@ -134,9 +127,6 @@ final class ADBLogReaderCl
 	belg(self::cmd . ' closing event ' . $ev);
 
 	$this->sendStatus(false);
-
-	// if (isset($this->loop)) $this->loop->stop(); 	unset($this->loop);
-
 
 	if (isset($this->lines)) {
 	    $this->lines->close();

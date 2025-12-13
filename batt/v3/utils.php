@@ -40,6 +40,8 @@ class battKillCl {
 
 }
 
+$BEOUTO;
+
 if (!isset($BEOUTO)) { 
     $BEOUTO = new battLogCl();
 }
@@ -58,7 +60,8 @@ function belg(string $s) {
     $BEOUTO->put($s);
 }
 
-function getbeout() : string {
+function getbeout() : string|int {
+    global $BEOUTO;
     return $BEOUTO->get();
 }
 
@@ -68,8 +71,16 @@ class battLogCl {
 
     private readonly string $logf;
 
-    public function put($s, bool $emitting = false) {
+    private static string|int $current = '(init)';
+
+    public static function get() : string|int {
+	return self::$current;
+    }
+
+    public function put(string|int $s, bool $emitting = false) {
 	static $i = 1;
+
+	if ($emitting) self::$current = $s;
 
 	if (!$s && is_string($s) && strlen(trim($s)) === 0) $s = '(blanking)';
 

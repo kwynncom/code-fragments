@@ -1,3 +1,12 @@
+# Android 5
+D/BatteryService(  961): level:69, scale:100, status:2, health:2, present:true, voltage: 4143, temperature: 226, technology: Li-ion, AC powered:false, USB powered:true, Wireless powered:false, icon:17303724, invalid charger:0
+
+# Android 13-ish
+--------- beginning of system
+12-13 00:47:03.208  1256  1529 D BatteryService: Processing new values: chargerAcOnline=false, chargerUsbOnline=true, maxChargingCurrent500000, maxChargingVoltage5000000, batteryStatus=2, batteryHealth=2, batteryPresent=true, batteryLevel=36, batteryTechnology=Li-ion, batteryVoltage=3943, batteryChargeCounter=1043280, batteryFullCharge=2898000, batteryTemperature=220, mBatteryLevelCritical=false, mPlugType=2
+
+
+
 2025/12/12 21:30
 
 about to delete a bunch of USB stuff

@@ -16,18 +16,26 @@ class usbMonitorCl {
     private readonly mixed  $inputStream;
 
     public function __construct() {
+	if ($this->lsusb()) adbDevicesCl::doit();
 	$this->init();
+	if ($this->lsusb()) adbDevicesCl::doit();
     }
 
     private function checkDat(string $l) {
+
+	static $lat = 0;
+
 	$check = false;
 
 	if (strpos($l, ' add ') !== false) $check = true;
 	if (trim($l) === 'KERNEL - the kernel uevent') $check = true;
 	
+	$now = microtime(1);
 	if ($check) {
+	    if ($now - $lat < 1) return;
 	    belg('calling adb devices PHP func (not shell)');
 	    belg($l);
+	    $lat = $now;
 	    adbDevicesCl::doit();
 	}
 
@@ -56,12 +64,12 @@ class usbMonitorCl {
 	$b = microtime(true);
 	$s = shell_exec('timeout -k 0.1 0.15 lsusb');
 	$e = microtime(true);
-	belg('lsusb took ' . sprintf('%0.3f', $e - $b) . 's');
+	belg('l-susb took ' . sprintf('%0.3f', $e - $b) . 's');
 	if (!$s || !is_string($s)) return false;
 
 	foreach(KWPhonesPRIVATE::list as $r) {
 	    if (strpos($s, $r['vidpid']) !== false) {
-		belg($r);
+		belg('usb found specific device');
 		adbDevicesCl::doit();
 		return true;
 	    }

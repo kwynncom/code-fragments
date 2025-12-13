@@ -36,9 +36,15 @@ class battExtCl {
     }
 
     public function exit() {
+
+	global $PHPREACTLOOPGL;
+
 	beout('');
 	belg('b3 e-xit called' . "\n");
-	Loop::stop();
+    	$PHPREACTLOOPGL->stop();
+	$PHPREACTLOOPGL = false;
+	beout('');
+
 	exit(0);
     }
 }
