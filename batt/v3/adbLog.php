@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once('adbDevices.php');
+
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use React\Stream\ReadableStreamInterface;
@@ -20,20 +22,24 @@ final class ADBLogReaderCl
 
     private readonly mixed $cb;
 
+    private function checkDevices() {
+	adbDevicesCl::doit();
+    }
+
     private function bufferTrueSend() {
 	static $lat = 0;
 
 	$now = time();
 
 	if ($now - $lat < 7) {
-	    belg('discarding multiple positives');
+	    belg('discarding multiple positives in logcat');
 	    return;
 	}
 	($this->cb)(true);
 	$lat = $now;
     }
 
-    private function sendStatus(bool $setto) {
+    public function sendStatus(bool $setto) {
 
 	static $prev;
 
@@ -55,6 +61,7 @@ final class ADBLogReaderCl
 	}
 	if (trim($line) === '- waiting for device -') {
 	    belg($line);
+	    $this->checkDevices();
 	}
 
     }
@@ -76,6 +83,8 @@ final class ADBLogReaderCl
 	    beout('');
 	    belg('blanking due to *re*-init of :' . self::cmd);
 	} else $this->close();
+
+	$this->checkDevices();
 
 	$this->init();
     }

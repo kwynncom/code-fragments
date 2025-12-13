@@ -57,6 +57,8 @@ function getbeout() : string {
     return $BEOUTO->get();
 }
 
+
+
 class battLogCl {
 
     private readonly string $logf;
@@ -95,6 +97,8 @@ class battLogCl {
 	$this->logf = $f;
 	$this->put(date('Y-m-d'));
     }
+
+
 
 }
 
