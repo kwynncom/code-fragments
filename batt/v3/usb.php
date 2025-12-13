@@ -2,8 +2,54 @@
 
 require_once('utils.php');
 require_once('/var/kwynn/batt/PRIVATEphones.php');
+require_once('adbDevices.php');
+
+use React\Stream\ReadableResourceStream;
+use ReactLineStream\LineStream;
 
 class usbMonitorCl {
+
+    const cmd = 'udevadm monitor -s usb 2>&1';
+
+    private readonly object $lines;
+    private readonly object $loop;
+    private readonly mixed  $inputStream;
+
+    public function __construct() {
+	$this->init();
+    }
+
+    private function checkDat(string $l) {
+	$check = false;
+
+	if (strpos($l, ' add ') !== false) $check = true;
+	if (trim($l) === 'KERNEL - the kernel uevent') $check = true;
+	
+	if ($check) {
+	    belg('calling adb devices PHP func (not shell)');
+	    belg($l);
+	    adbDevicesCl::doit();
+	}
+
+    }
+
+    private function init() {
+
+	global $PHPREACTLOOPGL;
+
+	adbDevicesCl::doit();
+
+	$this->loop = $PHPREACTLOOPGL;
+
+        $this->inputStream = popen(self::cmd, 'r');
+        if (!$this->inputStream) {
+            throw new \RuntimeException('Cannot open stream: ' . self::cmd);
+        }
+
+        $resourceStream = new ReadableResourceStream($this->inputStream, $this->loop);
+	$this->lines = new LineStream($resourceStream);
+        $this->lines->on('data' , function (string $line) { $this->checkDat($line); });
+    }
 
     private static function lsusb() : bool {
 
@@ -16,6 +62,7 @@ class usbMonitorCl {
 	foreach(KWPhonesPRIVATE::list as $r) {
 	    if (strpos($s, $r['vidpid']) !== false) {
 		belg($r);
+		adbDevicesCl::doit();
 		return true;
 	    }
 	}

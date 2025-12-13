@@ -3,11 +3,9 @@
 declare(strict_types=1);
 
 require_once('adbDevices.php');
+require_once('usb.php');
 
-use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
-use React\Stream\ReadableStreamInterface;
-use React\EventLoop\Loop;
 use ReactLineStream\LineStream;
 
 final class ADBLogReaderCl
@@ -17,8 +15,8 @@ final class ADBLogReaderCl
     const cmd = 'adb logcat ' . self::adbService . ':D *:S 2>&1';
 
     private object $lines;
-    private object $loop;
-    private mixed  $file;
+    private readonly object $loop;
+    private mixed  $inputStream;
 
     private readonly mixed $cb;
 
@@ -54,7 +52,7 @@ final class ADBLogReaderCl
 
     private function checkDat(string $line) {
 
-	// belg($line);
+	belg($line);
 
 	if (strpos($line, self::adbService) !== false) {
 	    $this->sendStatus(true);
@@ -68,16 +66,38 @@ final class ADBLogReaderCl
 
 
     public function __construct(callable $cb = null) {
+
+	global $PHPREACTLOOPGL;
+
+	$this->loop = $PHPREACTLOOPGL;
+
 	$this->cb = $cb;
-	$this->reinit();
+
+
+	if (false) {
+	belg('calling usb');
+	new usbMonitorCl();
+	belg('returning from usb');
+	}
+	$this->reinit('init');
+	
     }
 
     public function __destruct() { $this->close(); }
 
 
-    private function reinit() {
+    private function reinit(string $ev) {
 
 	static $i = 0;
+	static $doing = false;
+
+	belg('logcat reinit event ' . $ev);
+
+	if ($doing) return;
+
+	$doing = true;
+
+	belg('logcat reinit');
 
 	if ($i++ > 0) {
 	    beout('');
@@ -87,6 +107,7 @@ final class ADBLogReaderCl
 	$this->checkDevices();
 
 	$this->init();
+	$doing = false;
     }
 
     private function init(
@@ -94,41 +115,40 @@ final class ADBLogReaderCl
     ) {
 
  	belg(self::cmd);
-	$this->loop = Loop::get();
 
-        $this->file = popen(self::cmd, 'r');
-        if (!$this->file) {
+
+        $this->inputStream = popen(self::cmd, 'r');
+        if (!$this->inputStream) {
             throw new \RuntimeException('Cannot open stream: ' . self::cmd);
         }
 
-        $resourceStream = new ReadableResourceStream($this->file, $this->loop);
+        $resourceStream = new ReadableResourceStream($this->inputStream, $this->loop);
 	$this->lines = new LineStream($resourceStream);
-        $this->lines->on('data' , function (string $line) { $this->checkDat($line); });
-	$this->lines->on('close', function (		) { $this->reinit();	    });
-        $this->loop->run();
-
+        $this->lines->on('data' , function (string $line)   { $this->checkDat($line); });
+	$this->lines->on('close', function ()		    { $this->reinit('close');	    });
     }
 
 
     public function close(string $ev = 'unknown event'): void        { 
 
+	belg(self::cmd . ' closing event ' . $ev);
+
 	$this->sendStatus(false);
 
-	if (isset($this->loop)) $this->loop->stop();
-	unset($this->loop);
+	// if (isset($this->loop)) $this->loop->stop(); 	unset($this->loop);
 
-	belg(self::cmd . ' event ' . $ev);
+
 	if (isset($this->lines)) {
 	    $this->lines->close();
 	    unset($this->lines);
 	}
 
-	if (isset($this->file) && is_resource($this->file) && 
-		   ($meta = @stream_get_meta_data($this->file)) &&
-		   !empty($meta['stream_type'])) pclose($this->file); 
+	if (isset($this->inputStream) && is_resource($this->inputStream) && 
+		   ($meta = @stream_get_meta_data($this->inputStream)) &&
+		   !empty($meta['stream_type'])) pclose($this->inputStream); 
 
 	
-	unset($this->file);
+	unset($this->inputStream);
 
     }
 }

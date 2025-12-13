@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use React\EventLoop\Loop;
+
 require_once('utils.php');
 require_once('adbLevel.php');
 require_once('adbLog.php');
@@ -15,10 +17,14 @@ class battExtCl {
     private readonly object $adbo;
 
      public function __construct() {
+
+	global $PHPREACTLOOPGL;
+
 	beout('');
 	$this->initSignals();
 	battKillCl::killPrev();
 	$this->monitor();
+	Loop::run();
     }
 
     public function __destruct() { $this->exit();  }
@@ -32,6 +38,7 @@ class battExtCl {
     public function exit() {
 	beout('');
 	belg('b3 e-xit called' . "\n");
+	Loop::stop();
 	exit(0);
     }
 }

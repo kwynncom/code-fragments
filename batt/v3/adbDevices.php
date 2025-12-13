@@ -1,6 +1,5 @@
 <?php
 
-use React\EventLoop\Loop;
 use React\EventLoop\Timer\TimerInterface;
 
 require_once('adbLevel.php');
@@ -38,8 +37,10 @@ private function debounce() {
 private readonly object $loop;
 
 private function __construct() {
-    $this->loop = Loop::get();
-    $this->loop->run();
+
+    global $PHPREACTLOOPGL;
+
+    $this->loop = $PHPREACTLOOPGL;
 }
 
 private static function devsActual() : bool  {
