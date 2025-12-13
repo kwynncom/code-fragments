@@ -32,14 +32,19 @@ private static function debounce() {
 
 private static function devs10() {
     $ret = self::devsActual();
+    $send = 'unkdev';
 
-    self::$noti->notify('devices', is_string($ret) ? $ret : 'bool', is_bool($ret) ? $ret : null );
+    if (is_string($ret)) $send = $ret;
+    if ($ret === true)   $send = 'found';
+    if ($ret === false)  $send = 'nothing';
+
+    self::$noti->notify('devices', $send);
 }
 
 private static function devsActual() : bool | string {
 
     $c = 'adb devices 2>&1';
-    belg($c . "\n");
+    belg($c, true);
     $s = shell_exec($c);
     belg('finished ' . $c);
 

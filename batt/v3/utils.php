@@ -50,10 +50,10 @@ function beout($s) {
     shell_exec($c);
 }
 
-function belg(string $s) {
+function belg(string $s, bool $star = false) {
     global $BEOUTO;
 
-    $BEOUTO->put($s);
+    $BEOUTO->put($s, false, $star);
 }
 
 function getbeout() : string|int {
@@ -73,7 +73,7 @@ class battLogCl {
 	return self::$current;
     }
 
-    public function put(string|int $s, bool $emitting = false) {
+    public function put(string|int $s, bool $emitting = false, bool $star = false) {
 	static $i = 1;
 
 	if ($emitting) self::$current = $s;
@@ -85,6 +85,7 @@ class battLogCl {
 	$t .= ' ';
 	$t .= date('H:i:s');
 	$t .= ' ';
+	if ($star || $emitting) $t .= ' ************ ';
 	if ($emitting) $t .= 'emitting ';
 	$t .= $s;
 	$this->putA($t);

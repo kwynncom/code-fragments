@@ -30,22 +30,10 @@ final class ADBLogReaderCl
 	$this->reinit('init');
     }
 
-    private function bufferTrueSend() {
-	static $lat = 0;
-
-	$now = time();
-
-	if ($now - $lat < 7) {
-	    return;
-	}
-	$this->cb->notify('adblog', 'battdat', true);
-	$lat = $now;
-    }
-
     private function checkDat(string $line) {
 
 	if (strpos($line, self::adbService) !== false) {
-	    $this->bufferTrueSend();
+	    $this->cb->batteryDat($line);
 	}
 	if (trim($line) === '- waiting for device -') {
 	    belg($line);

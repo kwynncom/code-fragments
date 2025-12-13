@@ -8,6 +8,7 @@ require_once('adbLevel.php');
 require_once('utils.php');
 require_once('adbLevel.php');
 require_once('adbLog.php');
+require_once('battLines.php');
 
 class GrandCentralBattCl {
 
@@ -27,23 +28,28 @@ class GrandCentralBattCl {
 	adbDevicesCl::doit($this);
     }
 
-    private function doBlank() {
-	beout('');
-	adbLevelCl::connTrend(false, $this);
+    private function doBlank() { 	beout('');     }
+
+    public function levelFromADBLog(int $lev) {
+	static $prev;
+	if ($lev !== $prev) beout($lev);
+	else belg('adbcat confirmed level at ' . $lev . ' so not sending');
+	$prev = $lev;
     }
 
-    public function notify(string $from, string $type, bool $dir = null, int $n = -1) {
+    private function doLevelFromFile() {
+	$res = adbLevelCl::getLevelFromPhoneFileActual();
+	if ($res >= 0) beout($res);
+	else $this->doBlank();
 
-	if ($from === 'level') {
-	    if ($dir) beout($n);
-	    else $this->doBlank();
-	}
+	
+    }
 
+    public function batteryDat(string $line) {
+	batteryLinesCl::line($line, $this);
+    }
 
-	if ($from === 'adblog' && $type === 'battdat') {
-	    kwas(is_bool($dir), 'should be bool err ( #031617 ) - gcb1');
-	    adbLevelCl::connTrend($dir, $this);
-	}
+    public function notify(string $from, string $type) {
 
 	if ($from === 'adblog' && $type === 'waiting') {
 	    $this->checkDevices();
@@ -59,7 +65,7 @@ class GrandCentralBattCl {
 	if ($from === 'devices') {
 	    if ($type === 'perm') beout('need permission');
 	    belg('devices response');
-	    if ($dir) adbLevelCl::connTrend($dir, $this);
+	    if ($type === 'found') $this->doLevelFromFile();
 	}
     }
 
