@@ -7,6 +7,7 @@ require_once('usb.php');
 
 use React\Stream\ReadableResourceStream;
 use ReactLineStream\LineStream;
+use React\EventLoop\Loop;
 
 final class ADBLogReaderCl
 {
@@ -19,6 +20,8 @@ final class ADBLogReaderCl
     private mixed  $inputStream;
 
     private readonly mixed $cb;
+
+    private readonly bool  $termed;
 
     private function checkDevices() {
 	adbDevicesCl::doit();
@@ -66,9 +69,8 @@ final class ADBLogReaderCl
 
     public function __construct(callable $cb = null) {
 
-	global $PHPREACTLOOPGL;
 
-	$this->loop = $PHPREACTLOOPGL;
+	$this->loop = Loop::get();
 
 	$this->cb = $cb;
 
@@ -82,22 +84,20 @@ final class ADBLogReaderCl
 	
     }
 
-    public function __destruct() { $this->close(); }
+    public function __destruct() { $this->close('destructor'); }
 
 
     private function reinit(string $ev) {
 	
-	global $PHPREACTLOOPGL;
-
 	belg('logcat r-einit event ' . $ev);
 
 	if ($ev !== 'init') {
 	    beout('');
 	    belg('blanking due to pure r-einit (>0) of :' . self::cmd);
-	    $this->close();
+	    $this->close('reiniting');
 	} 
 
-	if ($PHPREACTLOOPGL === false) return;
+	if ($this->termed ?? false) return;
 
 	$this->checkDevices();
 	$this->init();
@@ -122,9 +122,12 @@ final class ADBLogReaderCl
     }
 
 
-    public function close(string $ev = 'unknown event'): void        { 
+    public function close(string $ev): void   
+    { 
 
 	belg(self::cmd . ' closing event ' . $ev);
+
+	if ($ev === 'term') $this->termed = true;
 
 	$this->sendStatus(false);
 

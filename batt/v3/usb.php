@@ -6,6 +6,8 @@ require_once('adbDevices.php');
 
 use React\Stream\ReadableResourceStream;
 use ReactLineStream\LineStream;
+use React\EventLoop\Loop;
+
 
 class usbMonitorCl {
 
@@ -43,11 +45,9 @@ class usbMonitorCl {
 
     private function init() {
 
-	global $PHPREACTLOOPGL;
-
 	adbDevicesCl::doit();
 
-	$this->loop = $PHPREACTLOOPGL;
+	$this->loop = Loop::get();
 
         $this->inputStream = popen(self::cmd, 'r');
         if (!$this->inputStream) {

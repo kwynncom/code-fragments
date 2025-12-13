@@ -10,15 +10,15 @@ require_once('adbLog.php');
 
 class battExtCl {
 
+    private readonly object $adbReader;
+
     private function monitor() {
-	new ADBLogReaderCl(['adbLevelCl', 'push']);
+	$this->adbReader = new ADBLogReaderCl(['adbLevelCl', 'push']);
     }
 
     private readonly object $adbo;
 
-     public function __construct() {
-
-	global $PHPREACTLOOPGL;
+    public function __construct() {
 
 	beout('');
 	$this->initSignals();
@@ -37,12 +37,12 @@ class battExtCl {
 
     public function exit() {
 
-	global $PHPREACTLOOPGL;
-
 	beout('');
 	belg('b3 e-xit called' . "\n");
-    	$PHPREACTLOOPGL->stop();
-	$PHPREACTLOOPGL = false;
+	$this->adbReader->close('term');
+	$loop = Loop::get();
+	$loop->stop();
+	
 	beout('');
 
 	exit(0);

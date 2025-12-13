@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 require_once('/opt/kwynn/kwutils.php');
 
-use React\EventLoop\Loop;
-
-$PHPREACTLOOPGL = Loop::get();
-
 require_once('kill.php');
 
 interface battExtIntf {
@@ -23,7 +19,7 @@ interface battExtIntf {
 
 class battKillCl {
 
-    const lockf = '/tmp/kwbatt.pid';
+    const lockf = '/tmp/kwtt_2025_1213_01.pid';
 
     public static function isPrev() : bool {
 	return PidFileGuard::isRunning(self::lockf);

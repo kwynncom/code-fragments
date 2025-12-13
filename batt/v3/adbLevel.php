@@ -2,8 +2,9 @@
 
 require_once('utils.php');
 
-
 class adbLevelCl {
+
+    private static object $self;
 
     public static function push(bool $dir) {
 
@@ -18,9 +19,7 @@ class adbLevelCl {
 
 	$now = time();
 
-	// belg('current beout = ' . getbeout());
-
-	if ($now - $lat < 67 && $prev) {
+	if ($prev && $now - $lat < 67) {
 	    // belg('discarding just before adb level call');
 	    return;
 	}

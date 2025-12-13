@@ -1,6 +1,8 @@
 <?php
 
 use React\EventLoop\Timer\TimerInterface;
+use React\EventLoop\Loop;
+
 
 require_once('adbLevel.php');
 
@@ -22,24 +24,30 @@ private function debounce() {
     if ($debounceTimer) {
         $this->loop->cancelTimer($debounceTimer);
     } else {
-	self::devsActual();
+	$this->devs10();
     }
 
     $debounceTimer = $this->loop->addTimer(3.0, function ()  {
         belg('debounce call');
-	self::devsActual();
+	$this->devs10();
         $debounceTimer = null;
     });
 
+}
+
+private function devs10() {
+    $ret = self::devsActual();
+    if (!$ret) return;
+    adbLevelCl::push(true);
 }
 
 private readonly object $loop;
 
 private function __construct() {
 
-    global $PHPREACTLOOPGL;
+    
+    $this->loop = Loop::get();
 
-    $this->loop = $PHPREACTLOOPGL;
 }
 
 private static function devsActual() : bool  {
@@ -69,8 +77,6 @@ private static function devsActual() : bool  {
 	    return false;
 	}
 
-
-	adbLevelCl::push(true);
 	return true;
     }
 
