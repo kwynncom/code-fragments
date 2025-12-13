@@ -6,42 +6,37 @@ class adbLevelCl {
 
     private static object $self;
 
-    public static function connTrend(bool $dir) {
+    public static function connTrend(bool $dir, object $noti) {
 
-	static $lat = 0;
+	static $lat  = 0;
 	static $prev;
     
 	if (!$dir) {
 	    $prev = $dir;
-	    beout('');
 	    return;
 	}
 
 	$now = time();
 
-	if ($prev && $now - $lat < 67) {
-	    // belg('discarding just before adb level call');
-	    return;
-	}
+	if (!$prev && $dir && $now - $lat < 20) { 	    return; 	}
 
 	$lat = $now;
-	$prev = self::sendLevelFromPhoneFile();
+	$res = self::sendLevelFromPhoneFile();
+	
+	$noti->notify('level', 'file', $res >= 0, $res);
+	$prev = $res  >= 0 ? true : false;
 	
 	
     }
 
-    private static function sendLevelFromPhoneFile() : bool {
+    private static function sendLevelFromPhoneFile() : int {
 	$c = 'adb shell cat /sys/class/power_supply/battery/capacity';
 	belg("$c\n");
 	$tlev = self::filtLevel(shell_exec($c));
-	if ($tlev === false) {
-	    beout('');
-	    return false;
-	}
+	if ($tlev === false) { return -1; }
 	$level = $tlev; unset($tlev);
 	belg('LEVEL *** ' . $level . " ***\n");
-	beout($level);
-	return true;
+	return $level;
     }
 
     private static function filtLevel(mixed $res) : int | false {
@@ -60,7 +55,6 @@ class adbLevelCl {
 	    belg('returning ' . $level);
 	    return $level;
 	} catch(Throwable $ex) {
-	    beout('');
 	    $msg = $ex->getMessage();
 	    belg('bad level ' . $msg . "\n");
 	}

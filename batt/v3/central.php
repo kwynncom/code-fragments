@@ -14,25 +14,35 @@ class GrandCentralBattCl {
     private readonly object $adbReader;
     
     public function __construct() {
+	beout('');
 	$this->checkDevices();
 	$this->adbReader = new ADBLogReaderCl($this);
 	new usbMonitorCl($this);
-	beout('');
 	$this->initSignals();
 	battKillCl::killPrev();
 	Loop::run();
     }
 
-   
-
     public function checkDevices() {
 	adbDevicesCl::doit($this);
     }
 
-    public function notify(string $from, string $type, bool $dir = null) {
+    private function doBlank() {
+	beout('');
+	adbLevelCl::connTrend(false, $this);
+    }
+
+    public function notify(string $from, string $type, bool $dir = null, int $n = -1) {
+
+	if ($from === 'level') {
+	    if ($dir) beout($n);
+	    else $this->doBlank();
+	}
+
+
 	if ($from === 'adblog' && $type === 'battdat') {
 	    kwas(is_bool($dir), 'should be bool err ( #031617 ) - gcb1');
-	    adbLevelCl::connTrend($dir);
+	    adbLevelCl::connTrend($dir, $this);
 	}
 
 	if ($from === 'adblog' && $type === 'waiting') {
@@ -41,17 +51,16 @@ class GrandCentralBattCl {
 
 	if ($from === 'adblog' && $type === 'reinit') {
 	    belg('adblog true *re*init');
-	    beout('');
+	    $this->doBlank();
 	}
 
 	if ($from === 'usb') $this->checkDevices();
 
 	if ($from === 'devices') {
 	    if ($type === 'perm') beout('need permission');
-	    if ($dir) adbLevelCl::connTrend($dir);
+	    belg('devices response');
+	    if ($dir) adbLevelCl::connTrend($dir, $this);
 	}
-
-// adbDevicesCl::doit()
     }
 
     private function initSignals() {

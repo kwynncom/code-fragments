@@ -42,23 +42,10 @@ final class ADBLogReaderCl
 	$lat = $now;
     }
 
-    public function sendStatus(bool $setto) {
-
-	static $prev;
-
-	// belg('logcat status is now ' . ($setto ? 'true' : 'false'));
-	if ((!$setto) || ($prev !== true)) { 
-	    $this->cb->notify('adblog', 'battdat', $setto); 
-	} else if ($setto) $this->bufferTrueSend();
-	
-	$prev = $setto;
-	
-    }
-
     private function checkDat(string $line) {
 
 	if (strpos($line, self::adbService) !== false) {
-	    $this->sendStatus(true);
+	    $this->bufferTrueSend();
 	}
 	if (trim($line) === '- waiting for device -') {
 	    belg($line);
@@ -114,8 +101,6 @@ final class ADBLogReaderCl
 
 	if ($this->termed ?? false) return;
 	if ($ev === 'term') $this->termed = true;
-
-	$this->sendStatus(false);
 
 	if (isset($this->lines)) {
 	    $this->lines->close();
