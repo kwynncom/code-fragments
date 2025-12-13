@@ -6,29 +6,52 @@ use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use React\Stream\ReadableStreamInterface;
 use React\EventLoop\Loop;
-use ReactLineStream\LineStream;  // ← Correct import, but installed from Tsufeki
+use ReactLineStream\LineStream;
 
 final class ADBLogReaderCl
 {
 
     const adbService = 'BatteryService';
+    const cmd = 'adb logcat ' . self::adbService . ':D *:S 2>&1';
 
-    private readonly object $lines;
-    private readonly object $loop;
-    private readonly mixed  $file;
+    private object $lines;
+    private object $loop;
+    private mixed  $file;
 
     private readonly mixed $cb;
 
+    private function bufferTrueSend() {
+	static $lat = 0;
 
-    private function setstat(bool $setto) {
-	belg('logcat to ' . ($setto ? 'true' : 'false'));
-	($this->cb)($setto);
+	$now = time();
+
+	if ($now - $lat < 7) {
+	    belg('discarding multiple positives');
+	    return;
+	}
+	($this->cb)(true);
+	$lat = $now;
+    }
+
+    private function sendStatus(bool $setto) {
+
+	static $prev;
+
+	belg('logcat status is now ' . ($setto ? 'true' : 'false'));
+	if ((!$setto) || ($prev !== true)) { 
+	    ($this->cb)($setto); 
+	} else if ($setto) $this->bufferTrueSend();
+	
+	$prev = $setto;
+	
     }
 
     private function checkDat(string $line) {
+
+	// belg($line);
+
 	if (strpos($line, self::adbService) !== false) {
-	    $this->setstat(true);
-	    if ($this->cb ?? false) ($this->cb)(true);
+	    $this->sendStatus(true);
 	}
 	if (trim($line) === '- waiting for device -') {
 	    belg($line);
@@ -36,74 +59,68 @@ final class ADBLogReaderCl
 
     }
 
-    private function getFile() {
-	return 'adb logcat ' . self::adbService . ':D *:S 2>&1';
-    }
 
     public function __construct(callable $cb = null) {
 	$this->cb = $cb;
-	$this->init();
-	$this->use();
+	$this->reinit();
     }
 
     public function __destruct() { $this->close(); }
 
-    public function sigintHandler(int $signal) {
-	    echo "\nCaught SIGINT (Ctrl+C) – shutting down gracefully (adb log)…\n";
-	    // Loop::get()->stop();    
-	    $this->close('control-C / SIGINT'); 
+
+    private function reinit() {
+
+	static $i = 0;
+
+	if ($i++ > 0) {
+	    beout('');
+	    belg('blanking due to *re*-init of :' . self::cmd);
+	} else $this->close();
+
+	$this->init();
     }
 
     private function init(
 
     ) {
 
-        $filename = $this->getFile();
-	belg($filename);
+ 	belg(self::cmd);
 	$this->loop = Loop::get();
-	// $this->loop->addSignal(SIGINT, [$this, 'sigintHandler']);
 
-        $this->file = popen($filename, 'r');
+        $this->file = popen(self::cmd, 'r');
         if (!$this->file) {
-            throw new \RuntimeException("Cannot open stream: $filename");
+            throw new \RuntimeException('Cannot open stream: ' . self::cmd);
         }
 
         $resourceStream = new ReadableResourceStream($this->file, $this->loop);
 	$this->lines = new LineStream($resourceStream);
-    }
-
-
-    private function use(): void
-    {
-        $this->lines->on('data', function (string $line) {
-            $this->checkDat($line);
-        });
-
-	$this->lines->on('close', function(string $ev = 'closeunk') {    $this->close($ev);	} );
-	$this->lines->on('end', function  (string $ev = 'endunk') {    $this->close($ev);	} );
-
-        echo "Now reading – Ctrl+C to stop\n\n";
-
+        $this->lines->on('data' , function (string $line) { $this->checkDat($line); });
+	$this->lines->on('close', function (		) { $this->reinit();	    });
         $this->loop->run();
+
     }
 
-    private function lines(): LineReader { return $this->lines; }
-    private function pause(): void        { $this->lines->pause(); }
-    private function resume(): void       { $this->lines->resume(); }
+
     public function close(string $ev = 'unknown event'): void        { 
 
-	$this->setstat(false);
+	$this->sendStatus(false);
 
-	//Loop::get()->removeSignal(SIGINT, [$this, 'sigintHandler']);
-	
-	Loop::get()->stop();
+	if (isset($this->loop)) $this->loop->stop();
+	unset($this->loop);
 
-	belg('logcat ' . $ev);
-	if (isset($this->lines)) $this->lines->close();
+	belg(self::cmd . ' event ' . $ev);
+	if (isset($this->lines)) {
+	    $this->lines->close();
+	    unset($this->lines);
+	}
 
 	if (isset($this->file) && is_resource($this->file) && 
 		   ($meta = @stream_get_meta_data($this->file)) &&
 		   !empty($meta['stream_type'])) pclose($this->file); 
+
+	
+	unset($this->file);
+
     }
 }
 

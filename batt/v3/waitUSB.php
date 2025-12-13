@@ -29,7 +29,6 @@ private function ondata(string $data) {
 
     Loop::get()->stop();
     echo('found usb'. PHP_EOL);
-    sleep(2);
     ($this->cb)();
 }
 
