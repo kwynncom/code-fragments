@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once('utils.php');
 require_once('/var/kwynn/batt/PRIVATEphones.php');
 require_once('adbDevices.php');
@@ -7,7 +9,6 @@ require_once('adbDevices.php');
 use React\Stream\ReadableResourceStream;
 use ReactLineStream\LineStream;
 use React\EventLoop\Loop;
-
 
 class usbMonitorCl {
 
@@ -17,10 +18,12 @@ class usbMonitorCl {
     private readonly object $loop;
     private readonly mixed  $inputStream;
 
-    public function __construct() {
-	if ($this->lsusb()) adbDevicesCl::doit();
+    private readonly object $noti;
+
+    public function __construct(object $noti) {
+	$this->noti = $noti;
 	$this->init();
-	if ($this->lsusb()) adbDevicesCl::doit();
+	if ($this->lsusb()) $this->noti->notify('usb', 'lsusb', true);
     }
 
     private function checkDat(string $l) {
@@ -29,23 +32,22 @@ class usbMonitorCl {
 
 	$check = false;
 
-	if (strpos($l, ' add ') !== false) $check = true;
-	if (trim($l) === 'KERNEL - the kernel uevent') $check = true;
+	if (strpos($l, ' add ') !== false) $check = 'add';
+	if (trim($l) === 'KERNEL - the kernel uevent') $check = 'init';
 	
-	$now = microtime(1);
+	$now = microtime(true);
 	if ($check) {
 	    if ($now - $lat < 1) return;
 	    belg('calling adb devices PHP func (not shell)');
 	    belg($l);
 	    $lat = $now;
-	    adbDevicesCl::doit();
+	    $this->noti->notify('usb', $check);
 	}
 
     }
 
     private function init() {
 
-	adbDevicesCl::doit();
 
 	$this->loop = Loop::get();
 
@@ -70,7 +72,6 @@ class usbMonitorCl {
 	foreach(KWPhonesPRIVATE::list as $r) {
 	    if (strpos($s, $r['vidpid']) !== false) {
 		belg('usb found specific device');
-		adbDevicesCl::doit();
 		return true;
 	    }
 	}

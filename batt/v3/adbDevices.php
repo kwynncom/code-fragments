@@ -8,55 +8,40 @@ require_once('adbLevel.php');
 
 class adbDevicesCl {
 
+    private static mixed $noti;
 
-
-public static function doit() {
-    static $o;
-    if (!$o) $o = new self();
-
-    $o->debounce();
-  
+public static function doit(mixed $noti) {
+    self::$noti = $noti;
+    self::debounce();
 }
 
-private function debounce() {
+private static function debounce() {
+
     static $debounceTimer = null;
+    $loop = Loop::get();
 
-    if ($debounceTimer) {
-        $this->loop->cancelTimer($debounceTimer);
-    } else {
-	$this->devs10();
-    }
+    if ($debounceTimer) {       $loop->cancelTimer($debounceTimer);    } 
+    else { self::devs10();    }
 
-    $debounceTimer = $this->loop->addTimer(3.0, function ()  {
+    $debounceTimer = $loop->addTimer(3.0, function ()  {
         belg('debounce call');
-	$this->devs10();
+	self::devs10();
         $debounceTimer = null;
     });
-
 }
 
-private function devs10() {
+private static function devs10() {
     $ret = self::devsActual();
-    if (!$ret) return;
-    adbLevelCl::push(true);
+
+    self::$noti->notify('devices', is_string($ret) ? $ret : 'bool', is_bool($ret) ? $ret : null );
 }
 
-private readonly object $loop;
-
-private function __construct() {
-
-    
-    $this->loop = Loop::get();
-
-}
-
-private static function devsActual() : bool  {
+private static function devsActual() : bool | string {
 
     $c = 'adb devices 2>&1';
     belg($c . "\n");
     $s = shell_exec($c);
     belg('finished ' . $c);
-
 
     $a = explode("\n", $s); unset($s);
     $dline = false;
@@ -72,9 +57,8 @@ private static function devsActual() : bool  {
 	belg($l . "\n");
 	$k = 'no permissions';
 	if (strpos($l, $k) !== false) {
-	    beout('need permission');
 	    belg ('need perm');
-	    return false;
+	    return 'perm';
 	}
 
 	return true;
@@ -82,4 +66,5 @@ private static function devsActual() : bool  {
 
     return false;
 } // func
+
 } // class

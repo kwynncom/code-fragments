@@ -25,24 +25,9 @@ final class ADBLogReaderCl
 
 
     public function __construct(object $cb) {
-
-
 	$this->loop = Loop::get();
-
 	$this->cb = $cb;
-	if (true) {
-	    belg('calling usb');
-	    new usbMonitorCl();
-	    belg('returning from usb');
-	}
 	$this->reinit('init');
-	
-    }
-
-
-
-    private function checkDevices() {
-	$this->cb->checkDevices();
     }
 
     private function bufferTrueSend() {
@@ -51,8 +36,6 @@ final class ADBLogReaderCl
 	$now = time();
 
 	if ($now - $lat < 7) {
-	    // maybe with a higher debug level
-	    // belg('discarding multiple positives in logcat');
 	    return;
 	}
 	$this->cb->notify('adblog', 'battdat', true);
@@ -94,8 +77,7 @@ final class ADBLogReaderCl
 	belg('logcat r-einit event ' . $ev);
 
 	if ($ev !== 'init') {
-	    beout('');
-	    belg('blanking due to pure r-einit (>0) of :' . self::cmd);
+	    $this->cb->notify('adblog', 'reinit');
 	} 
 
 	if ($this->termed ?? false) return;

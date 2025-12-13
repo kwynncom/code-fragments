@@ -6,7 +6,7 @@ class adbLevelCl {
 
     private static object $self;
 
-    public static function push(bool $dir) {
+    public static function connTrend(bool $dir) {
 
 	static $lat = 0;
 	static $prev;
