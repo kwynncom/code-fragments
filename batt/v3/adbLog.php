@@ -23,8 +23,26 @@ final class ADBLogReaderCl
 
     private readonly bool  $termed;
 
+
+    public function __construct(object $cb) {
+
+
+	$this->loop = Loop::get();
+
+	$this->cb = $cb;
+	if (true) {
+	    belg('calling usb');
+	    new usbMonitorCl();
+	    belg('returning from usb');
+	}
+	$this->reinit('init');
+	
+    }
+
+
+
     private function checkDevices() {
-	adbDevicesCl::doit();
+	$this->cb->checkDevices();
     }
 
     private function bufferTrueSend() {
@@ -37,7 +55,7 @@ final class ADBLogReaderCl
 	    // belg('discarding multiple positives in logcat');
 	    return;
 	}
-	($this->cb)(true);
+	$this->cb->notify('adblog', 'battdat', true);
 	$lat = $now;
     }
 
@@ -47,7 +65,7 @@ final class ADBLogReaderCl
 
 	// belg('logcat status is now ' . ($setto ? 'true' : 'false'));
 	if ((!$setto) || ($prev !== true)) { 
-	    ($this->cb)($setto); 
+	    $this->cb->notify('adblog', 'battdat', $setto); 
 	} else if ($setto) $this->bufferTrueSend();
 	
 	$prev = $setto;
@@ -61,28 +79,12 @@ final class ADBLogReaderCl
 	}
 	if (trim($line) === '- waiting for device -') {
 	    belg($line);
-	    $this->checkDevices();
+	    $this->cb->notify('adblog', 'waiting');
 	}
 
     }
 
 
-    public function __construct(callable $cb = null) {
-
-
-	$this->loop = Loop::get();
-
-	$this->cb = $cb;
-
-
-	if (true) {
-	belg('calling usb');
-	new usbMonitorCl();
-	belg('returning from usb');
-	}
-	$this->reinit('init');
-	
-    }
 
     public function __destruct() { $this->close('destructor'); }
 
@@ -94,12 +96,13 @@ final class ADBLogReaderCl
 	if ($ev !== 'init') {
 	    beout('');
 	    belg('blanking due to pure r-einit (>0) of :' . self::cmd);
-	    $this->close('reiniting');
 	} 
 
 	if ($this->termed ?? false) return;
 
-	$this->checkDevices();
+	if ($ev !== 'init') $this->close('reiniting');
+
+
 	$this->init();
 
     }
@@ -127,6 +130,7 @@ final class ADBLogReaderCl
 
 	belg(self::cmd . ' closing event ' . $ev);
 
+	if ($this->termed ?? false) return;
 	if ($ev === 'term') $this->termed = true;
 
 	$this->sendStatus(false);

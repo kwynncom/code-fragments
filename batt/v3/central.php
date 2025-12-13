@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+use React\EventLoop\Loop;
+
+
+require_once('adbLevel.php');
+require_once('utils.php');
+require_once('adbLevel.php');
+require_once('adbLog.php');
+
+
+class GrandCentralBattCl {
+
+    private readonly object $adbReader;
+    
+    public function __construct() {
+	$this->checkDevices();
+	$this->adbReader = new ADBLogReaderCl($this);
+	beout('');
+	$this->initSignals();
+	battKillCl::killPrev();
+	Loop::run();
+
+
+    }
+
+    public function checkDevices() {
+	adbDevicesCl::doit();
+    }
+
+    public function notify(string $from, string $type, bool $dir = null) {
+	if ($from === 'adblog' && $type === 'battdat') {
+	    kwas(is_bool($dir), 'should be bool err ( #031617 ) - gcb1');
+	    adbLevelCl::push($dir);
+	}
+
+	if ($from === 'adblog' && $type === 'waiting') {
+	    $this->checkDevices();
+	}
+    }
+
+    private function initSignals() {
+	pcntl_async_signals(true);
+	pcntl_signal(SIGINT , [$this, 'exit']);
+	pcntl_signal(SIGTERM, [$this, 'exit']);
+    }
+
+    public function exit() {
+
+	beout('');
+	belg('b3 e-xit called' . "\n");
+	$this->adbReader->close('term');
+	$loop = Loop::get();
+	$loop->stop();
+	
+	beout('');
+
+	exit(0);
+    }
+
+    public function __destruct() { $this->exit();  }
+
+}
+
