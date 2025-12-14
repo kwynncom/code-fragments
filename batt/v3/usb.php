@@ -34,13 +34,14 @@ class usbMonitorCl {
 
 	if (strpos($l, ' add ') !== false) $check = 'add';
 	if (strpos($l, 'KERNEL - the kernel uevent') !== false) {
+	    belg('usb started monitoring');
 	    $check = 'init';
 	}
 	
 	$now = microtime(true);
 	if ($check) {
 	    if ($now - $lat < 1) return;
-	    belg($l);
+	    if ($check === 'add') belg($l);
 	    $lat = $now;
 	    $this->noti->notify('usb', $check);
 	}
