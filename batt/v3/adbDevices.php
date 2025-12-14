@@ -8,10 +8,10 @@ require_once('adbLevel.php');
 
 class adbDevicesCl {
 
-    private static mixed $noti;
+    private static mixed $cento;
 
-public static function doit(mixed $noti) {
-    self::$noti = $noti;
+public static function doit(mixed $cento) {
+    self::$cento = $cento;
     self::debounce();
 }
 
@@ -38,15 +38,13 @@ private static function devs10() {
     if ($ret === true)   $send = 'found';
     if ($ret === false)  $send = 'nothing';
 
-    self::$noti->notify('devices', $send);
+    self::$cento->notify('devices', $send);
 }
 
 private static function devsActual() : bool | string {
 
-    $c = 'adb devices 2>&1';
-    belg($c, true);
-    $s = shell_exec($c);
-    belg('finished ' . $c);
+
+    $s = self::$cento->doShCmd(shCmdCl::advi);
 
     $a = explode("\n", $s); unset($s);
     $dline = false;

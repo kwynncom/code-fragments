@@ -7,10 +7,19 @@ require_once('adbLevel.php');
 
 class adbLinesCl {
 
+    const av5l = 'D/BatteryService';
+
+    private readonly int    $av5ln;
+
     private readonly object $noti;
+
+    private function setSemiConsts() {
+	$this->av5ln = strlen(self::av5l);
+    }
 
     public function __construct(?object $noti = null) {
 	if ($noti) $this->noti = $noti;
+	$this->setSemiConsts();
     }
 
     public static function test() {
@@ -47,21 +56,20 @@ class adbLinesCl {
 	return null;
     }
 
-    private function batteryFilt05($s) : bool {
-	// BatteryService: Processing new values:
-	//  D BatteryService: Processing new values: 
-
+    private static function bf13(string $s) : bool {
 	if (strpos($s, ' D BatteryService: Processing new values: ') === false) return false;
-
 	$d = self::checkLineTimestamp($s);
-
 	if ($d === true) return true;
-
-	belg('tsd ' . $d);
-
 	if ($d > 5) return false;
 	else return true;
-	
+    }
+
+    private function bfv05(string $s) : bool { return substr(trim($s), 0, $this->av5ln) === self::av5l;    }
+
+    private function batteryFilt05(string $s) : bool {
+	if (self::bf13 ($s)) return true;
+	if ($this->bfv05($s)) return true;
+	return false;
     }
 
     public function batteryLine(string $s) : ?int {

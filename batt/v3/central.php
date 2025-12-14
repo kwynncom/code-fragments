@@ -3,24 +3,34 @@
 declare(strict_types=1);
 use React\EventLoop\Loop;
 
-
-require_once('adbLevel.php');
 require_once('utils.php');
+require_once('adbCommands.php');
 require_once('adbLevel.php');
 require_once('adbLog.php');
 require_once('adbLines.php');
+require_once('adbDevices.php');
+
 
 class GrandCentralBattCl {
 
-    private readonly object $adbReader;
+    public function doShCmd(string $which) : mixed {
+	return $this->shcmo->dosh($which);
+    }
+
+   
     private readonly object $lineO;
+    private readonly object $adbReader;
+    private readonly object $usbo;
+    private readonly object $shcmo;
+    
     
     public function __construct() {
 	beout('');
+	$this->shcmo = new shCmdCl();
+	$this->lineO = new adbLinesCl($this);
 	$this->checkDevices();
 	$this->adbReader = new ADBLogReaderCl($this);
-	$this->lineO = new adbLinesCl($this);
-	new usbMonitorCl($this);
+	$this->usbo = new usbMonitorCl($this);
 	$this->initSignals();
 	battKillCl::killPrev();
 	Loop::run();
@@ -84,7 +94,8 @@ class GrandCentralBattCl {
 	$this->adbReader->close('term');
 	$loop = Loop::get();
 	$loop->stop();
-	
+	$this->usbo->close();
+	PidFileGuard::release();
 	beout('');
 
 	exit(0);
@@ -93,4 +104,3 @@ class GrandCentralBattCl {
     public function __destruct() { $this->exit();  }
 
 }
-

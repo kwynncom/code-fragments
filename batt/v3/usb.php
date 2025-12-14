@@ -38,7 +38,6 @@ class usbMonitorCl {
 	$now = microtime(true);
 	if ($check) {
 	    if ($now - $lat < 1) return;
-	    belg('calling adb devices PHP func (not shell)');
 	    belg($l);
 	    $lat = $now;
 	    $this->noti->notify('usb', $check);
@@ -47,18 +46,16 @@ class usbMonitorCl {
     }
 
     private function init() {
-
-
 	$this->loop = Loop::get();
-
-        $this->inputStream = popen(self::cmd, 'r');
-        if (!$this->inputStream) {
-            throw new \RuntimeException('Cannot open stream: ' . self::cmd);
-        }
-
+        kwas($this->inputStream = popen(self::cmd, 'r'), 'Cannot open stream: ' . self::cmd);
         $resourceStream = new ReadableResourceStream($this->inputStream, $this->loop);
 	$this->lines = new LineStream($resourceStream);
         $this->lines->on('data' , function (string $line) { $this->checkDat($line); });
+    }
+
+    public function close() {
+	pclose($this->inputStream);
+	$this->lines->close();
     }
 
     private static function lsusb() : bool {

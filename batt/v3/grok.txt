@@ -1,0 +1,7 @@
+Grok prompts / requests:
+
+For the kill file: 2025/12/14 00:02
+
+I have requests for the following file.  1. Remove all code comments, and 2. Give me a way to explicitly close it  from the outside.  3. Make sure my explicit closing does not conflict with the shutdown function: 
+
+NOTE: It tried to use the "resource" type, which isn't possible.

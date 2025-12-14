@@ -1,3 +1,20 @@
+2025/12/14 00:11
+
+adb shell
+adb devices
+adb logcat
+lsusb
+udevmonitor
+
+popen
+proc_open
+shell_exec
+exec
+system
+
+*******
+
+
 # Android 5
 D/BatteryService(  961): level:69, scale:100, status:2, health:2, present:true, voltage: 4143, temperature: 226, technology: Li-ion, AC powered:false, USB powered:true, Wireless powered:false, icon:17303724, invalid charger:0
 
@@ -39,7 +56,7 @@ adb logcat -c BatteryService:D *:S
 
 # current phone - does exactly what I want at a reasonable data rate
 # Note that it seems to mix in old timestamps and then maybe stabilizes
-# cat'ing adb shell is much faster, but the following will start, well, following the data I want:
+# cat'ing a-db s-hell is much faster, but the following will start, well, following the data I want:
 adb logcat BatteryService:D *:S
 
 
