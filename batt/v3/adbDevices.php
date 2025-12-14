@@ -8,6 +8,8 @@ require_once('adbLevel.php');
 
 class adbDevicesCl {
 
+    const cmd = shCmdCl::advicmdConst;
+
     private static mixed $cento;
 
 public static function doit(mixed $cento) {
@@ -43,8 +45,7 @@ private static function devs10() {
 
 private static function devsActual() : bool | string {
 
-
-    $s = self::$cento->doShCmd(shCmdCl::advi);
+    $s = self::$cento->doShCmd(self::cmd);
 
     $a = explode("\n", $s); unset($s);
     $dline = false;

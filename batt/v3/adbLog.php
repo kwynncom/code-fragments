@@ -37,7 +37,7 @@ final class ADBLogReaderCl
 
 	// if (strpos($line, self::adbService) !== false) {    $this->cb->batteryDat($line); 	}
 	if (trim($line) === '- waiting for device -') {
-	    belg($line);
+	    belg('adb log: ' . $line);
 	    $this->cb->notify('adblog', 'waiting');
 	}
 

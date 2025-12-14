@@ -2,11 +2,11 @@
 
 class shCmdCl {
 
-    const advi = 'advi';
+    const advicmdConst = 'advi';
 
     public function dosh(string $which) : mixed {
 	switch($which) {
-	    case self::advi : return $this->advi(); break;
+	    case self::advicmdConst : return $this->advi(); break;
 	}
     }
 

@@ -33,7 +33,9 @@ class usbMonitorCl {
 	$check = false;
 
 	if (strpos($l, ' add ') !== false) $check = 'add';
-	if (trim($l) === 'KERNEL - the kernel uevent') $check = 'init';
+	if (strpos($l, 'KERNEL - the kernel uevent') !== false) {
+	    $check = 'init';
+	}
 	
 	$now = microtime(true);
 	if ($check) {
@@ -47,6 +49,7 @@ class usbMonitorCl {
 
     private function init() {
 	$this->loop = Loop::get();
+	belg(self::cmd, true);
         kwas($this->inputStream = popen(self::cmd, 'r'), 'Cannot open stream: ' . self::cmd);
         $resourceStream = new ReadableResourceStream($this->inputStream, $this->loop);
 	$this->lines = new LineStream($resourceStream);
