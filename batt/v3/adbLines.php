@@ -26,17 +26,21 @@ class adbLinesCl {
 	belg($line);
     }
 
-    private function findLastMatchingLine(string $s): ?string
+    public function batteryLineCheck(string $s): ?string
     {
 	$lines = preg_split('/\R/', $s);
 
 	for ($i = count($lines) - 1; $i >= 0; $i--) {
 	    $line = $lines[$i];
-	    belg($line);
-	    $t36 = self::checkLineTimestamp($line);
-	    $d = $t36 === true ? 'n/a' : $t36;
-	    belg((string)$d);
-	    if ($ret = self::batteryLine($line) ?? false) { return $line; }
+	    // belg($line);
+	    // $t36 = self::checkLineTimestamp($line);
+	    // $d = $t36 === true ? 'n/a' : $t36;
+	    // belg((string)$d);
+	    if (self::batteryLine($line) ?? false) { 
+		// $d = self::checkLineTimestamp($line);
+		
+		return $line; 
+	    }
 	    
 	}
 
@@ -48,7 +52,16 @@ class adbLinesCl {
 	//  D BatteryService: Processing new values: 
 
 	if (strpos($s, ' D BatteryService: Processing new values: ') === false) return false;
+
+	$d = self::checkLineTimestamp($s);
+
+	if ($d === true) return true;
+
+	belg('tsd ' . $d);
+
+	if ($d > 5) return false;
 	else return true;
+	
     }
 
     public function batteryLine(string $s) : ?int {
@@ -73,10 +86,11 @@ class adbLinesCl {
 	if (isset($m[1])) {
 	    $tlev = adbLevelCl::filt($m[1]);
 	    if ($tlev === false) return null;
+
 	    if ($this->noti ?? false) {
-		$noti->levelFromADBLog($tlev);
+		$this->noti->levelFromADBLog($tlev);
 	    }
-	    belg('bfilt10 ' . $tlev);
+	    // belg('bfilt10 ' . $tlev);
 	    return $tlev;
 	}
 

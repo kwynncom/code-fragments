@@ -48,7 +48,7 @@ class GrandCentralBattCl {
     }
 
     public function adbLogLine(string $line) {
-	batteryLinesCl::line($line, $this);
+	$this->lineO->batteryLineCheck($line);
     }
 
     public function notify(string $from, string $type) {
