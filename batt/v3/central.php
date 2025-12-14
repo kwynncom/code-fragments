@@ -8,16 +8,18 @@ require_once('adbLevel.php');
 require_once('utils.php');
 require_once('adbLevel.php');
 require_once('adbLog.php');
-require_once('battLines.php');
+require_once('adbLines.php');
 
 class GrandCentralBattCl {
 
     private readonly object $adbReader;
+    private readonly object $lineO;
     
     public function __construct() {
 	beout('');
 	$this->checkDevices();
 	$this->adbReader = new ADBLogReaderCl($this);
+	$this->lineO = new adbLinesCl($this);
 	new usbMonitorCl($this);
 	$this->initSignals();
 	battKillCl::killPrev();
@@ -33,7 +35,7 @@ class GrandCentralBattCl {
     public function levelFromADBLog(int $lev) {
 	static $prev;
 	if ($lev !== $prev) beout($lev);
-	else belg('adbcat confirmed level at ' . $lev . ' so not sending');
+	else belg('same level');
 	$prev = $lev;
     }
 
@@ -45,7 +47,7 @@ class GrandCentralBattCl {
 	
     }
 
-    public function batteryDat(string $line) {
+    public function adbLogLine(string $line) {
 	batteryLinesCl::line($line, $this);
     }
 

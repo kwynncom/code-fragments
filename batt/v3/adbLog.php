@@ -12,8 +12,9 @@ use React\EventLoop\Loop;
 final class ADBLogReaderCl
 {
 
-    const adbService = 'BatteryService';
-    const cmd = 'adb logcat ' . self::adbService . ':D *:S 2>&1';
+    // const adbService = 'BatteryService';
+    // const cmd = 'adb logcat ' . self::adbService . ':D *:S 2>&1';
+    const cmd = 'adb logcat 2>&1';
 
     private	     object $lines;
     private readonly object $loop;
@@ -32,9 +33,9 @@ final class ADBLogReaderCl
 
     private function checkDat(string $line) {
 
-	if (strpos($line, self::adbService) !== false) {
-	    $this->cb->batteryDat($line);
-	}
+	$this->cb->adbLogLine($line); 
+
+	// if (strpos($line, self::adbService) !== false) {    $this->cb->batteryDat($line); 	}
 	if (trim($line) === '- waiting for device -') {
 	    belg($line);
 	    $this->cb->notify('adblog', 'waiting');
