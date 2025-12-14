@@ -75,21 +75,23 @@ class battLogCl {
 
     public function put(string|int $s, bool $emitting = false, bool $star = false) {
 	static $i = 1;
-	static $c1s = -1;
+	static $hbs = '';
 	static $lnothb = 0;
+	static $prevnl = true;
 
-	$pnl = false;
+	$ishb = !$star && !$emitting && is_string($s) && (strlen($s) === 1);
 
-	$c1 = ($c1s < 65) && !$star && !$emitting && is_string($s) && (strlen($s) === 1);
 
-	if ($c1) {
-	    if (microtime(true) - $lnothb < 2.0) return;
-	    $c1s++;
+	if ($ishb) {
+	    if (microtime(true) - $lnothb < 2.0) {
+		return;
+	    }
+
+	    $hbs .= $s;
+	    
 	}
 	else {
 	    $lnothb = microtime(true);
-	    if ($c1s >= 0) $pnl = true;
-	    $c1s = -1;
 	}
 
 	if ($emitting) self::$current = $s;
@@ -97,7 +99,10 @@ class battLogCl {
 	if (!$s && is_string($s) && strlen(trim($s)) === 0) $s = '(blanking)';
 
 	$t  = '';
-	if ($c1s <= 0) {
+
+	$hbl = strlen($hbs);
+
+	if (!$ishb || $hbl <= 1) {
 	    $t .= $i;
 	    $t .= ' ';
 	    $t .= date('H:i:s');
@@ -105,23 +110,29 @@ class battLogCl {
 	    if ($star || $emitting) $t .= '********* ';
 	    if ($emitting) $t .= 'emitting ';
 	}
+
 	$t .= $s;
 
-	$t = ($pnl ? "\n" : '') . trim($t) . ($c1s < 0 ? "\n" : '');
-	$this->putA($t);
-	$i++;
+	$cnl = !$ishb || $hbl >= 64;
+	$prefixnl = !$ishb && $hbl > 0;
+	
+	$t = ($prefixnl ? PHP_EOL : '') . trim($t) . ($cnl ? PHP_EOL : '');
+	$this->putA($t, $cnl);
+	if ($cnl) $i++;
+
+	if ($cnl || !$ishb) $hbs = '';
+
     }
 
     public function __construct() {
 	$this->initLog();
     }
 
-    private function putA(string $s) {
+    private function putA(string $s, bool $cnl) {
 	file_put_contents($this->logf, $s, FILE_APPEND);
 	echo($s);
 
-	if (strpos($s, "\n") === false) {
-	    // fflush($this->logf);
+	if (!$cnl) {
 	    fflush(STDOUT);
 	}
     }
@@ -132,6 +143,14 @@ class battLogCl {
 	kwas(chmod($f, 0600), "cannot chmod $f");
 	$this->logf = $f;
 	$this->put(date('Y-m-d'));
+    }
+
+    public static function noop() {
+	static $prev = 0;
+	$now = microtime(true);
+	if ($now - $prev < 0.3) return;
+	belg('.');
+	$prev = $now;
     }
 
 

@@ -9,8 +9,6 @@ require_once('adbLevel.php');
 require_once('adbLog.php');
 require_once('adbLines.php');
 require_once('adbDevices.php');
-require_once('heartbeat.php');
-
 
 class GrandCentralBattCl {
 
@@ -64,7 +62,7 @@ class GrandCentralBattCl {
     public function adbLogLine(string $line) {
 	if ($this->Ubf <= 0) return;
 	$this->lineO->batteryLineCheck($line);
-	battLogHBCl::noop();
+	battLogCl::noop();
 	
     }
 
@@ -87,6 +85,8 @@ class GrandCentralBattCl {
 	    if ($type === 'found') $this->doLevelFromFile();
 	}
     }
+
+
 
     private function initSignals() {
 	pcntl_async_signals(true);
