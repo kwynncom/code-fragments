@@ -75,19 +75,39 @@ class battLogCl {
 
     public function put(string|int $s, bool $emitting = false, bool $star = false) {
 	static $i = 1;
+	static $c1s = -1;
+	static $lnothb = 0;
+
+	$pnl = false;
+
+	$c1 = ($c1s < 65) && !$star && !$emitting && is_string($s) && (strlen($s) === 1);
+
+	if ($c1) {
+	    if (microtime(true) - $lnothb < 2.0) return;
+	    $c1s++;
+	}
+	else {
+	    $lnothb = microtime(true);
+	    if ($c1s >= 0) $pnl = true;
+	    $c1s = -1;
+	}
 
 	if ($emitting) self::$current = $s;
 
 	if (!$s && is_string($s) && strlen(trim($s)) === 0) $s = '(blanking)';
 
 	$t  = '';
-	$t .= $i;
-	$t .= ' ';
-	$t .= date('H:i:s');
-	$t .= ' ';
-	if ($star || $emitting) $t .= ' ************ ';
-	if ($emitting) $t .= 'emitting ';
+	if ($c1s <= 0) {
+	    $t .= $i;
+	    $t .= ' ';
+	    $t .= date('H:i:s');
+	    $t .= ' ';
+	    if ($star || $emitting) $t .= '********* ';
+	    if ($emitting) $t .= 'emitting ';
+	}
 	$t .= $s;
+
+	$t = ($pnl ? "\n" : '') . trim($t) . ($c1s < 0 ? "\n" : '');
 	$this->putA($t);
 	$i++;
     }
@@ -96,11 +116,14 @@ class battLogCl {
 	$this->initLog();
     }
 
-    private function putA(string $sin) {
-	$s = trim($sin) . "\n"; unset($sin);
-	
+    private function putA(string $s) {
 	file_put_contents($this->logf, $s, FILE_APPEND);
 	echo($s);
+
+	if (strpos($s, "\n") === false) {
+	    // fflush($this->logf);
+	    fflush(STDOUT);
+	}
     }
 
     private function initLog() {

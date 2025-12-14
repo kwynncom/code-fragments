@@ -9,6 +9,7 @@ require_once('adbLevel.php');
 require_once('adbLog.php');
 require_once('adbLines.php');
 require_once('adbDevices.php');
+require_once('heartbeat.php');
 
 
 class GrandCentralBattCl {
@@ -22,7 +23,7 @@ class GrandCentralBattCl {
     private readonly object $adbReader;
     private readonly object $usbo;
     private readonly object $shcmo;
-    
+    private	     int    $Ubf = 0;
     
     public function __construct() {
 	beout('');
@@ -44,21 +45,27 @@ class GrandCentralBattCl {
 
     public function levelFromADBLog(int $lev) {
 	static $prev;
+
+	if (time() - $this->Ubf < 5) return;
+
 	if ($lev !== $prev) beout($lev);
-	else belg('same level');
+	else belg('+');
 	$prev = $lev;
     }
 
     private function doLevelFromFile() {
 	$res = adbLevelCl::getLevelFromPhoneFileActual();
-	if ($res >= 0) beout($res);
-	else $this->doBlank();
-
+	if ($res < 0) { return $this->doBlank(); }
+	$this->Ubf = time();
+	beout($res);
 	
     }
 
     public function adbLogLine(string $line) {
+	if ($this->Ubf <= 0) return;
 	$this->lineO->batteryLineCheck($line);
+	battLogHBCl::noop();
+	
     }
 
     public function notify(string $from, string $type) {
