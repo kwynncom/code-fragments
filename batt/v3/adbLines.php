@@ -39,16 +39,16 @@ class adbLinesCl {
     {
 	$lines = preg_split('/\R/', $s);
 
+	$j = 0;
 	for ($i = count($lines) - 1; $i >= 0; $i--) {
 	    $line = $lines[$i];
-	    // belg($line);
-	    // $t36 = self::checkLineTimestamp($line);
-	    // $d = $t36 === true ? 'n/a' : $t36;
-	    // belg((string)$d);
+	    
+	    if (!isset($line[180])) continue;
 
+	    if ($j++ === 0) {
+		$this->checkLastTS($line);
+	    }
 	    if (self::batteryLine($line) ?? false) { 
-		// $d = self::checkLineTimestamp($line);
-		
 		return $line; 
 	    }
 	    
@@ -106,7 +106,14 @@ class adbLinesCl {
 	return null;
     }
 
-    private static function checkLineTimestamp(string $line): bool|float
+    private function checkLastTS(string $line) {
+	$tsr = self::checkLineTimestamp($line);
+	if ($tsr === true) return;
+	if ($tsr < 3) battLogCl::noop('.');
+
+    }
+
+    private static function checkLineTimestamp(string $line): true|float
     {
 	if (preg_match('/^(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/', $line, $matches)) {
 	    $timestampPart = $matches[1];
@@ -114,14 +121,12 @@ class adbLinesCl {
 	    $fullDateStr = $currentYear . '-' . $timestampPart;
 	    $dt = DateTime::createFromFormat('Y-m-d H:i:s.v', $fullDateStr);
 
-	    if ($dt === false) {
-		return true;
-	    }
+	    if ($dt === false) { return true;    }
 
 	    $now = new DateTime('now');
 	    $diffInSeconds = $now->format('U.u') - $dt->format('U.u');
 
-	    return (float) $diffInSeconds;
+	    return $diffInSeconds;
 	}
 
 	return true;

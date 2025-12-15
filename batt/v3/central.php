@@ -112,7 +112,7 @@ class GrandCentralBattCl {
 	$this->checkFirstLogLine($line);
 	if ($this->Ubf <= 0) return;
 	$this->lineO->batteryLineCheck($line);
-	battLogCl::noop('.');
+	// battLogCl::noop('.');
 
     }
 
