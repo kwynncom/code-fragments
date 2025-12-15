@@ -12,28 +12,19 @@ require_once('adbDevices.php');
 
 class GrandCentralBattCl {
 
-
-
-    private function resetHeartBeat() {	$this->hbn = 0;    }
-
-    private string $tsst = 'init';
-
     public function confirmedTimestamp() {
 	battLogCl::noop('.');
-	$this->tsst = 'sent';
 	$this->resetHeartBeat();
     }
 
-    const hbuinit = 16;
+    private	     int    $hbsize = 0;
+    private	     int    $hbi    = 0;
 
-    private int $hbu = self::hbuinit;
+    private function resetHeartBeat() {	$this->hbsize = $this->hbi = 0;    }
 
-    private function setHeartBeatN(int $nin) {
-	if ($nin <= 0) return;
-	$this->hbn += $nin;
-
-	if ($this->hbu === self::hbuinit) $this->hbu  = $nin;
-	// belg('data unit = '. $nin);
+    private function setHeartBeatN(int $sizein) { 
+	$this->hbsize += $sizein;     
+	$this->hbi++;
     }
 
     private function initHeartBeat() {
@@ -44,18 +35,9 @@ class GrandCentralBattCl {
 		return;
 	    }
 
-	    if ($this->tsst === 'sent') {
-		$this->tsst = 'waiting';
-		return;
-	    }
-	    
-	    belg('hbn / hbu ' . $this->hbn . ' / '. $this->hbu);
-
-	    $v05 = (intval(floor(floatval($this->hbn) / floatval(($this->hbu * 10))))) % 10;
+	    $v05 = $this->hbi % 10;
 	    $v10 = (string)$v05;
 	    battLogCl::noop($v10);
-	    if ($this->hbn > ($this->hbu * 10)) $this->resetHeartBeat();
-	    
 	});
     }
 
@@ -65,7 +47,7 @@ class GrandCentralBattCl {
     private readonly object $usbo;
     private readonly object $shcmo;
     private	     int    $Ubf = 0;
-    private	     int    $hbn = 0;
+
     
     public function __construct() {
 	beout('');
