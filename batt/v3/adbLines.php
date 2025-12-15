@@ -45,6 +45,7 @@ class adbLinesCl {
 	    // $t36 = self::checkLineTimestamp($line);
 	    // $d = $t36 === true ? 'n/a' : $t36;
 	    // belg((string)$d);
+
 	    if (self::batteryLine($line) ?? false) { 
 		// $d = self::checkLineTimestamp($line);
 		

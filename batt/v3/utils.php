@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// use React\EventLoop\Timer\TimerInterface;
+use React\EventLoop\Loop;
+
 require_once('/opt/kwynn/kwutils.php');
 
 require_once('kill.php');
@@ -83,7 +86,7 @@ class battLogCl {
 
 
 	if ($ishb) {
-	    if (microtime(true) - $lnothb < 2.0) {
+	    if (microtime(true) - $lnothb < 0.1) {
 		return;
 	    }
 
@@ -148,9 +151,37 @@ class battLogCl {
     public static function noop() {
 	static $prev = 0;
 	$now = microtime(true);
-	if ($now - $prev < 0.3) return;
-	belg('.');
+	if ($now - $prev < 0.15) return;
+	if (true) belg('.');
+	else self::debounce($now);
 	$prev = $now;
+    }
+
+    private static function debounce(float $now) {
+
+	static $prev = 0;
+	static $timer = null;
+
+	$d = $now - $prev;
+	
+	if ($d < 15 && !$timer) {
+	    $timer = Loop::get()->addTimer($d, function () use($now)  { 
+		belg('.');
+		$timer = null;
+	    });
+	    
+	} else {
+	    belg('.');
+	    $prev = $now;
+
+	    if ($timer) {
+		Loop::get()->cancelTimer($timer);
+		$timer = null; 
+	    }
+
+	}
+
+
     }
 
 

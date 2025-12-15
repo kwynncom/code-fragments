@@ -63,7 +63,7 @@ class GrandCentralBattCl {
 	if ($this->Ubf <= 0) return;
 	$this->lineO->batteryLineCheck($line);
 	battLogCl::noop();
-	
+
     }
 
     public function notify(string $from, string $type) {
