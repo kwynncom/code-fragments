@@ -1,0 +1,33 @@
+
+********
+Android 5
+
+I/PlayCommon( 2520): [225] apvc.j(241): Preparing logs for uploading
+I/PlayCommon( 2520): [225] apvc.j(1420): Connecting to server for timestamp: https://play.googleapis.com/play/log/timestamp
+I/System.out( 2520): (HTTPLog)-Static: isSBSettingEnabled false
+D/EnterpriseController(  277): mIsMarkChainAdded is 0 mIsBlockChainAdded is 0 netId is 0
+D/Netd    (  277): getNetworkForDns: using netid 0 for uid 10016
+E/PlayCommon( 2520): [225] apvc.j(1632): Failed to connect to server for server timestamp: java.net.UnknownHostException: Unable to resolve host "play.googleapis.com": No address associated with hostname
+I/ActivityManager(  837): Killing 8843:com.sec.android.widgetapp.activeapplicationwidget/u0a173 (adj 13): empty for 2041s
+I/PlayCommon( 2520): [225] apvc.j(1862): Connecting to server: https://play.googleapis.com/play/log?format=raw&proto_v2=true
+I/System.out( 2520): (HTTPLog)-Static: isSBSettingEnabled false
+E/PlayCommon( 2520): [225] apvc.j(2626): Failed to connect to server for log upload.
+W/libprocessgroup(  837): failed to open /acct/uid_10173/pid_8843/cgroup.procs: No such file or directory
+E/SMD     (  284): DCD OFF
+E/SMD     (  284): DCD OFF
+D/SSRM:n  (  837): SIOP:: AP = 250, PST = 224, CUR = 450
+D/BatteryService(  837): !@BatteryListener : batteryPropertiesChanged!
+D/BatteryService(  837): level:97, scale:100, status:2, health:2, present:true, voltage: 4338, temperature: 205, technology: Li-ion, AC powered:false, USB powered:true, Wireless powered:false, icon:17303724, invalid charger:0
+D/BatteryService(  837): online:4, current avg:450, charge type:1, power sharing:false, high voltage charger:false, capacity:280000, current_now:450
+D/BatteryService(  837): Sending ACTION_BATTERY_CHANGED.
+D/KeyguardUpdateMonitor( 1182): received broadcast android.intent.action.BATTERY_CHANGED
+D/KeyguardUpdateMonitor( 1182): handleBatteryUpdate
+I/MotionRecognitionService(  837): Plugged
+I/MotionRecognitionService(  837): setPowerConnected  = true
+D/BatteryService(  837): stay LED for charging
+D/STATUSBAR-PhoneStatusBar( 1182):  mBrightnessEnablebySettings = true mBrightnessEnablebyBattery = true mBrightnessEnablebyDisableFlag = true mPmsBrightnessEnablebySettings = true
+D/BatteryMeterView( 1182): ACTION_BATTERY_CHANGED : level:97 status:2 health:2
+D/BatteryManager( 4135): ***Receiving Battery Change 97.0% ***
+D/BatteryMeterView( 1182): ACTION_BATTERY_CHANGED : level:97 status:2 health:2
+D/BatteryMeterView( 1182): ACTION_BATTERY_CHANGED : level:97 status:2 health:2
+

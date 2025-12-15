@@ -12,8 +12,28 @@ require_once('adbDevices.php');
 
 class GrandCentralBattCl {
 
-    public function doShCmd(string $which) : mixed {
-	return $this->shcmo->dosh($which);
+    private int $hbat = 0;
+    
+    private function setHeartBeatN(int $nin) {
+	$this->hbn += $nin;
+	$this->hbat = time();
+    }
+
+    private function resetHeartBeat() {	$this->hbn = $this->hbat = 0;    }
+
+    private function initHeartBeat() {
+
+	Loop::addPeriodicTimer(0.8, function ()  {
+	    if (!$this->Ubf || !$this->adbReader->isOpen()) {
+		$this->resetHeartBeat();
+		return;
+	    }
+
+	    if ($this->hbn < 500) return;
+	    if (time() - $this->hbat > 5) { $this->resetHeartBeat();  }
+	    battLogCl::noop(',');
+	    
+	});
     }
 
    
@@ -22,12 +42,14 @@ class GrandCentralBattCl {
     private readonly object $usbo;
     private readonly object $shcmo;
     private	     int    $Ubf = 0;
+    private	     int    $hbn = 0;
     
     public function __construct() {
 	beout('');
 	$this->shcmo = new shCmdCl();
+	$this->resetLog();
 	$this->lineO = new adbLinesCl($this);
-	$this->checkDevices();
+	$this->initHeartBeat();
 	$this->adbReader = new ADBLogReaderCl($this);
 	$this->usbo = new usbMonitorCl($this);
 	$this->initSignals();
@@ -39,7 +61,13 @@ class GrandCentralBattCl {
 	adbDevicesCl::doit($this);
     }
 
-    private function doBlank() { 	beout('');     }
+    private function resetLog() {
+	beout('');
+	$this->Ubf;
+	$this->resetHeartBeat();
+	$this->checkDevices();
+ 
+    }
 
     public function levelFromADBLog(int $lev) {
 	static $prev;
@@ -53,28 +81,46 @@ class GrandCentralBattCl {
 
     private function doLevelFromFile() {
 	$res = adbLevelCl::getLevelFromPhoneFileActual();
-	if ($res < 0) { return $this->doBlank(); }
+	if ($res < 0) { return $this->resetLog(); }
 	$this->Ubf = time();
 	beout($res);
 	
     }
 
+    const fll = '- waiting for device -';
+
+    private function checkFirstLogLine(string $line) {
+
+	static $l;
+	static $lp;
+	if (!$l) { 
+	    $l = strlen(self::fll);
+	    $lp = $l + 3;
+	}
+	
+	if (isset($line[$lp])) return;
+
+	if (trim($line) !== self::fll) return;
+	belg('adb log: ' . $line);
+	$this->resetLog();
+    }
+
     public function adbLogLine(string $line) {
+
+	$this->setHeartBeatN(strlen($line));
+
+	$this->checkFirstLogLine($line);
 	if ($this->Ubf <= 0) return;
 	$this->lineO->batteryLineCheck($line);
-	battLogCl::noop();
+	battLogCl::noop('.');
 
     }
 
     public function notify(string $from, string $type) {
 
-	if ($from === 'adblog' && $type === 'waiting') {
-	    $this->checkDevices();
-	}
-
 	if ($from === 'adblog' && $type === 'reinit') {
 	    belg('adblog true *re*init');
-	    $this->doBlank();
+	    $this->resetLog();
 	}
 
 	if ($from === 'usb') $this->checkDevices();
@@ -108,6 +154,10 @@ class GrandCentralBattCl {
 	exit(0);
     }
 
-    public function __destruct() { $this->exit();  }
+   public function doShCmd(string $which) : mixed {
+	return $this->shcmo->dosh($which);
+    } 
+
+   public function __destruct() { $this->exit();  }
 
 }

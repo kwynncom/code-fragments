@@ -86,9 +86,7 @@ class battLogCl {
 
 
 	if ($ishb) {
-	    if (microtime(true) - $lnothb < 0.1) {
-		return;
-	    }
+	    // if (microtime(true) - $lnothb < 0.1) { return; }
 
 	    $hbs .= $s;
 	    
@@ -148,43 +146,12 @@ class battLogCl {
 	$this->put(date('Y-m-d'));
     }
 
-    public static function noop() {
+    public static function noop(string $out = '?') {
 	static $prev = 0;
 	$now = microtime(true);
-	if ($now - $prev < 0.15) return;
-	if (true) belg('.');
-	else self::debounce($now);
+	if ($now - $prev < 0.10) return;
+	belg($out);
 	$prev = $now;
     }
-
-    private static function debounce(float $now) {
-
-	static $prev = 0;
-	static $timer = null;
-
-	$d = $now - $prev;
-	
-	if ($d < 15 && !$timer) {
-	    $timer = Loop::get()->addTimer($d, function () use($now)  { 
-		belg('.');
-		$timer = null;
-	    });
-	    
-	} else {
-	    belg('.');
-	    $prev = $now;
-
-	    if ($timer) {
-		Loop::get()->cancelTimer($timer);
-		$timer = null; 
-	    }
-
-	}
-
-
-    }
-
-
-
 }
 
