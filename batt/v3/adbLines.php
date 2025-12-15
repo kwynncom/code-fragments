@@ -45,9 +45,8 @@ class adbLinesCl {
 	    
 	    if (!isset($line[180])) continue;
 
-	    if ($j++ === 0) {
-		$this->checkLastTS($line);
-	    }
+	    if ($j === 0 && $this->checkLastTS($line)) $j++;
+	    
 	    if (self::batteryLine($line) ?? false) { 
 		return $line; 
 	    }
@@ -106,10 +105,15 @@ class adbLinesCl {
 	return null;
     }
 
-    private function checkLastTS(string $line) {
+    private function checkLastTS(string $line) : bool | null {
 	$tsr = self::checkLineTimestamp($line);
-	if ($tsr === true) return;
-	if ($tsr < 3) battLogCl::noop('.');
+	if ($tsr === true) return null;
+	if ($tsr < 3) {
+	    battLogCl::noop('.');
+	    return true;
+	}
+
+	return false;
 
     }
 
