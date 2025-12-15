@@ -12,19 +12,28 @@ require_once('adbDevices.php');
 
 class GrandCentralBattCl {
 
-    private function setHeartBeatN(int $nin) {
-	$this->hbn += $nin;
-    }
+
 
     private function resetHeartBeat() {	$this->hbn = 0;    }
 
-    const hbbuf = 192;
     private string $tsst = 'init';
 
     public function confirmedTimestamp() {
 	battLogCl::noop('.');
 	$this->tsst = 'sent';
 	$this->resetHeartBeat();
+    }
+
+    const hbuinit = 16;
+
+    private int $hbu = self::hbuinit;
+
+    private function setHeartBeatN(int $nin) {
+	if ($nin <= 0) return;
+	$this->hbn += $nin;
+
+	if ($this->hbu === self::hbuinit) $this->hbu  = $nin;
+	// belg('data unit = '. $nin);
     }
 
     private function initHeartBeat() {
@@ -39,11 +48,13 @@ class GrandCentralBattCl {
 		$this->tsst = 'waiting';
 		return;
 	    }
+	    
+	    belg('hbn / hbu ' . $this->hbn . ' / '. $this->hbu);
 
-	    $v05 = roint(floor((($this->hbn / self::hbbuf) * 10))) % 10;
+	    $v05 = (intval(floor(floatval($this->hbn) / floatval(($this->hbu * 10))))) % 10;
 	    $v10 = (string)$v05;
 	    battLogCl::noop($v10);
-	    if ($this->hbn > self::hbbuf) $this->resetHeartBeat();
+	    if ($this->hbn > ($this->hbu * 10)) $this->resetHeartBeat();
 	    
 	});
     }
