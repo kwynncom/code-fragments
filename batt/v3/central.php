@@ -17,30 +17,18 @@ class GrandCentralBattCl {
 	$this->resetHeartBeat();
     }
 
-    private	     int    $hbsize = 0;
     private	     int    $hbi    = 0;
 
-    private function resetHeartBeat() {	$this->hbsize = $this->hbi = 0;    }
+    private function resetHeartBeat() {	$this->hbi = 0;    }
 
-    private function setHeartBeatN(int $sizein) { 
-	$this->hbsize += $sizein;     
-	$this->hbi++;
-    }
+    private function setHeartBeatN() { $this->hbi++;    }
 
     private function initHeartBeat() {
-
 	Loop::addPeriodicTimer(0.8, function ()  {
-	    if (!$this->Ubf || !$this->adbReader->isOpen()) {
-		$this->resetHeartBeat();
-		return;
-	    }
-
-	    $v05 = $this->hbi % 10;
-	    $v10 = (string)$v05;
-	    battLogCl::noop($v10);
+	    if (!$this->Ubf || !$this->adbReader->isOpen()) { $this->resetHeartBeat(); 	return;   }
+	    battLogCl::noop((string)($this->hbi % 10));
 	});
     }
-
    
     private readonly object $lineO;
     private readonly object $adbReader;
@@ -112,7 +100,7 @@ class GrandCentralBattCl {
 
     public function adbLogLine(string $line) {
 
-	$this->setHeartBeatN(strlen($line));
+	$this->setHeartBeatN();
 
 	$this->checkFirstLogLine($line);
 	if ($this->Ubf <= 0) return;
