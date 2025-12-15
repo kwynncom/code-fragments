@@ -37,24 +37,27 @@ class adbLinesCl {
 
     public function batteryLineCheck(string $s): ?string
     {
+	$fts = false;
 	$lines = preg_split('/\R/', $s);
-
-	$j = 0;
 	for ($i = count($lines) - 1; $i >= 0; $i--) {
 	    $line = $lines[$i];
-	    
 	    if (!isset($line[180])) continue;
-
-	    if ($j === 0 && $this->checkLastTS($line)) $j++;
-	    
-	    if (self::batteryLine($line) ?? false) { 
-		return $line; 
-	    }
-	    
+	    if (self::batteryLine($line) ?? false)  { return $line; }
+	    if (!$fts && $this->checkLastTS($line)) { $fts  = true; }
 	}
 
 	return null;
     }
+
+
+    private function checkLastTS(string $line) : bool | null {
+	$tsr = self::checkLineTimestamp($line);
+	if ($tsr === true) return null;
+	if ($tsr > 3) return false;
+        battLogCl::noop('.');
+        return true;
+    }
+
 
     private static function bf13(string $s) : bool {
 	if (strpos($s, ' D BatteryService: Processing new values: ') === false) return false;
@@ -105,17 +108,7 @@ class adbLinesCl {
 	return null;
     }
 
-    private function checkLastTS(string $line) : bool | null {
-	$tsr = self::checkLineTimestamp($line);
-	if ($tsr === true) return null;
-	if ($tsr < 3) {
-	    battLogCl::noop('.');
-	    return true;
-	}
 
-	return false;
-
-    }
 
     private static function checkLineTimestamp(string $line): true|float
     {

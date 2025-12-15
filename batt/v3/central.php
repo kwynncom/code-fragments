@@ -12,14 +12,13 @@ require_once('adbDevices.php');
 
 class GrandCentralBattCl {
 
-    private int $hbat = 0;
-    
     private function setHeartBeatN(int $nin) {
 	$this->hbn += $nin;
-	$this->hbat = time();
     }
 
-    private function resetHeartBeat() {	$this->hbn = $this->hbat = 0;    }
+    private function resetHeartBeat() {	$this->hbn = 0;    }
+
+    const hbbuf = 192;
 
     private function initHeartBeat() {
 
@@ -29,9 +28,10 @@ class GrandCentralBattCl {
 		return;
 	    }
 
-	    if ($this->hbn < 500) return;
-	    if (time() - $this->hbat > 5) { $this->resetHeartBeat();  }
-	    battLogCl::noop(',');
+	    $v05 = roint(floor((($this->hbn / self::hbbuf) * 10))) % 10;
+	    $v10 = (string)$v05;
+	    battLogCl::noop($v10);
+	    if ($this->hbn > self::hbbuf) $this->resetHeartBeat();
 	    
 	});
     }
@@ -63,7 +63,7 @@ class GrandCentralBattCl {
 
     private function resetLog() {
 	beout('');
-	$this->Ubf;
+	$this->Ubf = 0;
 	$this->resetHeartBeat();
 	$this->checkDevices();
  
