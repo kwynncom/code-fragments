@@ -4,17 +4,14 @@ require_once('utils.php');
 
 class adbLevelCl {
 
-    public static function getLevelFromPhoneFileActual() : int {
-	$c = 'adb shell cat /sys/class/power_supply/battery/capacity';
-	belg("$c\n", true);
-	$tlev = self::filt(shell_exec($c));
+    public static function getLevelFromPhoneFileActual(mixed $s) : int {
+	$tlev = self::filt($s);
 	if ($tlev === false) { return -1; }
 	$level = $tlev; unset($tlev);
 	return $level;
     }
 
     public static function filt(mixed $res) : int | false {
-
 	try {
 	    kwas($res && is_string($res), 'bad res type');
 	    $res = trim($res);

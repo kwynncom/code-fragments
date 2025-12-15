@@ -11,7 +11,9 @@ use React\EventLoop\Loop;
 
 final class ADBLogReaderCl
 {
-    const cmd = 'adb logcat 2>&1';
+    const cmdSfx = 'logcat 2>&1';
+
+    private readonly string $cmd;
 
     private	     object $lines;
     private readonly object $loop;
@@ -40,9 +42,17 @@ final class ADBLogReaderCl
 
     }
 
+    private function setCmd() : string {
+	$c  = $this->cb->shcmo->adbPrefix();
+	$c .= self::cmdSfx;
+	$this->cmd = $c;
+	return $c;
+    }
+
     private function init() {
- 	belg(self::cmd);
-        kwas($this->inputStream = popen(self::cmd, 'r'), 'Cannot open stream: ' . self::cmd);
+	$this->setCmd();
+ 	belg($this->cmd);
+        kwas($this->inputStream = popen($this->cmd, 'r'), 'Cannot open stream: ' . $this->cmd);
   	$this->lines = new LineStream(new ReadableResourceStream($this->inputStream, $this->loop));
         $this->lines->on('data' , function (string $line)   { $this->cb->adbLogLine($line);  });
 	$this->lines->on('close', function ()		    { $this->reinit('close');	    });
@@ -54,7 +64,7 @@ final class ADBLogReaderCl
     public function close(string $ev): void   
     { 
 	$this->isOpen = false;
-	belg(self::cmd . ' closing event ' . $ev);
+	belg($this->cmd . ' closing event ' . $ev);
 	if ($this->termed ?? false) return;
 	if ($ev === 'term') $this->termed = true;
 	if (isset($this->lines)) {  $this->lines->close(); }

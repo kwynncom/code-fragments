@@ -33,7 +33,7 @@ class GrandCentralBattCl {
     private readonly object $lineO;
     private readonly object $adbReader;
     private readonly object $usbo;
-    private readonly object $shcmo;
+    public  readonly object $shcmo;
     private	     int    $Ubf = 0;
 
     
@@ -43,8 +43,8 @@ class GrandCentralBattCl {
 	$this->resetLog();
 	$this->lineO = new adbLinesCl($this);
 	$this->initHeartBeat();
-	$this->adbReader = new ADBLogReaderCl($this);
 	$this->usbo = new usbMonitorCl($this);
+	$this->adbReader = new ADBLogReaderCl($this);
 	$this->initSignals();
 	battKillCl::killPrev();
 	Loop::run();
@@ -73,7 +73,7 @@ class GrandCentralBattCl {
     }
 
     private function doLevelFromFile() {
-	$res = adbLevelCl::getLevelFromPhoneFileActual();
+	$res = adbLevelCl::getLevelFromPhoneFileActual(self::doShCmd(shCmdCl::asbccmdConst));
 	if ($res < 0) { return $this->resetLog(); }
 	$this->Ubf = time();
 	beout($res);
@@ -99,14 +99,10 @@ class GrandCentralBattCl {
     }
 
     public function adbLogLine(string $line) {
-
 	$this->setHeartBeatN();
-
 	$this->checkFirstLogLine($line);
 	if ($this->Ubf <= 0) return;
 	$this->lineO->batteryLineCheck($line);
-	// battLogCl::noop('.');
-
     }
 
     public function notify(string $from, string $type) {
