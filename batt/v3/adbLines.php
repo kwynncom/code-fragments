@@ -54,7 +54,7 @@ class adbLinesCl {
 	$tsr = self::checkLineTimestamp($line);
 	if ($tsr === true) return null;
 	if ($tsr > 3) return false;
-        battLogCl::noop('.');
+        $this->noti->confirmedTimestamp();
         return true;
     }
 

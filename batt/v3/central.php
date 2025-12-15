@@ -19,12 +19,24 @@ class GrandCentralBattCl {
     private function resetHeartBeat() {	$this->hbn = 0;    }
 
     const hbbuf = 192;
+    private string $tsst = 'init';
+
+    public function confirmedTimestamp() {
+	battLogCl::noop('.');
+	$this->tsst = 'sent';
+	$this->resetHeartBeat();
+    }
 
     private function initHeartBeat() {
 
 	Loop::addPeriodicTimer(0.8, function ()  {
 	    if (!$this->Ubf || !$this->adbReader->isOpen()) {
 		$this->resetHeartBeat();
+		return;
+	    }
+
+	    if ($this->tsst === 'sent') {
+		$this->tsst = 'waiting';
 		return;
 	    }
 
