@@ -110,14 +110,23 @@ private function findHighestUfilePerProject($databases, $files) {
     return $results;
 }
 
+    private function setDBO() : bool {
+	try { 
+	    $this->dbo = new odsDBCl();
+	    return true;
+	} catch(Throwable $ex) {
+	    if (iscli()) echo('mongod is probably down' . "\n");
+	}
 
+	return false;
+    }
 
 
 
 
     public function __construct() {
 	$this->log();
-	$this->dbo = new odsDBCl();
+	if (!$this->setDBO()) return;
 	$aa = $this->getLatest();
         $this->do10($aa);
         $this->toDB();
