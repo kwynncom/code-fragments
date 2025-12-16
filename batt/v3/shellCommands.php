@@ -15,7 +15,7 @@ class shCmdCl {
     private function asbc() : string {
 	$c  = '';
 	$c .= $this->adbPrefix();
-	$c .= 'shell cat /sys/class/power_supply/battery/capacity';
+	$c .= 'shell cat /sys/class/power_supply/battery/capacity 2>&1';
 	belg("$c\n", true);
 	$s = shell_exec($c);
 	return $s;

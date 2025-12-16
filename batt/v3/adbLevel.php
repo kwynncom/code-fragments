@@ -15,7 +15,7 @@ class adbLevelCl {
 	try {
 	    kwas($res && is_string($res), 'bad res type');
 	    $res = trim($res);
-	    kwas(is_numeric($res), 'not numeric');
+	    kwas(is_numeric($res), 'not numeric: ' . $res);
 	    kwas(is_string($res), 'not string');
 	    $n = strlen($res);
 	    kwas($n > 0 && $n <= 3, 'invalid l-evel - string'); unset($n);

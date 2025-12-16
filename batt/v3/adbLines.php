@@ -35,7 +35,7 @@ class adbLinesCl {
 	belg($line);
     }
 
-    public function batteryLineCheck(string $s): ?string
+    public function doLine(string $s): ?string
     {
 	$fts = false;
 	$lines = preg_split('/\R/', $s);
@@ -75,8 +75,7 @@ class adbLinesCl {
 	return false;
     }
 
-    public function batteryLine(string $s) : ?int {
-	// belg('att line match ' . $s);
+    private function batteryLine(string $s) : ?int {
 
 	if (!self::batteryFilt05($s)) return null;
 

@@ -12,9 +12,26 @@ class adbDevicesCl {
 
     private static mixed $cento;
 
+    private static int $iatts = 0;
+
+    private static function slowReinitLoop() : bool {
+
+	static $sleep = 5;
+
+	if (++self::$iatts > 3) {
+	    belg(self::$iatts . ' adb devices init attempts.  Sleeping for ' . $sleep);
+	    if ($sleep) sleep($sleep);
+
+	    return true;
+	}
+
+	return false;
+    }
+
 public static function doit(mixed $cento) {
+    
     self::$cento = $cento;
-    self::debounce();
+    if (!self::slowReinitLoop()) { self::debounce(); }
 }
 
 private static function debounce() {
@@ -48,7 +65,9 @@ private static function devsActual() : bool | string {
     $s = self::$cento->doShCmd(self::cmd);
 
     $a = explode("\n", $s); unset($s);
+
     $dline = false;
+
     foreach($a as $rawl) {
 	$l = trim($rawl); unset($rawl);
 	if ((!$dline) && ($l === 'List of devices attached')) {

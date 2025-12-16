@@ -39,12 +39,12 @@ class GrandCentralBattCl {
     
     public function __construct() {
 	beout('');
+	$this->adbReader = new ADBLogReaderCl($this);
 	$this->shcmo = new shCmdCl();
-	$this->resetLog();
+	$this->resetCF(false);
 	$this->lineO = new adbLinesCl($this);
 	$this->initHeartBeat();
 	$this->usbo = new usbMonitorCl($this);
-	$this->adbReader = new ADBLogReaderCl($this);
 	$this->initSignals();
 	battKillCl::killPrev();
 	Loop::run();
@@ -54,11 +54,12 @@ class GrandCentralBattCl {
 	adbDevicesCl::doit($this);
     }
 
-    private function resetLog() {
+    private function resetCF(bool $restartLog) {
 	beout('');
 	$this->Ubf = 0;
 	$this->resetHeartBeat();
-	$this->checkDevices();
+	if ($restartLog) { $this->adbReader->start(); }
+	else { $this->checkDevices(); }
  
     }
 
@@ -74,7 +75,12 @@ class GrandCentralBattCl {
 
     private function doLevelFromFile() {
 	$res = adbLevelCl::getLevelFromPhoneFileActual(self::doShCmd(shCmdCl::asbccmdConst));
-	if ($res < 0) { return $this->resetLog(); }
+	if ($res < 0) { 
+	    return $this->resetCF(false); 
+	} else {
+	    $this->resetCF(true);
+	}
+
 	$this->Ubf = time();
 	beout($res);
 	
@@ -95,28 +101,29 @@ class GrandCentralBattCl {
 
 	if (trim($line) !== self::fll) return;
 	belg('adb log: ' . $line);
-	$this->resetLog();
+	$this->resetCF(false);
     }
 
     public function adbLogLine(string $line) {
 	$this->setHeartBeatN();
 	$this->checkFirstLogLine($line);
-	if ($this->Ubf <= 0) return;
-	$this->lineO->batteryLineCheck($line);
+	if (preg_match('/^error: /', $line)) { belg($line);    }
+	if ($this->Ubf <= 0) {   return; }
+	$this->lineO->doLine($line);
     }
 
     public function notify(string $from, string $type) {
 
-	if ($from === 'adblog' && $type === 'reinit') {
+	if ($from === 'adblog' && $type === 'closed') {
 	    belg('adblog true *re*init');
-	    $this->resetLog();
+	    $this->resetCF(false);
 	}
 
 	if ($from === 'usb') $this->checkDevices();
 
 	if ($from === 'devices') {
 	    if ($type === 'perm') beout('need permission');
-	    belg('devices response');
+	    belg('devices response is ' . $type);
 	    if ($type === 'found') $this->doLevelFromFile();
 	}
     }
@@ -133,10 +140,10 @@ class GrandCentralBattCl {
 
 	beout('');
 	belg('b3 e-xit called' . "\n");
-	$this->adbReader->close('term');
+	if (isset($this->adbReader)) { $this->adbReader->close('term'); }
 	$loop = Loop::get();
 	$loop->stop();
-	$this->usbo->close();
+	if (isset($this->usbo)) { $this->usbo->close(); }
 	PidFileGuard::release();
 	beout('');
 
