@@ -58,7 +58,10 @@ class GrandCentralBattCl {
 	beout('');
 	$this->Ubf = 0;
 	$this->resetHeartBeat();
-	if ($restartLog) { $this->adbReader->start(); }
+	if ($restartLog) { 
+	    $this->adbReader->start(); 
+	    adbDevicesCl::ok();
+	}
 	else { $this->checkDevices(); }
  
     }
@@ -114,8 +117,8 @@ class GrandCentralBattCl {
 
     public function notify(string $from, string $type) {
 
-	if ($from === 'adblog' && $type === 'closed') {
-	    belg('adblog true *re*init');
+	if ($from === 'adblog' && $type === 'close') {
+	    belg('adblog close');
 	    $this->resetCF(false);
 	}
 

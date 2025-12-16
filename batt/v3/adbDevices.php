@@ -28,10 +28,14 @@ class adbDevicesCl {
 	return false;
     }
 
+public static function ok() {
+    self::$iatts = 0;
+}
+
 public static function doit(mixed $cento) {
-    
     self::$cento = $cento;
     if (!self::slowReinitLoop()) { self::debounce(); }
+    else { self::devs10(); }
 }
 
 private static function debounce() {

@@ -44,9 +44,9 @@ final class ADBLogReaderCl
 	self::$nlines = 0;
 
 	belg('logcat r-einit event ' . $ev);
-	if ($ev !== 'init') { $this->cb->notify('adblog', 'reinit');	} 
+	if ($ev !== 'init') { $this->cb->notify('adblog', $ev);	} 
 	if ($this->termed ?? false) return;
-	if ($ev !== 'init') $this->close('reiniting');
+	if ($ev !== 'init') $this->close('r-einiting');
 
 	if ($ev !== 'close') $this->init();
 
@@ -61,7 +61,7 @@ final class ADBLogReaderCl
 
     private static int $iatts = 0;
 
-    private function slowReinitLoop() {
+    private function slowRILoop() {
 
 	static $sleep = 5;
 
@@ -79,7 +79,7 @@ final class ADBLogReaderCl
     }
 
     private function init() {
-	$this->slowReinitLoop();
+	$this->slowRILoop();
 	$this->setCmd();
  	belg($this->cmd);
         kwas($this->inputStream = popen($this->cmd, 'r'), 'Cannot open stream: ' . $this->cmd);
