@@ -3,16 +3,20 @@
 // use React\EventLoop\Timer\TimerInterface;
 use React\EventLoop\Loop;
 
-
 require_once('adbLevel.php');
+require_once('/var/kwynn/batt/PRIVATEphones.php');
 
-class adbDevicesCl {
+class adbDevicesCl implements KWPhonesPRIVATE {
 
     const cmd = shCmdCl::advicmdConst;
+    const needPerms = ['no permissions', 'unauthorized'];
+
 
     private static mixed $cento;
 
     private static int $iatts = 0;
+
+  
 
     private static function slowReinitLoop() : bool {
 
@@ -81,14 +85,33 @@ private static function devsActual() : bool | string {
 	if (!$dline) continue;
 	if (!$l) continue;
 
+	$l = self::hideSerials($l);
 	belg($l . "\n");
-	$k = 'no permissions';
-	if (strpos($l, $k) !== false) {
-	    belg ('need perm');
-	    return 'perm';
-	}
+
+	if (self::needPerms($l)) { return 'perm'; }
 
 	return true;
+    }
+
+    return false;
+} // func
+
+private static function hideSerials(string $sin) : string {
+    foreach(KWPhonesPRIVATE::list as $r) {
+	$sin = str_replace($r['serial'], $r['alias'], $sin);
+    }
+
+    return $sin;
+
+}
+
+private static function needPerms(string $l) : bool {
+
+    foreach(self::needPerms as $k) {
+	if (strpos($l, $k) !== false) {
+	    belg ('need perm: ' . $l);
+	    return true;
+	}
     }
 
     return false;
