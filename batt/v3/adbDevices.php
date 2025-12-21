@@ -5,75 +5,81 @@ use React\EventLoop\Loop;
 
 require_once('adbLevel.php');
 require_once('/var/kwynn/batt/PRIVATEphones.php');
+require_once('adbWait.php');
 
 class adbDevicesCl implements KWPhonesPRIVATE {
 
-    const cmd = shCmdCl::advicmdConst;
-    const needPerms = ['no permissions', 'unauthorized'];
+const cmd = shCmdCl::advicmdConst;
+const needPerms = ['no permissions', 'unauthorized'];
+
+private readonly object $cento;
+private int $iatts = 0;
 
 
-    private static mixed $cento;
-
-    private static int $iatts = 0;
-
-  
-
-    private static function slowReinitLoop() : bool {
-
-	static $sleep = 5;
-
-	if (++self::$iatts > 3) {
-	    belg(self::$iatts . ' adb devices init attempts.  Sleeping for ' . $sleep);
-	    if ($sleep) sleep($sleep);
-
-	    return true;
-	}
-
-	return false;
-    }
-
-public static function ok() {
-    self::$iatts = 0;
+public function __construct($oin) {
+    $this->cento = $oin;
+    $this->iatts = 0;
+    new adbWaitCl();
 }
 
-public static function doit(mixed $cento) {
-    self::$cento = $cento;
-    if (!self::slowReinitLoop()) { 
-		self::debounce(); 
 
+const nsleep = 4;
+
+private function slowReinitLoop() : bool {
+    if (++$this->iatts > 3) {
+	belg($this->iatts . ' adb devices init attempts.  Sleeping for ' . $sleep);
+	if (self::nsleep) sleep(self::nsleep);
+	return true;
     }
-    else { self::devs10(); }
+    return false;
 }
 
-private static function debounce() {
+public function setok() {
+    $this->iatts = 0;
+}
+
+public function doit() {
+    if (!$this->slowReinitLoop()) { 
+	$this->debounce(); 
+    }
+    else { $this->devs10(); }
+}
+
+private function debounce() {
 
     static $debounceTimer = null;
     $loop = Loop::get();
 
-    if ($debounceTimer) {       $loop->cancelTimer($debounceTimer);    } 
-    else { self::devs10();    }
+    if ($debounceTimer) {       
+	$loop->cancelTimer($debounceTimer);    
+	$debounceTimer = null;
+    } 
+    else { $this->devs10();    }
 
-    $debounceTimer = $loop->addTimer(3.0, function ()  {
+    $debounceTimer = $loop->addTimer(3.0, function () use (&$debounceTimer) {
         belg('debounce call');
-	self::devs10();
         $debounceTimer = null;
+	$this->devs10();
     });
 }
 
-private static function devs10() {
-    $ret = self::devsActual();
+private function devs10() {
+
+    belg('devs10()');
+
+    $ret = $this->devsActual();
     $send = 'unkdev';
 
     if (is_string($ret)) $send = $ret;
     if ($ret === true)   $send = 'found';
     if ($ret === false)  $send = 'nothing';
 
-    self::$cento->notify('devices', $send);
+    $this->cento->notify('devices', $send);
 }
 
-private static function devsActual() : bool | string {
+private function devsActual() : bool | string {
 
-    $s = self::$cento->doShCmd(self::cmd);
+    $s = $this->cento->doShCmd(self::cmd);
 
     $a = explode("\n", $s); unset($s);
 
@@ -103,20 +109,16 @@ private static function hideSerials(string $sin) : string {
     foreach(KWPhonesPRIVATE::list as $r) {
 	$sin = str_replace($r['serial'], $r['alias'], $sin);
     }
-
     return $sin;
-
 }
 
 private static function needPerms(string $l) : bool {
-
     foreach(self::needPerms as $k) {
 	if (strpos($l, $k) !== false) {
 	    belg ('need perm: ' . $l);
 	    return true;
 	}
     }
-
     return false;
 } // func
 

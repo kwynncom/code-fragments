@@ -36,11 +36,13 @@ class GrandCentralBattCl {
     private readonly object $usbo;
     public  readonly object $shcmo;
     private	     int    $Ubf = 0;
+    private readonly object $adbdevo;
 
     
     public function __construct() {
 	beout('');
 	$this->shcmo = new shCmdCl();
+	$this->adbdevo = new adbDevicesCl($this);
 	$this->adbReader = new ADBLogReaderCl($this);
 	$this->resetCF(false);
 	$this->lineO = new adbLinesCl($this);
@@ -52,7 +54,7 @@ class GrandCentralBattCl {
     }
 
     private function checkDevices() {
-	adbDevicesCl::doit($this);
+	$this->adbdevo->doit();
     }
 
     private function resetCF(bool $isGood) {
@@ -62,7 +64,7 @@ class GrandCentralBattCl {
 	$this->resetHeartBeat();
 	if ($isGood) { 
 	    $this->adbReader->logRestart(); 
-	    adbDevicesCl::ok();
+	    $this->adbdevo->setok();
 	}
 	if (!$isGood) $this->checkDevices();
  
@@ -83,11 +85,12 @@ class GrandCentralBattCl {
 	if ($res < 0) { 
 	    return $this->resetCF(false); 
 	} else {
+	    beout($res);
 	    $this->resetCF(true);
 	}
 
 	$this->Ubf = time();
-	beout($res);
+
 	
     }
 

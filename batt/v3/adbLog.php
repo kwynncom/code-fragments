@@ -33,69 +33,44 @@ final class ADBLogReaderCl
 
     public function __destruct() { $this->close('destructor'); }
 
-    private static int $nlines = 0;
 
     private function reinit(string $ev) {
 
+	belg('logcat r-einit event ' . $ev);
 
 	if ($ev === 'ext' && $this->isOpen) {
 	    belg('log cat ext reinit call, but open so happy and ignoring');
 	    return;
 	}
 
-	$this->isOpen = false;
-	self::$nlines = 0;
-
-	belg('logcat r-einit event ' . $ev);
 	$this->close('closing');
 
 	if ($ev === 'close') { $this->cb->notify('adblog', $ev);	} 
 	if ($this->termed ?? false) return;
 
 	if ($ev !== 'close') $this->init();
-
     }
 
     private function setCmd() : string {
 
 	$c  = '';
 	$pre  = $this->cb->shcmo->adbPrefix();
-	// $c  .= $pre . 'logcat -c 2>&1 && ';
 	$c .= $pre . 'logcat 2>&1';
 	$this->cmd = $c;
 	return $c;
     }
 
-    private static int $iatts = 0;
-    const sleepForRI = 5;
-
-    private function slowRILoop() {
-
-	self::$nlines = 0;
-
-	if (++self::$iatts > 5) {
-	    belg(self::$iatts . ' log init attempts.  Sleeping for ' . self::sleepForRI);
-	    if (self::sleepForRI) sleep(self::sleepForRI);
-	}
-    }
-
-
     const ils = ['- waiting for device -', '--------- beginning of main' ];
 
     private function doLine(string $line) {
-	if (++self::$nlines > 30) {
-	    self::$iatts = 0;
-	}
-
 	foreach(self::ils as $cl) {
-	    if (strpos($line, $cl) !== false) belg($cl);
+	    if (strpos($line, $cl) !== false) belg('logcat: ' . $cl);
 	}
 
 	$this->cb->adbLogLine($line);
     }
 
     private function init() {
-	$this->slowRILoop();
 	$this->setCmd();
  	belg($this->cmd);
         kwas($this->inputStream = popen($this->cmd, 'r'), 'Cannot open stream: ' . $this->cmd);
