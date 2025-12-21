@@ -8,37 +8,31 @@ use React\EventLoop\Loop;
 use React\ChildProcess\Process;
 
 class adbWaitCl {
-    private	     object $lines;
-    private mixed  $inputStream;
 
-    public function __construct() {
-	$this->init();
+    private int $n = 0;
+
+    public function __construct($oin) {
+	$this->init($oin);
     }
 
-    private function init() {
+    private function init($oin) {
 	$c = 'adb wait-for-device 2>&1';
-	belg($c, true);
+	belg($c . ' call ' . $this->n++, true);
 	$process = new Process($c);
-
 	$process->start(Loop::get());
+	$process->on('exit', function ($exitCode) use($oin) {
 
-	// Stream stdout in real-time (non-blocking)
-	$process->stdout->on('data', function ($chunk) {
-	    echo "STDOUT: " . $chunk;
-	});
-
-	// Stream stderr in real-time
-	$process->stderr->on('data', function ($chunk) {
-	    echo "STDERR: " . $chunk;
-	});
-
-	// Handle process exit (non-blocking)
-	$process->on('exit', function ($exitCode, $termSignal) {
-	    if ($termSignal === null) {
-		echo "Process exited with code: " . $exitCode . PHP_EOL;
-	    } else {
-		echo "Process terminated by signal: " . $termSignal . PHP_EOL;
+	    if ($exitCode === 0) {
+		$oin->notify('devices', 'found');
 	    }
+
+	    if ($this->n > 3) {
+		belg('too many wait restarts.  Exiting.');
+		return;
+	    }
+
+	    $this->init($oin);
+	    
 	});
 
 
@@ -46,4 +40,4 @@ class adbWaitCl {
 
 }
 
-if (didCLICallMe(__FILE__)) new adbWaitCl();
+// if (didCLICallMe(__FILE__)) new adbWaitCl();

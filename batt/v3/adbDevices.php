@@ -19,7 +19,7 @@ private int $iatts = 0;
 public function __construct($oin) {
     $this->cento = $oin;
     $this->iatts = 0;
-    new adbWaitCl();
+    new adbWaitCl($oin);
 }
 
 
