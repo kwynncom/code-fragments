@@ -25,8 +25,6 @@ final class ADBLogReaderCl
     public function __construct(object $cb) {
 	$this->loop = Loop::get();
 	$this->cb = $cb;
-	$this->reinit('init');
-	
     }
 
     public function logRestart() {
@@ -39,8 +37,9 @@ final class ADBLogReaderCl
 
     private function reinit(string $ev) {
 
+
 	if ($ev === 'ext' && $this->isOpen) {
-	    belg('log restart sent but already open');
+	    belg('log cat ext reinit call, but open so happy and ignoring');
 	    return;
 	}
 
@@ -48,9 +47,10 @@ final class ADBLogReaderCl
 	self::$nlines = 0;
 
 	belg('logcat r-einit event ' . $ev);
-	if ($ev !== 'init') { $this->cb->notify('adblog', $ev);	} 
+	$this->close('closing');
+
+	if ($ev === 'close') { $this->cb->notify('adblog', $ev);	} 
 	if ($this->termed ?? false) return;
-	if ($ev !== 'init') $this->close('r-einiting');
 
 	if ($ev !== 'close') $this->init();
 
@@ -59,10 +59,9 @@ final class ADBLogReaderCl
     private function setCmd() : string {
 
 	$c  = '';
-	// $c .= 'adb wait-for-device 2>&1 && ';
-
 	$pre  = $this->cb->shcmo->adbPrefix();
-	$c  .= $pre . 'logcat -c 2>&1 && ' . $pre . 'logcat 2>&1';
+	// $c  .= $pre . 'logcat -c 2>&1 && ';
+	$c .= $pre . 'logcat 2>&1';
 	$this->cmd = $c;
 	return $c;
     }
@@ -81,9 +80,15 @@ final class ADBLogReaderCl
     }
 
 
+    const ils = ['- waiting for device -', '--------- beginning of main' ];
+
     private function doLine(string $line) {
 	if (++self::$nlines > 30) {
 	    self::$iatts = 0;
+	}
+
+	foreach(self::ils as $cl) {
+	    if (strpos($line, $cl) !== false) belg($cl);
 	}
 
 	$this->cb->adbLogLine($line);

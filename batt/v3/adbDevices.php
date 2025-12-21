@@ -38,7 +38,10 @@ public static function ok() {
 
 public static function doit(mixed $cento) {
     self::$cento = $cento;
-    if (!self::slowReinitLoop()) { self::debounce(); }
+    if (!self::slowReinitLoop()) { 
+		self::debounce(); 
+
+    }
     else { self::devs10(); }
 }
 

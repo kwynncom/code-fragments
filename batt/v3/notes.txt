@@ -1,6 +1,23 @@
+07:00am
+    If I don't check for the first adb log line in central, the debounce request will kill the log
+
+06:56am
+
+    adb logcat -c  is unstable in the adb log reader class.  It has someting to do with the fact that adb logcat -c 
+	will both wait for a device but will wait forever if the adb server fluctuates.  
+	logcat -c probably needs to go along with wait-for-device
+
 2025/12/21 06:18am
 
-I 
+My new theory is to have a "wait-for-device" that does indeed trigger everything.
+    I need to see what I think is stderr of the adb server starting, if in fact it needs to start.
+    Then wait-for-devices either exits silently, which is golden, or it exits with an error if the server is killed again
+    I still need debouncing or something where usb and devices and wait-for all try to happen around the same time.
+    It's valid to try to run the log first, but that can also go in a circle.  
+    
+
+I still need "adb devices" to check for permission.
+
 
 **********
 2025/12/14 00:11

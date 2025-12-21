@@ -55,16 +55,16 @@ class GrandCentralBattCl {
 	adbDevicesCl::doit($this);
     }
 
-    private function resetCF(bool $isGood, bool $init = false) {
+    private function resetCF(bool $isGood) {
 	beout('');
-	belg('resetCF');
+	belg('resetCF.  isGood = ' . ($isGood ? 'true' : 'false'));
 	$this->Ubf = 0;
 	$this->resetHeartBeat();
 	if ($isGood) { 
 	    $this->adbReader->logRestart(); 
 	    adbDevicesCl::ok();
 	}
-	if (!$isGood || $init) $this->checkDevices();
+	if (!$isGood) $this->checkDevices();
  
     }
 
@@ -91,30 +91,9 @@ class GrandCentralBattCl {
 	
     }
 
-    const fll = '- waiting for device -';
-
-    private function checkFirstLogLine(string $line) {
-
-	static $l;
-	static $lp;
-	if (!$l) { 
-	    $l = strlen(self::fll);
-	    $lp = $l + 3;
-	}
-	
-	if (isset($line[$lp])) return;
-
-	if (trim($line) !== self::fll) return;
-	belg('adb log: ' . $line);
-	$this->resetCF(false);
-    }
-
     public function adbLogLine(string $line) {
-	belg($line);
 	$this->setHeartBeatN();
-	// $this->checkFirstLogLine($line);
 	if (preg_match('/^error: /', $line)) { belg($line);    }
-	// if ($this->Ubf <= 0) {   return; }
 	$this->lineO->doLine($line);
     }
 
