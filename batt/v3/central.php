@@ -58,7 +58,7 @@ class GrandCentralBattCl {
     }
 
     private function resetCF(bool $isGood) {
-	beout('');
+	if (!$isGood) beout('');
 	belg('resetCF.  isGood = ' . ($isGood ? 'true' : 'false'));
 	$this->Ubf = 0;
 	$this->resetHeartBeat();

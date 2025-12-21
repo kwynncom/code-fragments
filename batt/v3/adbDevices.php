@@ -13,13 +13,14 @@ const cmd = shCmdCl::advicmdConst;
 const needPerms = ['no permissions', 'unauthorized'];
 
 private readonly object $cento;
+private readonly object $waito;
 private int $iatts = 0;
 
 
 public function __construct($oin) {
-    $this->cento = $oin;
+    $this->cento = $oin; unset($oin);
     $this->iatts = 0;
-    new adbWaitCl($oin);
+    $this->waito = new adbWaitCl($this->cento);
 }
 
 
@@ -72,7 +73,10 @@ private function devs10() {
 
     if (is_string($ret)) $send = $ret;
     if ($ret === true)   $send = 'found';
-    if ($ret === false)  $send = 'nothing';
+    if ($ret === false)  {
+	$send = 'nothing';
+	$this->waito->wait();
+    }
 
     $this->cento->notify('devices', $send);
 }

@@ -9,35 +9,29 @@ use React\ChildProcess\Process;
 
 class adbWaitCl {
 
+    private readonly object $cb;
     private int $n = 0;
 
-    public function __construct($oin) {
-	$this->init($oin);
+    public function __construct(object $cb) {
+	$this->cb = $cb;
     }
 
-    private function init($oin) {
+    public function wait() {
 	$c = 'adb wait-for-device 2>&1';
-	belg($c . ' call ' . $this->n++, true);
+	if (++$this->n > 10) {
+	    belg($c . ' too many restarts.  Not restarting.');
+	    return;
+	}
+
+	belg($c . ' call ' . $this->n, true);
 	$process = new Process($c);
 	$process->start(Loop::get());
-	$process->on('exit', function ($exitCode) use($oin) {
-
+	$process->on('exit', function ($exitCode) {
 	    if ($exitCode === 0) {
-		$oin->notify('devices', 'found');
+		$this->cb->notify('devices', 'found');
 	    }
-
-	    if ($this->n > 3) {
-		belg('too many wait restarts.  Exiting.');
-		return;
-	    }
-
-	    $this->init($oin);
-	    
 	});
-
-
     }
-
 }
 
 // if (didCLICallMe(__FILE__)) new adbWaitCl();

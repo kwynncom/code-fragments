@@ -46,7 +46,10 @@ final class ADBLogReaderCl
 	$this->close('closing');
 
 	if ($ev === 'close') { $this->cb->notify('adblog', $ev);	} 
-	if ($this->termed ?? false) return;
+	if ($this->termed ?? false) {
+	    belg('logcat termed');
+	    return;
+	}
 
 	if ($ev !== 'close') $this->init();
     }
@@ -86,7 +89,10 @@ final class ADBLogReaderCl
     { 
 	$this->isOpen = false;
 	belg($this->cmd ?? '(adbLog command not set yet) ' . ' closing event ' . $ev);
-	if ($this->termed ?? false) return;
+	if ($this->termed ?? false) {
+	    belg('logcat termed');
+	    return;
+	}
 	if ($ev === 'term') $this->termed = true;
 	if (isset($this->lines)) {  $this->lines->close(); }
 	unset(    $this->lines);
