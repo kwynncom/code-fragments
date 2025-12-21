@@ -7,6 +7,7 @@ require_once('utils.php');
 require_once('shellCommands.php');
 require_once('adbLevel.php');
 require_once('adbLog.php');
+require_once('usb.php');
 require_once('adbLines.php');
 require_once('adbDevices.php');
 
@@ -39,8 +40,8 @@ class GrandCentralBattCl {
     
     public function __construct() {
 	beout('');
-	$this->adbReader = new ADBLogReaderCl($this);
 	$this->shcmo = new shCmdCl();
+	$this->adbReader = new ADBLogReaderCl($this);
 	$this->resetCF(false);
 	$this->lineO = new adbLinesCl($this);
 	$this->initHeartBeat();
@@ -50,19 +51,20 @@ class GrandCentralBattCl {
 	Loop::run();
     }
 
-    public function checkDevices() {
+    private function checkDevices() {
 	adbDevicesCl::doit($this);
     }
 
-    private function resetCF(bool $restartLog) {
+    private function resetCF(bool $isGood, bool $init = false) {
 	beout('');
+	belg('resetCF');
 	$this->Ubf = 0;
 	$this->resetHeartBeat();
-	if ($restartLog) { 
-	    $this->adbReader->start(); 
+	if ($isGood) { 
+	    $this->adbReader->logRestart(); 
 	    adbDevicesCl::ok();
 	}
-	else { $this->checkDevices(); }
+	if (!$isGood || $init) $this->checkDevices();
  
     }
 
@@ -108,10 +110,11 @@ class GrandCentralBattCl {
     }
 
     public function adbLogLine(string $line) {
+	belg($line);
 	$this->setHeartBeatN();
-	$this->checkFirstLogLine($line);
+	// $this->checkFirstLogLine($line);
 	if (preg_match('/^error: /', $line)) { belg($line);    }
-	if ($this->Ubf <= 0) {   return; }
+	// if ($this->Ubf <= 0) {   return; }
 	$this->lineO->doLine($line);
     }
 

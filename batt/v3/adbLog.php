@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once('adbDevices.php');
-require_once('usb.php');
+
 
 use React\Stream\ReadableResourceStream;
 use ReactLineStream\LineStream;
@@ -11,8 +11,6 @@ use React\EventLoop\Loop;
 
 final class ADBLogReaderCl
 {
-    const cmdSfx = 'logcat 2>&1';
-
     private	     string $cmd;
 
     private	     object $lines;
@@ -27,11 +25,12 @@ final class ADBLogReaderCl
     public function __construct(object $cb) {
 	$this->loop = Loop::get();
 	$this->cb = $cb;
+	$this->reinit('init');
 	
     }
 
-    public function start() {
-	$this->reinit('init');
+    public function logRestart() {
+	$this->reinit('ext');
     }
 
     public function __destruct() { $this->close('destructor'); }
@@ -39,6 +38,11 @@ final class ADBLogReaderCl
     private static int $nlines = 0;
 
     private function reinit(string $ev) {
+
+	if ($ev === 'ext' && $this->isOpen) {
+	    belg('log restart sent but already open');
+	    return;
+	}
 
 	$this->isOpen = false;
 	self::$nlines = 0;
@@ -53,29 +57,36 @@ final class ADBLogReaderCl
     }
 
     private function setCmd() : string {
-	$c  = $this->cb->shcmo->adbPrefix();
-	$c .= self::cmdSfx;
+
+	$c  = '';
+	// $c .= 'adb wait-for-device 2>&1 && ';
+
+	$pre  = $this->cb->shcmo->adbPrefix();
+	$c  .= $pre . 'logcat -c 2>&1 && ' . $pre . 'logcat 2>&1';
 	$this->cmd = $c;
 	return $c;
     }
 
     private static int $iatts = 0;
+    const sleepForRI = 5;
 
     private function slowRILoop() {
 
-	static $sleep = 5;
+	self::$nlines = 0;
 
-	if (++self::$iatts > 3) {
-	    belg(self::$iatts . ' log init attempts.  Sleeping for ' . $sleep);
-	    if ($sleep) sleep($sleep);
+	if (++self::$iatts > 5) {
+	    belg(self::$iatts . ' log init attempts.  Sleeping for ' . self::sleepForRI);
+	    if (self::sleepForRI) sleep(self::sleepForRI);
 	}
     }
 
 
     private function doLine(string $line) {
-	if (++self::$lines > 30) {
+	if (++self::$nlines > 30) {
 	    self::$iatts = 0;
 	}
+
+	$this->cb->adbLogLine($line);
     }
 
     private function init() {
@@ -84,7 +95,7 @@ final class ADBLogReaderCl
  	belg($this->cmd);
         kwas($this->inputStream = popen($this->cmd, 'r'), 'Cannot open stream: ' . $this->cmd);
   	$this->lines = new LineStream(new ReadableResourceStream($this->inputStream, $this->loop));
-        $this->lines->on('data' , function (string $line)   { $this->cb->adbLogLine($line);  });
+        $this->lines->on('data' , function (string $line)   { $this->doLine($line); });
 	$this->lines->on('close', function ()		    { $this->reinit('close');	    });
 	$this->isOpen = true;
     }
