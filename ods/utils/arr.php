@@ -63,18 +63,19 @@ class odsFirstSheetCl {
     }
 
     private function getLatest() : array {
-	$db = $this->dbo->getLatest();
-	$ret = $this->getLatestLoop($db);
+	$ps = $this->dbo->getLatest();
+	if (!$ps) $ps = getHoursSACl::getProjects();
+	$ret = $this->getLatestLoop($ps);
 	return $ret;
     }
 
     private function getLatestLoop(array $db) {
 	$ret = [];
 
-	foreach($db as $da) {
-	    $prnm = $da['project'];
+	foreach($db as $prnm => $da) {
 	    $mt = getHoursSACl::getMTime($prnm);
-	    if ($da['Ufile'] < $mt) $ret[$prnm] = getHoursSACl::get($prnm);
+	    $Ufile = $da['Ufile'] ?? 0;
+	    if ($Ufile < $mt) $ret[$prnm] = getHoursSACl::get($prnm);
 	    else $ret[$prnm] = $da;
 	}
 
@@ -110,15 +111,8 @@ private function findHighestUfilePerProject($databases, $files) {
     return $results;
 }
 
-    private function setDBO() : bool {
-	try { 
-	    $this->dbo = new odsDBCl();
-	    return true;
-	} catch(Throwable $ex) {
-	    if (iscli()) echo('mongod is probably down' . "\n");
-	}
-
-	return false;
+    private function setDBO() {
+        $this->dbo = new odsDBCl();
     }
 
 
@@ -126,14 +120,14 @@ private function findHighestUfilePerProject($databases, $files) {
 
     public function __construct() {
 	$this->log();
-	if (!$this->setDBO()) return;
+	$this->setDBO();
 	$aa = $this->getLatest();
         $this->do10($aa);
         $this->toDB();
     }
 
-    private function toDB() {
-	odsDBCl::put($this->input);
+    private function toDB() { 	
+	odsDBCl::put($this->input);     
     }
 
     private function do10(array $aa) {
@@ -174,4 +168,6 @@ private function findHighestUfilePerProject($databases, $files) {
     }
 }
 
-if (didCLICallMe(__FILE__)) new odsFirstSheetCl();
+if (didCLICallMe(__FILE__)) {
+    new odsFirstSheetCl();
+}

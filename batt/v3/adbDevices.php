@@ -28,7 +28,7 @@ const nsleep = 4;
 
 private function slowReinitLoop() : bool {
     if (++$this->iatts > 3) {
-	belg($this->iatts . ' adb devices init attempts.  Sleeping for ' . $sleep);
+	belg($this->iatts . ' adb devices init attempts.  Sleeping for ' . self::nsleep);
 	if (self::nsleep) sleep(self::nsleep);
 	return true;
     }

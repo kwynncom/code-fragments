@@ -90,7 +90,7 @@ class getHoursSACl implements hoursIntf {
 	try { 
 	    kwas(trim($s), 'bad project name');
 	    if (!strpos($s, '.')) return $s;
-	    $t = trim(pathinfo($f, PATHINFO_FILENAME));
+	    $t = trim(pathinfo($s, PATHINFO_FILENAME));
 	    kwas($t, 'cannot parse proj');
 	    return $t;
 	} catch(Throwable $ex) {
@@ -112,7 +112,7 @@ class getHoursSACl implements hoursIntf {
 
     public static function getProjects() : array {
 	$fs = self::getAllFiles();
-	if (!$ps) return [];
+	if (!$fs) return [];
 
 	$ret = [];
 	foreach($fs as $p) {
@@ -155,7 +155,4 @@ class getHoursSACl implements hoursIntf {
 	$o = new self($proj);
 	return $o->odat;
     }
-
-    
-
 }

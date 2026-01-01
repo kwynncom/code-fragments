@@ -18,6 +18,7 @@ class shCmdCl {
 	$c .= 'shell cat /sys/class/power_supply/battery/capacity 2>&1';
 	belg("$c\n", true);
 	$s = shell_exec($c);
+	if (!$s || !is_string($s)) return '';
 	return $s;
     }
 

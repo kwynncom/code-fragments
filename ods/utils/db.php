@@ -45,6 +45,7 @@ class odsDBCl extends dao_generic_4 {
     }
 
     private function getProjects() : array {
+	if (!$this->isup) return [];
 	$res = $this->p->find(['active' => ['$ne' => false]]);
 	if (!$res) return [];
 
@@ -61,11 +62,13 @@ class odsDBCl extends dao_generic_4 {
 
 	$this->vala = odsArrValCl::getValidAProj($a); unset($a);
 
-	foreach($this->vala as $proj => $a) {
-	    $res = $this->putI20($proj);
-	    if ($res === 2) {
-		if (isrv('post')) echo($proj . 'OKDB_DUPLICATE');
-		continue;
+	if ($this->isup) {
+	    foreach($this->vala as $proj => $a) {
+		$res = $this->putI20($proj);
+		if ($res === 2) {
+		    if (isrv('post')) echo($proj . 'OKDB_DUPLICATE');
+		    continue;
+		}
 	    }
 	}
 
@@ -82,21 +85,23 @@ class odsDBCl extends dao_generic_4 {
 	$pmac = hoursPostCl::statusKey();
 
 	$topost = [];
-	foreach($this->vala as $proj => $a) {
-	   $q = [   'project' => $a['project'], 
-		    'Ufile' => $a['Ufile'],
-		    'posted.' . $pmac => ['$exists' => true]
-		];
+	if ($this->isup) {
+	    foreach($this->vala as $proj => $a) {
+	       $q = [   'project' => $a['project'], 
+			'Ufile' => $a['Ufile'],
+			'posted.' . $pmac => ['$exists' => true]
+		    ];
 
-	    if ($this->c->count($q) >= 1) continue;
-	    
-	    $topost[$proj] = $a;
-	    
-	}
+		if ($this->c->count($q) >= 1) continue;
+
+		$topost[$proj] = $a;
+
+	    }
+	} else $topost = $this->vala;
 
 	if (!$topost) return;
 	$pok = hoursPostCl::post($topost);
-	if (!$pok) return;
+	if (!$pok || !$this->isup) return;
 
 
 	foreach($pok as $a) {
@@ -117,12 +122,25 @@ class odsDBCl extends dao_generic_4 {
 	return (ispkwd() && time() < strtotime('2024-10-19 05:30'));
     }
 
+    private readonly bool $isup;
+
+    private function setDBStatus() {
+	$t = false;
+	try { 
+	    $t = ($this->client->admin->command(['ping' => 1])->toArray()[0]['ok'] ?? 0) == 1; // == not ===
+	} catch(Throwable $ex) { }
+	$this->isup = $t;
+	return;
+    }
+
     private function initDB() {
 	if (isset($this->c)) return;
 	parent::__construct(self::dbname);
-	$this->c = $this->kwsel(self::coname);
-	// $this->c->createIndex(['project' => 1, 'Ufile' => -1], ['unique' => true]);
+	$this->setDBStatus();
+	
+	if (!$this->isup) return;
 
+	$this->c = $this->kwsel(self::coname);
 	$this->p = $this->kwsel(self::co20name);
 	$this->p->createIndex(['project' => 1], ['unique' => true]);
 
