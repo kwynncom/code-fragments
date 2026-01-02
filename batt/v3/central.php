@@ -72,10 +72,15 @@ class GrandCentralBattCl {
 
     public function levelFromADBLog(int $lev) {
 	static $prev;
+	static $U = 0;
 
-	if (time() - $this->Ubf < 5) return;
+	$now = time();
+	if ($now - $this->Ubf < 5) return;
 
-	if ($lev !== $prev) beout($lev);
+	if (($lev !== $prev) || ($now - $U > 30)) {
+	    beout($lev);
+	    $U = $now;
+	}
 	else belg('+');
 	$prev = $lev;
     }
