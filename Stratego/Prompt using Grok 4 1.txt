@@ -1,0 +1,4 @@
+Prompt, using Grok 4.1 Fast mode.  2026/02/15 06:25am US Eastern Time.
+
+Please give me code for the board game Stratego. HTML and client-side JavaScript. Start with red and blue players. Use the numbers 1 - 9 where apt. Pick a letter or symbol for others. Start with both sides' pieces visible and any initial board setup you want.
+
