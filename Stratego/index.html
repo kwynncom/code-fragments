@@ -46,8 +46,7 @@ function place(){
 
 function ph(p){
   if(!p)return"";
-  let s=p.t;
-  if(p.t==='B')s='💣';if(p.t==='F')s='⚑';if(p.t==='S')s='🕵️';
+  let s=p.t;if(p.t==='B')s='💣';if(p.t==='F')s='⚑';if(p.t==='S')s='🕵️';
   return`<div class="piece ${p.c}">${s}</div>`;
 }
 
@@ -66,7 +65,7 @@ function render(){
   });
   document.getElementById("red-graveyard").innerHTML=rg.map(gh).join("");
   document.getElementById("blue-graveyard").innerHTML=bg.map(gh).join("");
-  document.getElementById("status").textContent=over?"":(cur==="red"?"🔴":"🔵");
+  if(!over)document.getElementById("status").textContent=cur==="red"?"🔴":"🔵";
 }
 
 function scoutPath(f,t){
@@ -114,11 +113,17 @@ function move(f,t){
   if(!d){
     board[t]=a;board[f]=null;
   }else{
+    if(d.t==="F"){
+      // Attacking flag → instant win, flag does NOT fight back
+      board[t]=a;board[f]=null;
+      over=true;
+      document.getElementById("status").textContent=a.c.toUpperCase()+" WINS!";
+      clearPoss();render();return;
+    }
     const r=combat(a,d);
     if(r==="aw"){
       board[t]=a;board[f]=null;
       (d.c==="red"?rg:bg).push(d);
-      if(d.t==="F"){over=true;document.getElementById("status").textContent=a.c.toUpperCase()+" WINS!";return}
     }else if(r==="dw"){
       board[f]=null;(a.c==="red"?rg:bg).push(a);
     }else{
