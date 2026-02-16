@@ -4,19 +4,100 @@
 <meta charset="UTF-8">
 <title>Stratego</title>
 <style>
-body{font-family:Arial,sans-serif;background:#111;color:#eee;margin:10px;text-align:center;}
-#status{font-size:2.4rem;margin:12px 0;}
-.game{display:flex;gap:10px;align-items:flex-start;justify-content:center;}
-.grave{width:180px;min-height:520px;background:#222;padding:8px;border-radius:6px;border:1px solid #444;display:flex;flex-direction:column;gap:2px;flex-wrap:wrap;}
-#board{display:grid;grid-template-columns:repeat(10,52px);grid-template-rows:repeat(10,52px);gap:1px;background:#222;padding:6px;border:2px solid #444;border-radius:6px;}
-.cell{width:52px;height:52px;background:#8bc34a;border:1px solid #4caf50;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;cursor:pointer;user-select:none;position:relative;}
-.cell.lake{background:#000;border-color:#111;cursor:default;}
-.red{background:#c62828;border-color:#b71c1c;color:#fff;}
-.blue{background:#1565c0;border-color:#0d47a1;color:#fff;}
-.piece{width:48px;height:48px;line-height:48px;border-radius:4px;font-size:24px;box-shadow:0 2px 4px #000;}
-.selected{box-shadow:0 0 0 3px #ffeb3b,inset 0 0 6px #ffeb3b !important;}
-.possible-move{background:#ffeb3b !important;opacity:0.65;}
-.grave-piece{width:24px;height:24px;line-height:24px;font-size:14px;border-radius:3px;border:1px solid #555;display:flex;align-items:center;justify-content:center;}
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #eee;
+  margin: 10px;
+  text-align: center;
+}
+#status {
+  font-size: 2.4rem;
+  margin: 12px 0;
+}
+.game {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.grave {
+  width: 180px;
+  min-height: 520px;
+  background: #222;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+#board {
+  display: grid;
+  grid-template-columns: repeat(10, 52px);
+  grid-template-rows: repeat(10, 52px);
+  gap: 1px;
+  background: #222;
+  padding: 6px;
+  border: 2px solid #444;
+  border-radius: 6px;
+}
+.cell {
+  width: 52px;
+  height: 52px;
+  background: #8bc34a;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+.cell.lake {
+  background: #000;
+  border-color: #111;
+  cursor: default;
+}
+.red {
+  background: #c62828;
+  border-color: #b71c1c;
+  color: #fff;
+}
+.blue {
+  background: #1565c0;
+  border-color: #0d47a1;
+  color: #fff;
+}
+.piece {
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 4px;
+  font-size: 24px;
+  box-shadow: 0 2px 4px #000;
+}
+.selected {
+  box-shadow: 0 0 0 3px #ffeb3b, inset 0 0 6px #ffeb3b !important;
+}
+.possible-move {
+  background: #ffeb3b !important;
+  opacity: 0.65;
+}
+.grave-piece {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 14px;
+  border-radius: 3px;
+  border: 1px solid #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
 </head>
 <body>
@@ -30,138 +111,228 @@ body{font-family:Arial,sans-serif;background:#111;color:#eee;margin:10px;text-al
 </div>
 
 <script>
-const PIECES={'B':{r:-1,m:false},'F':{r:-2,m:false},'S':{r:999,m:true},'9':{r:9,m:true,s:true},'8':{r:8,m:true},'7':{r:7,m:true},'6':{r:6,m:true},'5':{r:5,m:true},'4':{r:4,m:true},'3':{r:3,m:true},'2':{r:2,m:true},'1':{r:1,m:true}};
-const RED=["1","2","3","3","4","4","4","5","5","5","5","6","6","6","6","7","7","7","7","S","B","B","B","B","B","B","F","8","8","8","9","9","9","9","9","9","9","9","8","8"];
-const BLUE=["9","9","9","9","9","9","9","9","8","8","B","B","B","B","B","B","F","8","8","8","5","6","6","6","6","7","7","7","7","S","1","2","3","3","4","4","4","5","5","5"];
-const board=Array(100).fill(null),rg=[],bg=[];
-let sel=null,cur="red",over=false;
+// Piece data (r = rank, lower number stronger; m = movable; s = scout)
+const PIECES = {
+  'B': {name:"Bomb",   r:-1, m:false},
+  'F': {name:"Flag",   r:-2, m:false},
+  'S': {name:"Spy",    r:999, m:true},
+  '9': {name:"Scout",  r:9,   m:true, s:true},
+  '8': {name:"Miner",  r:8,   m:true},
+  '7': {name:"Sergeant",r:7,   m:true},
+  '6': {name:"Lieutenant",r:6, m:true},
+  '5': {name:"Captain", r:5,   m:true},
+  '4': {name:"Major",   r:4,   m:true},
+  '3': {name:"Colonel", r:3,   m:true},
+  '2': {name:"General", r:2,   m:true},
+  '1': {name:"Marshal", r:1,   m:true}
+};
 
-function idx(r,c){return r*10+c}
-function lake(r,c){return(r===4||r===5)&&(c===2||c===3||c===6||c===7)}
+const RED_SETUP = ["1","2","3","3","4","4","4","5","5","5","5","6","6","6","6","7","7","7","7","S","B","B","B","B","B","B","F","8","8","8","9","9","9","9","9","9","9","9","8","8"];
+const BLUE_SETUP = ["9","9","9","9","9","9","9","9","8","8","B","B","B","B","B","B","F","8","8","8","5","6","6","6","6","7","7","7","7","S","1","2","3","3","4","4","4","5","5","5"];
 
-function place(){
-  let k=0;for(let r=0;r<4;r++)for(let c=0;c<10;c++)if(!lake(r,c))board[idx(r,c)]={c:"red",t:RED[k++]};
-  k=0;for(let r=6;r<10;r++)for(let c=0;c<10;c++)if(!lake(r,c))board[idx(r,c)]={c:"blue",t:BLUE[k++]};
+const board = Array(100).fill(null);
+const redGrave = [], blueGrave = [];
+let selected = null;
+let currentPlayer = "red";
+let gameOver = false;
+
+function idx(r, c) { return r * 10 + c; }
+function isLake(r, c) { return (r === 4 || r === 5) && (c === 2 || c === 3 || c === 6 || c === 7); }
+
+function placePieces() {
+  let k = 0;
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 10; c++) {
+      if (!isLake(r, c)) board[idx(r, c)] = {c: "red", t: RED_SETUP[k++]};
+    }
+  }
+  k = 0;
+  for (let r = 6; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      if (!isLake(r, c)) board[idx(r, c)] = {c: "blue", t: BLUE_SETUP[k++]};
+    }
+  }
 }
 
-function ph(p){
-  if(!p)return"";
-  let s=p.t;if(p.t==='B')s='💣';if(p.t==='F')s='⚑';if(p.t==='S')s='🕵️';
-  return`<div class="piece ${p.c}">${s}</div>`;
+function pieceHTML(p) {
+  if (!p) return "";
+  let s = p.t;
+  if (p.t === 'B') s = '💣';
+  if (p.t === 'F') s = '⚑';
+  if (p.t === 'S') s = '🕵️';
+  return `<div class="piece ${p.c}">${s}</div>`;
 }
 
-function gh(p){
-  let s=p.t;if(p.t==='B')s='💣';if(p.t==='F')s='⚑';if(p.t==='S')s='🕵️';
-  return`<div class="grave-piece ${p.c}">${s}</div>`;
+function graveHTML(p) {
+  let s = p.t;
+  if (p.t === 'B') s = '💣';
+  if (p.t === 'F') s = '⚑';
+  if (p.t === 'S') s = '🕵️';
+  return `<div class="grave-piece ${p.c}">${s}</div>`;
 }
 
-function render(){
-  document.querySelectorAll(".cell").forEach(c=>{
-    const i=+c.dataset.i,p=board[i];
-    c.innerHTML=p?ph(p):"";
-    c.className="cell"+(lake(Math.floor(i/10),i%10)?" lake":"");
-    if(p)c.classList.add(p.c);
-    if(sel===i)c.classList.add("selected");
+function render() {
+  document.querySelectorAll(".cell").forEach(cell => {
+    const i = +cell.dataset.i;
+    const p = board[i];
+    cell.innerHTML = p ? pieceHTML(p) : "";
+    cell.className = "cell" + (isLake(Math.floor(i/10), i%10) ? " lake" : "");
+    if (p) cell.classList.add(p.c);
+    if (selected === i) cell.classList.add("selected");
   });
-  document.getElementById("red-graveyard").innerHTML=rg.map(gh).join("");
-  document.getElementById("blue-graveyard").innerHTML=bg.map(gh).join("");
-  if(!over)document.getElementById("status").textContent=cur==="red"?"🔴":"🔵";
+  document.getElementById("red-graveyard").innerHTML = redGrave.map(graveHTML).join("");
+  document.getElementById("blue-graveyard").innerHTML = blueGrave.map(graveHTML).join("");
+  if (!gameOver) {
+    document.getElementById("status").textContent = currentPlayer === "red" ? "🔴" : "🔵";
+  }
 }
 
-function scoutPath(f,t){
-  const fr=Math.floor(f/10),fc=f%10,tr=Math.floor(t/10),tc=t%10;
-  if(fr!==tr&&fc!==tc)return false;
-  const dr=Math.sign(tr-fr),dc=Math.sign(tc-fc);
-  let r=fr+dr,c=fc+dc;
-  while(r!==tr||c!==tc){
-    if(lake(r,c)||board[idx(r,c)])return false;
-    r+=dr;c+=dc;
+function scoutValidPath(from, to) {
+  const fr = Math.floor(from/10), fc = from % 10;
+  const tr = Math.floor(to/10),   tc = to   % 10;
+  if (fr !== tr && fc !== tc) return false;
+  const dr = Math.sign(tr - fr);
+  const dc = Math.sign(tc - fc);
+  let r = fr + dr, c = fc + dc;
+  while (r !== tr || c !== tc) {
+    if (isLake(r, c) || board[idx(r, c)]) return false;
+    r += dr;
+    c += dc;
   }
   return true;
 }
 
-function valid(f,t){
-  if(over||lake(Math.floor(t/10),t%10))return false;
-  const p=board[f];
-  if(!PIECES[p.t].m)return false;
-  const tg=board[t];
-  if(tg&&tg.c===p.c)return false;
-  if(PIECES[p.t].s)return scoutPath(f,t);
-  return Math.abs(Math.floor(f/10)-Math.floor(t/10))+Math.abs(f%10-t%10)===1;
+function isValidMove(fromIdx, toIdx) {
+  if (gameOver || isLake(Math.floor(toIdx/10), toIdx%10)) return false;
+  const piece = board[fromIdx];
+  if (!PIECES[piece.t].m) return false;
+  const target = board[toIdx];
+  if (target && target.c === piece.c) return false;
+  if (PIECES[piece.t].s) return scoutValidPath(fromIdx, toIdx);
+  return Math.abs(Math.floor(fromIdx/10) - Math.floor(toIdx/10)) +
+         Math.abs(fromIdx%10 - toIdx%10) === 1;
 }
 
-function showPoss(f){
-  document.querySelectorAll(".cell").forEach(c=>{
-    if(valid(f,+c.dataset.i))c.classList.add("possible-move");
+function showPossibleMoves(from) {
+  document.querySelectorAll(".cell").forEach(cell => {
+    if (isValidMove(from, +cell.dataset.i)) {
+      cell.classList.add("possible-move");
+    }
   });
 }
 
-function clearPoss(){document.querySelectorAll(".cell").forEach(c=>c.classList.remove("possible-move"))}
-
-function combat(a,d){
-  const pa=PIECES[a.t],pd=PIECES[d.t];
-  if(pa.name==="Miner"&&pd.name==="Bomb")return"aw";
-  if(pa.name==="Spy"&&pd.name==="Marshal")return"aw";
-  if(pa.r<pd.r)return"aw";
-  if(pa.r>pd.r)return"dw";
-  return"both";
+function clearHighlights() {
+  document.querySelectorAll(".cell").forEach(c => c.classList.remove("possible-move"));
 }
 
-function move(f,t){
-  if(over)return;
-  const a=board[f],d=board[t];
-  if(!d){
-    board[t]=a;board[f]=null;
-  }else{
-    if(d.t==="F"){
-      // Attacking flag → instant win, flag does NOT fight back
-      board[t]=a;board[f]=null;
-      over=true;
-      document.getElementById("status").textContent=a.c.toUpperCase()+" WINS!";
-      clearPoss();render();return;
-    }
-    const r=combat(a,d);
-    if(r==="aw"){
-      board[t]=a;board[f]=null;
-      (d.c==="red"?rg:bg).push(d);
-    }else if(r==="dw"){
-      board[f]=null;(a.c==="red"?rg:bg).push(a);
-    }else{
-      board[f]=null;board[t]=null;
-      (a.c==="red"?rg:bg).push(a);
-      (d.c==="red"?rg:bg).push(d);
-    }
-  }
-  sel=null;clearPoss();
-  render();
-  if(!over)cur=cur==="red"?"blue":"red";
+function resolveAttack(attacker, defender) {
+  const a = PIECES[attacker.t];
+  const d = PIECES[defender.t];
+
+  // Miner defeats Bomb
+  if (a.name === "Miner" && d.name === "Bomb") return "attacker_wins";
+
+  // Spy defeats Marshal
+  if (a.name === "Spy" && d.name === "Marshal") return "attacker_wins";
+
+  // Normal rank comparison
+  if (a.r < d.r) return "attacker_wins";  // lower number = stronger
+  if (a.r > d.r) return "defender_wins";
+  return "both_die";
 }
 
-function init(){
-  const b=document.getElementById("board");b.innerHTML="";
-  for(let r=0;r<10;r++)for(let c=0;c<10;c++){
-    const el=document.createElement("div");
-    el.className="cell"+(lake(r,c)?" lake":"");
-    el.dataset.i=idx(r,c);
-    el.onclick=()=>{
-      const i=+el.dataset.i,p=board[i];
-      if(sel!==null){
-        if(i===sel){sel=null;clearPoss()}
-        else if(p&&p.c===cur){sel=i;clearPoss();showPoss(i)}
-        else if(valid(sel,i)){move(sel,i)}
-        else{sel=null;clearPoss()}
-      }else if(p&&p.c===cur){sel=i;showPoss(i)}
+function performMove(from, to) {
+  if (gameOver) return;
+  const attacker = board[from];
+  const defender = board[to];
+
+  if (!defender) {
+    // Normal move to empty square
+    board[to] = attacker;
+    board[from] = null;
+  } else {
+    // Attack
+    if (defender.t === "F") {
+      // Flag capture → instant win
+      board[to] = attacker;
+      board[from] = null;
+      gameOver = true;
+      document.getElementById("status").textContent = attacker.c.toUpperCase() + " WINS!";
+      clearHighlights();
       render();
-    };
-    b.appendChild(el);
+      return;
+    }
+
+    const result = resolveAttack(attacker, defender);
+
+    if (result === "attacker_wins") {
+      board[to] = attacker;
+      board[from] = null;
+      (defender.c === "red" ? redGrave : blueGrave).push(defender);
+    } else if (result === "defender_wins") {
+      board[from] = null;
+      (attacker.c === "red" ? redGrave : blueGrave).push(attacker);
+    } else {
+      // both die
+      board[from] = null;
+      board[to] = null;
+      (attacker.c === "red" ? redGrave : blueGrave).push(attacker);
+      (defender.c === "red" ? redGrave : blueGrave).push(defender);
+    }
+  }
+
+  selected = null;
+  clearHighlights();
+  render();
+  if (!gameOver) currentPlayer = currentPlayer === "red" ? "blue" : "red";
+}
+
+function initBoard() {
+  const boardEl = document.getElementById("board");
+  boardEl.innerHTML = "";
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      const cell = document.createElement("div");
+      cell.className = "cell" + (isLake(r, c) ? " lake" : "");
+      cell.dataset.i = idx(r, c);
+      cell.onclick = () => {
+        const i = +cell.dataset.i;
+        const piece = board[i];
+        if (selected !== null) {
+          if (i === selected) {
+            selected = null;
+            clearHighlights();
+          } else if (piece && piece.c === currentPlayer) {
+            selected = i;
+            clearHighlights();
+            showPossibleMoves(i);
+          } else if (isValidMove(selected, i)) {
+            performMove(selected, i);
+          } else {
+            selected = null;
+            clearHighlights();
+          }
+        } else if (piece && piece.c === currentPlayer) {
+          selected = i;
+          showPossibleMoves(i);
+        }
+        render();
+      };
+      boardEl.appendChild(cell);
+    }
   }
 }
 
-function start(){
-  board.fill(null);rg.length=0;bg.length=0;
-  place();init();render();
+function startGame() {
+  board.fill(null);
+  redGrave.length = 0;
+  blueGrave.length = 0;
+  placePieces();
+  initBoard();
+  render();
 }
-start();
+
+startGame();
 </script>
 </body>
 </html>

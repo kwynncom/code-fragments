@@ -1,3 +1,7 @@
+23:49
+
+Miners are dying on bombs rather than defeating bombs.
+****
 23:32
 
 Move the labeling and graveyards from the top and bottom to the sides. Make sure everything fits on an HD screen. You can make stuff smaller if you want. I don't need your labels for that matter. I do need a turn indicator, though, to tell me if red or blue is moving. Other than that, no labels or verbiage needed.
