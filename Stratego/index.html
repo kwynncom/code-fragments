@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Stratego – Reversed Ranks (Learning Mode)</title>
+<title>Stratego – Reversed Ranks (Fixed Movement)</title>
 <style>
   body {
     font-family: Arial, Helvetica, sans-serif;
@@ -63,12 +63,18 @@
     cursor: grab;
   }
 
-  .selected { box-shadow: 0 0 0 4px gold, inset 0 0 10px gold; }
+  .selected { 
+    box-shadow: 0 0 0 4px gold, inset 0 0 10px gold !important;
+    border-color: gold !important;
+  }
 
   #status {
     font-size: 1.3rem;
     margin: 15px;
     min-height: 1.6em;
+    padding: 10px;
+    background: #333;
+    border-radius: 6px;
   }
 
   .small-label {
@@ -83,21 +89,19 @@
 </head>
 <body>
 
-<h1>Stratego – Reversed Ranks (9 = Scout, 1 = Marshal)</h1>
+<h1>Stratego – Reversed Ranks (9=Scout, 1=Marshal)</h1>
+<p><strong>How to play:</strong> 1️⃣ Click YOUR RED piece → 2️⃣ Click empty square or enemy → Watch it move/attack!</p>
 
-<div id="status">Red to move • Click piece to select, then destination</div>
+<div id="status">🔴 RED to move • Click your front row pieces (row closest to black lakes)</div>
 
 <div id="board"></div>
 
 <script>
-// ────────────────────────────────────────────────
-// Piece definitions – reversed numbering as requested
-// Higher number = weaker (except Spy, Bomb, Flag)
-// ────────────────────────────────────────────────
+// Piece definitions – reversed numbering (lower number = STRONGER)
 const PIECES = {
   'B': { name: "Bomb",   rank: -1, movable: false },
   'F': { name: "Flag",   rank: -2, movable: false },
-  'S': { name: "Spy",    rank: 999, movable: true }, // Spy beats Marshal (1)
+  'S': { name: "Spy",    rank: 999, movable: true }, 
   '9': { name: "Scout",  rank: 9,  movable: true },
   '8': { name: "Miner",  rank: 8,  movable: true },
   '7': { name: "Sergeant", rank: 7, movable: true },
@@ -109,26 +113,17 @@ const PIECES = {
   '1': { name: "Marshal", rank: 1, movable: true }
 };
 
-// Classic counts, but using new rank numbers
 const RED_SETUP = [
-  // Row 0 (back row – strong pieces)
   "1","2","3","3","4","4","4","5","5","5",
-  // Row 1
   "5","6","6","6","6","7","7","7","7","S",
-  // Row 2
   "B","B","B","B","B","B","F","8","8","8",
-  // Row 3 (front row – mostly weak/scouts)
   "9","9","9","9","9","9","9","9","8","8"
 ];
 
 const BLUE_SETUP = [
-  // Row 6 (front row)
   "9","9","9","9","9","9","9","9","8","8",
-  // Row 7
   "B","B","B","B","B","B","F","8","8","8",
-  // Row 8
   "5","6","6","6","6","7","7","7","7","S",
-  // Row 9 (back row)
   "1","2","3","3","4","4","4","5","5","5"
 ];
 
@@ -147,18 +142,13 @@ function placePieces() {
   let k = 0;
   for (let r = 0; r <= 3; r++) {
     for (let c = 0; c < 10; c++) {
-      if (!isLake(r, c)) {
-        board[idx(r, c)] = { color: "red", type: RED_SETUP[k++] };
-      }
+      if (!isLake(r, c)) board[idx(r, c)] = { color: "red", type: RED_SETUP[k++] };
     }
   }
-
   k = 0;
   for (let r = 6; r <= 9; r++) {
     for (let c = 0; c < 10; c++) {
-      if (!isLake(r, c)) {
-        board[idx(r, c)] = { color: "blue", type: BLUE_SETUP[k++] };
-      }
+      if (!isLake(r, c)) board[idx(r, c)] = { color: "blue", type: BLUE_SETUP[k++] };
     }
   }
 }
@@ -169,86 +159,76 @@ function getPieceHTML(piece) {
   if (piece.type === 'B') symbol = '💣';
   if (piece.type === 'F') symbol = '⚑';
   if (piece.type === 'S') symbol = '🕵️';
-
-  return `
-    <div class="piece ${piece.color}" draggable="true">
-      ${symbol}
-      <span class="small-label">${piece.type}</span>
-    </div>
-  `;
+  return `<div class="piece ${piece.color}">${symbol}<span class="small-label">${piece.type}</span></div>`;
 }
 
 function render() {
-  document.querySelectorAll(".cell").forEach(cell => {
+  document.querySelectorAll('.cell').forEach((cell, idx) => {
     const i = Number(cell.dataset.index);
     const piece = board[i];
-    cell.innerHTML = piece ? getPieceHTML(piece) : "";
-    cell.classList.remove("red", "blue", "selected");
+    cell.innerHTML = piece ? getPieceHTML(piece) : '';
+    cell.className = 'cell' + (isLake(Math.floor(i/10), i%10) ? ' lake' : '');
     if (piece) cell.classList.add(piece.color);
-    if (selected === i) cell.classList.add("selected");
+    if (selected === i) cell.classList.add('selected');
   });
-
-  if (!gameOver) {
-    document.getElementById("status").textContent =
-      `${currentPlayer.toUpperCase()} to move` +
-      (selected !== null ? " • piece selected" : "");
+  
+  const status = document.getElementById('status');
+  if (gameOver) {
+    status.textContent = status.textContent; // Win message set elsewhere
+  } else {
+    status.textContent = `${currentPlayer === 'red' ? '🔴 RED' : '🔵 BLUE'} to move • ${selected !== null ? '✅ SELECTED - now click target!' : 'Click your piece!'}`
   }
 }
 
 function isAdjacent(from, to) {
   const fr = Math.floor(from / 10), fc = from % 10;
   const tr = Math.floor(to / 10), tc = to % 10;
-  return (Math.abs(fr - tr) + Math.abs(fc - tc) === 1);
+  return Math.abs(fr - tr) + Math.abs(fc - tc) === 1;
 }
 
 function isValidMove(from, to) {
-  if (gameOver) return false;
-  if (!isAdjacent(from, to)) return false;
-  if (isLake(Math.floor(to/10), to%10)) return false;
-
+  if (gameOver || !isAdjacent(from, to) || isLake(Math.floor(to/10), to%10)) return false;
+  
   const piece = board[from];
-  if (!PIECES[piece.type].movable) return false;
-
+  if (!PIECES[piece.type]?.movable) return false;
+  
   const target = board[to];
   if (!target) return true;
-  if (target.color === piece.color) return false;
-
-  return true;
+  return target.color !== piece.color;
 }
 
-function resolveCombat(att, def) {
-  const a = PIECES[att.type];
-  const d = PIECES[def.type];
+function resolveCombat(attacker, defender) {
+  const a = PIECES[attacker.type];
+  const d = PIECES[defender.type];
 
-  // Miner (8) defeats Bomb
   if (a.name === "Miner" && d.name === "Bomb") return "attacker_wins";
-  // Spy defeats Marshal (1)
   if (a.name === "Spy" && d.name === "Marshal") return "attacker_wins";
 
-  if (a.rank < d.rank) return "attacker_wins";  // lower number = stronger
+  if (a.rank < d.rank) return "attacker_wins";  // Lower number wins
   if (a.rank > d.rank) return "defender_wins";
   return "both_die";
 }
 
 function movePiece(from, to) {
   if (gameOver) return;
-
+  
   const attacker = board[from];
   const defender = board[to];
-  let winMessage = "";
-
+  
   if (!defender) {
+    // Move to empty
     board[to] = attacker;
     board[from] = null;
   } else {
+    // Combat
     const result = resolveCombat(attacker, defender);
-
     if (result === "attacker_wins") {
       board[to] = attacker;
       board[from] = null;
       if (defender.type === 'F') {
-        winMessage = `${attacker.color.toUpperCase()} WINS – captured the flag!`;
         gameOver = true;
+        document.getElementById('status').textContent = `${attacker.color.toUpperCase()} WINS! 🎉 Flag captured!`;
+        return;
       }
     } else if (result === "defender_wins") {
       board[from] = null;
@@ -257,34 +237,26 @@ function movePiece(from, to) {
       board[to] = null;
     }
   }
-
+  
+  currentPlayer = currentPlayer === "red" ? "blue" : "red";
   selected = null;
   render();
-
-  if (winMessage) {
-    document.getElementById("status").textContent = winMessage;
-  } else if (!gameOver) {
-    currentPlayer = currentPlayer === "red" ? "blue" : "red";
-  }
 }
 
 function initBoard() {
-  const boardEl = document.getElementById("board");
-  boardEl.innerHTML = "";
-
+  const boardEl = document.getElementById('board');
+  boardEl.innerHTML = '';
+  
   for (let r = 0; r < 10; r++) {
     for (let c = 0; c < 10; c++) {
-      const cell = document.createElement("div");
-      cell.classList.add("cell");
-      if (isLake(r, c)) cell.classList.add("lake");
-      const i = idx(r, c);
-      cell.dataset.index = i;
-
-      cell.addEventListener("click", () => {
-        if (gameOver) return;
-        const i = Number(cell.dataset.index);
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (isLake(r, c) ? ' lake' : '');
+      cell.dataset.index = idx(r, c);
+      
+      cell.addEventListener('click', function() {
+        const i = Number(this.dataset.index);
         const piece = board[i];
-
+        
         if (selected !== null) {
           if (isValidMove(selected, i)) {
             movePiece(selected, i);
@@ -297,13 +269,14 @@ function initBoard() {
           render();
         }
       });
-
+      
       boardEl.appendChild(cell);
     }
   }
 }
 
 function startGame() {
+  board.fill(null);
   placePieces();
   initBoard();
   render();
