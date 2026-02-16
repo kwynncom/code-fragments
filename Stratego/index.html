@@ -1,220 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Stratego – All Pieces Visible (Reversed Ranks • Scout Long Moves • Graveyard)</title>
+<meta charset="UTF-8">
+<title>Stratego</title>
 <style>
-  body {font-family:Arial,Helvetica,sans-serif;background:#111;color:#eee;text-align:center;margin:20px;}
-  h1 {margin:10px;color:#ffeb3b;}
-  #board {display:grid;grid-template-columns:repeat(10,60px);grid-template-rows:repeat(10,60px);gap:2px;margin:20px auto;width:fit-content;background:#222;padding:8px;border:3px solid #444;border-radius:8px;}
-  .cell {width:60px;height:60px;background:#8bc34a;border:2px solid #4caf50;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;cursor:pointer;user-select:none;position:relative;}
-  .cell.lake {background:#000;border-color:#111;cursor:default;}
-  .red {background:#d32f2f;border-color:#b71c1c;color:white;}
-  .blue {background:#1976d2;border-color:#0d47a1;color:white;}
-  .piece {width:56px;height:56px;line-height:56px;text-align:center;border-radius:6px;font-size:32px;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.5);cursor:grab;}
-  .selected {box-shadow:0 0 0 4px gold,inset 0 0 10px gold !important;border-color:gold !important;}
-  .possible-move {background:#ffeb3b !important;border-color:#f57c00 !important;opacity:0.7;}
-  #status {font-size:1.3rem;margin:15px;min-height:1.6em;padding:10px;background:#333;border-radius:6px;}
-  .small-label {position:absolute;font-size:10px;bottom:2px;right:4px;opacity:0.75;color:#fff;}
-  .graveyard {display:flex;justify-content:space-around;margin:20px 0;gap:20px;}
-  .graveyard-section {background:#333;padding:15px;border-radius:8px;border:2px solid #555;min-width:580px;}
-  .graveyard-title {font-size:1.2rem;margin-bottom:10px;color:#ffeb3b;}
-  .graveyard-row {display:flex;gap:4px;margin-bottom:4px;flex-wrap:wrap;}
-  .grave-piece {width:32px;height:32px;line-height:32px;font-size:18px;border-radius:4px;border:1px solid #666;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+body{font-family:Arial,sans-serif;background:#111;color:#eee;margin:10px;text-align:center;}
+#status{font-size:2.4rem;margin:12px 0;}
+.game{display:flex;gap:10px;align-items:flex-start;justify-content:center;}
+.grave{width:180px;min-height:520px;background:#222;padding:8px;border-radius:6px;border:1px solid #444;display:flex;flex-direction:column;gap:2px;flex-wrap:wrap;}
+#board{display:grid;grid-template-columns:repeat(10,52px);grid-template-rows:repeat(10,52px);gap:1px;background:#222;padding:6px;border:2px solid #444;border-radius:6px;}
+.cell{width:52px;height:52px;background:#8bc34a;border:1px solid #4caf50;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;cursor:pointer;user-select:none;position:relative;}
+.cell.lake{background:#000;border-color:#111;cursor:default;}
+.red{background:#c62828;border-color:#b71c1c;color:#fff;}
+.blue{background:#1565c0;border-color:#0d47a1;color:#fff;}
+.piece{width:48px;height:48px;line-height:48px;border-radius:4px;font-size:24px;box-shadow:0 2px 4px #000;}
+.selected{box-shadow:0 0 0 3px #ffeb3b,inset 0 0 6px #ffeb3b !important;}
+.possible-move{background:#ffeb3b !important;opacity:0.65;}
+.grave-piece{width:24px;height:24px;line-height:24px;font-size:14px;border-radius:3px;border:1px solid #555;display:flex;align-items:center;justify-content:center;}
 </style>
 </head>
 <body>
 
-<h1>Stratego – All Pieces Visible (Reversed Ranks • Scout Long Moves • Graveyard)</h1>
-<p><strong>How to play:</strong> Click your piece → click destination. Scouts (9) move any distance straight line. All pieces visible.</p>
+<div id="status">🔴</div>
 
-<div id="status">🔴 RED to move • Click any of your pieces</div>
-<div id="board"></div>
-
-<div class="graveyard">
-  <div class="graveyard-section">
-    <div class="graveyard-title">⚰️ Red Captured</div>
-    <div id="red-graveyard" class="graveyard-row"></div>
-  </div>
-  <div class="graveyard-section">
-    <div class="graveyard-title">⚰️ Blue Captured</div>
-    <div id="blue-graveyard" class="graveyard-row"></div>
-  </div>
+<div class="game">
+  <div id="red-graveyard" class="grave"></div>
+  <div id="board"></div>
+  <div id="blue-graveyard" class="grave"></div>
 </div>
 
 <script>
-// Reversed ranks: lower number = stronger (1=Marshal, 9=Scout)
-const PIECES = {
-  'B': {name:"Bomb",rank:-1,movable:false},
-  'F': {name:"Flag",rank:-2,movable:false},
-  'S': {name:"Spy",rank:999,movable:true},
-  '9': {name:"Scout",rank:9,movable:true,isScout:true},
-  '8': {name:"Miner",rank:8,movable:true},
-  '7': {name:"Sergeant",rank:7,movable:true},
-  '6': {name:"Lieutenant",rank:6,movable:true},
-  '5': {name:"Captain",rank:5,movable:true},
-  '4': {name:"Major",rank:4,movable:true},
-  '3': {name:"Colonel",rank:3,movable:true},
-  '2': {name:"General",rank:2,movable:true},
-  '1': {name:"Marshal",rank:1,movable:true}
-};
+const PIECES={'B':{r:-1,m:false},'F':{r:-2,m:false},'S':{r:999,m:true},'9':{r:9,m:true,s:true},'8':{r:8,m:true},'7':{r:7,m:true},'6':{r:6,m:true},'5':{r:5,m:true},'4':{r:4,m:true},'3':{r:3,m:true},'2':{r:2,m:true},'1':{r:1,m:true}};
+const RED=["1","2","3","3","4","4","4","5","5","5","5","6","6","6","6","7","7","7","7","S","B","B","B","B","B","B","F","8","8","8","9","9","9","9","9","9","9","9","8","8"];
+const BLUE=["9","9","9","9","9","9","9","9","8","8","B","B","B","B","B","B","F","8","8","8","5","6","6","6","6","7","7","7","7","S","1","2","3","3","4","4","4","5","5","5"];
+const board=Array(100).fill(null),rg=[],bg=[];
+let sel=null,cur="red",over=false;
 
-const RED_SETUP = ["1","2","3","3","4","4","4","5","5","5","5","6","6","6","6","7","7","7","7","S","B","B","B","B","B","B","F","8","8","8","9","9","9","9","9","9","9","9","8","8"];
-const BLUE_SETUP = ["9","9","9","9","9","9","9","9","8","8","B","B","B","B","B","B","F","8","8","8","5","6","6","6","6","7","7","7","7","S","1","2","3","3","4","4","4","5","5","5"];
+function idx(r,c){return r*10+c}
+function lake(r,c){return(r===4||r===5)&&(c===2||c===3||c===6||c===7)}
 
-const board = Array(100).fill(null);
-let redGrave = [], blueGrave = [];
-let selected = null, currentPlayer = "red", gameOver = false;
-
-function idx(r,c){return r*10+c;}
-function isLake(r,c){return (r===4||r===5)&&(c===2||c===3||c===6||c===7);}
-
-function placePieces(){
-  let k=0;
-  for(let r=0;r<=3;r++) for(let c=0;c<10;c++) if(!isLake(r,c)) board[idx(r,c)]={color:"red",type:RED_SETUP[k++]};
-  k=0;
-  for(let r=6;r<=9;r++) for(let c=0;c<10;c++) if(!isLake(r,c)) board[idx(r,c)]={color:"blue",type:BLUE_SETUP[k++]};
+function place(){
+  let k=0;for(let r=0;r<4;r++)for(let c=0;c<10;c++)if(!lake(r,c))board[idx(r,c)]={c:"red",t:RED[k++]};
+  k=0;for(let r=6;r<10;r++)for(let c=0;c<10;c++)if(!lake(r,c))board[idx(r,c)]={c:"blue",t:BLUE[k++]};
 }
 
-function getPieceHTML(p){
-  if(!p) return "";
-  let sym = p.type;
-  if(p.type==='B') sym='💣';
-  if(p.type==='F') sym='⚑';
-  if(p.type==='S') sym='🕵️';
-  return `<div class="piece ${p.color}">${sym}<span class="small-label">${p.type}</span></div>`;
+function ph(p){
+  if(!p)return"";
+  let s=p.t;
+  if(p.t==='B')s='💣';if(p.t==='F')s='⚑';if(p.t==='S')s='🕵️';
+  return`<div class="piece ${p.c}">${s}</div>`;
 }
 
-function getGraveHTML(p){
-  let sym = p.type;
-  if(p.type==='B') sym='💣';
-  if(p.type==='F') sym='⚑';
-  if(p.type==='S') sym='🕵️';
-  return `<div class="grave-piece ${p.color}">${sym}</div>`;
+function gh(p){
+  let s=p.t;if(p.t==='B')s='💣';if(p.t==='F')s='⚑';if(p.t==='S')s='🕵️';
+  return`<div class="grave-piece ${p.c}">${s}</div>`;
 }
 
 function render(){
-  document.querySelectorAll(".cell").forEach(cell=>{
-    const i = Number(cell.dataset.index);
-    const p = board[i];
-    cell.innerHTML = p ? getPieceHTML(p) : "";
-    cell.className = "cell" + (isLake(Math.floor(i/10),i%10)?" lake":"");
-    if(p) cell.classList.add(p.color);
-    if(selected===i) cell.classList.add("selected");
+  document.querySelectorAll(".cell").forEach(c=>{
+    const i=+c.dataset.i,p=board[i];
+    c.innerHTML=p?ph(p):"";
+    c.className="cell"+(lake(Math.floor(i/10),i%10)?" lake":"");
+    if(p)c.classList.add(p.c);
+    if(sel===i)c.classList.add("selected");
   });
-  document.getElementById("red-graveyard").innerHTML = redGrave.map(getGraveHTML).join("");
-  document.getElementById("blue-graveyard").innerHTML = blueGrave.map(getGraveHTML).join("");
-  document.getElementById("status").textContent = gameOver ? document.getElementById("status").textContent : `${currentPlayer==="red"?"🔴 RED":"🔵 BLUE"} to move • ${selected!==null?"Selected – click target":"Click your piece"}`;
+  document.getElementById("red-graveyard").innerHTML=rg.map(gh).join("");
+  document.getElementById("blue-graveyard").innerHTML=bg.map(gh).join("");
+  document.getElementById("status").textContent=over?"":(cur==="red"?"🔴":"🔵");
 }
 
-function isValidScoutPath(from,to){
-  const fr=Math.floor(from/10),fc=from%10,tr=Math.floor(to/10),tc=to%10;
-  if(fr!==tr && fc!==tc) return false;
-  const dr=Math.sign(tr-fr), dc=Math.sign(tc-fc);
-  let r=fr+dr, c=fc+dc;
-  while(r!==tr || c!==tc){
-    if(isLake(r,c) || board[idx(r,c)]) return false;
-    r+=dr; c+=dc;
+function scoutPath(f,t){
+  const fr=Math.floor(f/10),fc=f%10,tr=Math.floor(t/10),tc=t%10;
+  if(fr!==tr&&fc!==tc)return false;
+  const dr=Math.sign(tr-fr),dc=Math.sign(tc-fc);
+  let r=fr+dr,c=fc+dc;
+  while(r!==tr||c!==tc){
+    if(lake(r,c)||board[idx(r,c)])return false;
+    r+=dr;c+=dc;
   }
   return true;
 }
 
-function isValidMove(from,to){
-  if(gameOver || isLake(Math.floor(to/10),to%10)) return false;
-  const p=board[from];
-  if(!PIECES[p.type].movable) return false;
-  const target=board[to];
-  if(target && target.color===p.color) return false;
-  if(PIECES[p.type].isScout) return isValidScoutPath(from,to);
-  return Math.abs(Math.floor(from/10)-Math.floor(to/10)) + Math.abs(from%10-to%10)===1;
+function valid(f,t){
+  if(over||lake(Math.floor(t/10),t%10))return false;
+  const p=board[f];
+  if(!PIECES[p.t].m)return false;
+  const tg=board[t];
+  if(tg&&tg.c===p.c)return false;
+  if(PIECES[p.t].s)return scoutPath(f,t);
+  return Math.abs(Math.floor(f/10)-Math.floor(t/10))+Math.abs(f%10-t%10)===1;
 }
 
-function showPossible(from){
-  document.querySelectorAll(".cell").forEach(cell=>{
-    if(isValidMove(from,Number(cell.dataset.index))) cell.classList.add("possible-move");
+function showPoss(f){
+  document.querySelectorAll(".cell").forEach(c=>{
+    if(valid(f,+c.dataset.i))c.classList.add("possible-move");
   });
 }
 
-function clearPossible(){document.querySelectorAll(".cell").forEach(c=>c.classList.remove("possible-move"));}
+function clearPoss(){document.querySelectorAll(".cell").forEach(c=>c.classList.remove("possible-move"))}
 
-function resolveCombat(a,d){
-  const pa=PIECES[a.type], pd=PIECES[d.type];
-  if(pa.name==="Miner" && pd.name==="Bomb") return "attacker_wins";
-  if(pa.name==="Spy" && pd.name==="Marshal") return "attacker_wins";
-  if(pa.rank < pd.rank) return "attacker_wins";   // lower number wins
-  if(pa.rank > pd.rank) return "defender_wins";
-  return "both_die";
+function combat(a,d){
+  const pa=PIECES[a.t],pd=PIECES[d.t];
+  if(pa.name==="Miner"&&pd.name==="Bomb")return"aw";
+  if(pa.name==="Spy"&&pd.name==="Marshal")return"aw";
+  if(pa.r<pd.r)return"aw";
+  if(pa.r>pd.r)return"dw";
+  return"both";
 }
 
-function movePiece(from,to){
-  if(gameOver) return;
-  const att=board[from], def=board[to];
-  let winMsg="";
-
-  if(!def){
-    board[to]=att; board[from]=null;
+function move(f,t){
+  if(over)return;
+  const a=board[f],d=board[t];
+  if(!d){
+    board[t]=a;board[f]=null;
   }else{
-    const res=resolveCombat(att,def);
-    if(res==="attacker_wins"){
-      board[to]=att; board[from]=null;
-      (def.color==="red"?redGrave:blueGrave).push(def);
-      if(def.type==="F"){
-        gameOver=true;
-        winMsg=`${att.color.toUpperCase()} WINS! Flag captured!`;
-      }
-    }else if(res==="defender_wins"){
-      board[from]=null;
-      (att.color==="red"?redGrave:blueGrave).push(att);
+    const r=combat(a,d);
+    if(r==="aw"){
+      board[t]=a;board[f]=null;
+      (d.c==="red"?rg:bg).push(d);
+      if(d.t==="F"){over=true;document.getElementById("status").textContent=a.c.toUpperCase()+" WINS!";return}
+    }else if(r==="dw"){
+      board[f]=null;(a.c==="red"?rg:bg).push(a);
     }else{
-      board[from]=null; board[to]=null;
-      (att.color==="red"?redGrave:blueGrave).push(att);
-      (def.color==="red"?redGrave:blueGrave).push(def);
+      board[f]=null;board[t]=null;
+      (a.c==="red"?rg:bg).push(a);
+      (d.c==="red"?rg:bg).push(d);
     }
   }
-
-  selected=null;
-  clearPossible();
+  sel=null;clearPoss();
   render();
-  if(winMsg) document.getElementById("status").textContent=winMsg;
-  else if(!gameOver) currentPlayer = currentPlayer==="red"?"blue":"red";
+  if(!over)cur=cur==="red"?"blue":"red";
 }
 
-function initBoard(){
-  const b=document.getElementById("board");
-  b.innerHTML="";
-  for(let r=0;r<10;r++){
-    for(let c=0;c<10;c++){
-      const cell=document.createElement("div");
-      cell.className="cell"+(isLake(r,c)?" lake":"");
-      cell.dataset.index=idx(r,c);
-      cell.addEventListener("click",()=>{
-        const i=Number(cell.dataset.index);
-        const p=board[i];
-        if(selected!==null){
-          if(i===selected){
-            selected=null; clearPossible();
-          }else if(p && p.color===currentPlayer){
-            selected=i; clearPossible(); showPossible(i);
-          }else if(isValidMove(selected,i)){
-            movePiece(selected,i);
-          }else{
-            selected=null; clearPossible();
-          }
-        }else if(p && p.color===currentPlayer){
-          selected=i; showPossible(i);
-        }
-        render();
-      });
-      b.appendChild(cell);
-    }
+function init(){
+  const b=document.getElementById("board");b.innerHTML="";
+  for(let r=0;r<10;r++)for(let c=0;c<10;c++){
+    const el=document.createElement("div");
+    el.className="cell"+(lake(r,c)?" lake":"");
+    el.dataset.i=idx(r,c);
+    el.onclick=()=>{
+      const i=+el.dataset.i,p=board[i];
+      if(sel!==null){
+        if(i===sel){sel=null;clearPoss()}
+        else if(p&&p.c===cur){sel=i;clearPoss();showPoss(i)}
+        else if(valid(sel,i)){move(sel,i)}
+        else{sel=null;clearPoss()}
+      }else if(p&&p.c===cur){sel=i;showPoss(i)}
+      render();
+    };
+    b.appendChild(el);
   }
 }
 
 function start(){
-  board.fill(null); redGrave=[]; blueGrave=[];
-  placePieces();
-  initBoard();
-  render();
+  board.fill(null);rg.length=0;bg.length=0;
+  place();init();render();
 }
 start();
 </script>

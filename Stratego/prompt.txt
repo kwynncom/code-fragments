@@ -1,3 +1,8 @@
+23:32
+
+Move the labeling and graveyards from the top and bottom to the sides. Make sure everything fits on an HD screen. You can make stuff smaller if you want. I don't need your labels for that matter. I do need a turn indicator, though, to tell me if red or blue is moving. Other than that, no labels or verbiage needed.
+
+********
 Sorry. I see the confusion. Let's do scouts as 9, miners as 8, sargeants as 7, ... , general as 2 and marshal as 1, please.
 ******
 I made it list the piece count, which was correct.  Now I changed it to hard thinking mode to try to get it right.
