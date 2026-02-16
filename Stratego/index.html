@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Stratego – Simple Browser Version</title>
+<title>Stratego – Reversed Ranks (Learning Mode)</title>
 <style>
   body {
     font-family: Arial, Helvetica, sans-serif;
@@ -20,9 +20,9 @@
     gap: 2px;
     margin: 20px auto;
     width: fit-content;
-    background: #444;
+    background: #222;
     padding: 8px;
-    border: 3px solid #555;
+    border: 3px solid #444;
     border-radius: 8px;
   }
 
@@ -43,14 +43,13 @@
   }
 
   .cell.lake {
-    background: #2196f3;
-    border-color: #1976d2;
+    background: #000;
+    border-color: #111;
     cursor: default;
   }
 
-  .red    { background: #f44336; border-color: #d32f2f; color: white; }
-  .blue   { background: #448aff; border-color: #2979ff; color: white; }
-  .hidden { filter: brightness(0.4) contrast(0.7); }
+  .red    { background: #d32f2f; border-color: #b71c1c; color: white; }
+  .blue   { background: #1976d2; border-color: #0d47a1; color: white; }
 
   .piece {
     width: 56px;
@@ -74,98 +73,102 @@
 
   .small-label {
     position: absolute;
-    font-size: 11px;
+    font-size: 10px;
     bottom: 2px;
     right: 4px;
-    opacity: 0.7;
+    opacity: 0.75;
+    color: #fff;
   }
 </style>
 </head>
 <body>
 
-<h1>Stratego (visible pieces – for learning)</h1>
+<h1>Stratego – Reversed Ranks (9 = Scout, 1 = Marshal)</h1>
 
-<div id="status">Red to move • Drag your pieces</div>
+<div id="status">Red to move • Click piece to select, then destination</div>
 
 <div id="board"></div>
 
 <script>
 // ────────────────────────────────────────────────
-// Piece types (classic Stratego ranking)
-// Higher number = stronger (except special cases)
+// Piece definitions – reversed numbering as requested
+// Higher number = weaker (except Spy, Bomb, Flag)
 // ────────────────────────────────────────────────
 const PIECES = {
-  'B': { name: "Bomb",      rank: -1,  canMove: false },
-  'F': { name: "Flag",      rank: -2,  canMove: false },
-  'S': { name: "Spy",       rank: 10,  beats: 1      }, // Spy beats Marshal only
-  '1': { name: "Scout",     rank: 2                   },
-  '2': { name: "Miner",     rank: 3                   }, // Miner defuses bombs
-  '3': { name: "Sergeant",  rank: 4                   },
-  '4': { name: "Lieutenant",rank: 5                   },
-  '5': { name: "Captain",   rank: 6                   },
-  '6': { name: "Major",     rank: 7                   },
-  '7': { name: "Colonel",   rank: 8                   },
-  '8': { name: "General",   rank: 9                   },
-  '9': { name: "Marshal",   rank: 10                  }
+  'B': { name: "Bomb",   rank: -1, movable: false },
+  'F': { name: "Flag",   rank: -2, movable: false },
+  'S': { name: "Spy",    rank: 999, movable: true }, // Spy beats Marshal (1)
+  '9': { name: "Scout",  rank: 9,  movable: true },
+  '8': { name: "Miner",  rank: 8,  movable: true },
+  '7': { name: "Sergeant", rank: 7, movable: true },
+  '6': { name: "Lieutenant", rank: 6, movable: true },
+  '5': { name: "Captain", rank: 5, movable: true },
+  '4': { name: "Major",   rank: 4, movable: true },
+  '3': { name: "Colonel", rank: 3, movable: true },
+  '2': { name: "General", rank: 2, movable: true },
+  '1': { name: "Marshal", rank: 1, movable: true }
 };
 
+// Classic counts, but using new rank numbers
 const RED_SETUP = [
-  "9 8 7 6 5 5 4 4 3 3",
-  "6 7 B B B B S 2 2 1",
-  "1 1 1 3 4 6 F B B 2",
-  "B B B 8   .   .   B B"
-].join("").split(" ");
+  // Row 0 (back row – strong pieces)
+  "1","2","3","3","4","4","4","5","5","5",
+  // Row 1
+  "5","6","6","6","6","7","7","7","7","S",
+  // Row 2
+  "B","B","B","B","B","B","F","8","8","8",
+  // Row 3 (front row – mostly weak/scouts)
+  "9","9","9","9","9","9","9","9","8","8"
+];
 
 const BLUE_SETUP = [
-  "B B 8   .   .   B B B B",
-  "2 1 1 1 3 4 6 F B B",
-  "1 2 S B B B B 7 6 5",
-  "5 4 3 3 2 6 7 8 9"
-].join("").split(" ");
+  // Row 6 (front row)
+  "9","9","9","9","9","9","9","9","8","8",
+  // Row 7
+  "B","B","B","B","B","B","F","8","8","8",
+  // Row 8
+  "5","6","6","6","6","7","7","7","7","S",
+  // Row 9 (back row)
+  "1","2","3","3","4","4","4","5","5","5"
+];
 
-// ────────────────────────────────────────────────
-// Board (10×10) – lakes in center
-// ────────────────────────────────────────────────
-const board = Array(10*10).fill(null);
+const board = Array(100).fill(null);
+let selected = null;
+let currentPlayer = "red";
+let gameOver = false;
 
-function idx(r, c) { return r*10 + c; }
+function idx(r, c) { return r * 10 + c; }
 
 function isLake(r, c) {
   return (r === 4 || r === 5) && (c === 2 || c === 3 || c === 6 || c === 7);
 }
 
 function placePieces() {
-  // Red (top – rows 0–3)
-  for (let i = 0; i < 40; i++) {
-    const r = Math.floor(i / 10);
-    const c = i % 10;
-    if (!isLake(r, c)) {
-      const type = RED_SETUP[i];
-      if (type !== ".") board[idx(r,c)] = { color:"red", type };
+  let k = 0;
+  for (let r = 0; r <= 3; r++) {
+    for (let c = 0; c < 10; c++) {
+      if (!isLake(r, c)) {
+        board[idx(r, c)] = { color: "red", type: RED_SETUP[k++] };
+      }
     }
   }
 
-  // Blue (bottom – rows 6–9)
-  for (let i = 0; i < 40; i++) {
-    const r = 6 + Math.floor(i / 10);
-    const c = i % 10;
-    if (!isLake(r, c)) {
-      const type = BLUE_SETUP[i];
-      if (type !== ".") board[idx(r,c)] = { color:"blue", type };
+  k = 0;
+  for (let r = 6; r <= 9; r++) {
+    for (let c = 0; c < 10; c++) {
+      if (!isLake(r, c)) {
+        board[idx(r, c)] = { color: "blue", type: BLUE_SETUP[k++] };
+      }
     }
   }
 }
 
-let selected = null;
-let currentPlayer = "red";
-
 function getPieceHTML(piece) {
   if (!piece) return "";
-  const p = PIECES[piece.type];
   let symbol = piece.type;
-  if (piece.type === "B") symbol = "💣";
-  if (piece.type === "F") symbol = "⚑";
-  if (piece.type === "S") symbol = "🕵️";
+  if (piece.type === 'B') symbol = '💣';
+  if (piece.type === 'F') symbol = '⚑';
+  if (piece.type === 'S') symbol = '🕵️';
 
   return `
     <div class="piece ${piece.color}" draggable="true">
@@ -176,93 +179,95 @@ function getPieceHTML(piece) {
 }
 
 function render() {
-  const cells = document.querySelectorAll(".cell");
-  cells.forEach(cell => {
-    const i = cell.dataset.index;
+  document.querySelectorAll(".cell").forEach(cell => {
+    const i = Number(cell.dataset.index);
     const piece = board[i];
     cell.innerHTML = piece ? getPieceHTML(piece) : "";
-    cell.classList.remove("red","blue","selected");
+    cell.classList.remove("red", "blue", "selected");
     if (piece) cell.classList.add(piece.color);
-    if (selected && selected.index === Number(i)) {
-      cell.classList.add("selected");
-    }
+    if (selected === i) cell.classList.add("selected");
   });
 
-  document.getElementById("status").textContent =
-    `${currentPlayer.toUpperCase()} to move${selected ? " • piece selected" : ""}`;
+  if (!gameOver) {
+    document.getElementById("status").textContent =
+      `${currentPlayer.toUpperCase()} to move` +
+      (selected !== null ? " • piece selected" : "");
+  }
+}
+
+function isAdjacent(from, to) {
+  const fr = Math.floor(from / 10), fc = from % 10;
+  const tr = Math.floor(to / 10), tc = to % 10;
+  return (Math.abs(fr - tr) + Math.abs(fc - tc) === 1);
 }
 
 function isValidMove(from, to) {
-  const fr = Math.floor(from / 10), fc = from % 10;
-  const tr = Math.floor(to   / 10), tc = to   % 10;
+  if (gameOver) return false;
+  if (!isAdjacent(from, to)) return false;
+  if (isLake(Math.floor(to/10), to%10)) return false;
 
-  // Must be adjacent (no diagonal)
-  const dr = Math.abs(fr - tr);
-  const dc = Math.abs(fc - tc);
-  if (dr + dc !== 1) return false;
+  const piece = board[from];
+  if (!PIECES[piece.type].movable) return false;
 
-  // Can't move into lake
-  if (isLake(tr, tc)) return false;
-
-  const targetPiece = board[to];
-  if (!targetPiece) return true; // empty square = ok
-
-  // Can't move onto own color
-  if (targetPiece.color === board[from].color) return false;
+  const target = board[to];
+  if (!target) return true;
+  if (target.color === piece.color) return false;
 
   return true;
 }
 
-function attack(attacker, defender) {
-  const a = PIECES[attacker.type];
-  const d = PIECES[defender.type];
+function resolveCombat(att, def) {
+  const a = PIECES[att.type];
+  const d = PIECES[def.type];
 
-  // Miner (2) removes bomb
-  if (a.rank === 3 && d.rank === -1) return "attacker_wins";
+  // Miner (8) defeats Bomb
+  if (a.name === "Miner" && d.name === "Bomb") return "attacker_wins";
+  // Spy defeats Marshal (1)
+  if (a.name === "Spy" && d.name === "Marshal") return "attacker_wins";
 
-  // Spy only beats Marshal (9)
-  if (a.rank === 10 && d.rank === 10 && a.name === "Spy") return "attacker_wins";
-
-  if (a.rank > d.rank) return "attacker_wins";
-  if (a.rank < d.rank) return "defender_wins";
-  return "both_die"; // equal rank
+  if (a.rank < d.rank) return "attacker_wins";  // lower number = stronger
+  if (a.rank > d.rank) return "defender_wins";
+  return "both_die";
 }
 
-function movePiece(fromIdx, toIdx) {
-  const attacker = board[fromIdx];
-  const defender = board[toIdx];
+function movePiece(from, to) {
+  if (gameOver) return;
+
+  const attacker = board[from];
+  const defender = board[to];
+  let winMessage = "";
 
   if (!defender) {
-    // Normal move to empty square
-    board[toIdx] = attacker;
-    board[fromIdx] = null;
-    currentPlayer = currentPlayer === "red" ? "blue" : "red";
-  }
-  else {
-    // Attack
-    const result = attack(attacker, defender);
+    board[to] = attacker;
+    board[from] = null;
+  } else {
+    const result = resolveCombat(attacker, defender);
 
     if (result === "attacker_wins") {
-      board[toIdx] = attacker;
-      board[fromIdx] = null;
+      board[to] = attacker;
+      board[from] = null;
+      if (defender.type === 'F') {
+        winMessage = `${attacker.color.toUpperCase()} WINS – captured the flag!`;
+        gameOver = true;
+      }
     } else if (result === "defender_wins") {
-      board[fromIdx] = null;
+      board[from] = null;
     } else {
-      // both die
-      board[fromIdx] = null;
-      board[toIdx]   = null;
+      board[from] = null;
+      board[to] = null;
     }
-
-    currentPlayer = currentPlayer === "red" ? "blue" : "red";
   }
 
   selected = null;
   render();
+
+  if (winMessage) {
+    document.getElementById("status").textContent = winMessage;
+  } else if (!gameOver) {
+    currentPlayer = currentPlayer === "red" ? "blue" : "red";
+  }
 }
 
-// ────────────────────────────────────────────────
-// Event listeners
-// ────────────────────────────────────────────────
 function initBoard() {
   const boardEl = document.getElementById("board");
   boardEl.innerHTML = "";
@@ -272,26 +277,25 @@ function initBoard() {
       const cell = document.createElement("div");
       cell.classList.add("cell");
       if (isLake(r, c)) cell.classList.add("lake");
-      cell.dataset.index = idx(r, c);
+      const i = idx(r, c);
+      cell.dataset.index = i;
 
       cell.addEventListener("click", () => {
+        if (gameOver) return;
         const i = Number(cell.dataset.index);
         const piece = board[i];
 
-        if (selected) {
-          // Try to move/attack
-          if (isValidMove(selected.index, i)) {
-            movePiece(selected.index, i);
+        if (selected !== null) {
+          if (isValidMove(selected, i)) {
+            movePiece(selected, i);
           } else {
-            // Invalid → just deselect
             selected = null;
+            render();
           }
+        } else if (piece && piece.color === currentPlayer) {
+          selected = i;
+          render();
         }
-        else if (piece && piece.color === currentPlayer) {
-          selected = { index: i, piece };
-        }
-
-        render();
       });
 
       boardEl.appendChild(cell);

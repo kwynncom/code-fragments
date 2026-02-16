@@ -1,3 +1,27 @@
+Sorry. I see the confusion. Let's do scouts as 9, miners as 8, sargeants as 7, ... , general as 2 and marshal as 1, please.
+******
+I made it list the piece count, which was correct.  Now I changed it to hard thinking mode to try to get it right.
+
+*******
+Changed to 4.1 think fast mode.  Fast-fast mode was very sloppy.  It's taking about 90s to think each time.
+Think fast has taken 2:31 to think.
+
+*******
+You have way too many bombs, and you covered the front row with bombs so no one can move.
+*******
+3 initial squares on each side are missing. Also, some of the pieces are "36" and "2B" and such. Your grid / array does not match the board for some reason.
+
+******
+22:57 - refinements
+
+That is your first pass at Stratego.  Follow-ups:
+
+Make the no-mans-land black.  Blue is too confusing.
+
+Some of your pieces are oddly named. And not all 80 initial squares are filled.
+
+
+*********
 2026/02/15 22:55pm - I redid this.  I think the previous version may have been corrupted somehow.
 
 ******
