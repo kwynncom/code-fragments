@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Live Cumulative VAERS Model – Dec 2020 base</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.6;
+            background: #f9f9f9;
+        }
+        h1, h2 { color: #2c3e50; }
+        .card {
+            background: white;
+            padding: 1.8rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+            margin-bottom: 2rem;
+        }
+        #live {
+            font-size: 2.1rem;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 1.2rem 0;
+            padding: 1.2rem;
+            background: #fffde7;
+            border-left: 6px solid #f57c00;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        th, td {
+            padding: 0.8rem;
+            text-align: right;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th { background: #e3f2fd; text-align: left; }
+        .note { font-size: 0.95rem; color: #555; margin-top: 1rem; }
+        .small { font-size: 0.9rem; color: #777; }
+    </style>
+</head>
+<body>
+
+    <h1>Live Cumulative VAERS Reports Model</h1>
+    <p class="note">
+        Model: monthly new ≈ 920 × (0.928)<sup>n</sup> + 105<br>
+        Cumulative ≈ 12777.78 × (1 − 0.928<sup>(n+1)</sup>) + 105 × (n + 1)<br>
+        n = months since December 1, 2020 (Dec 2020 = n=0)
+    </p>
+
+    <div class="card">
+        <h2>Live Estimate (updates every 0.2 seconds)</h2>
+        <div id="live">Calculating...</div>
+        <div id="frac" class="small"></div>
+    </div>
+
+    <div class="card">
+        <h2>Monthly Table (selected points)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Year-Month</th>
+                    <th>n (whole)</th>
+                    <th>Monthly (model)</th>
+                    <th>Cumulative (model)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Model constants
+        const A = 920;
+        const R = 0.928;
+        const C = 105;
+        const SUM_FACTOR = A / (1 - R);  // ≈ 12777.777777777778
+
+        // Reference: December 1, 2020
+        const REF_DATE = new Date(2020, 11, 1);  // month 11 = December
+
+        // Get precise fractional months elapsed
+        function getFractionalMonths() {
+            const now = new Date();
+            const msPerMonthApprox = 1000 * 60 * 60 * 24 * 30.437; // average month length
+            const msElapsed = now - REF_DATE;
+            let fractionalMonths = msElapsed / msPerMonthApprox;
+            return Math.max(0, fractionalMonths);
+        }
+
+        // Monthly value at fractional n
+        function monthlyAt(n) {
+            return A * Math.pow(R, n) + C;
+        }
+
+        // Cumulative at fractional n (continuous version)
+        function cumulativeAt(n) {
+            if (n < 0) return 0;
+            return SUM_FACTOR * (1 - Math.pow(R, n + 1)) + C * (n + 1);
+        }
+
+        // Format number with commas and decimals
+        function formatNum(num, decimals = 4) {
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+	const STEVE_KIRSCH_MULT = 41;
+
+        // Update live display
+        function updateLive() {
+            const n = getFractionalMonths();
+            const cum = cumulativeAt(n);
+            const mon = monthlyAt(n);
+	    const adj = cum * STEVE_KIRSCH_MULT;
+
+            document.getElementById('live').innerHTML = 
+                `${formatNum(adj, 3)}`;
+
+            document.getElementById('frac').innerHTML = 
+                `Current fractional month: n ≈ ${n.toFixed(3)}<br>` +
+                `Instant monthly rate: ≈ ${formatNum(mon, 2)} reports/month`;
+        }
+
+        // Build static table with whole-month points
+        function buildTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            const samples = [0,1,2,3,6,9,12,15,18,21,24,30,36,42,48,54,60,72,84];
+
+            samples.forEach(wholeN => {
+                const date = new Date(2020, 11 + wholeN, 1);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const label = `${year}-${month}`;
+
+                const mon = monthlyAt(wholeN);
+                const cum = cumulativeAt(wholeN);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${label}</td>
+                    <td>${wholeN}</td>
+                    <td>${Math.round(mon).toLocaleString()}</td>
+                    <td>${Math.round(cum).toLocaleString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Initial run
+        updateLive();
+        buildTable();
+
+        // Refresh every 200 ms
+        setInterval(updateLive, 550);
+    </script>
+
+    <p class="note">
+        This is a mathematical projection only — not official VAERS data.<br>
+        The live number increases continuously due to the fractional-month calculation.
+    </p>
+
+</body>
+</html>
