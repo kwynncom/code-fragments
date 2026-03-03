@@ -104,3 +104,51 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+/* ───────────────────────────────────────────────
+   Board labels (a–j files, 1–10 ranks)
+   ─────────────────────────────────────────────── */
+
+.board-with-labels {
+  display: inline-block;
+}
+
+.files.top,
+.files.bottom {
+  display: grid;
+  grid-template-columns: 30px repeat(10, 52px);
+  font-weight: bold;
+  font-size: 14px;
+  color: #ddd;
+  margin: 4px 0;
+  text-align: center;
+}
+
+.files.top {
+  margin-bottom: 2px;
+}
+
+.files.bottom {
+  margin-top: 6px;
+}
+
+.board-row {
+  display: flex;
+}
+
+.ranks.left {
+  display: grid;
+  grid-template-rows: repeat(10, 52px);
+  width: 30px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ddd;
+  text-align: center;
+  padding-right: 6px;
+}
+
+.ranks.left span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
