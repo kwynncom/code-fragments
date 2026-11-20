@@ -1,3 +1,33 @@
+Keep the last xact command.
+Let's do a new command "net worth"  If the meaning is not clear, ask me.  If it's clear, make it so.
+
+**********
+Let's back up.  I didn't read that in detail.
+
+For one, it sounds like you may have a better idea.  ACLs?  Let's discuss other ideas.
+
+The test account book / file should NOT be in this directory tree. It should be in /var/kwynn/gnucash
+
+But maybe you have a better idea than putting the file somewhere.
+
+let's discuss ideas.
+
+
+****
+If the following makes sense, do this:
+
+make a separate config or test config file.  Make up a prefix for a GNUcash file.  
+Write me a script that I can run that will give you read-only access to a hard link of THE gnucash file.
+The live file changes upon update, of course.  Hard links break because it's a totally new file.  That's fine for testing purposes.
+
+Make the suffix of your test file the date of the file in human-readable format. 
+
+If it doesn't fully make sense, ask me questions first.
+
+************
+  grok --resume 01a1f653-26e5-7171-8b32-011d6563368b
+
+******
 Your code works when I run it as me.  We'll leave it at that for now.
 
 /var/kwynn is already on the public github, so we'll let that be.

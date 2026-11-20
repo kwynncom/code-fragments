@@ -1,0 +1,4 @@
+Earlier versions had my original script that analyzed a credit card in March, 2026.
+
+I'll probably remove that.  2026/11/19 21:55
+
