@@ -1,4 +1,0 @@
-One of the goals of this project is to help me solve a problem at one particular Giant, Monster, Big Evil Megabank that Shall Not Be Named.
-
-There is current balance, remaining statement balance, and available credit.  Often transactions temporarily show up in some of these but not others.  That is, transactions have several states / statuses until they are consistently calculated across all these totals.
-

@@ -1,0 +1,32 @@
+Your code works when I run it as me.  We'll leave it at that for now.
+
+/var/kwynn is already on the public github, so we'll let that be.
+
+Is there anything new in this directory tree that can't go into github?  Anything new that is not git ignored?  Including the .txt file that I'm writing to now that has the previews of most of my questions to you?
+
+*****
+Ok, write the .json file, and let's create main.py
+
+Go ahead and implement finding the last transaction as I mentioned.    As output, is the "one shot" as a guide.  I don't need that much data, though.  Just enough human-readable stuff that I can make sure you are indeed finding the last xact.
+
+If that makes sense, make it so.
+
+
+*****
+How does one abstract out a const (whether Python implements const or not, that's not my point.  It would be a const in other languages is my point) such as my .gnucash reference in the "one shot" crcd2603.py?  
+
+Just tell me what is common in Python.  Don't do it yet.
+
+I want to abstract it in the sense of a config file.  For now, that will probably be the only "const" in there.
+
+
+**********
+Is main.py as good as anything to start with a new base file?  The next task is probably going to be to implement a command to the effect of "python3 main.py last xact" which will find the last transaction entered into the system.  Don't start going that command yet.  I'm first asking if main.py is a good place to start for this?  As a filename?  So, again, I'm asking a very limited question to start.
+
+********
+What is the pwd now?  Grok, can you "see" this directory?
+
+For manipulating Python, I assume you'd like access to .venv and maybe .idea and maybe __pycache__ and such?  You have a tendency to work around lack of permissions.  For this project, I'll likely give you whatever permissions you want.  So, if you have a permission problem, please stop and ask for more permission rather than trying to work around it.
+
+
+
