@@ -27,6 +27,7 @@ if __name__ == '__main__':
                 'reconciled'  : o.reconciled,
                 'i': o.i,
                 'Uposted'  : int(trans_date.timestamp()),
+                'number': (int(num) if (num := o.transaction.GetNum().strip()).isdigit() else num),  # ← updated here
                 'Ucreated' : int(o.transaction.GetDateEntered().timestamp()),
                 'splitGUID': o.split.GetGUID().to_string(),
             }
